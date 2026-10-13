@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui' show Color;
+import 'dart:ui' show Color, Rect;
 
 import 'mime.dart';
 import 'silica_icons.dart';
@@ -12,14 +12,27 @@ import 'silica_icons.dart';
 /// L'icona da disegnare per un file: l'icona del tipo, oppure il file generico con
 /// l'estensione scritta (`label`) nel colore della categoria.
 class FileIcon {
-  const FileIcon(this.icon, {this.label, this.labelColor, this.rules});
+  const FileIcon(
+    this.icon, {
+    this.label,
+    this.labelColor,
+    this.labelBox,
+    this.labelSize = 0,
+    this.labelWeight = 600,
+    this.labelMinSide = 0,
+  });
 
   final LayeredIcon icon;
   final String? label;
 
   /// Colore dell'etichetta (chiaro, scuro).
   final (Color, Color)? labelColor;
-  final FileLabelRules? rules;
+
+  /// Riquadro (tela 1024), corpo e peso dell'etichetta; sotto `labelMinSide` pt non si scrive.
+  final Rect? labelBox;
+  final double labelSize;
+  final int labelWeight;
+  final double labelMinSide;
 }
 
 /// Tipi eseguibili: senza estensione e con il bit `x` prendono `file-executable`.
@@ -140,33 +153,62 @@ FileIcon? resolveFileIcon(
     return icon == null ? null : FileIcon(icon);
   }
   final db = mime ?? systemMime;
-  final mimeType = type ?? db.typeOf(path);
+  // 0. Il nome canonico (gli alias di shared-mime-info).
+  final mimeType = db.canonical(type ?? db.typeOf(path));
   // 5. Il file generico con l'etichetta, o il foglio con il punto di domanda.
-  FileIcon labeled() {
+  FileIcon labeled([String? category]) {
     if (ext.isEmpty || ext.length > rules.maxChars) {
       final fallback = findSilicaIcon(rules.fallback, env: env);
       return fallback == null ? FileIcon(generic) : FileIcon(fallback);
     }
     final override = rules.overrides[ext];
+    // L'override dell'estensione vince sulla categoria della voce e su quella del tipo.
     final color = switch (override) {
       final Color c => (c, c),
-      final String category => rules.colors[category],
-      _ => rules.colors[labelCategory(mimeType)],
+      final String c => rules.colors[c],
+      _ => rules.colors[category ?? labelCategory(mimeType)],
     };
     return FileIcon(
       generic,
       label: ext.toUpperCase(),
       labelColor: color ?? rules.colors['other'],
-      rules: rules,
+      labelBox: rules.box,
+      labelSize: rules.size,
+      // Peso 900 nel manifest: il pacchetto ha Inter fino al semibold.
+      labelWeight: 600,
     );
   }
 
-  FileIcon? byId(String? id) {
+  /// Un'icona di tipo con la sua etichetta (`file-type-label`): l'estensione, o il testo per
+  /// i file senza (null: nessuna etichetta).
+  FileIcon typed(LayeredIcon icon) {
+    final rule = icon.dynamic;
+    if (rule is! TypeLabel) return FileIcon(icon);
+    final text = ext.isNotEmpty && ext.length <= rule.maxChars
+        ? ext.toUpperCase()
+        : rule.noExtension;
+    return FileIcon(
+      icon,
+      label: text,
+      labelColor: (rule.color, rule.darkColor),
+      labelBox: rule.box,
+      labelSize: rule.size,
+      labelWeight: 500,
+      labelMinSide: rule.minSize,
+    );
+  }
+
+  FileIcon? byId(String? id, [String? category]) {
     if (id == null) return null;
     // Una voce della mappa può mandare al file generico (application/json): con l'etichetta.
-    if (id == generic.id) return labeled();
+    if (id == generic.id) return labeled(category);
     final icon = findSilicaIcon(id, env: env);
-    return icon == null ? null : FileIcon(icon);
+    return icon == null ? null : typed(icon);
+  }
+
+  FileIcon? byMime(String key) {
+    final entry = rules.mime[key];
+    return entry == null ? null : byId(entry.$1, entry.$2);
   }
 
   // 1. Eseguibile senza estensione.
@@ -178,9 +220,9 @@ FileIcon? resolveFileIcon(
   }
   // 1–3. Il tipo, il tipo con `*`, i genitori.
   for (final candidate in [mimeType, ...db.parentsOf(mimeType)]) {
-    if (byId(rules.mime[candidate]) case final icon?) return icon;
+    if (byMime(candidate) case final icon?) return icon;
     final major = candidate.split('/').first;
-    if (byId(rules.mime['$major/*']) case final icon?) return icon;
+    if (byMime('$major/*') case final icon?) return icon;
   }
   // 4. L'estensione.
   if (byId(rules.extensions[ext]) case final icon?) return icon;

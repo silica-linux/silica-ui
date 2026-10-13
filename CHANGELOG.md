@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.0 · 2026-10-13
+
+- Le icone dei tipi scrivono l'estensione vera (`file-type-label` di silica-icons): riquadro,
+  corpo, colore chiaro e scuro, `no_extension`, niente etichetta sotto `min_size`.
+- `icons.mime` accetta `{icon, category}`: il file generico con quella categoria (l'override
+  dell'estensione resta prima). Passo 0: il tipo diventa canonico con gli alias.
+- `FileIcon`: `labelBox`, `labelSize`, `labelWeight`, `labelMinSide` al posto di `rules`.
+  L'etichetta usa la riga naturale di Inter, centrata nel riquadro.
+
 ## 0.10.0 · 2026-10-13
 
 - `MenuHost.opaque` e `MenuPanel.opaque`: menu a fondo pieno (`#fcfcfd` con un filo) invece

@@ -175,7 +175,7 @@ void main() {
       expect(json?.label, 'JSON');
       expect(json?.labelColor?.$1, const Color(0xFF1F9D55));
       // La voce esplicita vince sul genitore (application/javascript), con l'etichetta.
-      expect(json?.rules, isNotNull);
+      expect(json?.labelBox, isNotNull);
       expect(resolve('progetto.skt')?.labelColor?.$1, const Color(0xFFF7B500));
       expect(resolve('LEGGIMI')?.icon.id, 'file-unknown');
       expect(resolve('troppo.lunghissima')?.icon.id, 'file-unknown');
@@ -322,6 +322,51 @@ void main() {
     expect(mounts.last.device, '/dev/sdb1');
   });
 
+  testWidgets('l\'etichetta di un tipo non si scrive sotto min_size', (
+    tester,
+  ) async {
+    final root = iconTree();
+    addTearDown(() => root.deleteSync(recursive: true));
+    final env = {'SILICA_ICONS_DIR': root.path};
+    final dir = Directory('${root.path}/files/file-image')
+      ..createSync(recursive: true);
+    File('${dir.path}/icon.json').writeAsStringSync(
+      manifest(
+        'file-image',
+        dynamic: {
+          'type': 'file-type-label',
+          'label': {
+            'size': 101.79,
+            'box': [292, 741.43, 440, 124],
+            'max_chars': 5,
+            'max_width': 440,
+            'color': '#30b0c7',
+            'no_extension': null,
+            'min_size': 32,
+          },
+        },
+      ),
+    );
+    final icon = resolveFileIcon(
+      '/x/foto.png',
+      mime: mime,
+      env: env,
+      type: 'image/png',
+    )!;
+    expect(icon.label, 'PNG');
+    for (final (side, shown) in [(64.0, true), (16.0, false)]) {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: SilicaIcon(FileSource(icon), side: side, dark: false),
+          ),
+        ),
+      );
+      expect(find.text('PNG'), shown ? findsOneWidget : findsNothing);
+    }
+  });
+
   test('il repo vero e il database del sistema, se ci sono', () {
     final repo =
         Platform.environment['SILICA_ICONS_DIR'] ??
@@ -348,6 +393,21 @@ void main() {
     expect(id('disco.iso'), 'file-disk-image');
     expect(id('foto.jpg'), 'file-image');
     expect(id('main.rs'), 'file-code');
+    FileIcon? icon(String name) => resolveFileIcon(
+      '/tmp/$name',
+      mime: db,
+      env: env,
+      type: db.typeForName(name),
+      executable: false,
+    );
+    // L'estensione vera sulle icone dei tipi, nel colore del tipo.
+    expect(icon('foto.jpg')?.label, 'JPG');
+    expect(icon('foto.jpg')?.labelColor?.$1, const Color(0xFF30B0C7));
+    expect(icon('font.ttf')?.label, 'TTF');
+    // JSON: voce esplicita al file generico, categoria data (non il codice del genitore).
+    expect(icon('dati.json')?.icon.id, 'file-generic');
+    expect(icon('dati.json')?.labelColor?.$1, const Color(0xFF1F9D55));
+
     expect(
       findBadgeRules(env: env)?.pathFor(IconBadge.alias, dark: true),
       endsWith('alias-dark.svg'),

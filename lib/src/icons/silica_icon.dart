@@ -205,23 +205,23 @@ class SilicaIcon extends StatelessWidget {
     );
   }
 
-  /// Un file: i livelli e, per il file generico, l'estensione nel riquadro dell'etichetta.
+  /// Un file: i livelli e l'etichetta (l'estensione) nel suo riquadro, centrata sulla riga
+  /// naturale di Inter; più larga del riquadro, il corpo scende (`shrink`).
   Widget _file(FileIcon file, double canvas, bool isDark) {
-    final rules = file.rules;
+    final box = file.labelBox;
     final label = file.label;
     final scale = canvas / canvasSide;
     return Stack(
       children: [
         for (final layer in file.icon.layers)
           _svg(layer.pathFor(dark: isDark), canvas),
-        if (rules != null && label != null)
+        if (box != null && label != null && side >= file.labelMinSide)
           Positioned(
-            left: rules.box.left * scale,
-            top: rules.box.top * scale,
-            width: rules.box.width * scale,
-            height: rules.box.height * scale,
+            left: box.left * scale,
+            top: box.top * scale,
+            width: box.width * scale,
+            height: box.height * scale,
             child: FittedBox(
-              // Più largo di max_width: il corpo scende in proporzione.
               fit: BoxFit.scaleDown,
               child: Text(
                 label,
@@ -229,10 +229,9 @@ class SilicaIcon extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: uiFontFamily,
                   package: 'silica_ui',
-                  // Peso 900 nel manifest: il pacchetto ha Inter fino al semibold.
-                  fontWeight: FontWeight.w600,
-                  fontSize: rules.size * scale,
-                  height: 1,
+                  fontWeight: FontWeight
+                      .values[(file.labelWeight ~/ 100 - 1).clamp(0, 8)],
+                  fontSize: file.labelSize * scale,
                   color: isDark ? file.labelColor?.$2 : file.labelColor?.$1,
                 ),
               ),
@@ -288,6 +287,7 @@ class SilicaIcon extends StatelessWidget {
                 ),
                 FolderSymbol() ||
                 FileLabelRules() ||
+                TypeLabel() ||
                 null => const SizedBox.shrink(),
               },
             ],

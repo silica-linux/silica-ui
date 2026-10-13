@@ -235,12 +235,41 @@ class FileLabelRules extends IconDynamic {
   /// Estensione → categoria (String) o colore (Color).
   final Map<String, Object> overrides;
 
-  /// Tipo MIME (anche `image/*`) → id dell'icona, ed estensione → id.
-  final Map<String, String> mime;
+  /// Tipo MIME (anche `image/*`) → id dell'icona (e la categoria quando porta al file
+  /// generico), ed estensione → id.
+  final Map<String, (String, String?)> mime;
   final Map<String, String> extensions;
 
   /// L'icona per i file senza estensione o con un'estensione troppo lunga.
   final String fallback;
+}
+
+/// L'etichetta di un'icona di tipo (`file-type-label`, icon-format.md "Icone dei tipi di
+/// file"): l'estensione in maiuscolo nel riquadro, in un solo colore.
+class TypeLabel extends IconDynamic {
+  const TypeLabel({
+    required this.box,
+    required this.size,
+    required this.maxChars,
+    required this.maxWidth,
+    required this.color,
+    required this.darkColor,
+    required this.noExtension,
+    required this.minSize,
+  });
+
+  final Rect box;
+  final double size;
+  final int maxChars;
+  final double maxWidth;
+  final Color color;
+  final Color darkColor;
+
+  /// Il testo senza estensione (o con una troppo lunga); null: nessuna etichetta.
+  final String? noExtension;
+
+  /// Sotto questo lato del corpo l'etichetta non si disegna.
+  final double minSize;
 }
 
 class LayeredIcon {
@@ -363,6 +392,8 @@ IconDynamic? _parseDynamic(
       return _parseFolder(raw, dir);
     case 'file-label':
       return _parseFileLabel(raw);
+    case 'file-type-label':
+      return _parseTypeLabel(raw);
     default:
       return null;
   }
@@ -404,6 +435,25 @@ FileLabelRules? _parseFileLabel(Map raw) {
           key.toLowerCase(): value,
   };
   final icons = raw['icons'];
+  // Le voci di `icons.mime`: un id, o `{icon, category}` (il file generico con una categoria).
+  final mime = <String, (String, String?)>{};
+  final rawMime = icons is Map ? icons['mime'] : null;
+  if (rawMime is Map) {
+    for (final MapEntry(:key, :value) in rawMime.entries) {
+      if (key is! String) continue;
+      if (value is String && _idPattern.hasMatch(value)) {
+        mime[key.toLowerCase()] = (value, null);
+      } else if (value is Map &&
+          value['icon'] is String &&
+          _idPattern.hasMatch(value['icon'] as String)) {
+        final category = value['category'];
+        mime[key.toLowerCase()] = (
+          value['icon'] as String,
+          category is String ? category : null,
+        );
+      }
+    }
+  }
   final fallback = raw['fallback'];
   return FileLabelRules(
     box: Rect.fromLTWH(
@@ -417,11 +467,37 @@ FileLabelRules? _parseFileLabel(Map raw) {
     maxWidth: _number(label['max_width'], 1, 1024) ?? 534,
     colors: colors,
     overrides: overrides,
-    mime: ids(icons is Map ? icons['mime'] : null),
+    mime: mime,
     extensions: ids(icons is Map ? icons['extensions'] : null),
     fallback: fallback is String && _idPattern.hasMatch(fallback)
         ? fallback
         : 'file-unknown',
+  );
+}
+
+/// `dynamic` di tipo `file-type-label`.
+TypeLabel? _parseTypeLabel(Map raw) {
+  final label = raw['label'];
+  if (label is! Map) return null;
+  final box = label['box'];
+  if (box is! List || box.length != 4 || box.any((v) => v is! num)) return null;
+  final color = _parseColor(label['color']);
+  if (color == null) return null;
+  final none = label['no_extension'];
+  return TypeLabel(
+    box: Rect.fromLTWH(
+      (box[0] as num).toDouble(),
+      (box[1] as num).toDouble(),
+      (box[2] as num).toDouble(),
+      (box[3] as num).toDouble(),
+    ),
+    size: _number(label['size'], 1, 1024) ?? 100,
+    maxChars: (label['max_chars'] as num?)?.toInt().clamp(1, 16) ?? 5,
+    maxWidth: _number(label['max_width'], 1, 1024) ?? 440,
+    color: color,
+    darkColor: _parseColor(label['dark_color']) ?? color,
+    noExtension: none is String && none.length <= 8 ? none : null,
+    minSize: _number(label['min_size'], 0, 1024) ?? 32,
   );
 }
 
