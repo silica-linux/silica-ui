@@ -200,4 +200,19 @@ void main() {
       expect(find.text('Apri'), findsOneWidget);
     },
   );
+
+  testWidgets('menu pieno: niente vetro', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: MenuHost(
+          entries: [MenuAction('Apri')],
+          anchor: Offset(10, 10),
+          opaque: true,
+        ),
+      ),
+    );
+    expect(find.byKey(const ValueKey('menu pieno')), findsOneWidget);
+    expect(find.byType(LiquidGlass), findsNothing);
+  });
 }

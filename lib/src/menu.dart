@@ -116,6 +116,10 @@ abstract final class MenuColors {
   static const Color highlight = Color(0xFF007AFF);
   static const Color highlightText = Color(0xFFFFFFFF);
   static const Color shadow = Color(0x33000000);
+
+  /// Il fondo pieno ([MenuPanel.opaque]) e il suo filo.
+  static const Color opaqueFill = Color(0xFFFCFCFD);
+  static const Color opaqueBorder = Color(0x1F000000);
 }
 
 TextStyle _style(double size, Color color, {FontWeight? weight}) => TextStyle(
@@ -233,6 +237,7 @@ class MenuHost extends StatefulWidget {
     this.autofocus = true,
     this.handlesPointer = true,
     this.onRectsChanged,
+    this.opaque = false,
   });
 
   final List<MenuEntry> entries;
@@ -259,6 +264,9 @@ class MenuHost extends StatefulWidget {
   /// I rettangoli dei menu aperti sono cambiati (un sottomenu si apre o si chiude): chi ospita
   /// il menu allarga la regione d'input. Chiamato dopo il frame.
   final ValueChanged<List<Rect>>? onRectsChanged;
+
+  /// Pannelli a fondo pieno invece del vetro ([MenuPanel.opaque]).
+  final bool opaque;
 
   @override
   State<MenuHost> createState() => MenuHostState();
@@ -601,6 +609,7 @@ class MenuHostState extends State<MenuHost>
                         ? widget.tip!.dx - level.rect.left
                         : null,
                     group: _levels.indexOf(level),
+                    opaque: widget.opaque,
                   ),
                 ),
             ],
@@ -620,6 +629,7 @@ class MenuPanel extends StatelessWidget {
     this.highlighted,
     this.tipX,
     this.group = 0,
+    this.opaque = false,
   });
 
   final List<MenuEntry> entries;
@@ -628,6 +638,11 @@ class MenuPanel extends StatelessWidget {
   /// Il gruppo del vetro ([Glass.group]): un sottomenu ha il suo, e non si fonde con il
   /// menu madre su cui è disegnato.
   final int group;
+
+  /// Fondo pieno invece del vetro: per un menu disegnato dentro una finestra, dove il vetro del
+  /// compositor starebbe sotto il contenuto. Il colore è quello del menu sopra il contenuto
+  /// bianco (mustache.md MU-50, `mu50-file-light.png`: `#fcfcfd`).
+  final bool opaque;
 
   /// Centro della punta sotto il pannello, dal suo bordo sinistro (null: niente punta).
   final double? tipX;
@@ -640,38 +655,50 @@ class MenuPanel extends StatelessWidget {
     final tipX = this.tipX;
     return CustomPaint(
       painter: _MenuShadow(tipX),
-      child: LiquidGlass(
-        radius: MenuMetrics.radius,
-        material: GlassMaterial.thick,
-        interactive: false,
-        group: group,
-        // La punta è parte del vetro (una sola forma con il corpo, il bordo continuo).
-        tip: tipX == null
-            ? null
-            : GlassTip(
-                x: tipX,
-                // Sui pixel di dock-context-light.png la punta scende ~10 pt sotto il corpo
-                // (y 1338 → 1347) e si stringe di ~0,7 pt per lato a ogni riga. Il vertice
-                // arrotondato (3,5 pt) e i raccordi dell'unione morbida allargano la base:
-                // sul corpo torna larga ~22 pt.
-                width: MenuMetrics.tipBase - 14,
-                height: MenuMetrics.tipHeight + 2,
+      child: opaque
+          ? DecoratedBox(
+              key: const ValueKey('menu pieno'),
+              decoration: BoxDecoration(
+                color: MenuColors.opaqueFill,
+                borderRadius: BorderRadius.circular(MenuMetrics.radius),
+                border: Border.all(color: MenuColors.opaqueBorder, width: 0.5),
               ),
-        child: Stack(
-          children: [
-            for (var i = 0; i < entries.length; i++)
-              Positioned(
-                left: 0,
-                right: 0,
-                top: tops[i],
-                height: _entryHeight(entries[i]),
-                child: _row(entries[i], i == highlighted, left, checks),
-              ),
-          ],
-        ),
-      ),
+              child: _rows(left, checks, tops),
+            )
+          : LiquidGlass(
+              radius: MenuMetrics.radius,
+              material: GlassMaterial.thick,
+              interactive: false,
+              group: group,
+              // La punta è parte del vetro (una sola forma con il corpo, il bordo continuo).
+              tip: tipX == null
+                  ? null
+                  : GlassTip(
+                      x: tipX,
+                      // Sui pixel di dock-context-light.png la punta scende ~10 pt sotto il corpo
+                      // (y 1338 → 1347) e si stringe di ~0,7 pt per lato a ogni riga. Il vertice
+                      // arrotondato (3,5 pt) e i raccordi dell'unione morbida allargano la base:
+                      // sul corpo torna larga ~22 pt.
+                      width: MenuMetrics.tipBase - 14,
+                      height: MenuMetrics.tipHeight + 2,
+                    ),
+              child: _rows(left, checks, tops),
+            ),
     );
   }
+
+  Widget _rows(double left, bool checks, List<double> tops) => Stack(
+    children: [
+      for (var i = 0; i < entries.length; i++)
+        Positioned(
+          left: 0,
+          right: 0,
+          top: tops[i],
+          height: _entryHeight(entries[i]),
+          child: _row(entries[i], i == highlighted, left, checks),
+        ),
+    ],
+  );
 
   Widget _row(MenuEntry entry, bool lit, double textLeft, bool checks) {
     switch (entry) {

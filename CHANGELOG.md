@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0 · 2026-10-13
+
+- `MenuHost.opaque` e `MenuPanel.opaque`: menu a fondo pieno (`#fcfcfd` con un filo) invece
+  del vetro, per i menu contestuali disegnati dentro la finestra di un'app (finché l'embedder
+  non ha i popup).
+
 ## 0.9.1 · 2026-10-13
 
 - `resolveFileIcon`: una voce di `icons.mime` che porta al file generico (`application/json`)
