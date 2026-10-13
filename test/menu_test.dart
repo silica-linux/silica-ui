@@ -215,4 +215,46 @@ void main() {
     expect(find.byKey(const ValueKey('menu pieno')), findsOneWidget);
     expect(find.byType(LiquidGlass), findsNothing);
   });
+
+  testWidgets(
+    'riga personalizzata: alta quanto chiede, chiude il menu dal suo tocco',
+    (tester) async {
+      var closed = false;
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: MenuHost(
+            entries: [
+              const MenuAction('Apri'),
+              MenuCustom(
+                height: 25,
+                width: 200,
+                builder: (context, close) => GestureDetector(
+                  key: const ValueKey('cerchio'),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: close,
+                  child: const SizedBox(width: 14, height: 14),
+                ),
+              ),
+            ],
+            anchor: const Offset(10, 10),
+            onDismissed: () => closed = true,
+          ),
+        ),
+      );
+      expect(
+        menuRowTops([
+          const MenuAction('Apri'),
+          MenuCustom(height: 25, builder: (_, _) => const SizedBox()),
+          const MenuAction('Dopo'),
+        ]),
+        [5, 29, 54],
+      );
+      await tester.tap(find.byKey(const ValueKey('cerchio')));
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      expect(closed, isTrue);
+    },
+  );
 }

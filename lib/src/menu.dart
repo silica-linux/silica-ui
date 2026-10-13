@@ -59,6 +59,21 @@ class MenuDivider extends MenuEntry {
 }
 
 /// Intestazione grigia di un gruppo, non selezionabile.
+/// Una riga disegnata da chi apre il menu (la fila dei cerchi delle etichette): alta `height`,
+/// larga almeno `width`; `builder` riceve la funzione che chiude il menu. Non si sceglie con la
+/// tastiera e il rilascio del puntatore sopra di lei non chiude il menu: gestisce i suoi tocchi.
+class MenuCustom extends MenuEntry {
+  const MenuCustom({
+    required this.height,
+    required this.builder,
+    this.width = 0,
+  });
+
+  final double height;
+  final double width;
+  final Widget Function(BuildContext context, VoidCallback close) builder;
+}
+
 class MenuSection extends MenuEntry {
   const MenuSection(this.label);
   final String label;
@@ -141,6 +156,7 @@ double _entryHeight(MenuEntry entry) => switch (entry) {
   MenuAction() => MenuMetrics.itemHeight,
   MenuDivider() => MenuMetrics.dividerHeight,
   MenuSection() => MenuMetrics.sectionHeight,
+  MenuCustom(:final height) => height,
 };
 
 /// La colonna del testo: dipende da spunte e icone presenti nel menu.
@@ -183,6 +199,7 @@ Size menuSize(List<MenuEntry> entries) {
             ) +
             MenuMetrics.right,
       MenuDivider() => 0.0,
+      MenuCustom(:final width) => width,
     };
     if (w > width) width = w;
   }
@@ -610,6 +627,7 @@ class MenuHostState extends State<MenuHost>
                         : null,
                     group: _levels.indexOf(level),
                     opaque: widget.opaque,
+                    onClose: close,
                   ),
                 ),
             ],
@@ -630,10 +648,14 @@ class MenuPanel extends StatelessWidget {
     this.tipX,
     this.group = 0,
     this.opaque = false,
+    this.onClose,
   });
 
   final List<MenuEntry> entries;
   final int? highlighted;
+
+  /// Chiude il menu (per le righe [MenuCustom]).
+  final VoidCallback? onClose;
 
   /// Il gruppo del vetro ([Glass.group]): un sottomenu ha il suo, e non si fonde con il
   /// menu madre su cui è disegnato.
@@ -702,6 +724,10 @@ class MenuPanel extends StatelessWidget {
 
   Widget _row(MenuEntry entry, bool lit, double textLeft, bool checks) {
     switch (entry) {
+      case MenuCustom(:final builder):
+        return Builder(
+          builder: (context) => builder(context, onClose ?? () {}),
+        );
       case MenuDivider():
         return Center(
           child: Container(

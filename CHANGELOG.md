@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.0 · 2026-10-13
+
+- `MenuCustom`: una riga del menu disegnata da chi lo apre (alta `height`, larga almeno
+  `width`), con la funzione per chiudere il menu: la fila dei cerchi delle etichette.
+
 ## 0.11.1 · 2026-10-13
 
 - Passo 0b di silica-icons: se il tipo viene solo dal nome e `globs2` dà più tipi con lo
