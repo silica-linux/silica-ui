@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 · 2026-10-13
+
+- Menu: `MenuHost` (un menu con i suoi sottomenu in un'area che lo contiene), `MenuPanel`,
+  le voci `MenuAction` (scorciatoia, spunta, icona, sottomenu, disattivata), `MenuDivider` e
+  `MenuSection`; `menuSize` e `menuRowTops` per posizionarli. Voci da 24 pt, separatori da 11,
+  evidenziazione blu, vetro spesso con l'ombra fuori dal pannello; sottomenu dopo ~295 ms
+  con la tolleranza a triangolo; ↑ ↓ → ← Invio Esc e le lettere; la scelta lampeggia e il
+  menu sfuma in ~190 ms.
+
 ## 0.2.0 · 2026-10-13
 
 - Il vetro porta l'opacità degli antenati (`Opacity`, `FadeTransition`, `AnimatedOpacity`):
