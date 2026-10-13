@@ -207,7 +207,7 @@ List<double> menuRowTops(List<MenuEntry> entries) {
 class _Level {
   _Level(this.entries, this.rect);
   final List<MenuEntry> entries;
-  final Rect rect;
+  Rect rect;
   int? highlighted;
   late final List<double> tops = menuRowTops(entries);
 
@@ -295,7 +295,21 @@ class MenuHostState extends State<MenuHost>
   @override
   void didUpdateWidget(MenuHost old) {
     super.didUpdateWidget(old);
-    if (old.entries != widget.entries || old.anchor != widget.anchor) _reset();
+    if (old.entries != widget.entries ||
+        (old.tip == null) != (widget.tip == null)) {
+      _reset();
+    } else if (old.anchor != widget.anchor || old.tip != widget.tip) {
+      // La superficie che ospita il menu è cambiata (il Dock che si allunga): i menu aperti
+      // si spostano insieme, senza chiudere il sottomenu.
+      final tip = widget.tip;
+      final oldTip = old.tip;
+      final shift = tip != null && oldTip != null
+          ? tip - oldTip
+          : widget.anchor - old.anchor;
+      for (final level in _levels) {
+        level.rect = level.rect.shift(shift);
+      }
+    }
   }
 
   void _reset() {

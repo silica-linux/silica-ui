@@ -183,4 +183,21 @@ void main() {
       isTrue,
     );
   });
+
+  testWidgets(
+    'la punta che si sposta sposta il menu (la superficie si allunga)',
+    (tester) async {
+      const entries = [MenuAction('Apri')];
+      Widget host(Offset tip) => Directionality(
+        textDirection: TextDirection.ltr,
+        child: MenuHost(entries: entries, anchor: Offset.zero, tip: tip),
+      );
+      await tester.pumpWidget(host(const Offset(500, 100)));
+      final before = tester.getRect(find.byType(MenuPanel));
+      await tester.pumpWidget(host(const Offset(500, 400)));
+      final after = tester.getRect(find.byType(MenuPanel));
+      expect(after.top - before.top, 300);
+      expect(find.text('Apri'), findsOneWidget);
+    },
+  );
 }

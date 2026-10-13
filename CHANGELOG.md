@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1 · 2026-10-13
+
+- `MenuHost`: quando cambiano `tip` o `anchor` (la superficie che ospita il menu si allunga)
+  i menu aperti si spostano con loro; prima restavano dov'erano.
+
 ## 0.5.0 · 2026-10-13
 
 - `MenuHost.onRectsChanged`: i rettangoli dei menu aperti, dopo il frame in cui cambiano
