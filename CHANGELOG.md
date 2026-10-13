@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 · 2026-10-13
+
+- `MenuHost.tip` e `MenuPanel.tipX`: un menu che indica un oggetto sotto di sé (le icone del
+  Dock) ha una punta alta 8 pt e larga 22 alla base, con il corpo 27 pt a sinistra del
+  vertice.
+
 ## 0.3.2 · 2026-10-13
 
 - `MenuHost.handlesPointer`: falso per passare il puntatore dall'esterno (`pointerMoved`,

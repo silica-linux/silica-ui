@@ -129,4 +129,27 @@ void main() {
       expect(log, ['doc', 'chiuso']);
     },
   );
+
+  testWidgets(
+    'con la punta il menu sta sopra: corpo 27 pt a sinistra, fondo 8 pt sopra',
+    (tester) async {
+      const entries = [MenuAction('Apri')];
+      await tester.pumpWidget(
+        const Directionality(
+          textDirection: TextDirection.ltr,
+          child: MenuHost(
+            entries: entries,
+            anchor: Offset.zero,
+            tip: Offset(500, 400),
+          ),
+        ),
+      );
+      final size = menuSize(entries);
+      final text = tester.getTopLeft(find.text('Apri'));
+      expect(text.dx, closeTo(500 - 27 + 17, 0.5));
+      final panel = tester.getRect(find.byType(MenuPanel));
+      expect(panel.bottom, 400 - 8);
+      expect(panel.height, size.height);
+    },
+  );
 }
