@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0 · 2026-10-13
+
+- Le icone di silica-icons passano qui dalla shell, per le app (Mustache) e per la shell:
+  `SilicaIcon` (prima `ShellIcon` della shell) con `LayeredSource`, `FolderSource`,
+  `FlatSource`; il manifest (`parseManifest`, `findSilicaIcon`, `silicaIconDirs`), la
+  cartella generica con simbolo e tinta (`resolveFolderIcon`, `FolderIcon`) e le cartelle
+  speciali (`xdgUserDirs`, `specialFolderKey`, `xdgDataDirs`). `iconBodyPath`: la
+  superellisse del corpo.
+- Nuova dipendenza: `flutter_svg`.
+
 ## 0.6.0 · 2026-10-13
 
 - `Glass.group` e `LiquidGlass.group`: il vetro si fonde solo con quello dello stesso

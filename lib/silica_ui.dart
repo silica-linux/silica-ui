@@ -4,6 +4,9 @@ library;
 import 'package:flutter/widgets.dart';
 
 export 'src/glass.dart';
+export 'src/icons/silica_icon.dart'
+    show SilicaIcon, IconSource, LayeredSource, FolderSource, FlatSource, iconBodyPath;
+export 'src/icons/silica_icons.dart';
 export 'src/liquid_glass.dart';
 export 'src/menu.dart';
 
