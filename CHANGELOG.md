@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0 · 2026-10-13
+
+- `MenuHost.onRectsChanged`: i rettangoli dei menu aperti, dopo il frame in cui cambiano
+  (un sottomenu che si apre o si chiude), per allargare la regione d'input di chi ospita il
+  menu. Senza, su una superficie con regione d'input il sottomenu non riceveva il puntatore.
+
 ## 0.4.0 · 2026-10-13
 
 - `MenuHost.tip` e `MenuPanel.tipX`: un menu che indica un oggetto sotto di sé (le icone del

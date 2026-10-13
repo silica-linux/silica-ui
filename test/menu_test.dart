@@ -152,4 +152,35 @@ void main() {
       expect(panel.height, size.height);
     },
   );
+
+  testWidgets('onRectsChanged: il sottomenu aperto entra nei rettangoli', (
+    tester,
+  ) async {
+    final seen = <List<Rect>>[];
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MenuHost(
+          entries: const [
+            MenuAction('Opzioni', submenu: [MenuAction('Rimuovi')]),
+          ],
+          anchor: const Offset(100, 31),
+          onRectsChanged: seen.add,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(seen.length, 1);
+    expect(seen.last.length, 1);
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    await mouse.moveTo(const Offset(150, 31 + 5 + 12));
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pump();
+    expect(seen.last.length, 2);
+    expect(
+      seen.last.last.contains(tester.getCenter(find.text('Rimuovi'))),
+      isTrue,
+    );
+  });
 }

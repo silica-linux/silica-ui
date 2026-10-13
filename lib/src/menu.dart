@@ -12,6 +12,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -235,6 +236,7 @@ class MenuHost extends StatefulWidget {
     this.onPrevious,
     this.autofocus = true,
     this.handlesPointer = true,
+    this.onRectsChanged,
   });
 
   final List<MenuEntry> entries;
@@ -257,6 +259,10 @@ class MenuHost extends StatefulWidget {
   /// Falso: il puntatore lo passa chi ospita il menu (`pointerMoved`, `pointerDown`,
   /// `pointerUp`), per esempio una barra in cui si preme su una voce e si rilascia nel menu.
   final bool handlesPointer;
+
+  /// I rettangoli dei menu aperti sono cambiati (un sottomenu si apre o si chiude): chi ospita
+  /// il menu allarga la regione d'input. Chiamato dopo il frame.
+  final ValueChanged<List<Rect>>? onRectsChanged;
 
   @override
   State<MenuHost> createState() => MenuHostState();
@@ -537,8 +543,22 @@ class MenuHostState extends State<MenuHost>
     return KeyEventResult.handled;
   }
 
+  List<Rect> _notified = const [];
+
+  void _notifyRects() {
+    final callback = widget.onRectsChanged;
+    if (callback == null) return;
+    final now = rects;
+    if (listEquals(now, _notified)) return;
+    _notified = now;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) callback(now);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _notifyRects();
     return Focus(
       focusNode: _focus,
       autofocus: widget.autofocus,
