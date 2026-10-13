@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 · 2026-10-13
+
+- `SilicaAlert`: l'avviso di sistema (292 pt, vetro spesso, icona 66, titolo in grassetto,
+  pulsanti alti 30 impilati a tutta larghezza o affiancati), con i ruoli `AlertRole`
+  (predefinito blu, annulla, distruttivo rosato); Invio sceglie il predefinito, Esc
+  l'annulla (o l'unico pulsante).
+
 ## 0.7.1 · 2026-10-13
 
 - `fileIconId(nome)` e `fileIconFor(nome)`: l'icona di silica-icons di un file
