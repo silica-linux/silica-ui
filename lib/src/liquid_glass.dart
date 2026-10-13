@@ -3,8 +3,9 @@
 // gonfiata arriva anche al compositor (la regione segue le trasformazioni), quindi lente,
 // bordo e fusione con il vetro vicino si muovono con lei.
 //
-// PROVVISORIO: scala della pressione, molle e riflesso non sono ancora misurati su macOS 27
-// (plan/execution-plan.md, "Da misurare sul Mac per il Liquid Glass").
+// PROVVISORIO: scala della pressione, molle e riflesso non sono ancora misurati sul
+// riferimento (richiesta G-01 delle osservazioni). I valori possono cambiare in una versione
+// minore; nomi e tipi no.
 
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
