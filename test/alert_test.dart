@@ -72,4 +72,34 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('avviso Mantieni')));
     expect(log, ['usa', 'mantieni', 'mantieni']);
   });
+
+  testWidgets('pieno: niente vetro, pulsante normale grigio', (tester) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: SilicaAlert(
+            title: 'Titolo',
+            opaque: true,
+            buttons: [
+              AlertButton('OK', role: AlertRole.cancel, onPressed: () {}),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(const ValueKey('avviso pieno')), findsOneWidget);
+    expect(find.byType(LiquidGlass), findsNothing);
+    final ok = tester.widget<Container>(
+      find.descendant(
+        of: find.byKey(const ValueKey('avviso OK')),
+        matching: find.byType(Container),
+      ),
+    );
+    expect(
+      (ok.decoration! as BoxDecoration).color,
+      AlertColors.normalOpaqueLight,
+    );
+  });
 }

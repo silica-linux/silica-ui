@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 · 2026-10-13
+
+- `SilicaAlert.opaque`: fondo pieno (bianco o `#272727`, filo esterno, ombra) invece del
+  vetro, per un avviso disegnato dentro una finestra: lì il vetro del compositor starebbe
+  sotto il contenuto e non si vedrebbe. Il pulsante normale diventa `#e8e8e8`.
+
 ## 0.8.0 · 2026-10-13
 
 - `SilicaAlert`: l'avviso di sistema (292 pt, vetro spesso, icona 66, titolo in grassetto,

@@ -53,6 +53,11 @@ class AlertColors {
   static const Color destructiveTextDark = Color(0xFFF01D14);
   static const Color textLight = Color(0xFF1A1A1A);
   static const Color textDark = Color(0xFFEBEBEB);
+
+  /// Il fondo pieno (misc.md) e il pulsante normale su di esso (mustache-spec R9.11).
+  static const Color opaqueLight = Color(0xFFFFFFFF);
+  static const Color opaqueDark = Color(0xFF272727);
+  static const Color normalOpaqueLight = Color(0xFFE8E8E8);
 }
 
 class SilicaAlert extends StatelessWidget {
@@ -63,6 +68,7 @@ class SilicaAlert extends StatelessWidget {
     this.icon,
     required this.buttons,
     this.sideBySide = false,
+    this.opaque = false,
   });
 
   final String title;
@@ -74,6 +80,11 @@ class SilicaAlert extends StatelessWidget {
 
   /// Pulsanti affiancati (al più due) invece che impilati.
   final bool sideBySide;
+
+  /// Fondo pieno invece del vetro: per un avviso disegnato dentro una finestra, dove il vetro
+  /// del compositor starebbe sotto il contenuto (misc.md, "Avviso": bianco o `#272727`, filo
+  /// esterno, ombra di ~10 pt in basso).
+  final bool opaque;
 
   @override
   Widget build(BuildContext context) {
@@ -101,11 +112,9 @@ class SilicaAlert extends StatelessWidget {
       },
       child: SizedBox(
         width: alertWidth,
-        child: LiquidGlass(
-          radius: alertRadius,
-          material: GlassMaterial.thick,
-          interactive: false,
-          child: Padding(
+        child: _panel(
+          dark,
+          Padding(
             padding: const EdgeInsets.only(top: alertPadding, bottom: 15),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -163,6 +172,32 @@ class SilicaAlert extends StatelessWidget {
     );
   }
 
+  Widget _panel(bool dark, Widget child) => opaque
+      ? DecoratedBox(
+          key: const ValueKey('avviso pieno'),
+          decoration: BoxDecoration(
+            color: dark ? AlertColors.opaqueDark : AlertColors.opaqueLight,
+            borderRadius: BorderRadius.circular(alertRadius),
+            border: Border.all(
+              color: dark ? const Color(0xFF030303) : const Color(0x40000000),
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x4D000000),
+                blurRadius: 40,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: child,
+        )
+      : LiquidGlass(
+          radius: alertRadius,
+          material: GlassMaterial.thick,
+          interactive: false,
+          child: child,
+        );
+
   Widget _stack(bool dark) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -192,7 +227,12 @@ class SilicaAlert extends StatelessWidget {
       _ =>
         dark
             ? (AlertColors.normalDark, AlertColors.normalTextDark)
-            : (AlertColors.normalLight, AlertColors.normalTextLight),
+            : (
+                opaque
+                    ? AlertColors.normalOpaqueLight
+                    : AlertColors.normalLight,
+                AlertColors.normalTextLight,
+              ),
     };
     return GestureDetector(
       key: ValueKey('avviso ${button.label}'),
