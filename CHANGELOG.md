@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2 · 2026-10-13
+
+- `MenuHost.handlesPointer`: falso per passare il puntatore dall'esterno (`pointerMoved`,
+  `pointerDown`, `pointerUp`, `contains`), come una barra in cui si preme su una voce e si
+  rilascia su una voce del menu.
+
+## 0.3.1 · 2026-10-13
+
+- Uguale a 0.3.0 (tag pubblicato per errore senza la modifica prevista).
+
 ## 0.3.0 · 2026-10-13
 
 - Menu: `MenuHost` (un menu con i suoi sottomenu in un'area che lo contiene), `MenuPanel`,

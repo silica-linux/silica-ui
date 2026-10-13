@@ -223,6 +223,7 @@ class MenuHost extends StatefulWidget {
     this.onNext,
     this.onPrevious,
     this.autofocus = true,
+    this.handlesPointer = true,
   });
 
   final List<MenuEntry> entries;
@@ -236,6 +237,10 @@ class MenuHost extends StatefulWidget {
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
   final bool autofocus;
+
+  /// Falso: il puntatore lo passa chi ospita il menu (`pointerMoved`, `pointerDown`,
+  /// `pointerUp`), per esempio una barra in cui si preme su una voce e si rilascia nel menu.
+  final bool handlesPointer;
 
   @override
   State<MenuHost> createState() => MenuHostState();
@@ -321,6 +326,31 @@ class MenuHostState extends State<MenuHost>
     final negative = d1 < 0 || d2 < 0 || d3 < 0;
     final positive = d1 > 0 || d2 > 0 || d3 > 0;
     return !(negative && positive);
+  }
+
+  /// Il puntatore si muove (coordinate dell'area del menu).
+  void pointerMoved(Offset p) => _hover(p);
+
+  /// Pressione: una voce, un sottomenu, o fuori (chiude).
+  void pointerDown(Offset p) => _press(p);
+
+  /// Rilascio: sceglie la voce evidenziata sotto il puntatore.
+  void pointerUp(Offset p) => _release(p);
+
+  /// Il punto è sopra uno dei menu aperti.
+  bool contains(Offset p) => _levels.any((l) => l.rect.contains(p));
+
+  void _release(Offset p) {
+    for (var level = _levels.length - 1; level >= 0; level--) {
+      final row = _levels[level].rowAt(p);
+      if (row != null && _levels[level].highlighted == row) {
+        final entry = _levels[level].entries[row];
+        if (entry is MenuAction && entry.selectable && entry.submenu == null) {
+          _choose(level, row);
+        }
+        return;
+      }
+    }
   }
 
   void _hover(Offset p) {
@@ -493,24 +523,18 @@ class MenuHostState extends State<MenuHost>
       onKeyEvent: _key,
       child: Listener(
         behavior: HitTestBehavior.translucent,
-        onPointerHover: (e) => _hover(e.localPosition),
-        onPointerMove: (e) => _hover(e.localPosition),
-        onPointerUp: (e) {
-          // Pressione su una voce della barra, trascinamento e rilascio su una voce: sceglie.
-          for (var level = _levels.length - 1; level >= 0; level--) {
-            final row = _levels[level].rowAt(e.localPosition);
-            if (row != null && _levels[level].highlighted == row) {
-              final entry = _levels[level].entries[row];
-              if (entry is MenuAction &&
-                  entry.selectable &&
-                  entry.submenu == null) {
-                _choose(level, row);
-              }
-              return;
-            }
-          }
-        },
-        onPointerDown: (e) => _press(e.localPosition),
+        onPointerHover: widget.handlesPointer
+            ? (e) => _hover(e.localPosition)
+            : null,
+        onPointerMove: widget.handlesPointer
+            ? (e) => _hover(e.localPosition)
+            : null,
+        onPointerUp: widget.handlesPointer
+            ? (e) => _release(e.localPosition)
+            : null,
+        onPointerDown: widget.handlesPointer
+            ? (e) => _press(e.localPosition)
+            : null,
         child: Opacity(
           opacity: _fade.value,
           child: Stack(
