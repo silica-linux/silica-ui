@@ -435,4 +435,14 @@ void main() {
       expect(find.byType(SilicaIcon), findsNWidgets(2));
     },
   );
+
+  test('icona di un file dall\'estensione', () {
+    expect(fileIconId('Foto.JPG'), 'file-image');
+    expect(fileIconId('relazione.pdf'), 'file-pdf');
+    expect(fileIconId('archivio.tar.gz'), 'file-archive');
+    expect(fileIconId('LEGGIMI'), 'file-unknown');
+    // Un file nascosto senza estensione non prende il nome come estensione.
+    expect(fileIconId('.bashrc'), 'file-unknown');
+    expect(fileIconId('dati.xyz'), 'file-generic');
+  });
 }

@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' show Color, Rect;
 
-
 /// `app`: la shell ritaglia il corpo e aggiunge bordo e ombra; `file`: forma libera.
 enum IconKind { app, file }
 
@@ -627,3 +626,48 @@ FolderIcon? resolveFolderIcon(
   }
   return FolderIcon(generic, symbol: valid ? name : null, tint: color);
 }
+
+/// L'id dell'icona di silica-icons per un file, dall'estensione del nome (senza estensione:
+/// `file-unknown`; estensione sconosciuta: `file-generic`).
+String fileIconId(String name) {
+  final lower = name.toLowerCase();
+  final dot = lower.lastIndexOf('.');
+  final ext = dot <= 0 ? '' : lower.substring(dot + 1);
+  return switch (ext) {
+    'png' ||
+    'jpg' ||
+    'jpeg' ||
+    'gif' ||
+    'webp' ||
+    'svg' ||
+    'heic' => 'file-image',
+    'mp3' || 'ogg' || 'flac' || 'wav' || 'm4a' => 'file-audio',
+    'mp4' || 'mkv' || 'webm' || 'mov' || 'avi' => 'file-video',
+    'pdf' => 'file-pdf',
+    'zip' ||
+    'tar' ||
+    'gz' ||
+    'xz' ||
+    'zst' ||
+    '7z' ||
+    'rar' ||
+    'deb' => 'file-archive',
+    'txt' || 'md' || 'rtf' || 'odt' || 'doc' || 'docx' => 'file-text',
+    'rs' ||
+    'dart' ||
+    'py' ||
+    'js' ||
+    'ts' ||
+    'c' ||
+    'h' ||
+    'json' ||
+    'sh' => 'file-code',
+    '' => 'file-unknown',
+    _ => 'file-generic',
+  };
+}
+
+/// L'icona di un file (`fileIconId`), o quella generica se manca.
+LayeredIcon? fileIconFor(String name, {Map<String, String>? env}) =>
+    findSilicaIcon(fileIconId(name), env: env) ??
+    findSilicaIcon('file-generic', env: env);

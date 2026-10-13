@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1 · 2026-10-13
+
+- `fileIconId(nome)` e `fileIconFor(nome)`: l'icona di silica-icons di un file
+  dall'estensione (prima nella Dock della shell). Un file nascosto senza estensione
+  (`.bashrc`) è `file-unknown`.
+
 ## 0.7.0 · 2026-10-13
 
 - Le icone di silica-icons passano qui dalla shell, per le app (Mustache) e per la shell:
