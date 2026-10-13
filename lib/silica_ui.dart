@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 export 'src/glass.dart';
 export 'src/liquid_glass.dart';
 
-/// Il font dell'interfaccia: Inter (OFL), al posto dei font di sistema di Apple.
+/// Il font dell'interfaccia: Inter (OFL), servito dal pacchetto.
 const String uiFontFamily = 'Inter';
 
 /// Uno stile di testo in Inter, servito da questo pacchetto.

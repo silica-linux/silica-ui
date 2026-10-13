@@ -8,7 +8,7 @@ Impostazioni, …), ognuna nel suo repository.
 dependencies:
   silica_ui:
     git:
-      url: git@github.com:silica-linux/silica-ui.git
+      url: https://github.com/silica-linux/silica-ui.git
       ref: v0.1.0
 ```
 
