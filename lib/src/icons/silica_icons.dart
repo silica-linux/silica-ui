@@ -208,6 +208,41 @@ class FolderSymbol extends IconDynamic {
 }
 
 /// Un'icona di silica-icons, pronta da comporre.
+/// Il file generico: l'estensione scritta sul foglio, colorata per categoria, e la mappa del
+/// repo da tipo MIME ed estensione all'icona (icon-format.md, "File generico").
+class FileLabelRules extends IconDynamic {
+  const FileLabelRules({
+    required this.box,
+    required this.size,
+    required this.maxChars,
+    required this.maxWidth,
+    required this.colors,
+    required this.overrides,
+    required this.mime,
+    required this.extensions,
+    required this.fallback,
+  });
+
+  /// Riquadro dell'etichetta sulla tela 1024, corpo del testo e limiti.
+  final Rect box;
+  final double size;
+  final int maxChars;
+  final double maxWidth;
+
+  /// Categoria → colore (chiaro, scuro).
+  final Map<String, (Color, Color)> colors;
+
+  /// Estensione → categoria (String) o colore (Color).
+  final Map<String, Object> overrides;
+
+  /// Tipo MIME (anche `image/*`) → id dell'icona, ed estensione → id.
+  final Map<String, String> mime;
+  final Map<String, String> extensions;
+
+  /// L'icona per i file senza estensione o con un'estensione troppo lunga.
+  final String fallback;
+}
+
 class LayeredIcon {
   const LayeredIcon({
     required this.id,
@@ -326,9 +361,68 @@ IconDynamic? _parseDynamic(
       return CalendarText(month: month, day: day);
     case 'folder-symbol':
       return _parseFolder(raw, dir);
+    case 'file-label':
+      return _parseFileLabel(raw);
     default:
       return null;
   }
+}
+
+/// `dynamic` di tipo `file-label` (il file generico, icon-format.md "File generico").
+FileLabelRules? _parseFileLabel(Map raw) {
+  final label = raw['label'];
+  if (label is! Map) return null;
+  final box = label['box'];
+  if (box is! List || box.length != 4 || box.any((v) => v is! num)) return null;
+  final colors = <String, (Color, Color)>{};
+  final rawColors = raw['colors'];
+  if (rawColors is Map) {
+    for (final MapEntry(:key, :value) in rawColors.entries) {
+      if (key is! String || value is! Map) continue;
+      final light = _parseColor(value['color']);
+      if (light == null) continue;
+      colors[key] = (light, _parseColor(value['dark_color']) ?? light);
+    }
+  }
+  final overrides = <String, Object>{};
+  final rawOverrides = raw['overrides'];
+  if (rawOverrides is Map) {
+    for (final MapEntry(:key, :value) in rawOverrides.entries) {
+      if (key is! String) continue;
+      if (value is String && colors.containsKey(value)) {
+        overrides[key.toLowerCase()] = value;
+      } else if (value is Map) {
+        final color = _parseColor(value['color']);
+        if (color != null) overrides[key.toLowerCase()] = color;
+      }
+    }
+  }
+  Map<String, String> ids(Object? map) => {
+    if (map is Map)
+      for (final MapEntry(:key, :value) in map.entries)
+        if (key is String && value is String && _idPattern.hasMatch(value))
+          key.toLowerCase(): value,
+  };
+  final icons = raw['icons'];
+  final fallback = raw['fallback'];
+  return FileLabelRules(
+    box: Rect.fromLTWH(
+      (box[0] as num).toDouble(),
+      (box[1] as num).toDouble(),
+      (box[2] as num).toDouble(),
+      (box[3] as num).toDouble(),
+    ),
+    size: _number(label['size'], 1, 1024) ?? 160,
+    maxChars: (label['max_chars'] as num?)?.toInt().clamp(1, 16) ?? 4,
+    maxWidth: _number(label['max_width'], 1, 1024) ?? 534,
+    colors: colors,
+    overrides: overrides,
+    mime: ids(icons is Map ? icons['mime'] : null),
+    extensions: ids(icons is Map ? icons['extensions'] : null),
+    fallback: fallback is String && _idPattern.hasMatch(fallback)
+        ? fallback
+        : 'file-unknown',
+  );
 }
 
 double? _number(Object? v, double min, double max) =>

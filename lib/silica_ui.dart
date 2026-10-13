@@ -12,7 +12,10 @@ export 'src/icons/silica_icon.dart'
         LayeredSource,
         FolderSource,
         FlatSource,
+        FileSource,
         iconBodyPath;
+export 'src/icons/file_icons.dart';
+export 'src/icons/mime.dart';
 export 'src/icons/silica_icons.dart';
 export 'src/liquid_glass.dart';
 export 'src/menu.dart';

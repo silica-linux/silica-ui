@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.9.0 · 2026-10-13
+
+- `MimeDatabase`: il tipo MIME di un file da shared-mime-info (glob di `globs2` con pesi e
+  maiuscole, `subclasses`, `aliases`) e, se il nome non basta, dal contenuto (ELF, script con
+  `#!`, testo o binario).
+- `resolveFileIcon` e `FileSource`: l'icona di un file con l'ordine di silica-icons (tipo,
+  tipo con `*`, genitori, estensione, file generico con l'estensione scritta nel colore della
+  categoria, foglio con il punto di domanda); un eseguibile senza estensione prende
+  `file-executable`. La mappa è quella del manifest del file generico (`FileLabelRules`).
+- Badge (`IconBadge`, `SilicaIcon.badges`, `badgesOf`, `visibleBadges`): alias in basso a
+  sinistra, a destra il primo fra illeggibile, bloccato, nuvola; da 16 a 31 pt uno solo,
+  sotto 16 nessuno; varianti scure.
+- Volumi: `volumeIconId` (rete, immagine disco, ottico, esterno, interno), `parseMountinfo`,
+  `blockRemovable`.
+
 ## 0.8.1 · 2026-10-13
 
 - `SilicaAlert.opaque`: fondo pieno (bianco o `#272727`, filo esterno, ombra) invece del

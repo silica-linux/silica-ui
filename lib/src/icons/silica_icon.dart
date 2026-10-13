@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../silica_ui.dart' show uiFontFamily, uiText;
+import 'file_icons.dart';
 import 'silica_icons.dart';
 
 /// Tela delle icone: 1024, corpo 824 a 100 dal bordo, keyline quadrato 600.
@@ -96,6 +97,12 @@ class FolderSource extends IconSource {
   final FolderIcon folder;
 }
 
+/// Un file (`resolveFileIcon`): l'icona del tipo, o il file generico con l'estensione.
+class FileSource extends IconSource {
+  const FileSource(this.file);
+  final FileIcon file;
+}
+
 /// Un file SVG o PNG già composto (tema freedesktop).
 class FlatSource extends IconSource {
   const FlatSource(this.path);
@@ -105,7 +112,21 @@ class FlatSource extends IconSource {
 /// L'icona di `side` × `side` (il corpo visibile); la tela delle icone a livelli sborda
 /// di `side × 100 / 824` per lato, come nel disegno.
 class SilicaIcon extends StatelessWidget {
-  const SilicaIcon(this.source, {super.key, required this.side, this.dark});
+  const SilicaIcon(
+    this.source, {
+    super.key,
+    required this.side,
+    this.dark,
+    this.badges = const {},
+    this.env,
+  });
+
+  /// I badge da sovrapporre (alias, illeggibile, bloccato, nuvola): quanti e dove dipende dal
+  /// lato (icon-format.md, "Badge").
+  final Set<IconBadge> badges;
+
+  /// L'ambiente per trovare i badge (test).
+  final Map<String, String>? env;
 
   final IconSource source;
   final double side;
@@ -136,7 +157,15 @@ class SilicaIcon extends StatelessWidget {
       ),
       FolderSource(:final folder) => _folder(folder, canvas, isDark),
       FlatSource(:final path) => _flat(path, canvas, body, isDark),
+      FileSource(:final file) => _file(file, canvas, isDark),
     };
+    final shown = badges.isEmpty
+        ? const <IconBadge>[]
+        : visibleBadges(
+            badges,
+            side,
+            order: findBadgeRules(env: env)?.order ?? IconBadge.values,
+          );
     return SizedBox(
       width: side,
       height: side,
@@ -150,8 +179,66 @@ class SilicaIcon extends StatelessWidget {
             height: canvas,
             child: IgnorePointer(child: content),
           ),
+          for (final badge in shown) _badge(badge, isDark),
         ],
       ),
+    );
+  }
+
+  /// Un badge sopra l'icona composta, senza ombra: lato 315/1024 della tela da 32 pt, 509 se è
+  /// l'unico (16–31 pt); appoggiato all'angolo in basso del corpo.
+  Widget _badge(IconBadge badge, bool isDark) {
+    final path = findBadgeRules(env: env)?.pathFor(badge, dark: isDark);
+    if (path == null) return const SizedBox.shrink();
+    final scale = side / bodySide;
+    final edge = (side >= 32 ? 315.0 : 509.0) * scale;
+    // alias in basso a sinistra, gli altri in basso a destra.
+    final left = badge == IconBadge.alias ? 0.0 : side - edge;
+    // La tela 1024 del badge, scalata di edge/824, con il suo corpo sul riquadro.
+    final k = edge / bodySide;
+    return Positioned(
+      left: left - bodyInset * k,
+      top: side - edge - bodyInset * k,
+      width: canvasSide * k,
+      height: canvasSide * k,
+      child: IgnorePointer(child: _svg(path, canvasSide * k)),
+    );
+  }
+
+  /// Un file: i livelli e, per il file generico, l'estensione nel riquadro dell'etichetta.
+  Widget _file(FileIcon file, double canvas, bool isDark) {
+    final rules = file.rules;
+    final label = file.label;
+    final scale = canvas / canvasSide;
+    return Stack(
+      children: [
+        for (final layer in file.icon.layers)
+          _svg(layer.pathFor(dark: isDark), canvas),
+        if (rules != null && label != null)
+          Positioned(
+            left: rules.box.left * scale,
+            top: rules.box.top * scale,
+            width: rules.box.width * scale,
+            height: rules.box.height * scale,
+            child: FittedBox(
+              // Più largo di max_width: il corpo scende in proporzione.
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: TextStyle(
+                  fontFamily: uiFontFamily,
+                  package: 'silica_ui',
+                  // Peso 900 nel manifest: il pacchetto ha Inter fino al semibold.
+                  fontWeight: FontWeight.w600,
+                  fontSize: rules.size * scale,
+                  height: 1,
+                  color: isDark ? file.labelColor?.$2 : file.labelColor?.$1,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -199,7 +286,9 @@ class SilicaIcon extends StatelessWidget {
                   canvas: canvas,
                   dark: isDark,
                 ),
-                FolderSymbol() || null => const SizedBox.shrink(),
+                FolderSymbol() ||
+                FileLabelRules() ||
+                null => const SizedBox.shrink(),
               },
             ],
           ),
