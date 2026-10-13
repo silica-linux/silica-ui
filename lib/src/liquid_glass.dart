@@ -36,6 +36,8 @@ class LiquidGlass extends StatefulWidget {
     this.radius = 0,
     this.material = GlassMaterial.regular,
     this.interactive = true,
+    this.group = 0,
+    this.tip,
     this.child,
   });
 
@@ -44,6 +46,10 @@ class LiquidGlass extends StatefulWidget {
 
   /// Senza interazione è un [Glass] e basta.
   final bool interactive;
+
+  /// Vedi [Glass.group] e [Glass.tip].
+  final int group;
+  final GlassTip? tip;
   final Widget? child;
 
   @override
@@ -74,6 +80,8 @@ class _LiquidGlassState extends State<LiquidGlass>
     final glass = Glass(
       radius: widget.radius,
       material: widget.material,
+      group: widget.group,
+      tip: widget.tip,
       child: Stack(
         fit: StackFit.passthrough,
         children: [

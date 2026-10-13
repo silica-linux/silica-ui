@@ -18,29 +18,83 @@ class Glass extends SingleChildRenderObjectWidget {
     super.key,
     this.radius = 0,
     this.material = GlassMaterial.clear,
+    this.group = 0,
+    this.tip,
     super.child,
   });
 
   final double radius;
   final GlassMaterial material;
 
+  /// Il vetro si fonde solo con quello dello stesso gruppo; un gruppo più alto sta sopra
+  /// (un sottomenu sul suo menu: due pannelli distinti anche dove si sovrappongono).
+  final int group;
+
+  /// Una punta sotto il vetro, nella stessa forma: il bordo corre dal corpo alla punta.
+  final GlassTip? tip;
+
   @override
   RenderGlass createRenderObject(BuildContext context) =>
-      RenderGlass(radius: radius, material: material);
+      RenderGlass(radius: radius, material: material, group: group, tip: tip);
 
   @override
   void updateRenderObject(BuildContext context, RenderGlass renderObject) {
     renderObject
       ..radius = radius
-      ..material = material;
+      ..material = material
+      ..group = group
+      ..tip = tip;
   }
+}
+
+/// La punta sotto un vetro, rivolta in basso: `x` è il centro dal bordo sinistro, la base
+/// larga `width` poggia sul bordo inferiore, il vertice è `height` più in basso.
+@immutable
+class GlassTip {
+  const GlassTip({required this.x, required this.width, required this.height});
+
+  final double x;
+  final double width;
+  final double height;
+
+  @override
+  bool operator ==(Object other) =>
+      other is GlassTip &&
+      other.x == x &&
+      other.width == width &&
+      other.height == height;
+
+  @override
+  int get hashCode => Object.hash(x, width, height);
 }
 
 /// Il render object di [Glass]: si registra finché è attaccato all'albero.
 class RenderGlass extends RenderProxyBox {
-  RenderGlass({required double radius, required GlassMaterial material})
-    : _radius = radius,
-      _material = material;
+  RenderGlass({
+    required double radius,
+    required GlassMaterial material,
+    int group = 0,
+    GlassTip? tip,
+  }) : _radius = radius,
+       _material = material,
+       _group = group,
+       _tip = tip;
+
+  int _group;
+  int get group => _group;
+  set group(int value) {
+    if (value == _group) return;
+    _group = value;
+    GlassRegistry.instance.schedule();
+  }
+
+  GlassTip? _tip;
+  GlassTip? get tip => _tip;
+  set tip(GlassTip? value) {
+    if (value == _tip) return;
+    _tip = value;
+    GlassRegistry.instance.schedule();
+  }
 
   double _radius;
   double get radius => _radius;
@@ -91,7 +145,32 @@ class RenderGlass extends RenderProxyBox {
       'radius': radius * factor,
       'material': material.name,
       'opacity': opacity,
+      if (group != 0) 'group': group,
     };
+  }
+
+  /// La regione del corpo e, se c'è, quella della punta.
+  List<Map<String, Object>> regions() {
+    final body = region();
+    final tip = this.tip;
+    if (tip == null) return [body];
+    final rect = MatrixUtils.transformRect(
+      getTransformTo(null),
+      Rect.fromLTWH(tip.x - tip.width / 2, size.height, tip.width, tip.height),
+    );
+    return [
+      body,
+      {
+        'x': rect.left,
+        'y': rect.top,
+        'width': rect.width,
+        'height': rect.height,
+        'material': material.name,
+        'opacity': body['opacity'] ?? 1.0,
+        'shape': 'tip',
+        if (group != 0) 'group': group,
+      },
+    ];
   }
 
   /// L'opacità degli antenati (`Opacity`, `FadeTransition`, `AnimatedOpacity`): il vetro
@@ -151,7 +230,7 @@ class GlassRegistry {
   @visibleForTesting
   List<Map<String, Object>> get regions => [
     for (final glass in _glasses)
-      if (glass.attached && glass.hasSize) glass.region(),
+      if (glass.attached && glass.hasSize) ...glass.regions(),
   ];
 
   void schedule() {

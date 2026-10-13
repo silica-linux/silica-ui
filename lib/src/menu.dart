@@ -116,10 +116,6 @@ abstract final class MenuColors {
   static const Color highlight = Color(0xFF007AFF);
   static const Color highlightText = Color(0xFFFFFFFF);
   static const Color shadow = Color(0x33000000);
-
-  /// La punta: il riempimento del vetro spesso sul grigio e il filo esterno.
-  static const Color tipFill = Color(0xFFC8C9CE);
-  static const Color tipLine = Color(0x3D000000);
 }
 
 TextStyle _style(double size, Color color, {FontWeight? weight}) => TextStyle(
@@ -604,6 +600,7 @@ class MenuHostState extends State<MenuHost>
                     tipX: identical(level, _levels.first) && widget.tip != null
                         ? widget.tip!.dx - level.rect.left
                         : null,
+                    group: _levels.indexOf(level),
                   ),
                 ),
             ],
@@ -622,10 +619,15 @@ class MenuPanel extends StatelessWidget {
     required this.entries,
     this.highlighted,
     this.tipX,
+    this.group = 0,
   });
 
   final List<MenuEntry> entries;
   final int? highlighted;
+
+  /// Il gruppo del vetro ([Glass.group]): un sottomenu ha il suo, e non si fonde con il
+  /// menu madre su cui è disegnato.
+  final int group;
 
   /// Centro della punta sotto il pannello, dal suo bordo sinistro (null: niente punta).
   final double? tipX;
@@ -635,13 +637,26 @@ class MenuPanel extends StatelessWidget {
     final left = menuTextLeft(entries);
     final checks = entries.whereType<MenuAction>().any((a) => a.checked);
     final tops = menuRowTops(entries);
+    final tipX = this.tipX;
     return CustomPaint(
-      painter: const _MenuShadow(),
-      foregroundPainter: tipX == null ? null : _TipPainter(tipX!),
+      painter: _MenuShadow(tipX),
       child: LiquidGlass(
         radius: MenuMetrics.radius,
         material: GlassMaterial.thick,
         interactive: false,
+        group: group,
+        // La punta è parte del vetro (una sola forma con il corpo, il bordo continuo).
+        tip: tipX == null
+            ? null
+            : GlassTip(
+                x: tipX,
+                // Sui pixel di dock-context-light.png la punta scende ~10 pt sotto il corpo
+                // (y 1338 → 1347) e si stringe di ~0,7 pt per lato a ogni riga. Il vertice
+                // arrotondato (3,5 pt) e i raccordi dell'unione morbida allargano la base:
+                // sul corpo torna larga ~22 pt.
+                width: MenuMetrics.tipBase - 14,
+                height: MenuMetrics.tipHeight + 2,
+              ),
         child: Stack(
           children: [
             for (var i = 0; i < entries.length; i++)
@@ -776,9 +791,11 @@ class MenuPanel extends StatelessWidget {
   }
 }
 
-/// Ombra fuori dal pannello: più lunga in basso (~20 pt) che ai lati (~16 pt).
+/// Ombra fuori dal pannello: più lunga in basso (~20 pt) che ai lati (~16 pt). Non cade
+/// sul vetro, punta compresa.
 class _MenuShadow extends CustomPainter {
-  const _MenuShadow();
+  const _MenuShadow(this.tipX);
+  final double? tipX;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -786,13 +803,50 @@ class _MenuShadow extends CustomPainter {
       Offset.zero & size,
       const Radius.circular(MenuMetrics.radius),
     );
+    var glass = Path()..addRRect(body);
+    final x = tipX;
+    if (x != null) {
+      const half = MenuMetrics.tipBase / 2 - 3;
+      // La punta come la disegna il compositor: lati dritti raccordati al corpo da curve
+      // concave di ~4 pt (l'unione morbida del vetro) e il vertice appena arrotondato.
+      const h = MenuMetrics.tipHeight + 2;
+      final top = size.height;
+      final side = Offset(half, h) / Offset(half, h).distance;
+      const fillet = 4.0;
+      final apex = Offset(x, top + h);
+      glass = Path.combine(
+        PathOperation.union,
+        glass,
+        Path()
+          ..moveTo(x - half - fillet, top - 1)
+          ..lineTo(x - half - fillet, top)
+          ..quadraticBezierTo(
+            x - half,
+            top,
+            x - half + side.dx * fillet,
+            top + side.dy * fillet,
+          )
+          ..lineTo(apex.dx - side.dx * 4, apex.dy - side.dy * 4)
+          ..quadraticBezierTo(
+            apex.dx,
+            apex.dy + 1,
+            apex.dx + side.dx * 4,
+            apex.dy - side.dy * 4,
+          )
+          ..lineTo(x + half - side.dx * fillet, top + side.dy * fillet)
+          ..quadraticBezierTo(x + half, top, x + half + fillet, top)
+          ..lineTo(x + half + fillet, top - 1)
+          ..close(),
+      );
+    }
     canvas
       ..save()
       ..clipPath(
-        Path()
-          ..fillType = PathFillType.evenOdd
-          ..addRect((Offset.zero & size).inflate(60))
-          ..addRRect(body),
+        Path.combine(
+          PathOperation.difference,
+          Path()..addRect((Offset.zero & size).inflate(60)),
+          glass,
+        ),
       )
       ..drawRRect(
         body.shift(const Offset(0, 4)),
@@ -807,46 +861,7 @@ class _MenuShadow extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_MenuShadow old) => false;
-}
-
-/// La punta sotto il pannello, nel colore del vetro spesso sul grigio, con il filo esterno.
-class _TipPainter extends CustomPainter {
-  const _TipPainter(this.x);
-  final double x;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const h = MenuMetrics.tipHeight;
-    const half = MenuMetrics.tipBase / 2;
-    final top = size.height - 0.5;
-    final path = Path()
-      ..moveTo(x - half, top)
-      ..quadraticBezierTo(x - 2.5, top + 1.5, x - 1, top + h - 0.6)
-      ..quadraticBezierTo(x, top + h + 0.3, x + 1, top + h - 0.6)
-      ..quadraticBezierTo(x + 2.5, top + 1.5, x + half, top)
-      ..close();
-    canvas
-      ..drawPath(path, Paint()..color = MenuColors.tipFill)
-      ..drawPath(
-        path,
-        Paint()
-          ..color = MenuColors.tipLine
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1,
-      )
-      // Il filo non attraversa il pannello.
-      ..drawLine(
-        Offset(x - half + 1, top),
-        Offset(x + half - 1, top),
-        Paint()
-          ..color = MenuColors.tipFill
-          ..strokeWidth = 1.5,
-      );
-  }
-
-  @override
-  bool shouldRepaint(_TipPainter old) => old.x != x;
+  bool shouldRepaint(_MenuShadow old) => old.tipX != tipX;
 }
 
 class _CheckPainter extends CustomPainter {

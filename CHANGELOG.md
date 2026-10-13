@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0 · 2026-10-13
+
+- `Glass.group` e `LiquidGlass.group`: il vetro si fonde solo con quello dello stesso
+  gruppo, e un gruppo più alto sta sopra. Ogni livello di un menu ha il suo: il sottomenu
+  è un pannello distinto sopra il menu madre, non una forma unica con lui.
+- `Glass.tip` (`GlassTip`): una punta che fa parte della forma di vetro, con il vertice
+  arrotondato e i lati raccordati al corpo. La punta dei menu del Dock non è più un
+  triangolo dipinto sopra il vetro; l'ombra del menu non cade sulla punta.
+- Tolti `MenuColors.tipFill` e `MenuColors.tipLine` (non servono più).
+- Richiede silica-glass-v1 versione 4 (Ossido); con un compositor più vecchio i gruppi si
+  ignorano e la punta non c'è.
+
 ## 0.5.1 · 2026-10-13
 
 - `MenuHost`: quando cambiano `tip` o `anchor` (la superficie che ospita il menu si allunga)
