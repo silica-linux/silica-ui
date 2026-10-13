@@ -90,7 +90,22 @@ class RenderGlass extends RenderProxyBox {
       'height': rect.height,
       'radius': radius * factor,
       'material': material.name,
+      'opacity': opacity,
     };
+  }
+
+  /// L'opacità degli antenati (`Opacity`, `FadeTransition`, `AnimatedOpacity`): il vetro
+  /// compare e scompare in dissolvenza insieme al pannello che lo contiene.
+  double get opacity {
+    var value = 1.0;
+    for (RenderObject? node = parent; node != null; node = node.parent) {
+      if (node is RenderOpacity) {
+        value *= node.opacity;
+      } else if (node is RenderAnimatedOpacity) {
+        value *= node.opacity.value;
+      }
+    }
+    return value.clamp(0.0, 1.0);
   }
 }
 

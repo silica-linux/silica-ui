@@ -88,4 +88,41 @@ void main() {
       expect(sent.last['radius'], 25);
     },
   );
+
+  testWidgets('il vetro porta l\'opacità degli antenati', (tester) async {
+    final sent = <Map<Object?, Object?>>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      GlassRegistry.channel,
+      (call) async {
+        final regions = call.arguments as List<Object?>;
+        if (regions.isNotEmpty) {
+          sent.add(regions.first! as Map<Object?, Object?>);
+        }
+        return true;
+      },
+    );
+    Widget at(double opacity) => Directionality(
+      textDirection: TextDirection.ltr,
+      child: Center(
+        child: Opacity(
+          opacity: opacity,
+          child: Opacity(
+            opacity: 0.5,
+            child: const SizedBox(
+              width: 100,
+              height: 50,
+              child: Glass(radius: 25, child: SizedBox.expand()),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpWidget(at(1));
+    await tester.pump();
+    expect(sent.last['opacity'], 0.5);
+    // Cambia solo l'opacità dell'antenato: il vetro segue senza ridisegnarsi.
+    await tester.pumpWidget(at(0.5));
+    await tester.pump();
+    expect(sent.last['opacity'], 0.25);
+  });
 }

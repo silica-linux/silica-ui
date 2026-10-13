@@ -9,7 +9,7 @@ dependencies:
   silica_ui:
     git:
       url: https://github.com/silica-linux/silica-ui.git
-      ref: v0.1.0
+      ref: v0.2.0
 ```
 
 ## Cosa c'è
@@ -25,8 +25,8 @@ dependencies:
 ## Come funziona il vetro
 
 Il pacchetto non disegna il vetro: dichiara le aree al compositor sul canale `silica/glass`
-dell'embedder di Silica (`setRegions` con `x`, `y`, `width`, `height`, `radius`, `material`
-in pixel logici della superficie), e Ossido le compone con il protocollo `silica-glass-v1`.
+dell'embedder di Silica (`setRegions` con `x`, `y`, `width`, `height`, `radius`, `material`,
+`opacity` in pixel logici della superficie), e Ossido le compone con il protocollo `silica-glass-v1`.
 Fuori da Silica (test, altri embedder) il canale non risponde e il vetro non c'è: l'app deve
 restare leggibile anche così.
 
