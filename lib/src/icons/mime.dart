@@ -139,9 +139,29 @@ class MimeDatabase {
   /// Il tipo canonico (gli alias portano al nome vero).
   String canonical(String type) => _aliases[type] ?? type;
 
+  /// Il nome dà più tipi con lo stesso peso e lo stesso glob (es. `.ts`: Qt Linguist o
+  /// MPEG-TS)? Allora il nome da solo non decide (icon-format.md, passo 0b).
+  bool isAmbiguousName(String name) {
+    final candidates = _candidates(name);
+    if (candidates.length < 2) return false;
+    final first = candidates.first;
+    return candidates.any(
+      (g) =>
+          g.weight == first.weight &&
+          g.pattern.length == first.pattern.length &&
+          canonical(g.type) != canonical(first.type),
+    );
+  }
+
   /// Il tipo dal nome del file, o null se nessun glob corrisponde. Vince il peso più alto, poi
   /// il glob più lungo (specifica, "Recommended checking order").
   String? typeForName(String name) {
+    final candidates = _candidates(name);
+    return candidates.isEmpty ? null : canonical(candidates.first.type);
+  }
+
+  /// I glob che corrispondono al nome, dal migliore: peso più alto, poi glob più lungo.
+  List<_Glob> _candidates(String name) {
     final candidates = <_Glob>[];
     candidates.addAll(_literal[name] ?? const []);
     // Tutte le estensioni possibili: per "a.tar.gz" sia "tar.gz" sia "gz".
@@ -167,14 +187,13 @@ class MimeDatabase {
         candidates.add(glob);
       }
     }
-    if (candidates.isEmpty) return null;
     candidates.sort((a, b) {
       final weight = b.weight.compareTo(a.weight);
       return weight != 0
           ? weight
           : b.pattern.length.compareTo(a.pattern.length);
     });
-    return canonical(candidates.first.type);
+    return candidates;
   }
 
   /// I genitori di un tipo, dal più vicino (`sub-class-of`, poi le regole implicite: ogni

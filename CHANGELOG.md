@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.1 · 2026-10-13
+
+- Passo 0b di silica-icons: se il tipo viene solo dal nome e `globs2` dà più tipi con lo
+  stesso peso (`.ts`), decide prima la mappa delle estensioni. `MimeDatabase.isAmbiguousName`.
+
 ## 0.11.0 · 2026-10-13
 
 - Le icone dei tipi scrivono l'estensione vera (`file-type-label` di silica-icons): riquadro,

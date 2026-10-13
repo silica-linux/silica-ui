@@ -218,6 +218,10 @@ FileIcon? resolveFileIcon(
       if (byId('file-executable') case final icon?) return icon;
     }
   }
+  // 0b. Il tipo viene solo dal nome e il nome è ambiguo: decide l'estensione.
+  if (type == null && db.isAmbiguousName(name)) {
+    if (byId(rules.extensions[ext]) case final icon?) return icon;
+  }
   // 1–3. Il tipo, il tipo con `*`, i genitori.
   for (final candidate in [mimeType, ...db.parentsOf(mimeType)]) {
     if (byMime(candidate) case final icon?) return icon;

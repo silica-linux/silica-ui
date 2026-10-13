@@ -121,6 +121,13 @@ void main() {
     expect(mime.parentsOf('text/x-csrc'), ['text/plain']);
     expect(mime.parentsOf('text/x-readme'), ['text/plain']);
     expect(mime.canonical('application/x-pdf'), 'application/pdf');
+    final ambiguous = MimeDatabase.fromText(
+      globs2:
+          '50:text/vnd.trolltech.linguist:*.ts\n50:video/mp2t:*.ts\n'
+          '50:application/pdf:*.pdf\n',
+    );
+    expect(ambiguous.isAmbiguousName('main.ts'), isTrue);
+    expect(ambiguous.isAmbiguousName('a.pdf'), isFalse);
   });
 
   test('MIME dal contenuto: ELF, script, testo, binario, vuoto', () {
@@ -407,6 +414,16 @@ void main() {
     // JSON: voce esplicita al file generico, categoria data (non il codice del genitore).
     expect(icon('dati.json')?.icon.id, 'file-generic');
     expect(icon('dati.json')?.labelColor?.$1, const Color(0xFF1F9D55));
+    // Passo 0b: .ts è ambiguo nel database del sistema, decide l'estensione.
+    expect(
+      resolveFileIcon(
+        '/tmp/main.ts',
+        mime: db,
+        env: env,
+        executable: false,
+      )?.icon.id,
+      'file-code',
+    );
 
     expect(
       findBadgeRules(env: env)?.pathFor(IconBadge.alias, dark: true),
