@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1 · 2026-10-13
+
+- `resolveFileIcon`: una voce di `icons.mime` che porta al file generico (`application/json`)
+  lo disegna con l'etichetta e il colore di categoria, come al passo 5.
+
 ## 0.9.0 · 2026-10-13
 
 - `MimeDatabase`: il tipo MIME di un file da shared-mime-info (glob di `globs2` con pesi e

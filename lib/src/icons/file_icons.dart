@@ -141,8 +141,30 @@ FileIcon? resolveFileIcon(
   }
   final db = mime ?? systemMime;
   final mimeType = type ?? db.typeOf(path);
+  // 5. Il file generico con l'etichetta, o il foglio con il punto di domanda.
+  FileIcon labeled() {
+    if (ext.isEmpty || ext.length > rules.maxChars) {
+      final fallback = findSilicaIcon(rules.fallback, env: env);
+      return fallback == null ? FileIcon(generic) : FileIcon(fallback);
+    }
+    final override = rules.overrides[ext];
+    final color = switch (override) {
+      final Color c => (c, c),
+      final String category => rules.colors[category],
+      _ => rules.colors[labelCategory(mimeType)],
+    };
+    return FileIcon(
+      generic,
+      label: ext.toUpperCase(),
+      labelColor: color ?? rules.colors['other'],
+      rules: rules,
+    );
+  }
+
   FileIcon? byId(String? id) {
     if (id == null) return null;
+    // Una voce della mappa può mandare al file generico (application/json): con l'etichetta.
+    if (id == generic.id) return labeled();
     final icon = findSilicaIcon(id, env: env);
     return icon == null ? null : FileIcon(icon);
   }
@@ -162,22 +184,7 @@ FileIcon? resolveFileIcon(
   }
   // 4. L'estensione.
   if (byId(rules.extensions[ext]) case final icon?) return icon;
-  // 5. Il file generico con l'etichetta, o il foglio con il punto di domanda.
-  if (ext.isEmpty || ext.length > rules.maxChars) {
-    return byId(rules.fallback) ?? FileIcon(generic);
-  }
-  final override = rules.overrides[ext];
-  final color = switch (override) {
-    final Color c => (c, c),
-    final String category => rules.colors[category],
-    _ => rules.colors[labelCategory(mimeType)],
-  };
-  return FileIcon(
-    generic,
-    label: ext.toUpperCase(),
-    labelColor: color ?? rules.colors['other'],
-    rules: rules,
-  );
+  return labeled();
 }
 
 bool _isExecutable(String path) {

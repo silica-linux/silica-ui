@@ -44,6 +44,7 @@ const Map<String, Object> labelRules = {
       'text/plain': 'file-text',
       'image/*': 'file-image',
       'application/x-shellscript': 'file-executable',
+      'application/json': 'file-generic',
     },
     'extensions': {'pdf': 'file-pdf', 'xlsx': 'file-spreadsheet'},
   },
@@ -173,6 +174,8 @@ void main() {
       expect(json?.icon.id, 'file-generic');
       expect(json?.label, 'JSON');
       expect(json?.labelColor?.$1, const Color(0xFF1F9D55));
+      // La voce esplicita vince sul genitore (application/javascript), con l'etichetta.
+      expect(json?.rules, isNotNull);
       expect(resolve('progetto.skt')?.labelColor?.$1, const Color(0xFFF7B500));
       expect(resolve('LEGGIMI')?.icon.id, 'file-unknown');
       expect(resolve('troppo.lunghissima')?.icon.id, 'file-unknown');
