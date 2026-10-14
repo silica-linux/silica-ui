@@ -119,6 +119,11 @@ abstract final class MenuMetrics {
 
   /// Submenu: overlapping by 5 pt and 5 pt above the item.
   static const double submenuOverlap = 5;
+
+  /// Minimum distance between a menu and the edges of the area it is shown in, when it has
+  /// to be moved to fit. `provisional`: the flip and the shift were not observed
+  /// (menubar.md, "not observed"); the value is the 5 pt menu padding.
+  static const double edgeMargin = 5;
   static const Duration submenuDelay = Duration(milliseconds: 295);
   static const Duration triangleGrace = Duration(milliseconds: 300);
 
@@ -277,11 +282,66 @@ List<double> menuRowTops(List<MenuEntry> entries) {
   return tops;
 }
 
+/// Where a menu of `size` opens in an `area`, the way macOS places context menus
+/// (`provisional`: the behaviour was not measured, only the behaviour is known).
+///
+/// The menu has its top-left corner at `anchor` (its bottom-left if `upwards`). If it does not
+/// fit on the right it opens to the left of the anchor, its right edge at `anchor.dx`. If it
+/// does not fit at the bottom it shifts up, staying [MenuMetrics.edgeMargin] from the bottom
+/// edge, and never goes above `top` (the bottom of the menu bar) plus the margin. A menu
+/// larger than the area starts at the top bound.
+Rect placeMenu({
+  required Offset anchor,
+  required Size size,
+  required Size area,
+  bool upwards = false,
+  double top = 0,
+}) {
+  const m = MenuMetrics.edgeMargin;
+  var x = anchor.dx;
+  if (x + size.width > area.width - m) x = anchor.dx - size.width;
+  x = _clampLow(x, m, area.width - m - size.width);
+  var y = upwards ? anchor.dy - size.height : anchor.dy;
+  y = _clampLow(y, top + m, area.height - m - size.height);
+  return Offset(x, y) & size;
+}
+
+/// Where a submenu of `size` opens next to its `parent` menu, whose row starts at `rowTop`:
+/// to the right, or to the left of the parent if it does not fit; shifted to stay on screen
+/// like [placeMenu].
+Rect placeSubmenu({
+  required Rect parent,
+  required double rowTop,
+  required Size size,
+  required Size area,
+  double top = 0,
+}) {
+  const m = MenuMetrics.edgeMargin;
+  var x = parent.right - MenuMetrics.submenuOverlap;
+  if (x + size.width > area.width - m) {
+    x = parent.left + MenuMetrics.submenuOverlap - size.width;
+  }
+  x = _clampLow(x, m, area.width - m - size.width);
+  final y = _clampLow(
+    rowTop - MenuMetrics.padding,
+    top + m,
+    area.height - m - size.height,
+  );
+  return Offset(x, y) & size;
+}
+
+/// `v` limited to [low, high]; if the range is empty (the menu is larger than the area), `low`.
+double _clampLow(double v, double low, double high) =>
+    high < low ? low : v.clamp(low, high).toDouble();
+
 /// An open menu: the items, the rectangle and the highlighted item.
 class _Level {
-  _Level(this.entries, this.rect);
+  _Level(this.entries, this.rect, [this.parentRow]);
   final List<MenuEntry> entries;
   Rect rect;
+
+  /// The row of the parent menu that opened this submenu (null for the main menu).
+  final int? parentRow;
   int? highlighted;
   late final List<double> tops = menuRowTops(entries);
 
@@ -297,7 +357,9 @@ class _Level {
 
 /// A menu with its submenus, drawn in an area that contains it (a full-screen layer, the
 /// stretched bar surface). The main menu has its top-left corner at `anchor`, or its bottom
-/// edge there if `upwards`.
+/// edge there if `upwards`. It stays inside the area ([placeMenu], [placeSubmenu]): it opens
+/// to the left of the anchor if it does not fit on the right, shifts up if it does not fit
+/// below, and submenus flip to the left of their parent.
 class MenuHost extends StatefulWidget {
   const MenuHost({
     super.key,
@@ -313,7 +375,12 @@ class MenuHost extends StatefulWidget {
     this.handlesPointer = true,
     this.onRectsChanged,
     this.opaque = false,
+    this.top = 0,
   });
+
+  /// The top of the usable part of the area (the bottom of the menu bar): menus shifted to
+  /// stay on screen do not go above it.
+  final double top;
 
   final List<MenuEntry> entries;
   final Offset anchor;
@@ -382,35 +449,85 @@ class MenuHostState extends State<MenuHost>
     if (old.entries != widget.entries ||
         (old.tip == null) != (widget.tip == null)) {
       _reset();
-    } else if (old.anchor != widget.anchor || old.tip != widget.tip) {
-      // The surface hosting the menu has changed (the Dock stretching): the open menus
-      // move with it, without closing the submenu.
-      final tip = widget.tip;
-      final oldTip = old.tip;
-      final shift = tip != null && oldTip != null
-          ? tip - oldTip
-          : widget.anchor - old.anchor;
-      for (final level in _levels) {
-        level.rect = level.rect.shift(shift);
+    }
+    // A moved anchor or tip (the Dock stretching) is applied by the next `_fit`, which keeps
+    // the open submenu.
+  }
+
+  /// The size of the area, known after the first layout.
+  Size? _area;
+
+  Rect _rootRect() {
+    final size = menuSize(widget.entries);
+    final tip = widget.tip;
+    final area = _area;
+    if (tip != null) {
+      // Below or above the tip, which stays where it is; only the sides are kept on screen.
+      var x = tip.dx - MenuMetrics.tipBodyLeft;
+      if (area != null) {
+        x = _clampLow(
+          x,
+          MenuMetrics.edgeMargin,
+          area.width - MenuMetrics.edgeMargin - size.width,
+        );
       }
+      final y = widget.tipUp
+          ? tip.dy + MenuMetrics.tipHeight
+          : tip.dy - MenuMetrics.tipHeight - size.height;
+      return Offset(x, y) & size;
+    }
+    if (area == null) {
+      return (widget.upwards
+              ? widget.anchor - Offset(0, size.height)
+              : widget.anchor) &
+          size;
+    }
+    return placeMenu(
+      anchor: widget.anchor,
+      size: size,
+      area: area,
+      upwards: widget.upwards,
+      top: widget.top,
+    );
+  }
+
+  Rect _submenuRect(_Level parent, int row, Size size) {
+    final area = _area;
+    final rowTop = parent.rect.top + parent.tops[row];
+    if (area == null) {
+      return Offset(
+            parent.rect.right - MenuMetrics.submenuOverlap,
+            rowTop - MenuMetrics.padding,
+          ) &
+          size;
+    }
+    return placeSubmenu(
+      parent: parent.rect,
+      rowTop: rowTop,
+      size: size,
+      area: area,
+      top: widget.top,
+    );
+  }
+
+  /// Places the open menus again in an area of this size (first layout, resized area, moved
+  /// anchor).
+  void _fit(Size area) {
+    _area = area;
+    _levels.first.rect = _rootRect();
+    for (var i = 1; i < _levels.length; i++) {
+      final level = _levels[i];
+      level.rect = _submenuRect(
+        _levels[i - 1],
+        level.parentRow!,
+        menuSize(level.entries),
+      );
     }
   }
 
   void _reset() {
     _levels.clear();
-    final size = menuSize(widget.entries);
-    final tip = widget.tip;
-    final origin = tip != null
-        ? Offset(
-            tip.dx - MenuMetrics.tipBodyLeft,
-            widget.tipUp
-                ? tip.dy + MenuMetrics.tipHeight
-                : tip.dy - MenuMetrics.tipHeight - size.height,
-          )
-        : widget.upwards
-        ? widget.anchor - Offset(0, size.height)
-        : widget.anchor;
-    _levels.add(_Level(widget.entries, origin & size));
+    _levels.add(_Level(widget.entries, _rootRect()));
     _closing = false;
     _blinkHidden = false;
     _fade.value = 1;
@@ -430,13 +547,10 @@ class MenuHostState extends State<MenuHost>
     final entry = parent.entries[row];
     if (entry is! MenuAction || entry.submenu == null || !entry.enabled) return;
     final size = menuSize(entry.submenu!);
-    final origin = Offset(
-      parent.rect.right - MenuMetrics.submenuOverlap,
-      parent.rect.top + parent.tops[row] - MenuMetrics.padding,
-    );
+    final rect = _submenuRect(parent, row, size);
     setState(() {
       _levels.removeRange(level + 1, _levels.length);
-      _levels.add(_Level(entry.submenu!, origin & size));
+      _levels.add(_Level(entry.submenu!, rect, row));
     });
   }
 
@@ -658,7 +772,16 @@ class MenuHostState extends State<MenuHost>
 
   @override
   Widget build(BuildContext context) {
-    _notifyRects();
+    return LayoutBuilder(
+      builder: (context, box) {
+        if (box.hasBoundedWidth && box.hasBoundedHeight) _fit(box.biggest);
+        _notifyRects();
+        return _buildMenus(context);
+      },
+    );
+  }
+
+  Widget _buildMenus(BuildContext context) {
     return Focus(
       focusNode: _focus,
       autofocus: widget.autofocus,

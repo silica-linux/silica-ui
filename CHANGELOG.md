@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+- **Menus stay on screen:** `MenuHost` places the open levels inside its area and places them
+  again on every layout.
+  - A menu that does not fit on the right opens to the left of the anchor, its right edge at the
+    pointer.
+  - A menu that does not fit below shifts up, keeping `MenuMetrics.edgeMargin` (5 pt,
+    provisional) from the edge, and never goes above `top` plus the margin.
+  - Submenus flip to the left of their parent (5 pt overlap) and shift up.
+  - Tip menus (Dock, popovers) only clamp horizontally.
+- `MenuHost.top`: the bottom of the menu bar (default 0), the upper bound for shifted menus.
+- `placeMenu` and `placeSubmenu`: the placement as pure functions.
+- **Fix:** `withoutFilters` keeps the mask, clip-path and transform of the blurred shapes it
+  rewrites, so glows stay inside their mask (209a7ab).
+
 ## 0.24.0 · 2026-10-14
 
 The measured control gallery (INV-B, INV-D) replaces most provisional values, and the app
