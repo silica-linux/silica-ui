@@ -1,6 +1,6 @@
 # silica_ui
 
-Il design system di [Silica](https://github.com/silica-linux/silica) per le app Flutter: il
+Il design system di [Silica](https://github.com/silica-linux/silica-desktop) per le app Flutter: il
 font dell'interfaccia e il vetro. Lo usano la shell di Silica e le app (Mustache,
 Impostazioni, …), ognuna nel suo repository.
 
