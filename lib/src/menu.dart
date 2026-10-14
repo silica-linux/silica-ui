@@ -107,7 +107,10 @@ abstract final class MenuMetrics {
   /// Tip towards the object: 8 high, 22 base, concave sides; the body starts 27 pt to the
   /// left of the apex.
   static const double tipHeight = 8;
-  static const double tipBase = 22;
+  static const double tipBase = 24;
+
+  /// The depth of the drawn drop: it reaches 2 pt past the anchor, as on dock-context-light.
+  static const double tipDepth = 10;
   static const double tipBodyLeft = 27;
 
   /// Submenu: overlapping by 5 pt and 5 pt above the item.
@@ -758,13 +761,11 @@ class MenuPanel extends StatelessWidget {
                   ? null
                   : GlassTip(
                       x: tipX,
-                      // On the pixels of dock-context-light.png the tip goes ~10 pt below the body
-                      // (y 1338 → 1347) and narrows by ~0.7 pt per side at each row. The rounded
-                      // apex (3.5 pt) and the fillets of the smooth union widen the base:
-                      // on the body it is ~22 pt wide again.
-                      width: MenuMetrics.tipBase - 14,
-                      height: MenuMetrics.tipHeight + 2,
-                      up: tipUp,
+                      // The drop measured on dock-context-light.png: 24 pt base, 10 pt deep,
+                      // glass widths per row 24 20 18 16 14 12 10 8 6 2 (Ossido draws it).
+                      width: MenuMetrics.tipBase,
+                      height: MenuMetrics.tipDepth,
+                      edge: tipUp ? TipEdge.top : TipEdge.bottom,
                     ),
               child: _rows(colors, left, checks, tops),
             ),
@@ -935,38 +936,22 @@ class _MenuShadow extends CustomPainter {
     var glass = Path()..addRRect(body);
     final x = tipX;
     if (x != null) {
-      const half = MenuMetrics.tipBase / 2 - 3;
-      // The tip as the compositor draws it: straight sides joined to the body by concave
-      // ~4 pt curves (the smooth union of the glass) and a slightly rounded apex.
-      const h = MenuMetrics.tipHeight + 2;
+      // The drop as the compositor draws it: the glass widths measured per row (24 20 18 16
+      // 14 12 10 8 6 2 over the 10 pt depth), joined by straight segments.
+      const widths = [24.0, 20, 18, 16, 14, 12, 10, 8, 6, 2];
       final top = size.height;
-      final side = Offset(half, h) / Offset(half, h).distance;
-      const fillet = 4.0;
-      final apex = Offset(x, top + h);
-      glass = Path.combine(
-        PathOperation.union,
-        glass,
-        Path()
-          ..moveTo(x - half - fillet, top - 1)
-          ..lineTo(x - half - fillet, top)
-          ..quadraticBezierTo(
-            x - half,
-            top,
-            x - half + side.dx * fillet,
-            top + side.dy * fillet,
-          )
-          ..lineTo(apex.dx - side.dx * 4, apex.dy - side.dy * 4)
-          ..quadraticBezierTo(
-            apex.dx,
-            apex.dy + 1,
-            apex.dx + side.dx * 4,
-            apex.dy - side.dy * 4,
-          )
-          ..lineTo(x + half - side.dx * fillet, top + side.dy * fillet)
-          ..quadraticBezierTo(x + half, top, x + half + fillet, top)
-          ..lineTo(x + half + fillet, top - 1)
-          ..close(),
-      );
+      final tip = Path()..moveTo(x - widths.first / 2, top - 1);
+      for (var row = 0; row < widths.length; row++) {
+        tip.lineTo(x - widths[row] / 2, top + row);
+      }
+      tip.lineTo(x, top + MenuMetrics.tipDepth);
+      for (var row = widths.length - 1; row >= 0; row--) {
+        tip.lineTo(x + widths[row] / 2, top + row);
+      }
+      tip
+        ..lineTo(x + widths.first / 2, top - 1)
+        ..close();
+      glass = Path.combine(PathOperation.union, glass, tip);
       // On top: the same shape mirrored (the body is symmetric).
       if (up) {
         glass = glass.transform(

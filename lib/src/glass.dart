@@ -47,22 +47,29 @@ class Glass extends SingleChildRenderObjectWidget {
   }
 }
 
-/// The tip of a glass: `x` is the center from the left edge, the base is `width` wide. Pointing
-/// down it sits on the bottom edge and the apex is `height` lower; with `up` it sits on the
-/// top edge and the apex is `height` higher (a popover under its button).
+/// The edge of the glass a tip sits on, pointing away from the body.
+enum TipEdge { bottom, top, left, right }
+
+/// The tip of a glass, a drop shape that merges into the body (silica-glass-v1 versions 4–6).
+/// `x` is the center along the edge (from the left for top and bottom, from the top for left
+/// and right), `width` the base along the edge, `height` the depth away from it. The menu tip
+/// measured on the Dock is 24 × 10 pt.
 @immutable
 class GlassTip {
   const GlassTip({
     required this.x,
     required this.width,
     required this.height,
-    this.up = false,
+    this.edge = TipEdge.bottom,
   });
 
   final double x;
   final double width;
   final double height;
-  final bool up;
+  final TipEdge edge;
+
+  /// On the top edge, pointing up (a popover under its button).
+  bool get up => edge == TipEdge.top;
 
   @override
   bool operator ==(Object other) =>
@@ -70,10 +77,10 @@ class GlassTip {
       other.x == x &&
       other.width == width &&
       other.height == height &&
-      other.up == up;
+      other.edge == edge;
 
   @override
-  int get hashCode => Object.hash(x, width, height, up);
+  int get hashCode => Object.hash(x, width, height, edge);
 }
 
 /// The render object of [Glass]: it registers itself while attached to the tree.
@@ -164,12 +171,33 @@ class RenderGlass extends RenderProxyBox {
     if (tip == null) return [body];
     final rect = MatrixUtils.transformRect(
       getTransformTo(null),
-      Rect.fromLTWH(
-        tip.x - tip.width / 2,
-        tip.up ? -tip.height : size.height,
-        tip.width,
-        tip.height,
-      ),
+      switch (tip.edge) {
+        TipEdge.bottom => Rect.fromLTWH(
+          tip.x - tip.width / 2,
+          size.height,
+          tip.width,
+          tip.height,
+        ),
+        TipEdge.top => Rect.fromLTWH(
+          tip.x - tip.width / 2,
+          -tip.height,
+          tip.width,
+          tip.height,
+        ),
+        // Sideways the rectangle's width is the depth and its height the base.
+        TipEdge.left => Rect.fromLTWH(
+          -tip.height,
+          tip.x - tip.width / 2,
+          tip.height,
+          tip.width,
+        ),
+        TipEdge.right => Rect.fromLTWH(
+          size.width,
+          tip.x - tip.width / 2,
+          tip.height,
+          tip.width,
+        ),
+      },
     );
     return [
       body,
@@ -180,7 +208,12 @@ class RenderGlass extends RenderProxyBox {
         'height': rect.height,
         'material': material.name,
         'opacity': body['opacity'] ?? 1.0,
-        'shape': tip.up ? 'tip-up' : 'tip',
+        'shape': switch (tip.edge) {
+          TipEdge.bottom => 'tip',
+          TipEdge.top => 'tip-up',
+          TipEdge.left => 'tip-left',
+          TipEdge.right => 'tip-right',
+        },
         if (group != 0) 'group': group,
       },
     ];

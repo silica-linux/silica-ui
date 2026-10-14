@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.22.0 · 2026-10-14
+
+- **API change**: `GlassTip.up` becomes `GlassTip.edge` (`TipEdge.bottom`, `top`, `left`,
+  `right`); `up` stays as a getter. Side tips need Ossido with silica-glass-v1 version 6
+  (`add_side_tip`): a popover beside its control.
+- The menu tip is the measured drop: 24 pt base, 10 pt deep (glass widths per row 24 20 18 16
+  14 12 10 8 6 2, drawn by Ossido); the menu position is unchanged (body 8 pt above the anchor).
+  The shadow cut-out follows the same drop.
+
 ## 0.21.0 · 2026-10-14
 
 - `SilicaWindow.setSize`, `setSizeLimits`, `setFixedSize`: the app chooses its window size and

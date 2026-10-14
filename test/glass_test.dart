@@ -150,7 +150,7 @@ void main() {
                 radius: 12,
                 material: GlassMaterial.thick,
                 group: 1,
-                tip: GlassTip(x: 30, width: 22, height: 8),
+                tip: GlassTip(x: 30, width: 24, height: 10),
                 child: SizedBox.expand(),
               ),
             ),
@@ -167,7 +167,48 @@ void main() {
     expect(tip['shape'], 'tip');
     expect(tip['group'], 1);
     expect(tip['material'], 'thick');
-    expect([tip['x'], tip['y'], tip['width'], tip['height']], [29, 70, 22, 8]);
+    expect([tip['x'], tip['y'], tip['width'], tip['height']], [28, 70, 24, 10]);
+  });
+
+  testWidgets('side tips: the rectangle beside the body, depth across', (
+    tester,
+  ) async {
+    final calls = <MethodCall>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      GlassRegistry.channel,
+      (call) async {
+        calls.add(call);
+        return true;
+      },
+    );
+    for (final (edge, shape, rect) in [
+      (TipEdge.left, 'tip-left', [-10, 25, 10, 24]),
+      (TipEdge.right, 'tip-right', [100, 25, 10, 24]),
+      (TipEdge.top, 'tip-up', [25, -10, 24, 10]),
+    ]) {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Glass(
+              tip: GlassTip(x: 37, width: 24, height: 10, edge: edge),
+              child: const SizedBox(width: 100, height: 70),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final tip =
+          (calls.last.arguments as List<Object?>).last!
+              as Map<Object?, Object?>;
+      expect(tip['shape'], shape);
+      expect([tip['x'], tip['y'], tip['width'], tip['height']], rect);
+    }
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      GlassRegistry.channel,
+      null,
+    );
   });
 
   testWidgets('the submenu has a glass group of its own', (tester) async {
