@@ -109,8 +109,9 @@ class FlatSource extends IconSource {
   final String path;
 }
 
-/// L'icona di `side` × `side` (il corpo visibile); la tela delle icone a livelli sborda
-/// di `side × 100 / 824` per lato, come nel disegno.
+/// L'icona di `side` × `side`. Per un'app `side` è il corpo e la tela sborda di
+/// `side × 100 / 824` per lato, come nel disegno; per file, cartelle, volumi e Cestino `side`
+/// è la tela intera (silica-icons 0.2: icon-format.md, "Principio"), salvo [besideApps].
 class SilicaIcon extends StatelessWidget {
   const SilicaIcon(
     this.source, {
@@ -119,7 +120,24 @@ class SilicaIcon extends StatelessWidget {
     this.dark,
     this.badges = const {},
     this.env,
+    this.besideApps = false,
   });
+
+  /// Un luogo (cartella, Cestino) accanto alle app, come nel Dock: anche lui ha `side` per
+  /// corpo e la tela delle app attorno.
+  final bool besideApps;
+
+  /// La tela dell'icona coincide con `side` (file, cartelle, volumi fuori dal Dock).
+  bool get fullCanvas =>
+      !besideApps &&
+      switch (source) {
+        FileSource() || FolderSource() => true,
+        LayeredSource(:final icon) => icon.kind != IconKind.app,
+        FlatSource() => false,
+      };
+
+  /// Il lato della tela 1024, in pt: con questo si confrontano le fasce `min_size`.
+  double get canvasExtent => fullCanvas ? side : side * canvasSide / bodySide;
 
   /// I badge da sovrapporre (alias, illeggibile, bloccato, nuvola): quanti e dove dipende dal
   /// lato (icon-format.md, "Badge").
@@ -139,8 +157,8 @@ class SilicaIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = dark ?? false;
-    final canvas = side * canvasSide / bodySide;
-    final inset = side * bodyInset / bodySide;
+    final canvas = canvasExtent;
+    final inset = (canvas - side) / 2;
     final body = Rect.fromLTWH(inset, inset, side, side);
     final Widget content = switch (source) {
       LayeredSource(:final icon) when icon.kind == IconKind.app => _layeredApp(
@@ -163,7 +181,7 @@ class SilicaIcon extends StatelessWidget {
         ? const <IconBadge>[]
         : visibleBadges(
             badges,
-            side,
+            canvas,
             order: findBadgeRules(env: env)?.order ?? IconBadge.values,
           );
     return SizedBox(
@@ -179,26 +197,29 @@ class SilicaIcon extends StatelessWidget {
             height: canvas,
             child: IgnorePointer(child: content),
           ),
-          for (final badge in shown) _badge(badge, isDark),
+          for (final badge in shown) _badge(badge, canvas, inset, isDark),
         ],
       ),
     );
   }
 
   /// Un badge sopra l'icona composta, senza ombra: lato 315/1024 della tela da 32 pt, 509 se è
-  /// l'unico (16–31 pt); appoggiato all'angolo in basso del corpo.
-  Widget _badge(IconBadge badge, bool isDark) {
+  /// l'unico (16–31 pt); appoggiato all'angolo in basso del corpo delle app (100…924 sulla
+  /// tela), non al disegno.
+  Widget _badge(IconBadge badge, double canvas, double inset, bool isDark) {
     final path = findBadgeRules(env: env)?.pathFor(badge, dark: isDark);
     if (path == null) return const SizedBox.shrink();
-    final scale = side / bodySide;
-    final edge = (side >= 32 ? 315.0 : 509.0) * scale;
+    final scale = canvas / canvasSide;
+    final edge = (canvas >= 32 ? 315.0 : 509.0) * scale;
+    final near = bodyInset * scale - inset;
+    final far = (bodyInset + bodySide) * scale - inset;
     // alias in basso a sinistra, gli altri in basso a destra.
-    final left = badge == IconBadge.alias ? 0.0 : side - edge;
+    final left = badge == IconBadge.alias ? near : far - edge;
     // La tela 1024 del badge, scalata di edge/824, con il suo corpo sul riquadro.
     final k = edge / bodySide;
     return Positioned(
       left: left - bodyInset * k,
-      top: side - edge - bodyInset * k,
+      top: far - edge - bodyInset * k,
       width: canvasSide * k,
       height: canvasSide * k,
       child: IgnorePointer(child: _svg(path, canvasSide * k)),
@@ -215,7 +236,7 @@ class SilicaIcon extends StatelessWidget {
       children: [
         for (final layer in file.icon.layers)
           _svg(layer.pathFor(dark: isDark), canvas),
-        if (box != null && label != null && side >= file.labelMinSide)
+        if (box != null && label != null && canvas >= file.labelMinSide)
           Positioned(
             left: box.left * scale,
             top: box.top * scale,
@@ -312,7 +333,7 @@ class SilicaIcon extends StatelessWidget {
     ];
     if (dyn is FolderSymbol) {
       final name = folder.symbol;
-      final band = dyn.bandFor(side);
+      final band = dyn.bandFor(canvas);
       final file = name == null || band == null
           ? null
           : dyn.symbolFile(name, band.weight);

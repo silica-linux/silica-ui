@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.17.0 · 2026-10-14
+
+- **Cambia il disegno** delle icone di file, cartelle, volumi e Cestino (silica-icons 0.2,
+  icon-format.md › "Principio"): `side` è la tela intera, non più il corpo delle app.
+  Le fasce `min_size` di etichette, simboli della cartella e badge si confrontano con il lato
+  della tela; i badge restano nel riquadro fra il corpo delle app (100…924) e la linea aurea.
+- `SilicaIcon.besideApps`: un luogo accanto alle app (Dock) tiene `side` per corpo e la tela
+  delle app attorno. `canvasExtent` dà il lato della tela.
+
 ## 0.16.0 · 2026-10-14
 
 - `SilicaDrag` (canale `silica/drag` dell'embedder): il trascinamento fra app di Ossido.

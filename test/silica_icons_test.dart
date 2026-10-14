@@ -502,6 +502,36 @@ void main() {
     expect(await center(true), const Color(0xFF0000FF));
   });
 
+  test(
+    'la tela: intera per i file, con il bordo delle app per le app e nel Dock',
+    () {
+      final root = iconTree({
+        'files/trash-empty': {
+          'icon.json':
+              '{ "format": 1, "id": "trash-empty", "name": "Trash", "kind": "file", '
+              '"layers": [ { "role": "artwork", "file": "icon.svg" } ] }',
+          'icon.svg': svg,
+        },
+        'apps/mail': {
+          'icon.json': mailManifest,
+          'background.svg': svg,
+          'background-dark.svg': svg,
+          'foreground.svg': svg,
+        },
+      });
+      addTearDown(() => root.deleteSync(recursive: true));
+      final env = {'SILICA_ICONS_DIR': root.path};
+      final trash = LayeredSource(findSilicaIcon('trash-empty', env: env)!);
+      final mail = LayeredSource(findSilicaIcon('mail', env: env)!);
+      expect(SilicaIcon(trash, side: 64).canvasExtent, 64);
+      expect(
+        SilicaIcon(trash, side: 48, besideApps: true).canvasExtent,
+        48 * 1024 / 824,
+      );
+      expect(SilicaIcon(mail, side: 48).canvasExtent, 48 * 1024 / 824);
+    },
+  );
+
   test('icona di un file dall\'estensione', () {
     expect(fileIconId('Foto.JPG'), 'file-image');
     expect(fileIconId('relazione.pdf'), 'file-pdf');

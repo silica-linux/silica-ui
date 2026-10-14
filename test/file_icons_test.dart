@@ -222,7 +222,7 @@ void main() {
         Directionality(
           textDirection: TextDirection.ltr,
           child: Center(
-            child: SilicaIcon(FileSource(icon), side: 824, dark: false),
+            child: SilicaIcon(FileSource(icon), side: 1024, dark: false),
           ),
         ),
       );
@@ -232,56 +232,56 @@ void main() {
         find.ancestor(of: find.text('JSON'), matching: find.byType(FittedBox)),
       );
       final body = tester.getTopLeft(find.byType(SilicaIcon));
-      // Sulla tela 1024 il riquadro è (245, 376, 534, 194); il corpo parte da 100.
-      expect(box.left - body.dx, closeTo(245 - 100, 0.5));
-      expect(box.top - body.dy, closeTo(376 - 100, 0.5));
+      // Un file ha per lato la tela intera: il riquadro (245, 376, 534, 194) a 1024 pt.
+      expect(box.left - body.dx, closeTo(245, 0.5));
+      expect(box.top - body.dy, closeTo(376, 0.5));
       expect(box.width, closeTo(534, 0.5));
     });
 
-    testWidgets(
-      'badge: alias a sinistra, a destra il primo; sotto 32 uno solo',
-      (tester) async {
-        expect(
-          visibleBadges({
-            IconBadge.alias,
-            IconBadge.cloud,
-            IconBadge.locked,
-          }, 64),
-          [IconBadge.alias, IconBadge.locked],
-        );
-        expect(visibleBadges({IconBadge.alias, IconBadge.unreadable}, 20), [
-          IconBadge.unreadable,
-        ]);
-        expect(visibleBadges({IconBadge.alias}, 12), isEmpty);
+    testWidgets('badge: alias a sinistra, a destra il primo; sotto 32 uno solo', (
+      tester,
+    ) async {
+      expect(
+        visibleBadges({IconBadge.alias, IconBadge.cloud, IconBadge.locked}, 64),
+        [IconBadge.alias, IconBadge.locked],
+      );
+      expect(visibleBadges({IconBadge.alias, IconBadge.unreadable}, 20), [
+        IconBadge.unreadable,
+      ]);
+      expect(visibleBadges({IconBadge.alias}, 12), isEmpty);
 
-        await tester.pumpWidget(
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: Center(
-              child: SilicaIcon(
-                FileSource(resolve('a.pdf')!),
-                side: 64,
-                dark: false,
-                badges: const {IconBadge.alias, IconBadge.locked},
-                env: env,
-              ),
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: SilicaIcon(
+              FileSource(resolve('a.pdf')!),
+              side: 64,
+              dark: false,
+              badges: const {IconBadge.alias, IconBadge.locked},
+              env: env,
             ),
           ),
-        );
-        final body = tester.getRect(find.byType(SilicaIcon));
-        final positioned = tester
-            .widgetList<Positioned>(find.byType(Positioned))
-            .where((p) => p.width != null && p.width! < 64)
-            .toList();
-        expect(positioned, hasLength(2));
-        // Lato del badge 315/824 del corpo; la tela del badge sborda di 100 k.
-        final k = 64 * 315 / 824 / 824;
-        final lefts = positioned.map((p) => p.left!).toList()..sort();
-        expect(lefts.first, closeTo(-100 * k, 0.01));
-        expect(lefts.last, closeTo(64 - 64 * 315 / 824 - 100 * k, 0.01));
-        expect(body.width, 64);
-      },
-    );
+        ),
+      );
+      final body = tester.getRect(find.byType(SilicaIcon));
+      final positioned = tester
+          .widgetList<Positioned>(find.byType(Positioned))
+          .where((p) => p.width != null && p.width! < 64)
+          .toList();
+      expect(positioned, hasLength(2));
+      // Il file ha per lato la tela: badge 315/1024 di 64, nel riquadro fra il bordo del
+      // corpo delle app (100…924 della tela) e la linea aurea; la sua tela sborda di 100 k.
+      const t = 64 / 1024;
+      const edge = 315 * t;
+      const k = edge / 824;
+      final lefts = positioned.map((p) => p.left!).toList()..sort();
+      final tops = positioned.map((p) => p.top!).toSet();
+      expect(lefts.first, closeTo(100 * t - 100 * k, 0.01));
+      expect(lefts.last, closeTo(924 * t - edge - 100 * k, 0.01));
+      expect(tops.single, closeTo(924 * t - edge - 100 * k, 0.01));
+      expect(body.width, 64);
+    });
 
     test('badge dal disco: collegamento, rotto, illeggibile', () {
       final dir = Directory.systemTemp.createTempSync('badge-');
