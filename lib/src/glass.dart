@@ -47,25 +47,33 @@ class Glass extends SingleChildRenderObjectWidget {
   }
 }
 
-/// La punta sotto un vetro, rivolta in basso: `x` è il centro dal bordo sinistro, la base
-/// larga `width` poggia sul bordo inferiore, il vertice è `height` più in basso.
+/// La punta di un vetro: `x` è il centro dal bordo sinistro, la base larga `width`. Rivolta in
+/// basso poggia sul bordo inferiore e il vertice è `height` più in basso; con `up` poggia sul
+/// bordo superiore e il vertice è `height` più in alto (un popover sotto il suo pulsante).
 @immutable
 class GlassTip {
-  const GlassTip({required this.x, required this.width, required this.height});
+  const GlassTip({
+    required this.x,
+    required this.width,
+    required this.height,
+    this.up = false,
+  });
 
   final double x;
   final double width;
   final double height;
+  final bool up;
 
   @override
   bool operator ==(Object other) =>
       other is GlassTip &&
       other.x == x &&
       other.width == width &&
-      other.height == height;
+      other.height == height &&
+      other.up == up;
 
   @override
-  int get hashCode => Object.hash(x, width, height);
+  int get hashCode => Object.hash(x, width, height, up);
 }
 
 /// Il render object di [Glass]: si registra finché è attaccato all'albero.
@@ -156,7 +164,12 @@ class RenderGlass extends RenderProxyBox {
     if (tip == null) return [body];
     final rect = MatrixUtils.transformRect(
       getTransformTo(null),
-      Rect.fromLTWH(tip.x - tip.width / 2, size.height, tip.width, tip.height),
+      Rect.fromLTWH(
+        tip.x - tip.width / 2,
+        tip.up ? -tip.height : size.height,
+        tip.width,
+        tip.height,
+      ),
     );
     return [
       body,
@@ -167,7 +180,7 @@ class RenderGlass extends RenderProxyBox {
         'height': rect.height,
         'material': material.name,
         'opacity': body['opacity'] ?? 1.0,
-        'shape': 'tip',
+        'shape': tip.up ? 'tip-up' : 'tip',
         if (group != 0) 'group': group,
       },
     ];

@@ -2,7 +2,7 @@ name: silica_ui
 description: Design system di Silica per Flutter. Font dell'interfaccia (Inter, OFL), vetro e Liquid Glass composti da Ossido.
 # Distribuito con tag git (vX.Y.Z) finché il nome non è verificato per pub.dev.
 publish_to: none
-version: 0.13.1
+version: 0.14.0
 repository: https://github.com/silica-linux/silica-ui
 
 environment:

@@ -295,4 +295,49 @@ void main() {
       expect(closed, isTrue);
     },
   );
+
+  testWidgets(
+    'punta in alto: il menu sotto il vertice e il vetro con la punta in su',
+    (tester) async {
+      final calls = <MethodCall>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        GlassRegistry.channel,
+        (call) async {
+          calls.add(call);
+          return true;
+        },
+      );
+      tester.view.physicalSize = const Size(800, 600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        const Directionality(
+          textDirection: TextDirection.ltr,
+          child: MenuHost(
+            entries: [MenuAction('Riempi')],
+            anchor: Offset.zero,
+            tip: Offset(200, 100),
+            tipUp: true,
+          ),
+        ),
+      );
+      await tester.pump();
+      final panel = tester.getRect(find.byType(MenuPanel));
+      expect(panel.top, 100 + MenuMetrics.tipHeight);
+      expect(panel.left, 200 - MenuMetrics.tipBodyLeft);
+      final regions = calls.last.arguments as List<Object?>;
+      final tip = regions.cast<Map<Object?, Object?>>().firstWhere(
+        (r) => r['shape'] == 'tip-up',
+      );
+      // La punta sta sopra il corpo, con il vertice verso il punto indicato.
+      expect(
+        (tip['y']! as num) + (tip['height']! as num),
+        closeTo(panel.top, 0.5),
+      );
+      expect(
+        (tip['x']! as num) + (tip['width']! as num) / 2,
+        closeTo(200, 0.5),
+      );
+    },
+  );
 }

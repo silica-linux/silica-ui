@@ -248,6 +248,7 @@ class MenuHost extends StatefulWidget {
     required this.anchor,
     this.upwards = false,
     this.tip,
+    this.tipUp = false,
     this.onDismissed,
     this.onNext,
     this.onPrevious,
@@ -265,6 +266,11 @@ class MenuHost extends StatefulWidget {
   /// coordinate dell'area. Il menu sta sopra, con il corpo che comincia 27 pt a sinistra della
   /// punta e il fondo 8 pt sopra il vertice; `anchor` e `upwards` non contano.
   final Offset? tip;
+
+  /// La punta in alto: il menu sta **sotto** il vertice (un popover che indica il pulsante da
+  /// cui si apre), con il corpo che comincia 27 pt a sinistra della punta e la cima 8 pt sotto
+  /// il vertice.
+  final bool tipUp;
 
   /// Il menu è sparito (scelta, Esc o clic fuori), a dissolvenza finita.
   final VoidCallback? onDismissed;
@@ -340,7 +346,9 @@ class MenuHostState extends State<MenuHost>
     final origin = tip != null
         ? Offset(
             tip.dx - MenuMetrics.tipBodyLeft,
-            tip.dy - MenuMetrics.tipHeight - size.height,
+            widget.tipUp
+                ? tip.dy + MenuMetrics.tipHeight
+                : tip.dy - MenuMetrics.tipHeight - size.height,
           )
         : widget.upwards
         ? widget.anchor - Offset(0, size.height)
@@ -625,6 +633,7 @@ class MenuHostState extends State<MenuHost>
                     tipX: identical(level, _levels.first) && widget.tip != null
                         ? widget.tip!.dx - level.rect.left
                         : null,
+                    tipUp: widget.tipUp,
                     group: _levels.indexOf(level),
                     opaque: widget.opaque,
                     onClose: close,
@@ -646,6 +655,7 @@ class MenuPanel extends StatelessWidget {
     required this.entries,
     this.highlighted,
     this.tipX,
+    this.tipUp = false,
     this.group = 0,
     this.opaque = false,
     this.onClose,
@@ -669,6 +679,9 @@ class MenuPanel extends StatelessWidget {
   /// Centro della punta sotto il pannello, dal suo bordo sinistro (null: niente punta).
   final double? tipX;
 
+  /// La punta sul bordo superiore, rivolta in alto.
+  final bool tipUp;
+
   @override
   Widget build(BuildContext context) {
     final left = menuTextLeft(entries);
@@ -676,7 +689,7 @@ class MenuPanel extends StatelessWidget {
     final tops = menuRowTops(entries);
     final tipX = this.tipX;
     return CustomPaint(
-      painter: _MenuShadow(tipX),
+      painter: _MenuShadow(tipX, up: tipUp),
       child: opaque
           ? DecoratedBox(
               key: const ValueKey('menu pieno'),
@@ -703,6 +716,7 @@ class MenuPanel extends StatelessWidget {
                       // sul corpo torna larga ~22 pt.
                       width: MenuMetrics.tipBase - 14,
                       height: MenuMetrics.tipHeight + 2,
+                      up: tipUp,
                     ),
               child: _rows(left, checks, tops),
             ),
@@ -848,8 +862,9 @@ class MenuPanel extends StatelessWidget {
 /// Ombra fuori dal pannello: più lunga in basso (~20 pt) che ai lati (~16 pt). Non cade
 /// sul vetro, punta compresa.
 class _MenuShadow extends CustomPainter {
-  const _MenuShadow(this.tipX);
+  const _MenuShadow(this.tipX, {this.up = false});
   final double? tipX;
+  final bool up;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -892,6 +907,15 @@ class _MenuShadow extends CustomPainter {
           ..lineTo(x + half + fillet, top - 1)
           ..close(),
       );
+      // In alto: la stessa forma specchiata (il corpo è simmetrico).
+      if (up) {
+        glass = glass.transform(
+          (Matrix4.identity()
+                ..translateByDouble(0, size.height, 0, 1)
+                ..scaleByDouble(1, -1, 1, 1))
+              .storage,
+        );
+      }
     }
     canvas
       ..save()
@@ -915,7 +939,7 @@ class _MenuShadow extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_MenuShadow old) => old.tipX != tipX;
+  bool shouldRepaint(_MenuShadow old) => old.tipX != tipX || old.up != up;
 }
 
 class _CheckPainter extends CustomPainter {

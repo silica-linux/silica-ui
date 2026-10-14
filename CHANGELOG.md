@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.0 · 2026-10-14
+
+- `GlassTip.up`: la punta del vetro rivolta in alto, sul bordo superiore (silica-glass-v1
+  versione 5, `add_upward_tip`).
+- `MenuHost.tipUp` / `MenuPanel.tipUp`: un menu sotto la punta, che indica il pulsante da
+  cui si apre (il popover di disposizione delle finestre).
+
 ## 0.13.1 · 2026-10-14
 
 - Menu: un'intestazione (`MenuSection`) conta nella larghezza come una voce a 13 pt e sta
