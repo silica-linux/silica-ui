@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.26.0 · 2026-10-15
 
 The toolbar glass controls as measured (TITLEBAR-GLASS, #86): back/forward, segmented groups and
 view selectors, single round buttons, toolbar menu buttons and the search button. Behavior changes
