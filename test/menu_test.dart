@@ -239,37 +239,63 @@ void main() {
     },
   );
 
-  testWidgets('aspetto scuro: fondo pieno e testo chiari dal sistema', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const MediaQuery(
-        data: MediaQueryData(platformBrightness: Brightness.dark),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: MenuHost(
-            entries: [MenuAction('Apri'), MenuAction('Chiudi', enabled: false)],
-            anchor: Offset(10, 10),
-            opaque: true,
+  testWidgets(
+    'aspetto scuro: testo chiaro dal sistema, vetro di Flutter nella finestra',
+    (tester) async {
+      await tester.pumpWidget(
+        const MediaQuery(
+          data: MediaQueryData(platformBrightness: Brightness.dark),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: MenuHost(
+              entries: [
+                MenuAction('Apri'),
+                MenuAction('Chiudi', enabled: false),
+              ],
+              anchor: Offset(10, 10),
+              opaque: true,
+            ),
           ),
         ),
-      ),
-    );
-    final box = tester.widget<DecoratedBox>(
-      find.byKey(const ValueKey('menu pieno')),
-    );
-    expect((box.decoration as BoxDecoration).color, MenuColors.dark.opaqueFill);
-    expect(
-      tester.widget<Text>(find.text('Apri')).style?.color,
-      MenuColors.dark.text,
-    );
-    expect(
-      tester.widget<Text>(find.text('Chiudi')).style?.color,
-      MenuColors.dark.disabled,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('menu nella finestra')),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget<Text>(find.text('Apri')).style?.color,
+        MenuColors.dark.text,
+      );
+      expect(
+        tester.widget<Text>(find.text('Chiudi')).style?.color,
+        MenuColors.dark.disabled,
+      );
+    },
+  );
+
+  test('il materiale dei menu sul grigio di riferimento (menubar.md)', () {
+    void near(Color a, Color b) {
+      for (final (x, y) in [(a.r, b.r), (a.g, b.g), (a.b, b.b)]) {
+        expect((x - y).abs() * 255, lessThanOrEqualTo(3.01));
+      }
+    }
+
+    const gray = Color(0xFF7A7B80);
+    near(WindowGlassMaterial.thickLight.apply(gray), const Color(0xFFC7C8CD));
+    near(WindowGlassMaterial.thickDark.apply(gray), const Color(0xFF6F7075));
+    // Sul bianco la matrice satura a 255: 3 livelli sopra `#fcfcfd` misurato.
+    near(
+      WindowGlassMaterial.thickLight.apply(const Color(0xFFFFFFFF)),
+      const Color(0xFFFCFCFD),
     );
   });
 
-  testWidgets('menu pieno: niente vetro', (tester) async {
+  testWidgets('menu nella finestra: vetro di Flutter, non di Ossido', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -280,7 +306,8 @@ void main() {
         ),
       ),
     );
-    expect(find.byKey(const ValueKey('menu pieno')), findsOneWidget);
+    expect(find.byKey(const ValueKey('menu nella finestra')), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsOneWidget);
     expect(find.byType(LiquidGlass), findsNothing);
   });
 

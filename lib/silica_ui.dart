@@ -21,6 +21,7 @@ export 'src/icons/silica_icons.dart';
 export 'src/liquid_glass.dart';
 export 'src/menu.dart';
 export 'src/window.dart';
+export 'src/window_glass.dart';
 
 /// Il font dell'interfaccia: Inter (OFL), servito dal pacchetto.
 const String uiFontFamily = 'Inter';

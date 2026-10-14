@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart';
 import '../silica_ui.dart' show uiFontFamily;
 import 'glass.dart';
 import 'liquid_glass.dart';
+import 'window_glass.dart';
 
 /// Una riga di un menu.
 @immutable
@@ -131,7 +132,6 @@ class MenuColors {
     required this.section,
     required this.divider,
     required this.shadow,
-    required this.opaqueFill,
     required this.opaqueBorder,
   });
 
@@ -142,15 +142,15 @@ class MenuColors {
   final Color divider;
   final Color shadow;
 
-  /// Il fondo pieno ([MenuPanel.opaque]) e il suo filo.
-  final Color opaqueFill;
+  /// Il filo del menu dentro una finestra ([MenuPanel.opaque]).
   final Color opaqueBorder;
 
   /// L'evidenziazione: uguale in chiaro e in scuro.
   static const Color highlight = Color(0xFF007AFF);
   static const Color highlightText = Color(0xFFFFFFFF);
 
-  /// Fondo pieno: il menu sopra il contenuto bianco (mustache.md MU-50, `#fcfcfd`).
+  /// Dentro una finestra il vetro lo fa Flutter ([WindowGlass]): sul bianco `#fcfcfd`
+  /// (mustache.md MU-50).
   static const MenuColors light = MenuColors(
     text: Color(0xD9000000),
     disabled: Color(0x42000000),
@@ -158,13 +158,11 @@ class MenuColors {
     section: Color(0x42000000),
     divider: Color(0x1A000000),
     shadow: Color(0x33000000),
-    opaqueFill: Color(0xFFFCFCFD),
     opaqueBorder: Color(0x1F000000),
   );
 
   /// Testo bianco all'85 %, disattivato al 26 %, scorciatoie al 30 %, separatore al 14 %;
-  /// ombra più fonda (−14 % contro −11 % a destra). Fondo pieno: il menu scuro sopra il
-  /// contenuto scuro (`#353536`), filo esterno nero ~86 %. L'intestazione di sezione è
+  /// ombra più fonda (−14 % contro −11 % a destra). Filo esterno nero ~86 %. L'intestazione di sezione è
   /// *stimata* come il disattivato (non misurata in scuro).
   static const MenuColors dark = MenuColors(
     text: Color(0xD9FFFFFF),
@@ -173,7 +171,6 @@ class MenuColors {
     section: Color(0x42FFFFFF),
     divider: Color(0x24FFFFFF),
     shadow: Color(0x42000000),
-    opaqueFill: Color(0xFF353536),
     opaqueBorder: Color(0xDB000000),
   );
 
@@ -341,7 +338,7 @@ class MenuHost extends StatefulWidget {
   /// il menu allarga la regione d'input. Chiamato dopo il frame.
   final ValueChanged<List<Rect>>? onRectsChanged;
 
-  /// Pannelli a fondo pieno invece del vetro ([MenuPanel.opaque]).
+  /// Menu dentro una finestra: il vetro lo fa Flutter ([MenuPanel.opaque]).
   final bool opaque;
 
   @override
@@ -724,9 +721,9 @@ class MenuPanel extends StatelessWidget {
   /// menu madre su cui è disegnato.
   final int group;
 
-  /// Fondo pieno invece del vetro: per un menu disegnato dentro una finestra, dove il vetro del
-  /// compositor starebbe sotto il contenuto. Il colore è quello del menu sopra il contenuto
-  /// bianco (mustache.md MU-50, `mu50-file-light.png`: `#fcfcfd`).
+  /// Un menu disegnato dentro una finestra, dove il vetro del compositor starebbe sotto il
+  /// contenuto: il vetro lo fa Flutter ([WindowGlass]), con lo stesso materiale (sul bianco
+  /// `#fcfcfd`, mustache.md MU-50).
   final bool opaque;
 
   /// Centro della punta sotto il pannello, dal suo bordo sinistro (null: niente punta).
@@ -745,13 +742,10 @@ class MenuPanel extends StatelessWidget {
     return CustomPaint(
       painter: _MenuShadow(tipX, colors.shadow, up: tipUp),
       child: opaque
-          ? DecoratedBox(
-              key: const ValueKey('menu pieno'),
-              decoration: BoxDecoration(
-                color: colors.opaqueFill,
-                borderRadius: BorderRadius.circular(MenuMetrics.radius),
-                border: Border.all(color: colors.opaqueBorder, width: 0.5),
-              ),
+          ? WindowGlass(
+              key: const ValueKey('menu nella finestra'),
+              radius: MenuMetrics.radius,
+              border: colors.opaqueBorder,
               child: _rows(colors, left, checks, tops),
             )
           : LiquidGlass(

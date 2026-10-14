@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.18.0 · 2026-10-14
+
+- `WindowGlass` e `WindowGlassMaterial`: il vetro dentro una finestra, fatto da Flutter
+  (sfocatura σ 9 e matrice del materiale spesso, chiaro e scuro, le stesse di Ossido) sopra
+  il contenuto dell'app, dove il vetro del compositor non arriva.
+- `MenuPanel.opaque` / `MenuHost.opaque`: il menu dentro la finestra è ora di vetro
+  (`WindowGlass`) invece che a fondo pieno. **Cambia l'API**: tolto `MenuColors.opaqueFill`.
+
 ## 0.17.0 · 2026-10-14
 
 - **Cambia il disegno** delle icone di file, cartelle, volumi e Cestino (silica-icons 0.2,
