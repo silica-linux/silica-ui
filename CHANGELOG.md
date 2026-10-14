@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.1 · 2026-10-14
+
+- `SilicaIcon`: senza `dark` l'icona è sempre quella chiara. La variante scura appartiene
+  allo stile delle icone (un'impostazione a parte), non all'aspetto del sistema: in aspetto
+  scuro le icone delle app e dei file restano le stesse (icons.md IC-01, mu20-list-dark).
+
 ## 0.15.0 · 2026-10-14
 
 - Aspetto scuro dal sistema (`MediaQuery.platformBrightness`, che l'embedder riceve dal

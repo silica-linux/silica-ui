@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
@@ -435,6 +436,71 @@ void main() {
       expect(find.byType(SilicaIcon), findsNWidgets(2));
     },
   );
+
+  testWidgets('l\'aspetto scuro del sistema non cambia l\'icona', (
+    tester,
+  ) async {
+    const red =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">'
+        '<rect width="1024" height="1024" fill="#ff0000"/></svg>';
+    const blue =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">'
+        '<rect width="1024" height="1024" fill="#0000ff"/></svg>';
+    final root = iconTree({
+      'files/file-text': {
+        'icon.json': '''
+{ "format": 1, "id": "file-text", "name": "Text", "kind": "file",
+  "layers": [ { "role": "artwork", "file": "icon.svg" } ],
+  "variants": { "dark": { "artwork": "icon-dark.svg" } } }''',
+        'icon.svg': red,
+        'icon-dark.svg': blue,
+      },
+    });
+    addTearDown(() => root.deleteSync(recursive: true));
+    final icon = findSilicaIcon(
+      'file-text',
+      env: {'SILICA_ICONS_DIR': root.path},
+    )!;
+    Future<Color> center(bool? dark) async {
+      final key = GlobalKey();
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(platformBrightness: Brightness.dark),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Center(
+              child: RepaintBoundary(
+                key: key,
+                child: SilicaIcon(LayeredSource(icon), side: 64, dark: dark),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 200)),
+      );
+      await tester.pump();
+      final boundary =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final pixel = await tester.runAsync(() async {
+        final image = await boundary.toImage();
+        final data = await image.toByteData();
+        final w = image.width, h = image.height;
+        final i = ((h ~/ 2) * w + w ~/ 2) * 4;
+        return Color.fromARGB(
+          255,
+          data!.getUint8(i),
+          data.getUint8(i + 1),
+          data.getUint8(i + 2),
+        );
+      });
+      return pixel!;
+    }
+
+    expect(await center(null), const Color(0xFFFF0000));
+    expect(await center(true), const Color(0xFF0000FF));
+  });
 
   test('icona di un file dall\'estensione', () {
     expect(fileIconId('Foto.JPG'), 'file-image');

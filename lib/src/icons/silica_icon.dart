@@ -131,14 +131,14 @@ class SilicaIcon extends StatelessWidget {
   final IconSource source;
   final double side;
 
-  /// Tema scuro; null: dalla luminosità della piattaforma.
+  /// La variante scura. È lo stile delle icone (icons.md IC-01: Impostazioni › Aspetto ›
+  /// Stile icone, "Scuro"), non l'aspetto del sistema: in aspetto scuro con lo stile normale
+  /// le icone restano le stesse (appswitcher.md; mu20-list-dark). Null: chiara.
   final bool? dark;
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        dark ??
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final isDark = dark ?? false;
     final canvas = side * canvasSide / bodySide;
     final inset = side * bodyInset / bodySide;
     final body = Rect.fromLTWH(inset, inset, side, side);
