@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.0 · 2026-10-14
+
+- `SilicaWindow` (canale `silica/window`): `setFullSizeContent(toolbar)` chiede a Ossido il
+  contenuto a tutta finestra (i pulsanti della finestra sopra la barra dell'app),
+  `startMove()` sposta la finestra.
+- `WindowDragArea`: il vuoto della barra degli strumenti sposta la finestra.
+- `ToolbarCapsule`, `ToolbarSegment`, `ToolbarColors`: le capsule della barra unificata
+  (alte 38, raggio 19, segmento scelto a pillola 34 × 28).
+
 ## 0.12.0 · 2026-10-13
 
 - `MenuCustom`: una riga del menu disegnata da chi lo apre (alta `height`, larga almeno
