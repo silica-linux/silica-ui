@@ -4,6 +4,7 @@ library;
 import 'package:flutter/widgets.dart';
 
 export 'src/alert.dart';
+export 'src/app.dart';
 export 'src/controls/buttons/buttons.dart';
 export 'src/controls/containers/containers.dart';
 export 'src/controls/control_base.dart';
