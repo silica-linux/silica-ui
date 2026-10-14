@@ -10,6 +10,7 @@
 // is a 34 × 28 pill inset by 5 pt, `#e2e2e2` → `#e7e7e7`.
 
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
@@ -242,6 +243,18 @@ class ToolbarScope extends InheritedWidget {
       old.active != active || old.hovered != hovered;
 }
 
+/// Tells the toolbar capsules that content scrolls under them (`ScrollUnderToolbar`): they show it
+/// refracted at their edges (mustache-spec R1.9).
+class ToolbarOverContent extends InheritedWidget {
+  const ToolbarOverContent({super.key, required super.child});
+
+  static bool of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ToolbarOverContent>() != null;
+
+  @override
+  bool updateShouldNotify(ToolbarOverContent old) => false;
+}
+
 /// The long-press delay (history menu on Back and Forward, MU-07).
 const Duration toolbarLongPress = Duration(milliseconds: 295);
 
@@ -289,6 +302,7 @@ class _ToolbarCapsuleState extends State<ToolbarCapsule> {
         ? colors.fillBarHover
         : colors.fill;
     final children = widget.children;
+    final overContent = ToolbarOverContent.of(context);
     final capsule = Container(
       height: toolbarCapsuleHeight,
       // The outline: a 1 pt ring, light above and below, darker on the sides.
@@ -296,43 +310,117 @@ class _ToolbarCapsuleState extends State<ToolbarCapsule> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [colors.borderTop, colors.borderSide, colors.borderBottom],
+          colors: [
+            for (final c in [
+              colors.borderTop,
+              colors.borderSide,
+              colors.borderBottom,
+            ])
+              overContent ? c.withValues(alpha: capsuleRimOutlineAlpha) : c,
+          ],
         ),
         borderRadius: BorderRadius.circular(toolbarCapsuleHeight / 2),
       ),
       padding: const EdgeInsets.all(1),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: fill,
+          color: overContent ? null : fill,
           borderRadius: BorderRadius.circular(toolbarCapsuleHeight / 2 - 1),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = 0; i < children.length; i++) ...[
-              if (widget.separators && i > 0)
-                Container(
-                  width: 1,
-                  height: 21,
-                  color: _hovered == i || _hovered == i - 1
-                      ? null
-                      : colors.separator,
+        position: DecorationPosition.background,
+        child: CustomPaint(
+          painter: overContent ? _RimFillPainter(fill) : null,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                if (widget.separators && i > 0)
+                  Container(
+                    width: 1,
+                    height: 21,
+                    color: _hovered == i || _hovered == i - 1
+                        ? null
+                        : colors.separator,
+                  ),
+                _CapsuleSlot(
+                  index: i,
+                  single: children.length == 1,
+                  onHover: _hover,
+                  onPress: _press,
+                  child: children[i],
                 ),
-              _CapsuleSlot(
-                index: i,
-                single: children.length == 1,
-                onHover: _hover,
-                onPress: _press,
-                child: children[i],
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
     // Pressed: +1 pt per side (Back/Forward 407–481 → 406–482).
-    return _GrowByOne(grow: _pressed != null, child: capsule);
+    return _GrowByOne(
+      grow: _pressed != null,
+      child: overContent ? _RefractedRim(child: capsule) : capsule,
+    );
   }
+}
+
+/// Over content, the outermost [capsuleRim] pt of a capsule show the content under it, blurred
+/// by [capsuleRimSigma] and lightly covered by the fill: an approximation of the refraction seen
+/// at the capsule edges (MU-21, R1.9). *Provisional values: the profile is not measured.*
+const double capsuleRim = 3;
+const double capsuleRimSigma = 3;
+const double capsuleRimFillAlpha = 0.45;
+const double capsuleRimOutlineAlpha = 0.6;
+
+/// The content under the capsule, blurred, inside its shape.
+class _RefractedRim extends StatelessWidget {
+  const _RefractedRim({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned.fill(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(toolbarCapsuleHeight / 2),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: capsuleRimSigma,
+              sigmaY: capsuleRimSigma,
+              tileMode: TileMode.clamp,
+            ),
+            child: const SizedBox.expand(),
+          ),
+        ),
+      ),
+      child,
+    ],
+  );
+}
+
+/// The capsule fill over content: opaque inside, translucent on the rim.
+class _RimFillPainter extends CustomPainter {
+  const _RimFillPainter(this.fill);
+  final Color fill;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rim = capsuleRim - 1;
+    final outer = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      Radius.circular(size.height / 2),
+    );
+    final inner = outer.deflate(rim);
+    canvas
+      ..drawDRRect(
+        outer,
+        inner,
+        Paint()..color = fill.withValues(alpha: capsuleRimFillAlpha),
+      )
+      ..drawRRect(inner, Paint()..color = fill);
+  }
+
+  @override
+  bool shouldRepaint(_RimFillPainter old) => old.fill != fill;
 }
 
 /// The pressed capsule: 1 pt more per side, around the center (only when painting).
