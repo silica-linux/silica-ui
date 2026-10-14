@@ -239,6 +239,36 @@ void main() {
     },
   );
 
+  testWidgets('aspetto scuro: fondo pieno e testo chiari dal sistema', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MediaQuery(
+        data: MediaQueryData(platformBrightness: Brightness.dark),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: MenuHost(
+            entries: [MenuAction('Apri'), MenuAction('Chiudi', enabled: false)],
+            anchor: Offset(10, 10),
+            opaque: true,
+          ),
+        ),
+      ),
+    );
+    final box = tester.widget<DecoratedBox>(
+      find.byKey(const ValueKey('menu pieno')),
+    );
+    expect((box.decoration as BoxDecoration).color, MenuColors.dark.opaqueFill);
+    expect(
+      tester.widget<Text>(find.text('Apri')).style?.color,
+      MenuColors.dark.text,
+    );
+    expect(
+      tester.widget<Text>(find.text('Chiudi')).style?.color,
+      MenuColors.dark.disabled,
+    );
+  });
+
   testWidgets('menu pieno: niente vetro', (tester) async {
     await tester.pumpWidget(
       const Directionality(

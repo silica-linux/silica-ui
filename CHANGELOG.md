@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.15.0 · 2026-10-14
+
+- Aspetto scuro dal sistema (`MediaQuery.platformBrightness`, che l'embedder riceve dal
+  portale delle impostazioni).
+- **Cambia l'API**: `ToolbarColors` e `MenuColors` non sono più costanti statiche ma
+  istanze `light` / `dark`, con `of(context)` secondo l'aspetto del sistema
+  (`ToolbarColors.title` → `ToolbarColors.of(context).title`). `MenuColors.highlight` e
+  `highlightText` restano statiche: sono uguali nei due aspetti.
+- Barra degli strumenti scura: fondo `#4c4c4c` → `#535454`, pillola `#595959`, icone e
+  titolo `#e9e9e9` (mustache-spec 1.2).
+- Menu scuri: testo bianco all'85 %, disattivato al 26 %, scorciatoie al 30 %, separatore
+  al 14 %; il fondo pieno `#353536` (menubar.md).
+
 ## 0.14.0 · 2026-10-14
 
 - `GlassTip.up`: la punta del vetro rivolta in alto, sul bordo superiore (silica-glass-v1

@@ -77,4 +77,32 @@ void main() {
       expect(calls.map((c) => c.method), contains('startMove'));
     },
   );
+
+  testWidgets('le capsule seguono l\'aspetto del sistema', (tester) async {
+    Color? drawn;
+    Future<void> pump(Brightness b) => tester.pumpWidget(
+      MediaQuery(
+        data: MediaQueryData(platformBrightness: b),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: ToolbarCapsule(
+              children: [
+                ToolbarSegment(
+                  icon: (color) {
+                    drawn = color;
+                    return const SizedBox(width: 10, height: 10);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await pump(Brightness.light);
+    expect(drawn, ToolbarColors.light.icon);
+    await pump(Brightness.dark);
+    expect(drawn, ToolbarColors.dark.icon);
+  });
 }

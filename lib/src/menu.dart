@@ -121,20 +121,67 @@ abstract final class MenuMetrics {
   static const Duration fade = Duration(milliseconds: 190);
 }
 
-/// Colori dell'aspetto chiaro.
-abstract final class MenuColors {
-  static const Color text = Color(0xD9000000);
-  static const Color disabled = Color(0x42000000);
-  static const Color shortcut = Color(0x4D000000);
-  static const Color section = Color(0x42000000);
-  static const Color divider = Color(0x1A000000);
-  static const Color highlight = Color(0xFF007AFF);
-  static const Color highlightText = Color(0xFFFFFFFF);
-  static const Color shadow = Color(0x33000000);
+/// I colori del menu, chiaro e scuro (menubar.md, "Menu · testo" e "Menu · separatori").
+@immutable
+class MenuColors {
+  const MenuColors({
+    required this.text,
+    required this.disabled,
+    required this.shortcut,
+    required this.section,
+    required this.divider,
+    required this.shadow,
+    required this.opaqueFill,
+    required this.opaqueBorder,
+  });
+
+  final Color text;
+  final Color disabled;
+  final Color shortcut;
+  final Color section;
+  final Color divider;
+  final Color shadow;
 
   /// Il fondo pieno ([MenuPanel.opaque]) e il suo filo.
-  static const Color opaqueFill = Color(0xFFFCFCFD);
-  static const Color opaqueBorder = Color(0x1F000000);
+  final Color opaqueFill;
+  final Color opaqueBorder;
+
+  /// L'evidenziazione: uguale in chiaro e in scuro.
+  static const Color highlight = Color(0xFF007AFF);
+  static const Color highlightText = Color(0xFFFFFFFF);
+
+  /// Fondo pieno: il menu sopra il contenuto bianco (mustache.md MU-50, `#fcfcfd`).
+  static const MenuColors light = MenuColors(
+    text: Color(0xD9000000),
+    disabled: Color(0x42000000),
+    shortcut: Color(0x4D000000),
+    section: Color(0x42000000),
+    divider: Color(0x1A000000),
+    shadow: Color(0x33000000),
+    opaqueFill: Color(0xFFFCFCFD),
+    opaqueBorder: Color(0x1F000000),
+  );
+
+  /// Testo bianco all'85 %, disattivato al 26 %, scorciatoie al 30 %, separatore al 14 %;
+  /// ombra più fonda (−14 % contro −11 % a destra). Fondo pieno: il menu scuro sopra il
+  /// contenuto scuro (`#353536`), filo esterno nero ~86 %. L'intestazione di sezione è
+  /// *stimata* come il disattivato (non misurata in scuro).
+  static const MenuColors dark = MenuColors(
+    text: Color(0xD9FFFFFF),
+    disabled: Color(0x42FFFFFF),
+    shortcut: Color(0x4DFFFFFF),
+    section: Color(0x42FFFFFF),
+    divider: Color(0x24FFFFFF),
+    shadow: Color(0x42000000),
+    opaqueFill: Color(0xFF353536),
+    opaqueBorder: Color(0xDB000000),
+  );
+
+  /// Secondo l'aspetto del sistema (`MediaQuery.platformBrightness`).
+  static MenuColors of(BuildContext context) =>
+      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
+      ? dark
+      : light;
 }
 
 TextStyle _style(double size, Color color, {FontWeight? weight}) => TextStyle(
@@ -180,12 +227,15 @@ Size menuSize(List<MenuEntry> entries) {
     final w = switch (entry) {
       MenuAction(:final label, :final shortcut, :final submenu) =>
         left +
-            _textWidth(label, _style(MenuMetrics.fontSize, MenuColors.text)) +
+            _textWidth(
+              label,
+              _style(MenuMetrics.fontSize, MenuColors.light.text),
+            ) +
             (shortcut != null
                 ? MenuMetrics.shortcutGap +
                       _textWidth(
                         shortcut,
-                        _style(MenuMetrics.fontSize, MenuColors.shortcut),
+                        _style(MenuMetrics.fontSize, MenuColors.light.shortcut),
                       )
                 : submenu != null
                 ? MenuMetrics.shortcutGap + MenuMetrics.chevronWidth
@@ -196,7 +246,10 @@ Size menuSize(List<MenuEntry> entries) {
       // 29 + il testo a 13 pt + 20).
       MenuSection(:final label) =>
         left +
-            _textWidth(label, _style(MenuMetrics.fontSize, MenuColors.text)) +
+            _textWidth(
+              label,
+              _style(MenuMetrics.fontSize, MenuColors.light.text),
+            ) +
             MenuMetrics.right,
       MenuDivider() => 0.0,
       MenuCustom(:final width) => width,
@@ -688,17 +741,18 @@ class MenuPanel extends StatelessWidget {
     final checks = entries.whereType<MenuAction>().any((a) => a.checked);
     final tops = menuRowTops(entries);
     final tipX = this.tipX;
+    final colors = MenuColors.of(context);
     return CustomPaint(
-      painter: _MenuShadow(tipX, up: tipUp),
+      painter: _MenuShadow(tipX, colors.shadow, up: tipUp),
       child: opaque
           ? DecoratedBox(
               key: const ValueKey('menu pieno'),
               decoration: BoxDecoration(
-                color: MenuColors.opaqueFill,
+                color: colors.opaqueFill,
                 borderRadius: BorderRadius.circular(MenuMetrics.radius),
-                border: Border.all(color: MenuColors.opaqueBorder, width: 0.5),
+                border: Border.all(color: colors.opaqueBorder, width: 0.5),
               ),
-              child: _rows(left, checks, tops),
+              child: _rows(colors, left, checks, tops),
             )
           : LiquidGlass(
               radius: MenuMetrics.radius,
@@ -718,12 +772,17 @@ class MenuPanel extends StatelessWidget {
                       height: MenuMetrics.tipHeight + 2,
                       up: tipUp,
                     ),
-              child: _rows(left, checks, tops),
+              child: _rows(colors, left, checks, tops),
             ),
     );
   }
 
-  Widget _rows(double left, bool checks, List<double> tops) => Stack(
+  Widget _rows(
+    MenuColors colors,
+    double left,
+    bool checks,
+    List<double> tops,
+  ) => Stack(
     children: [
       for (var i = 0; i < entries.length; i++)
         Positioned(
@@ -731,12 +790,18 @@ class MenuPanel extends StatelessWidget {
           right: 0,
           top: tops[i],
           height: _entryHeight(entries[i]),
-          child: _row(entries[i], i == highlighted, left, checks),
+          child: _row(colors, entries[i], i == highlighted, left, checks),
         ),
     ],
   );
 
-  Widget _row(MenuEntry entry, bool lit, double textLeft, bool checks) {
+  Widget _row(
+    MenuColors colors,
+    MenuEntry entry,
+    bool lit,
+    double textLeft,
+    bool checks,
+  ) {
     switch (entry) {
       case MenuCustom(:final builder):
         return Builder(
@@ -749,7 +814,7 @@ class MenuPanel extends StatelessWidget {
             margin: const EdgeInsets.symmetric(
               horizontal: MenuMetrics.dividerInset,
             ),
-            color: MenuColors.divider,
+            color: colors.divider,
           ),
         );
       // Allineata al testo delle voci (con le spunte a 29, d06-pila-menu).
@@ -762,7 +827,7 @@ class MenuPanel extends StatelessWidget {
               label,
               style: _style(
                 MenuMetrics.sectionFontSize,
-                MenuColors.section,
+                colors.section,
                 weight: FontWeight.w600,
               ),
             ),
@@ -778,9 +843,9 @@ class MenuPanel extends StatelessWidget {
         final color = lit
             ? MenuColors.highlightText
             : entry.enabled
-            ? MenuColors.text
-            : MenuColors.disabled;
-        final minor = lit ? MenuColors.highlightText : MenuColors.shortcut;
+            ? colors.text
+            : colors.disabled;
+        final minor = lit ? MenuColors.highlightText : colors.shortcut;
         return Stack(
           children: [
             if (lit)
@@ -840,7 +905,7 @@ class MenuPanel extends StatelessWidget {
                     shortcut,
                     style: _style(
                       MenuMetrics.fontSize,
-                      entry.enabled ? minor : MenuColors.disabled,
+                      entry.enabled ? minor : colors.disabled,
                     ),
                   ),
                 ),
@@ -862,8 +927,9 @@ class MenuPanel extends StatelessWidget {
 /// Ombra fuori dal pannello: più lunga in basso (~20 pt) che ai lati (~16 pt). Non cade
 /// sul vetro, punta compresa.
 class _MenuShadow extends CustomPainter {
-  const _MenuShadow(this.tipX, {this.up = false});
+  const _MenuShadow(this.tipX, this.color, {this.up = false});
   final double? tipX;
+  final Color color;
   final bool up;
 
   @override
@@ -929,7 +995,7 @@ class _MenuShadow extends CustomPainter {
       ..drawRRect(
         body.shift(const Offset(0, 4)),
         Paint()
-          ..color = MenuColors.shadow
+          ..color = color
           ..maskFilter = MaskFilter.blur(
             BlurStyle.normal,
             Shadow.convertRadiusToSigma(16),
@@ -939,7 +1005,8 @@ class _MenuShadow extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_MenuShadow old) => old.tipX != tipX || old.up != up;
+  bool shouldRepaint(_MenuShadow old) =>
+      old.tipX != tipX || old.up != up || old.color != color;
 }
 
 class _CheckPainter extends CustomPainter {
