@@ -1,6 +1,6 @@
-// L'icona di un file, di un volume e i badge, con le regole di silica-icons
-// (docs/icon-format.md: "File generico", "Volumi", "Badge"). La mappa da tipo a icona è quella
-// del manifest del file generico: qui non ce n'è una propria.
+// The icon of a file, of a volume and the badges, with the rules of silica-icons
+// (docs/icon-format.md: "Generic file", "Volumes", "Badges"). The type-to-icon map is the one
+// in the manifest of the generic file: there is none of our own here.
 
 import 'dart:convert';
 import 'dart:io';
@@ -9,8 +9,8 @@ import 'dart:ui' show Color, Rect;
 import 'mime.dart';
 import 'silica_icons.dart';
 
-/// L'icona da disegnare per un file: l'icona del tipo, oppure il file generico con
-/// l'estensione scritta (`label`) nel colore della categoria.
+/// The icon to draw for a file: the icon of the type, or the generic file with the
+/// extension written on it (`label`) in the color of the category.
 class FileIcon {
   const FileIcon(
     this.icon, {
@@ -25,24 +25,24 @@ class FileIcon {
   final LayeredIcon icon;
   final String? label;
 
-  /// Colore dell'etichetta (chiaro, scuro).
+  /// Label color (light, dark).
   final (Color, Color)? labelColor;
 
-  /// Riquadro (tela 1024), corpo e peso dell'etichetta; sotto `labelMinSide` pt non si scrive.
+  /// Box (1024 canvas), size and weight of the label; below `labelMinSide` pt it is not written.
   final Rect? labelBox;
   final double labelSize;
   final int labelWeight;
   final double labelMinSide;
 }
 
-/// Tipi eseguibili: senza estensione e con il bit `x` prendono `file-executable`.
+/// Executable types: without an extension and with the `x` bit they take `file-executable`.
 const Set<String> _executableTypes = {
   'application/x-executable',
   'application/x-pie-executable',
   'application/x-shellscript',
 };
 
-/// La categoria del colore dell'etichetta per un tipo MIME (icon-format.md).
+/// The label color category for a MIME type (icon-format.md).
 String labelCategory(String type) {
   final (major, minor) = switch (type.split('/')) {
     [final a, final b] => (a, b),
@@ -120,8 +120,8 @@ String labelCategory(String type) {
   return 'other';
 }
 
-/// L'estensione per l'etichetta: l'ultima dopo il punto, in minuscolo; vuota per i nomi senza
-/// estensione e per i file nascosti senza un altro punto.
+/// The extension for the label: the last one after the dot, lowercase; empty for names without
+/// an extension and for hidden files without another dot.
 String fileExtension(String name) {
   final dot = name.lastIndexOf('.');
   if (dot <= 0 || dot == name.length - 1) return '';
@@ -130,12 +130,12 @@ String fileExtension(String name) {
 
 MimeDatabase? _defaultMime;
 
-/// Il database MIME del sistema, letto una volta.
+/// The system MIME database, read once.
 MimeDatabase get systemMime => _defaultMime ??= MimeDatabase.load();
 
-/// L'icona di un file regolare (icon-format.md, ordine di risoluzione). `type` evita di
-/// ricalcolare il tipo; `executable` è il bit `x` (null: si guarda sul disco). Null se il file
-/// generico non c'è (nessuna icona di silica-icons).
+/// The icon of a regular file (icon-format.md, resolution order). `type` avoids computing
+/// the type again; `executable` is the `x` bit (null: checked on disk). Null if the generic
+/// file is missing (no silica-icons icon).
 FileIcon? resolveFileIcon(
   String path, {
   String? type,
@@ -148,21 +148,21 @@ FileIcon? resolveFileIcon(
   final name = path.split('/').last;
   final ext = fileExtension(name);
   if (generic == null || rules is! FileLabelRules) {
-    // Un repo senza le regole: la vecchia scelta per estensione.
+    // A repo without the rules: the old choice by extension.
     final icon = fileIconFor(name, env: env);
     return icon == null ? null : FileIcon(icon);
   }
   final db = mime ?? systemMime;
-  // 0. Il nome canonico (gli alias di shared-mime-info).
+  // 0. The canonical name (shared-mime-info aliases).
   final mimeType = db.canonical(type ?? db.typeOf(path));
-  // 5. Il file generico con l'etichetta, o il foglio con il punto di domanda.
+  // 5. The generic file with the label, or the sheet with the question mark.
   FileIcon labeled([String? category]) {
     if (ext.isEmpty || ext.length > rules.maxChars) {
       final fallback = findSilicaIcon(rules.fallback, env: env);
       return fallback == null ? FileIcon(generic) : FileIcon(fallback);
     }
     final override = rules.overrides[ext];
-    // L'override dell'estensione vince sulla categoria della voce e su quella del tipo.
+    // The extension override wins over the category of the entry and of the type.
     final color = switch (override) {
       final Color c => (c, c),
       final String c => rules.colors[c],
@@ -174,13 +174,13 @@ FileIcon? resolveFileIcon(
       labelColor: color ?? rules.colors['other'],
       labelBox: rules.box,
       labelSize: rules.size,
-      // Peso 900 nel manifest: il pacchetto ha Inter fino al semibold.
+      // Weight 900 in the manifest: the package has Inter up to semibold.
       labelWeight: 600,
     );
   }
 
-  /// Un'icona di tipo con la sua etichetta (`file-type-label`): l'estensione, o il testo per
-  /// i file senza (null: nessuna etichetta).
+  /// A type icon with its label (`file-type-label`): the extension, or the text for
+  /// files without one (null: no label).
   FileIcon typed(LayeredIcon icon) {
     final rule = icon.dynamic;
     if (rule is! TypeLabel) return FileIcon(icon);
@@ -200,7 +200,7 @@ FileIcon? resolveFileIcon(
 
   FileIcon? byId(String? id, [String? category]) {
     if (id == null) return null;
-    // Una voce della mappa può mandare al file generico (application/json): con l'etichetta.
+    // A map entry may point to the generic file (application/json): with the label.
     if (id == generic.id) return labeled(category);
     final icon = findSilicaIcon(id, env: env);
     return icon == null ? null : typed(icon);
@@ -211,42 +211,42 @@ FileIcon? resolveFileIcon(
     return entry == null ? null : byId(entry.$1, entry.$2);
   }
 
-  // 1. Eseguibile senza estensione.
+  // 1. Executable without an extension.
   if (ext.isEmpty && _executableTypes.contains(mimeType)) {
     final x = executable ?? _isExecutable(path);
     if (x) {
       if (byId('file-executable') case final icon?) return icon;
     }
   }
-  // 0b. Il tipo viene solo dal nome e il nome è ambiguo: decide l'estensione.
+  // 0b. The type comes only from the name and the name is ambiguous: the extension decides.
   if (type == null && db.isAmbiguousName(name)) {
     if (byId(rules.extensions[ext]) case final icon?) return icon;
   }
-  // 1–3. Il tipo, il tipo con `*`, i genitori.
+  // 1–3. The type, the type with `*`, the parents.
   for (final candidate in [mimeType, ...db.parentsOf(mimeType)]) {
     if (byMime(candidate) case final icon?) return icon;
     final major = candidate.split('/').first;
     if (byMime('$major/*') case final icon?) return icon;
   }
-  // 4. L'estensione.
+  // 4. The extension.
   if (byId(rules.extensions[ext]) case final icon?) return icon;
   return labeled();
 }
 
 bool _isExecutable(String path) {
   try {
-    // Uno dei tre bit x.
+    // One of the three x bits.
     return FileStat.statSync(path).mode & 0x49 != 0;
   } on FileSystemException {
     return false;
   }
 }
 
-/// I badge (icon-format.md, "Badge").
-/// Nell'ordine in cui vince quando ne resta uno solo (sotto 32 pt).
+/// The badges (icon-format.md, "Badges").
+/// In the order in which one wins when only one remains (below 32 pt).
 enum IconBadge { unreadable, alias, locked, cloud }
 
-/// Le regole dei badge di `badges/badges.json` e i loro file.
+/// The badge rules of `badges/badges.json` and their files.
 class BadgeRules {
   const BadgeRules({
     required this.root,
@@ -256,10 +256,10 @@ class BadgeRules {
 
   final String root;
 
-  /// Badge → (chiaro, scuro).
+  /// Badge → (light, dark).
   final Map<IconBadge, (String, String?)> files;
 
-  /// L'ordine quando resta un solo badge (sotto 32 pt).
+  /// The order when only one badge remains (below 32 pt).
   final List<IconBadge> order;
 
   String? pathFor(IconBadge badge, {required bool dark}) {
@@ -271,7 +271,7 @@ class BadgeRules {
 
 final Map<String, BadgeRules?> _badgeCache = {};
 
-/// Le regole dei badge della prima cartella di silica-icons che le ha.
+/// The badge rules of the first silica-icons folder that has them.
 BadgeRules? findBadgeRules({Map<String, String>? env}) {
   final key = env == null ? '' : jsonEncode(env);
   if (_badgeCache.containsKey(key)) return _badgeCache[key];
@@ -316,9 +316,9 @@ BadgeRules? findBadgeRules({Map<String, String>? env}) {
   return found;
 }
 
-/// I badge di un file dal disco: alias (collegamento), illeggibile (anche un collegamento rotto).
-/// `locked` e `cloud` li dice chi elenca i file (`locked`: attributo immutabile o solo
-/// aggiunta; `cloud`: contenuto non locale).
+/// The badges of a file on disk: alias (symlink), unreadable (also a broken symlink).
+/// `locked` and `cloud` are told by whoever lists the files (`locked`: immutable or
+/// append-only attribute; `cloud`: content not local).
 Set<IconBadge> badgesOf(
   String path, {
   bool locked = false,
@@ -340,7 +340,7 @@ Set<IconBadge> badgesOf(
   return out;
 }
 
-/// Leggibile: per una cartella si deve poterla elencare, per un file aprirlo.
+/// Readable: a folder must be listable, a file openable.
 bool _readable(String path) {
   try {
     switch (FileSystemEntity.typeSync(path)) {
@@ -357,8 +357,8 @@ bool _readable(String path) {
   }
 }
 
-/// I badge da disegnare per un lato del corpo: da 32 pt uno per angolo (a destra il primo fra
-/// illeggibile, bloccato, nuvola), fra 16 e 31 uno solo (il primo dell'ordine), sotto niente.
+/// The badges to draw for an icon side: from 32 pt one per corner (on the right the first of
+/// unreadable, locked, cloud), between 16 and 31 just one (the first in the order), below none.
 List<IconBadge> visibleBadges(
   Set<IconBadge> badges,
   double side, {
@@ -377,7 +377,7 @@ List<IconBadge> visibleBadges(
   return [if (badges.contains(IconBadge.alias)) IconBadge.alias, ?right];
 }
 
-/// Quel che si sa di un volume montato per sceglierne l'icona.
+/// What is known about a mounted volume to choose its icon.
 class VolumeInfo {
   const VolumeInfo({
     this.fsType = '',
@@ -389,19 +389,19 @@ class VolumeInfo {
     this.connectionBus = '',
   });
 
-  /// Tipo di file system (mountinfo) e dispositivo (`/dev/sda1`, `/dev/loop0`…).
+  /// File system type (mountinfo) and device (`/dev/sda1`, `/dev/loop0`…).
   final String fsType;
   final String device;
 
-  /// Schema GVfs (`smb`, `sftp`…) per i mount di GVfs.
+  /// GVfs scheme (`smb`, `sftp`…) for GVfs mounts.
   final String? scheme;
 
-  /// Il file dietro un dispositivo loop (UDisks2 `Loop.BackingFile`).
+  /// The file behind a loop device (UDisks2 `Loop.BackingFile`).
   final String? backingFile;
   final bool optical;
   final bool removable;
 
-  /// UDisks2 `Drive.ConnectionBus` (`usb`, `sdio`, `ieee1394`, vuoto per i dischi interni).
+  /// UDisks2 `Drive.ConnectionBus` (`usb`, `sdio`, `ieee1394`, empty for internal disks).
   final String connectionBus;
 }
 
@@ -426,7 +426,7 @@ const Set<String> _networkSchemes = {
   'afp',
 };
 
-/// L'icona di un volume: il primo caso che vale (icon-format.md, "Volumi").
+/// The icon of a volume: the first case that applies (icon-format.md, "Volumes").
 String volumeIconId(VolumeInfo v) {
   if (_networkFs.contains(v.fsType) || _networkSchemes.contains(v.scheme)) {
     return 'volume-network';
@@ -442,7 +442,7 @@ String volumeIconId(VolumeInfo v) {
   return 'volume-internal';
 }
 
-/// Un punto di montaggio da `/proc/self/mountinfo`.
+/// A mount point from `/proc/self/mountinfo`.
 class MountPoint {
   const MountPoint(this.path, this.fsType, this.device);
   final String path;
@@ -450,14 +450,14 @@ class MountPoint {
   final String device;
 }
 
-/// I mount di `/proc/self/mountinfo` (testo, per i test): percorso, tipo, dispositivo.
+/// The mounts of `/proc/self/mountinfo` (text, for tests): path, type, device.
 List<MountPoint> parseMountinfo(String text) {
   final out = <MountPoint>[];
   for (final line in text.split('\n')) {
     final fields = line.split(' ');
     final dash = fields.indexOf('-');
     if (dash < 0 || fields.length < dash + 3 || fields.length < 5) continue;
-    // Gli spazi nei percorsi sono scritti come \040.
+    // Spaces in paths are written as \040.
     String unescape(String s) => s.replaceAllMapped(
       RegExp(r'\\([0-7]{3})'),
       (m) => String.fromCharCode(int.parse(m.group(1)!, radix: 8)),
@@ -469,7 +469,7 @@ List<MountPoint> parseMountinfo(String text) {
   return out;
 }
 
-/// Il disco è rimovibile (`/sys/block/<disco>/removable`)? Per una partizione si guarda il disco.
+/// Is the disk removable (`/sys/block/<disk>/removable`)? For a partition the disk is checked.
 bool blockRemovable(String device, {String sys = '/sys/block'}) {
   final name = device.split('/').last;
   if (name.isEmpty) return false;
@@ -482,7 +482,7 @@ bool blockRemovable(String device, {String sys = '/sys/block'}) {
       }
     }
   } on FileSystemException {
-    // Senza /sys: non rimovibile.
+    // Without /sys: not removable.
   }
   return false;
 }

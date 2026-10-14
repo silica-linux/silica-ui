@@ -1,6 +1,6 @@
-// Vetro calcolato da Ossido (silica-glass-v1, docs/protocols.md): il widget dichiara la
-// sua area, il compositor ci mette dietro lo sfondo sfocato del materiale. Il figlio
-// disegna sopra (testo, icone) e lascia trasparente il resto.
+// Glass computed by Ossido (silica-glass-v1, docs/protocols.md): the widget declares its
+// area, the compositor puts the blurred background of the material behind it. The child
+// draws on top (text, icons) and leaves the rest transparent.
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
@@ -8,11 +8,11 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// I vetri misurati: chiaro (Dock), spesso (menu, ricerca), regolare (il Liquid Glass
-/// dei controlli, con la lente forte sul bordo) e notifica (banner e Centro notifiche).
+/// The measured glasses: clear (Dock), thick (menus, search), regular (the Liquid Glass of
+/// controls, with the strong lens on the edge) and notification (banners and Notification Center).
 enum GlassMaterial { clear, thick, regular, notification }
 
-/// Un'area di vetro grande quanto il figlio, con angoli ad arco di cerchio.
+/// A glass area as large as its child, with circular-arc corners.
 class Glass extends SingleChildRenderObjectWidget {
   const Glass({
     super.key,
@@ -26,11 +26,11 @@ class Glass extends SingleChildRenderObjectWidget {
   final double radius;
   final GlassMaterial material;
 
-  /// Il vetro si fonde solo con quello dello stesso gruppo; un gruppo più alto sta sopra
-  /// (un sottomenu sul suo menu: due pannelli distinti anche dove si sovrappongono).
+  /// Glass merges only with glass of the same group; a higher group sits on top
+  /// (a submenu on its menu: two distinct panels even where they overlap).
   final int group;
 
-  /// Una punta sotto il vetro, nella stessa forma: il bordo corre dal corpo alla punta.
+  /// A tip under the glass, in the same shape: the edge runs from the body to the tip.
   final GlassTip? tip;
 
   @override
@@ -47,9 +47,9 @@ class Glass extends SingleChildRenderObjectWidget {
   }
 }
 
-/// La punta di un vetro: `x` è il centro dal bordo sinistro, la base larga `width`. Rivolta in
-/// basso poggia sul bordo inferiore e il vertice è `height` più in basso; con `up` poggia sul
-/// bordo superiore e il vertice è `height` più in alto (un popover sotto il suo pulsante).
+/// The tip of a glass: `x` is the center from the left edge, the base is `width` wide. Pointing
+/// down it sits on the bottom edge and the apex is `height` lower; with `up` it sits on the
+/// top edge and the apex is `height` higher (a popover under its button).
 @immutable
 class GlassTip {
   const GlassTip({
@@ -76,7 +76,7 @@ class GlassTip {
   int get hashCode => Object.hash(x, width, height, up);
 }
 
-/// Il render object di [Glass]: si registra finché è attaccato all'albero.
+/// The render object of [Glass]: it registers itself while attached to the tree.
 class RenderGlass extends RenderProxyBox {
   RenderGlass({
     required double radius,
@@ -134,13 +134,13 @@ class RenderGlass extends RenderProxyBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    // Dopo ogni disegno la posizione può essere cambiata.
+    // After every paint the position may have changed.
     GlassRegistry.instance.schedule();
     super.paint(context, offset);
   }
 
-  /// La regione in pixel logici della superficie, con le trasformazioni degli antenati
-  /// (un vetro che si gonfia cresce anche nel compositor, raggio compreso).
+  /// The region in logical pixels of the surface, with the ancestors' transforms
+  /// (a swelling glass grows in the compositor too, radius included).
   Map<String, Object> region() {
     final transform = getTransformTo(null);
     final rect = MatrixUtils.transformRect(transform, Offset.zero & size);
@@ -157,7 +157,7 @@ class RenderGlass extends RenderProxyBox {
     };
   }
 
-  /// La regione del corpo e, se c'è, quella della punta.
+  /// The region of the body and, if there is one, of the tip.
   List<Map<String, Object>> regions() {
     final body = region();
     final tip = this.tip;
@@ -186,8 +186,8 @@ class RenderGlass extends RenderProxyBox {
     ];
   }
 
-  /// L'opacità degli antenati (`Opacity`, `FadeTransition`, `AnimatedOpacity`): il vetro
-  /// compare e scompare in dissolvenza insieme al pannello che lo contiene.
+  /// The ancestors' opacity (`Opacity`, `FadeTransition`, `AnimatedOpacity`): the glass
+  /// fades in and out together with the panel that contains it.
   double get opacity {
     var value = 1.0;
     for (RenderObject? node = parent; node != null; node = node.parent) {
@@ -201,11 +201,11 @@ class RenderGlass extends RenderProxyBox {
   }
 }
 
-/// Raccoglie le aree di vetro dopo ogni frame e le manda all'embedder quando cambiano.
+/// Collects the glass areas after every frame and sends them to the embedder when they change.
 ///
-/// Si controlla a ogni frame, non solo quando un [RenderGlass] si ridisegna: un antenato
-/// che cambia trasformazione o opacità (un pannello che si apre) può spostare il vetro
-/// senza ridisegnarlo, e il compositor resterebbe con la geometria vecchia.
+/// It is checked at every frame, not only when a [RenderGlass] repaints: an ancestor that
+/// changes transform or opacity (a panel opening) can move the glass without repainting
+/// it, and the compositor would keep the old geometry.
 class GlassRegistry {
   GlassRegistry._();
 
@@ -225,8 +225,8 @@ class GlassRegistry {
     _glasses.add(glass);
     if (!_everyFrame) {
       _everyFrame = true;
-      // Dopo il disegno di ogni frame (i callback persistenti girano in ordine di
-      // registrazione, dopo quello del rendering).
+      // After the paint of every frame (persistent callbacks run in registration order,
+      // after the rendering one).
       SchedulerBinding.instance.addPersistentFrameCallback((_) {
         if (_glasses.isNotEmpty || _sent.isNotEmpty) _send();
       });
@@ -239,7 +239,7 @@ class GlassRegistry {
     schedule();
   }
 
-  /// Le regioni attuali, nell'ordine di registrazione.
+  /// The current regions, in registration order.
   @visibleForTesting
   List<Map<String, Object>> get regions => [
     for (final glass in _glasses)
@@ -264,7 +264,7 @@ class GlassRegistry {
     try {
       await channel.invokeMethod<Object?>('setRegions', regions);
     } on MissingPluginException {
-      // Fuori da Silica (test, altri embedder) il vetro non c'è.
+      // Outside Silica (tests, other embedders) there is no glass.
     }
   }
 

@@ -1,6 +1,6 @@
-// Laboratorio del Liquid Glass (M2 bis): capsule di vetro regolare su una finestra
-// trasparente. Si trascinano, premute si gonfiano, vicine si fondono come gocce (la
-// fusione e la lente le calcola Ossido). Dietro la finestra si vede il desktop.
+// Liquid Glass lab (M2 bis): regular glass capsules on a transparent window. They can be
+// dragged, swell when pressed, and merge like drops when close (Ossido computes the merging
+// and the lens). The desktop shows behind the window.
 
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';

@@ -1,11 +1,13 @@
 # AGENTS.md
 
-Valgono le regole di `silica/AGENTS.md` (clean-room, asset, mai crashare, parità misurata).
-In più, per questo pacchetto:
+The rules of `silica-desktop/AGENTS.md` apply (clean-room, assets, never crash, measured parity).
+In addition, for this package:
 
-- L'API pubblica è stabile: ogni cambiamento di nomi, tipi o comportamento va in
-  `CHANGELOG.md` e alza la versione come dice il README. I valori misurati possono cambiare.
-- Prima di ogni commit: `flutter analyze --fatal-infos`, `flutter test`, `dart format`, e lo
-  stesso in `example/`; ogni asset nuovo ha la sua riga in `ASSETS.md`.
-- Un rilascio è un tag `vX.Y.Z` sul commit che aggiorna `version` in `pubspec.yaml` e il
-  changelog; poi si aggiorna il `ref` nei repository che lo usano.
+- The public API is stable: every change of names, types or behavior goes into `CHANGELOG.md`
+  and bumps the version as the README says. Measured values may change.
+- Before every commit: `flutter analyze --fatal-infos`, `flutter test`, `dart format`, and the
+  same in `example/`; every new asset has its row in `ASSETS.md`.
+- A release is a `vX.Y.Z` tag on the commit that updates `version` in `pubspec.yaml` and the
+  changelog; then the `ref` is updated in the repositories that use it.
+- Everything in the repository is in English (comments, docs, tests, commits); user-visible
+  UI strings are localized.

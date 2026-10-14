@@ -2,232 +2,226 @@
 
 ## 0.19.2 · 2026-10-14
 
-- `SilicaIcon`: file, cartelle, volumi e Cestino hanno l'ombra a terra sotto la forma del
-  disegno (icons.md IC-01: a 128 opacità 0,28, σ 2,7, 1,2 pt in basso; `IconShadow`).
-  silica-icons li disegna piatti e lascia l'ombra a chi li mostra.
+- `SilicaIcon`: files, folders, volumes and Trash have a ground shadow under the shape of the
+  drawing (icons.md IC-01: at 128 opacity 0.28, σ 2.7, 1.2 pt down; `IconShadow`).
+  silica-icons draws them flat and leaves the shadow to whoever shows them.
 
 ## 0.19.1 · 2026-10-14
 
-- `ToolbarSegment` tiene per sé tocco e trascinamento: un clic o un trascinamento che parte
-  da un controllo non sposta la finestra (`WindowDragArea`), come prima della 0.19.0 (MU-08).
+- `ToolbarSegment` keeps tap and drag to itself: a click or a drag starting on a control does
+  not move the window (`WindowDragArea`), as before 0.19.0 (MU-08).
 
 ## 0.19.0 · 2026-10-14
 
-- Stati dei controlli della barra (mustache.md M6 › MU-07): pillola alta 28 (larga il
-  segmento − 3; nei pulsanti con capsula propria la capsula − 2) al passaggio, più scura alla
-  pressione con la capsula +1 pt per lato; segmento scelto a riposo, sopra e premuto;
-  disattivati senza pillola (in scuro una pillola tenue alla pressione); separatori nascosti
-  accanto al segmento sotto il puntatore. Il clic agisce al rilascio, dentro il segmento.
-- `ToolbarSegment.onLongPress` (dopo `toolbarLongPress`, 295 ms: il rilascio non agisce) e
-  `onPress` (alla pressione, per i pulsanti con un menu).
-- `ToolbarScope(active:, hovered:)`: finestra inattiva (capsula e glifo spenti, il passaggio
-  li riaccende) e puntatore nella barra (in scuro capsule +7 livelli).
-- **Cambia l'API** di `ToolbarColors`: `fill`, `fillBarHover`, `fillInactive`, `hover`,
-  `pressed`, `chosen*`, `icon*` al posto di `fillTop`/`fillBottom`/`chosenTop`/`chosenBottom`.
+- Toolbar control states (mustache.md M6 › MU-07): a 28 pt high pill (the segment width − 3;
+  for buttons with their own capsule, the capsule − 2) on hover, darker on press with the
+  capsule +1 pt per side; chosen segment at rest, hovered and pressed; disabled ones without
+  a pill (in dark a faint pill on press); separators hidden next to the segment under the
+  pointer. The click acts on release, inside the segment.
+- `ToolbarSegment.onLongPress` (after `toolbarLongPress`, 295 ms: the release does not act) and
+  `onPress` (on press, for buttons with a menu).
+- `ToolbarScope(active:, hovered:)`: inactive window (capsule and glyph dimmed, hovering lights
+  them up again) and pointer in the bar (in dark the capsules +7 levels).
+- **API change** in `ToolbarColors`: `fill`, `fillBarHover`, `fillInactive`, `hover`,
+  `pressed`, `chosen*`, `icon*` instead of `fillTop`/`fillBottom`/`chosenTop`/`chosenBottom`.
 
 ## 0.18.0 · 2026-10-14
 
-- `WindowGlass` e `WindowGlassMaterial`: il vetro dentro una finestra, fatto da Flutter
-  (sfocatura σ 9 e matrice del materiale spesso, chiaro e scuro, le stesse di Ossido) sopra
-  il contenuto dell'app, dove il vetro del compositor non arriva.
-- `MenuPanel.opaque` / `MenuHost.opaque`: il menu dentro la finestra è ora di vetro
-  (`WindowGlass`) invece che a fondo pieno. **Cambia l'API**: tolto `MenuColors.opaqueFill`.
+- `WindowGlass` and `WindowGlassMaterial`: glass inside a window, made by Flutter (blur σ 9 and
+  the thick material matrix, light and dark, the same as Ossido's) over the app content, where
+  the compositor glass does not reach.
+- `MenuPanel.opaque` / `MenuHost.opaque`: the in-window menu is now glass (`WindowGlass`)
+  instead of a solid fill. **API change**: `MenuColors.opaqueFill` removed.
 
 ## 0.17.0 · 2026-10-14
 
-- **Cambia il disegno** delle icone di file, cartelle, volumi e Cestino (silica-icons 0.2,
-  icon-format.md › "Principio"): `side` è la tela intera, non più il corpo delle app.
-  Le fasce `min_size` di etichette, simboli della cartella e badge si confrontano con il lato
-  della tela; i badge restano nel riquadro fra il corpo delle app (100…924) e la linea aurea.
-- `SilicaIcon.besideApps`: un luogo accanto alle app (Dock) tiene `side` per corpo e la tela
-  delle app attorno. `canvasExtent` dà il lato della tela.
+- **Drawing change** for the icons of files, folders, volumes and Trash (silica-icons 0.2,
+  icon-format.md › "Principle"): `side` is the whole canvas, no longer the app body.
+  The `min_size` bands of labels, folder symbols and badges are compared with the canvas
+  side; badges stay in the box between the app body (100…924) and the golden line.
+- `SilicaIcon.besideApps`: a place next to the apps (Dock) keeps `side` as its body and the
+  app canvas around it. `canvasExtent` gives the canvas side.
 
 ## 0.16.0 · 2026-10-14
 
-- `SilicaDrag` (canale `silica/drag` dell'embedder): il trascinamento fra app di Ossido.
-  `start(paths, icon:)` porta fuori dalla finestra un elenco di file (`text/uri-list`) con
-  l'immagine sul puntatore; `events` dà ingresso, movimento, uscita e rilascio
-  (`SilicaDrop` con gli URI e i percorsi) dei file trascinati da altre app, e la fine
-  (`SilicaDragFinished`: `copy`, `move`, `none`) di quelli usciti da qui.
+- `SilicaDrag` (the embedder's `silica/drag` channel): Ossido's drag and drop between apps.
+  `start(paths, icon:)` carries a list of files (`text/uri-list`) out of the window with the
+  image on the pointer; `events` gives enter, motion, leave and drop (`SilicaDrop` with the
+  URIs and the paths) of files dragged from other apps, and the end (`SilicaDragFinished`:
+  `copy`, `move`, `none`) of those that left from here.
 
 ## 0.15.1 · 2026-10-14
 
-- `SilicaIcon`: senza `dark` l'icona è sempre quella chiara. La variante scura appartiene
-  allo stile delle icone (un'impostazione a parte), non all'aspetto del sistema: in aspetto
-  scuro le icone delle app e dei file restano le stesse (icons.md IC-01, mu20-list-dark).
+- `SilicaIcon`: without `dark` the icon is always the light one. The dark variant belongs to
+  the icon style (a separate setting), not to the system appearance: in dark appearance the
+  icons of apps and files stay the same (icons.md IC-01, mu20-list-dark).
 
 ## 0.15.0 · 2026-10-14
 
-- Aspetto scuro dal sistema (`MediaQuery.platformBrightness`, che l'embedder riceve dal
-  portale delle impostazioni).
-- **Cambia l'API**: `ToolbarColors` e `MenuColors` non sono più costanti statiche ma
-  istanze `light` / `dark`, con `of(context)` secondo l'aspetto del sistema
-  (`ToolbarColors.title` → `ToolbarColors.of(context).title`). `MenuColors.highlight` e
-  `highlightText` restano statiche: sono uguali nei due aspetti.
-- Barra degli strumenti scura: fondo `#4c4c4c` → `#535454`, pillola `#595959`, icone e
-  titolo `#e9e9e9` (mustache-spec 1.2).
-- Menu scuri: testo bianco all'85 %, disattivato al 26 %, scorciatoie al 30 %, separatore
-  al 14 %; il fondo pieno `#353536` (menubar.md).
+- Dark appearance from the system (`MediaQuery.platformBrightness`, which the embedder
+  receives from the settings portal).
+- **API change**: `ToolbarColors` and `MenuColors` are no longer static constants but `light`
+  / `dark` instances, with `of(context)` following the system appearance
+  (`ToolbarColors.title` → `ToolbarColors.of(context).title`). `MenuColors.highlight` and
+  `highlightText` stay static: they are the same in both appearances.
+- Dark toolbar: fill `#4c4c4c` → `#535454`, pill `#595959`, icons and title `#e9e9e9`
+  (mustache-spec 1.2).
+- Dark menus: white text at 85 %, disabled at 26 %, shortcuts at 30 %, separator at 14 %;
+  the solid fill `#353536` (menubar.md).
 
 ## 0.14.0 · 2026-10-14
 
-- `GlassTip.up`: la punta del vetro rivolta in alto, sul bordo superiore (silica-glass-v1
-  versione 5, `add_upward_tip`).
-- `MenuHost.tipUp` / `MenuPanel.tipUp`: un menu sotto la punta, che indica il pulsante da
-  cui si apre (il popover di disposizione delle finestre).
+- `GlassTip.up`: the glass tip pointing up, on the top edge (silica-glass-v1 version 5,
+  `add_upward_tip`).
+- `MenuHost.tipUp` / `MenuPanel.tipUp`: a menu under the tip, pointing at the button it opens
+  from (the window arrangement popover).
 
 ## 0.13.1 · 2026-10-14
 
-- Menu: un'intestazione (`MenuSection`) conta nella larghezza come una voce a 13 pt e sta
-  allineata al testo delle voci (a 29 con le spunte), come nel menu delle pile del Dock
-  (d06-pila-menu: 220 pt).
+- Menus: a header (`MenuSection`) counts in the width as a 13 pt item and is aligned with the
+  item text (at 29 with checkmarks), as in the Dock stack menu (d06-pila-menu: 220 pt).
 
 ## 0.13.0 · 2026-10-14
 
-- `SilicaWindow` (canale `silica/window`): `setFullSizeContent(toolbar)` chiede a Ossido il
-  contenuto a tutta finestra (i pulsanti della finestra sopra la barra dell'app),
-  `startMove()` sposta la finestra.
-- `WindowDragArea`: il vuoto della barra degli strumenti sposta la finestra.
-- `ToolbarCapsule`, `ToolbarSegment`, `ToolbarColors`: le capsule della barra unificata
-  (alte 38, raggio 19, segmento scelto a pillola 34 × 28).
+- `SilicaWindow` (`silica/window` channel): `setFullSizeContent(toolbar)` asks Ossido for
+  full-size content (the window buttons over the app's bar), `startMove()` moves the window.
+- `WindowDragArea`: the empty part of the toolbar moves the window.
+- `ToolbarCapsule`, `ToolbarSegment`, `ToolbarColors`: the capsules of the unified toolbar
+  (38 high, radius 19, chosen segment as a 34 × 28 pill).
 
 ## 0.12.0 · 2026-10-13
 
-- `MenuCustom`: una riga del menu disegnata da chi lo apre (alta `height`, larga almeno
-  `width`), con la funzione per chiudere il menu: la fila dei cerchi delle etichette.
+- `MenuCustom`: a menu row drawn by whoever opens the menu (`height` high, at least `width`
+  wide), with the function that closes the menu: the row of tag circles.
 
 ## 0.11.1 · 2026-10-13
 
-- Passo 0b di silica-icons: se il tipo viene solo dal nome e `globs2` dà più tipi con lo
-  stesso peso (`.ts`), decide prima la mappa delle estensioni. `MimeDatabase.isAmbiguousName`.
+- silica-icons step 0b: if the type comes only from the name and `globs2` gives several types
+  with the same weight (`.ts`), the extension map decides first. `MimeDatabase.isAmbiguousName`.
 
 ## 0.11.0 · 2026-10-13
 
-- Le icone dei tipi scrivono l'estensione vera (`file-type-label` di silica-icons): riquadro,
-  corpo, colore chiaro e scuro, `no_extension`, niente etichetta sotto `min_size`.
-- `icons.mime` accetta `{icon, category}`: il file generico con quella categoria (l'override
-  dell'estensione resta prima). Passo 0: il tipo diventa canonico con gli alias.
-- `FileIcon`: `labelBox`, `labelSize`, `labelWeight`, `labelMinSide` al posto di `rules`.
-  L'etichetta usa la riga naturale di Inter, centrata nel riquadro.
+- Type icons write the real extension (silica-icons `file-type-label`): box, size, light and
+  dark color, `no_extension`, no label below `min_size`.
+- `icons.mime` accepts `{icon, category}`: the generic file with that category (the extension
+  override still comes first). Step 0: the type becomes canonical through the aliases.
+- `FileIcon`: `labelBox`, `labelSize`, `labelWeight`, `labelMinSide` instead of `rules`. The
+  label uses the natural line of Inter, centered in the box.
 
 ## 0.10.0 · 2026-10-13
 
-- `MenuHost.opaque` e `MenuPanel.opaque`: menu a fondo pieno (`#fcfcfd` con un filo) invece
-  del vetro, per i menu contestuali disegnati dentro la finestra di un'app (finché l'embedder
-  non ha i popup).
+- `MenuHost.opaque` and `MenuPanel.opaque`: solid menus (`#fcfcfd` with a hairline) instead of
+  glass, for context menus drawn inside an app window (until the embedder has popups).
 
 ## 0.9.1 · 2026-10-13
 
-- `resolveFileIcon`: una voce di `icons.mime` che porta al file generico (`application/json`)
-  lo disegna con l'etichetta e il colore di categoria, come al passo 5.
+- `resolveFileIcon`: an `icons.mime` entry leading to the generic file (`application/json`)
+  draws it with the label and the category color, as in step 5.
 
 ## 0.9.0 · 2026-10-13
 
-- `MimeDatabase`: il tipo MIME di un file da shared-mime-info (glob di `globs2` con pesi e
-  maiuscole, `subclasses`, `aliases`) e, se il nome non basta, dal contenuto (ELF, script con
-  `#!`, testo o binario).
-- `resolveFileIcon` e `FileSource`: l'icona di un file con l'ordine di silica-icons (tipo,
-  tipo con `*`, genitori, estensione, file generico con l'estensione scritta nel colore della
-  categoria, foglio con il punto di domanda); un eseguibile senza estensione prende
-  `file-executable`. La mappa è quella del manifest del file generico (`FileLabelRules`).
-- Badge (`IconBadge`, `SilicaIcon.badges`, `badgesOf`, `visibleBadges`): alias in basso a
-  sinistra, a destra il primo fra illeggibile, bloccato, nuvola; da 16 a 31 pt uno solo,
-  sotto 16 nessuno; varianti scure.
-- Volumi: `volumeIconId` (rete, immagine disco, ottico, esterno, interno), `parseMountinfo`,
-  `blockRemovable`.
+- `MimeDatabase`: the MIME type of a file from shared-mime-info (`globs2` globs with weights
+  and case, `subclasses`, `aliases`) and, if the name is not enough, from the content (ELF,
+  scripts with `#!`, text or binary).
+- `resolveFileIcon` and `FileSource`: the icon of a file in silica-icons order (type, type with
+  `*`, parents, extension, generic file with the extension written in the category color,
+  sheet with the question mark); an executable without an extension takes `file-executable`.
+  The map is the one in the generic file manifest (`FileLabelRules`).
+- Badges (`IconBadge`, `SilicaIcon.badges`, `badgesOf`, `visibleBadges`): alias at the bottom
+  left, on the right the first of unreadable, locked, cloud; from 16 to 31 pt just one, below
+  16 none; dark variants.
+- Volumes: `volumeIconId` (network, disk image, optical, external, internal),
+  `parseMountinfo`, `blockRemovable`.
 
 ## 0.8.1 · 2026-10-13
 
-- `SilicaAlert.opaque`: fondo pieno (bianco o `#272727`, filo esterno, ombra) invece del
-  vetro, per un avviso disegnato dentro una finestra: lì il vetro del compositor starebbe
-  sotto il contenuto e non si vedrebbe. Il pulsante normale diventa `#e8e8e8`.
+- `SilicaAlert.opaque`: solid background (white or `#272727`, outer hairline, shadow) instead
+  of glass, for an alert drawn inside a window: there the compositor glass would sit under the
+  content and would not show. The normal button becomes `#e8e8e8`.
 
 ## 0.8.0 · 2026-10-13
 
-- `SilicaAlert`: l'avviso di sistema (292 pt, vetro spesso, icona 66, titolo in grassetto,
-  pulsanti alti 30 impilati a tutta larghezza o affiancati), con i ruoli `AlertRole`
-  (predefinito blu, annulla, distruttivo rosato); Invio sceglie il predefinito, Esc
-  l'annulla (o l'unico pulsante).
+- `SilicaAlert`: the system alert (292 pt, thick glass, 66 icon, bold title, 30 pt high buttons
+  stacked full width or side by side), with the `AlertRole` roles (blue default, cancel,
+  pinkish destructive); Return chooses the default, Esc the cancel one (or the only button).
 
 ## 0.7.1 · 2026-10-13
 
-- `fileIconId(nome)` e `fileIconFor(nome)`: l'icona di silica-icons di un file
-  dall'estensione (prima nella Dock della shell). Un file nascosto senza estensione
-  (`.bashrc`) è `file-unknown`.
+- `fileIconId(name)` and `fileIconFor(name)`: the silica-icons icon of a file from its
+  extension (previously in the shell's Dock). A hidden file without an extension (`.bashrc`)
+  is `file-unknown`.
 
 ## 0.7.0 · 2026-10-13
 
-- Le icone di silica-icons passano qui dalla shell, per le app (Mustache) e per la shell:
-  `SilicaIcon` (prima `ShellIcon` della shell) con `LayeredSource`, `FolderSource`,
-  `FlatSource`; il manifest (`parseManifest`, `findSilicaIcon`, `silicaIconDirs`), la
-  cartella generica con simbolo e tinta (`resolveFolderIcon`, `FolderIcon`) e le cartelle
-  speciali (`xdgUserDirs`, `specialFolderKey`, `xdgDataDirs`). `iconBodyPath`: la
-  superellisse del corpo.
-- Nuova dipendenza: `flutter_svg`.
+- The silica-icons icons move here from the shell, for the apps (Mustache) and the shell:
+  `SilicaIcon` (formerly the shell's `ShellIcon`) with `LayeredSource`, `FolderSource`,
+  `FlatSource`; the manifest (`parseManifest`, `findSilicaIcon`, `silicaIconDirs`), the generic
+  folder with symbol and tint (`resolveFolderIcon`, `FolderIcon`) and the special folders
+  (`xdgUserDirs`, `specialFolderKey`, `xdgDataDirs`). `iconBodyPath`: the body superellipse.
+- New dependency: `flutter_svg`.
 
 ## 0.6.0 · 2026-10-13
 
-- `Glass.group` e `LiquidGlass.group`: il vetro si fonde solo con quello dello stesso
-  gruppo, e un gruppo più alto sta sopra. Ogni livello di un menu ha il suo: il sottomenu
-  è un pannello distinto sopra il menu madre, non una forma unica con lui.
-- `Glass.tip` (`GlassTip`): una punta che fa parte della forma di vetro, con il vertice
-  arrotondato e i lati raccordati al corpo. La punta dei menu del Dock non è più un
-  triangolo dipinto sopra il vetro; l'ombra del menu non cade sulla punta.
-- Tolti `MenuColors.tipFill` e `MenuColors.tipLine` (non servono più).
-- Richiede silica-glass-v1 versione 4 (Ossido); con un compositor più vecchio i gruppi si
-  ignorano e la punta non c'è.
+- `Glass.group` and `LiquidGlass.group`: glass merges only with glass of the same group, and a
+  higher group sits on top. Every menu level has its own: the submenu is a distinct panel over
+  the parent menu, not a single shape with it.
+- `Glass.tip` (`GlassTip`): a tip that is part of the glass shape, with a rounded apex and
+  sides joined to the body. The Dock menu tip is no longer a triangle painted over the glass;
+  the menu shadow does not fall on the tip.
+- Removed `MenuColors.tipFill` and `MenuColors.tipLine` (no longer needed).
+- Requires silica-glass-v1 version 4 (Ossido); with an older compositor groups are ignored and
+  there is no tip.
 
 ## 0.5.1 · 2026-10-13
 
-- `MenuHost`: quando cambiano `tip` o `anchor` (la superficie che ospita il menu si allunga)
-  i menu aperti si spostano con loro; prima restavano dov'erano.
+- `MenuHost`: when `tip` or `anchor` change (the surface hosting the menu stretches) the open
+  menus move with them; before they stayed where they were.
 
 ## 0.5.0 · 2026-10-13
 
-- `MenuHost.onRectsChanged`: i rettangoli dei menu aperti, dopo il frame in cui cambiano
-  (un sottomenu che si apre o si chiude), per allargare la regione d'input di chi ospita il
-  menu. Senza, su una superficie con regione d'input il sottomenu non riceveva il puntatore.
+- `MenuHost.onRectsChanged`: the rectangles of the open menus, after the frame in which they
+  change (a submenu opening or closing), so that whoever hosts the menu can widen its input
+  region. Without it, on a surface with an input region the submenu did not get the pointer.
 
 ## 0.4.0 · 2026-10-13
 
-- `MenuHost.tip` e `MenuPanel.tipX`: un menu che indica un oggetto sotto di sé (le icone del
-  Dock) ha una punta alta 8 pt e larga 22 alla base, con il corpo 27 pt a sinistra del
-  vertice.
+- `MenuHost.tip` and `MenuPanel.tipX`: a menu pointing at an object below it (the Dock icons)
+  has a tip 8 pt high and 22 wide at the base, with the body 27 pt to the left of the apex.
 
 ## 0.3.2 · 2026-10-13
 
-- `MenuHost.handlesPointer`: falso per passare il puntatore dall'esterno (`pointerMoved`,
-  `pointerDown`, `pointerUp`, `contains`), come una barra in cui si preme su una voce e si
-  rilascia su una voce del menu.
+- `MenuHost.handlesPointer`: false to pass the pointer from outside (`pointerMoved`,
+  `pointerDown`, `pointerUp`, `contains`), like a bar where you press on an item and release
+  on a menu item.
 
 ## 0.3.1 · 2026-10-13
 
-- Uguale a 0.3.0 (tag pubblicato per errore senza la modifica prevista).
+- Same as 0.3.0 (tag published by mistake without the intended change).
 
 ## 0.3.0 · 2026-10-13
 
-- Menu: `MenuHost` (un menu con i suoi sottomenu in un'area che lo contiene), `MenuPanel`,
-  le voci `MenuAction` (scorciatoia, spunta, icona, sottomenu, disattivata), `MenuDivider` e
-  `MenuSection`; `menuSize` e `menuRowTops` per posizionarli. Voci da 24 pt, separatori da 11,
-  evidenziazione blu, vetro spesso con l'ombra fuori dal pannello; sottomenu dopo ~295 ms
-  con la tolleranza a triangolo; ↑ ↓ → ← Invio Esc e le lettere; la scelta lampeggia e il
-  menu sfuma in ~190 ms.
+- Menus: `MenuHost` (a menu with its submenus in an area that contains it), `MenuPanel`, the
+  `MenuAction` items (shortcut, checkmark, icon, submenu, disabled), `MenuDivider` and
+  `MenuSection`; `menuSize` and `menuRowTops` to place them. 24 pt items, 11 pt separators,
+  blue highlight, thick glass with the shadow outside the panel; submenus after ~295 ms with
+  triangle tolerance; ↑ ↓ → ← Return Esc and letters; the choice blinks and the menu fades in
+  ~190 ms.
 
 ## 0.2.0 · 2026-10-13
 
-- Il vetro porta l'opacità degli antenati (`Opacity`, `FadeTransition`, `AnimatedOpacity`):
-  la regione mandata al compositor ha il campo `opacity` (0–1) e Ossido compone il vetro in
-  dissolvenza insieme al pannello (`silica-glass-v1` versione 3). Con un compositor più
-  vecchio il vetro resta pieno.
+- Glass carries the ancestors' opacity (`Opacity`, `FadeTransition`, `AnimatedOpacity`): the
+  region sent to the compositor has an `opacity` field (0–1) and Ossido composes the glass
+  fading together with the panel (`silica-glass-v1` version 3). With an older compositor the
+  glass stays solid.
 
 ## 0.1.0 · 2026-10-13
 
-Prima versione come pacchetto a sé (prima in `silica/packages/silica_ui`).
+First version as a standalone package (previously in `silica/packages/silica_ui`).
 
-- `uiFontFamily` e `uiText`: Inter Regular e SemiBold.
-- `Glass` e `GlassMaterial` (`clear`, `thick`, `regular`, `notification`) sul canale
-  `silica/glass`.
-- `LiquidGlass`: pressione, rilascio con rimbalzo, riflesso che segue il puntatore.
-- `GlassRegistry` controlla le regioni a ogni frame: il vetro sotto un antenato che cambia
-  trasformazione o opacità segue anche senza ridisegnarsi.
-- `example/`: il laboratorio del vetro.
+- `uiFontFamily` and `uiText`: Inter Regular and SemiBold.
+- `Glass` and `GlassMaterial` (`clear`, `thick`, `regular`, `notification`) on the
+  `silica/glass` channel.
+- `LiquidGlass`: press, release with bounce, highlight following the pointer.
+- `GlassRegistry` checks the regions at every frame: glass under an ancestor changing
+  transform or opacity follows even without repainting.
+- `example/`: the glass lab.

@@ -1,9 +1,9 @@
-// Il vetro dentro una finestra: un menu o un popover disegnato dall'app sopra il proprio
-// contenuto. Il vetro di Ossido starebbe sotto la superficie della finestra (vedrebbe la
-// scrivania, non il contenuto), quindi qui lo fa Flutter con lo stesso materiale: sfocatura
-// gaussiana e matrice di colore misurate (ossido-render glass.rs, menubar.md › Materiale).
-// Sul grigio di riferimento `#7a7b80` dà `#c7c8cd` (chiaro) e `#6f7075` (scuro), come in
-// menubar.md; sul bianco satura vicino a `#fcfcfd` (mustache.md MU-50).
+// Glass inside a window: a menu or popover drawn by the app over its own content. Ossido's
+// glass would sit under the window surface (it would see the desktop, not the content), so here
+// Flutter makes it with the same material: measured Gaussian blur and color matrix
+// (ossido-render glass.rs, menubar.md › Material). On the reference gray `#7a7b80` it gives
+// `#c7c8cd` (light) and `#6f7075` (dark), as in menubar.md; on white it saturates close to
+// `#fcfcfd` (mustache.md MU-50).
 
 import 'dart:ui' as ui;
 
@@ -11,8 +11,8 @@ import 'package:flutter/widgets.dart';
 
 import 'glass.dart';
 
-/// Un materiale per Flutter: σ della sfocatura in pt, matrice 3 × 3 e scostamento (0–255)
-/// applicati al colore sRGB dello sfondo sfocato.
+/// A material for Flutter: blur σ in pt, 3 × 3 matrix and offset (0–255) applied to the sRGB
+/// color of the blurred background.
 @immutable
 class WindowGlassMaterial {
   const WindowGlassMaterial(this.sigma, this.matrix, this.offset);
@@ -21,7 +21,7 @@ class WindowGlassMaterial {
   final List<List<double>> matrix;
   final List<double> offset;
 
-  /// Il materiale spesso dei menu: chiaro (σ 9, b ≈ 141) e scuro (b ≈ 59).
+  /// The thick material of menus: light (σ 9, b ≈ 141) and dark (b ≈ 59).
   static const WindowGlassMaterial thickLight = WindowGlassMaterial(
     9,
     [
@@ -41,12 +41,12 @@ class WindowGlassMaterial {
     [59.4, 59.0, 58.6],
   );
 
-  /// Il materiale per `material` e l'aspetto; per ora i menu (spesso) hanno le misure, gli
-  /// altri prendono lo spesso.
+  /// The material for `material` and the appearance; for now only menus (thick) are measured,
+  /// the others take the thick one.
   static WindowGlassMaterial of(GlassMaterial material, {required bool dark}) =>
       dark ? thickDark : thickLight;
 
-  /// Il colore di uno sfondo uniforme visto attraverso il materiale.
+  /// The color of a uniform background seen through the material.
   Color apply(Color background) {
     final rgb = [background.r * 255, background.g * 255, background.b * 255];
     int channel(int row) {
@@ -60,7 +60,7 @@ class WindowGlassMaterial {
     return Color.fromARGB(255, channel(0), channel(1), channel(2));
   }
 
-  /// Il filtro: prima la sfocatura, poi la matrice.
+  /// The filter: first the blur, then the matrix.
   ui.ImageFilter get filter => ui.ImageFilter.compose(
     outer: ui.ColorFilter.matrix([
       for (var row = 0; row < 3; row++) ...[...matrix[row], 0, offset[row]],
@@ -74,8 +74,8 @@ class WindowGlassMaterial {
   );
 }
 
-/// Un pannello di vetro dentro la finestra, grande quanto il figlio, con gli angoli di raggio
-/// `radius`: sfoca e tinge il contenuto dell'app che ha sotto.
+/// A glass panel inside the window, as large as its child, with corners of radius `radius`: it
+/// blurs and tints the app content underneath.
 class WindowGlass extends StatelessWidget {
   const WindowGlass({
     super.key,
@@ -89,7 +89,7 @@ class WindowGlass extends StatelessWidget {
   final double radius;
   final GlassMaterial material;
 
-  /// Il filo attorno (null: nessuno).
+  /// The hairline around it (null: none).
   final Color? border;
 
   @override

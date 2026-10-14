@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 void main() {
-  testWidgets('premuto il vetro si gonfia anche nel compositor, poi torna', (
+  testWidgets('pressed glass swells in the compositor too, then returns', (
     tester,
   ) async {
     final regions = <List<Object?>>[];

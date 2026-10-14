@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 void main() {
-  test('eventi dell\'embedder', () {
+  test('events from the embedder', () {
     final over = SilicaDrag.parse('enter', {'x': 10, 'y': 20.5});
     expect(over, isA<SilicaDragOver>());
     expect((over! as SilicaDragOver).position, const Offset(10, 20.5));
@@ -20,7 +20,7 @@ void main() {
         SilicaDrag.parse('drop', {
               'x': 5,
               'y': 6,
-              'uris': ['file:///tmp/a%20b.txt', 'https://esempio.it/', 3],
+              'uris': ['file:///tmp/a%20b.txt', 'https://example.org/', 3],
             })!
             as SilicaDrop;
     expect(drop.uris.length, 2);
@@ -30,10 +30,10 @@ void main() {
           .action,
       'move',
     );
-    expect(SilicaDrag.parse('altro', null), isNull);
+    expect(SilicaDrag.parse('other', null), isNull);
   });
 
-  testWidgets('start: URI codificati e icona RGBA in base64', (tester) async {
+  testWidgets('start: encoded URIs and RGBA icon in base64', (tester) async {
     MethodCall? sent;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(SilicaDrag.channel, (call) async {

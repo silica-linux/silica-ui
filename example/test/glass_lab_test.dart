@@ -3,7 +3,7 @@ import 'package:silica_ui_example/main.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 void main() {
-  testWidgets('le capsule si trascinano', (tester) async {
+  testWidgets('capsules can be dragged', (tester) async {
     await tester.pumpWidget(const GlassLab());
     expect(find.byType(LiquidGlass), findsNWidgets(5));
     final start = tester.getTopLeft(find.byType(LiquidGlass).first);

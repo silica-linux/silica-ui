@@ -1,35 +1,35 @@
-// Liquid Glass: vetro che reagisce al tocco. Alla pressione si gonfia con una molla, al
-// rilascio torna con un piccolo rimbalzo; un riflesso morbido segue il puntatore. La forma
-// gonfiata arriva anche al compositor (la regione segue le trasformazioni), quindi lente,
-// bordo e fusione con il vetro vicino si muovono con lei.
+// Liquid Glass: glass that reacts to touch. On press it swells with a spring, on
+// release it comes back with a small bounce; a soft highlight follows the pointer. The swollen
+// shape reaches the compositor too (the region follows the transforms), so the lens, the
+// edge and the merging with nearby glass move with it.
 //
-// PROVVISORIO: scala della pressione, molle e riflesso non sono ancora misurati sul
-// riferimento (richiesta G-01 delle osservazioni). I valori possono cambiare in una versione
-// minore; nomi e tipi no.
+// PROVISIONAL: press scale, springs and highlight are not measured on the reference yet
+// (request G-01 of the observations). The values may change in a minor version; names and
+// types may not.
 
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 
 import 'glass.dart';
 
-/// Quanto si gonfia il vetro premuto (provvisorio).
+/// How much pressed glass swells (provisional).
 const double liquidPressScale = 1.08;
 
-/// Molla della pressione: rapida e quasi senza rimbalzo (provvisoria).
+/// Press spring: fast and almost without bounce (provisional).
 const SpringDescription liquidPressSpring = SpringDescription(
   mass: 1,
   stiffness: 600,
   damping: 40,
 );
 
-/// Molla del rilascio: un piccolo rimbalzo, come un liquido (provvisoria).
+/// Release spring: a small bounce, like a liquid (provisional).
 const SpringDescription liquidReleaseSpring = SpringDescription(
   mass: 1,
   stiffness: 350,
   damping: 18,
 );
 
-/// Un'area di Liquid Glass che reagisce al puntatore.
+/// A Liquid Glass area that reacts to the pointer.
 class LiquidGlass extends StatefulWidget {
   const LiquidGlass({
     super.key,
@@ -44,10 +44,10 @@ class LiquidGlass extends StatefulWidget {
   final double radius;
   final GlassMaterial material;
 
-  /// Senza interazione è un [Glass] e basta.
+  /// Without interaction it is just a [Glass].
   final bool interactive;
 
-  /// Vedi [Glass.group] e [Glass.tip].
+  /// See [Glass.group] and [Glass.tip].
   final int group;
   final GlassTip? tip;
   final Widget? child;
@@ -103,7 +103,7 @@ class _LiquidGlassState extends State<LiquidGlass>
       onHover: (event) => setState(() => _pointer = event.localPosition),
       onExit: (_) => setState(() => _pointer = null),
       child: Listener(
-        // Tutta l'area di vetro risponde, anche dove il figlio è trasparente.
+        // The whole glass area responds, even where the child is transparent.
         behavior: HitTestBehavior.opaque,
         onPointerDown: (event) {
           _pointer = event.localPosition;
@@ -119,7 +119,7 @@ class _LiquidGlassState extends State<LiquidGlass>
   }
 }
 
-/// Riflesso morbido attorno al puntatore, più forte verso il bordo (provvisorio).
+/// Soft highlight around the pointer, stronger towards the edge (provisional).
 class _HighlightPainter extends CustomPainter {
   _HighlightPainter(this.pointer, this.radius);
 

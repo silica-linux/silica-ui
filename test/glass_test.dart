@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 void main() {
-  testWidgets('Glass manda la sua regione a silica/glass', (tester) async {
+  testWidgets('Glass sends its region to silica/glass', (tester) async {
     final calls = <MethodCall>[];
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       GlassRegistry.channel,
@@ -44,14 +44,14 @@ void main() {
     expect(region['radius'], 22);
     expect(region['material'], 'clear');
 
-    // Senza il widget, le regioni si svuotano.
+    // Without the widget, the regions empty.
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
     expect(calls.last.arguments, isEmpty);
   });
 
   testWidgets(
-    'un antenato che cambia scala sposta il vetro anche senza ridisegnarlo',
+    'an ancestor changing scale moves the glass even without repainting it',
     (tester) async {
       final sent = <Map<Object?, Object?>>[];
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -69,7 +69,7 @@ void main() {
         child: Center(
           child: Transform.scale(
             scale: scale,
-            // Il vetro non si ridisegna quando cambia solo la trasformazione.
+            // The glass does not repaint when only the transform changes.
             child: const RepaintBoundary(
               child: SizedBox(
                 width: 100,
@@ -90,7 +90,7 @@ void main() {
     },
   );
 
-  testWidgets('il vetro porta l\'opacità degli antenati', (tester) async {
+  testWidgets('the glass carries the ancestors\' opacity', (tester) async {
     final sent = <Map<Object?, Object?>>[];
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       GlassRegistry.channel,
@@ -121,13 +121,13 @@ void main() {
     await tester.pumpWidget(at(1));
     await tester.pump();
     expect(sent.last['opacity'], 0.5);
-    // Cambia solo l'opacità dell'antenato: il vetro segue senza ridisegnarsi.
+    // Only the ancestor's opacity changes: the glass follows without repainting.
     await tester.pumpWidget(at(0.5));
     await tester.pump();
     expect(sent.last['opacity'], 0.25);
   });
 
-  testWidgets('la punta e il gruppo arrivano come regioni', (tester) async {
+  testWidgets('the tip and the group arrive as regions', (tester) async {
     final calls = <MethodCall>[];
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       GlassRegistry.channel,
@@ -170,7 +170,7 @@ void main() {
     expect([tip['x'], tip['y'], tip['width'], tip['height']], [29, 70, 22, 8]);
   });
 
-  testWidgets('il sottomenu ha un gruppo di vetro a sé', (tester) async {
+  testWidgets('the submenu has a glass group of its own', (tester) async {
     final calls = <MethodCall>[];
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       GlassRegistry.channel,
@@ -184,7 +184,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: MenuHost(
           entries: [
-            MenuAction('Opzioni', submenu: [MenuAction('Rimuovi')]),
+            MenuAction('Options', submenu: [MenuAction('Remove')]),
           ],
           anchor: Offset(100, 31),
         ),

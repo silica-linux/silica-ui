@@ -1,11 +1,11 @@
-// L'avviso di sistema: largo 292 pt, vetro spesso con raggio ~26, icona da 66 in alto a
-// sinistra (19, 19), titolo in grassetto a y 99 su 250 pt, messaggio sotto, pulsanti alti 30.
-// I pulsanti stanno impilati a tutta larghezza (262, 4 pt fra loro: Svuota il Cestino, un
-// volume occupato, un solo OK) o affiancati (128 ciascuno, 6 pt fra loro: due scelte alla pari,
-// come "Usa .md" / "Mantieni .txt" o Annulla / Elimina). Il predefinito è blu (sRGB `#007aff`,
-// testo bianco), un'azione distruttiva ha il fondo rosato e il testo rosso.
+// The system alert: 292 pt wide, thick glass with radius ~26, a 66 pt icon at the top left
+// (19, 19), bold title at y 99 over 250 pt, message below, buttons 30 pt high.
+// Buttons are stacked full width (262, 4 pt apart: Empty Trash, a busy volume, a single OK)
+// or side by side (128 each, 6 pt apart: two equal choices,
+// like "Usa .md" / "Mantieni .txt" or Cancel / Delete). The default one is blue (sRGB `#007aff`,
+// white text), a destructive action has a pinkish background and red text.
 //
-// Misure: dock.md D-07 (avviso del Cestino), mustache-spec R2.13, R8.4, R8.5, R9.11.
+// Measurements: dock.md D-07 (Trash alert), mustache-spec R2.13, R8.4, R8.5, R9.11.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -24,7 +24,7 @@ const double alertButtonHeight = 30;
 const double alertStackedGap = 4;
 const double alertSideGap = 6;
 
-/// Il ruolo di un pulsante: decide colore e tasto (Invio il predefinito, Esc l'annulla).
+/// The role of a button: it decides color and key (Return the default one, Esc the cancel one).
 enum AlertRole { normal, primary, cancel, destructive }
 
 @immutable
@@ -36,7 +36,7 @@ class AlertButton {
   final VoidCallback? onPressed;
 }
 
-/// I colori dei pulsanti dell'avviso (chiaro, scuro).
+/// The colors of the alert buttons (light, dark).
 @immutable
 class AlertColors {
   const AlertColors._();
@@ -54,7 +54,7 @@ class AlertColors {
   static const Color textLight = Color(0xFF1A1A1A);
   static const Color textDark = Color(0xFFEBEBEB);
 
-  /// Il fondo pieno (misc.md) e il pulsante normale su di esso (mustache-spec R9.11).
+  /// The solid background (misc.md) and the normal button on it (mustache-spec R9.11).
   static const Color opaqueLight = Color(0xFFFFFFFF);
   static const Color opaqueDark = Color(0xFF272727);
   static const Color normalOpaqueLight = Color(0xFFE8E8E8);
@@ -74,16 +74,16 @@ class SilicaAlert extends StatelessWidget {
   final String title;
   final String? message;
 
-  /// L'icona da 66 pt (di solito quella dell'app o dell'elemento).
+  /// The 66 pt icon (usually the app's or the item's).
   final Widget? icon;
   final List<AlertButton> buttons;
 
-  /// Pulsanti affiancati (al più due) invece che impilati.
+  /// Buttons side by side (at most two) instead of stacked.
   final bool sideBySide;
 
-  /// Fondo pieno invece del vetro: per un avviso disegnato dentro una finestra, dove il vetro
-  /// del compositor starebbe sotto il contenuto (misc.md, "Avviso": bianco o `#272727`, filo
-  /// esterno, ombra di ~10 pt in basso).
+  /// Solid background instead of glass: for an alert drawn inside a window, where the
+  /// compositor's glass would sit under the content (misc.md, "Alert": white or `#272727`, outer
+  /// hairline, ~10 pt shadow below).
   final bool opaque;
 
   @override
@@ -104,7 +104,7 @@ class SilicaAlert extends StatelessWidget {
             : null;
         if (role == null) return KeyEventResult.ignored;
         final button = buttons.where((b) => b.role == role).firstOrNull;
-        // Senza un pulsante d'annullamento, Esc sceglie l'unico pulsante (un avviso con OK).
+        // Without a cancel button, Esc chooses the only button (an alert with OK).
         final chosen = button ?? (buttons.length == 1 ? buttons.first : null);
         if (chosen == null) return KeyEventResult.ignored;
         chosen.onPressed?.call();
@@ -174,7 +174,7 @@ class SilicaAlert extends StatelessWidget {
 
   Widget _panel(bool dark, Widget child) => opaque
       ? DecoratedBox(
-          key: const ValueKey('avviso pieno'),
+          key: const ValueKey('solid alert'),
           decoration: BoxDecoration(
             color: dark ? AlertColors.opaqueDark : AlertColors.opaqueLight,
             borderRadius: BorderRadius.circular(alertRadius),
@@ -235,7 +235,7 @@ class SilicaAlert extends StatelessWidget {
               ),
     };
     return GestureDetector(
-      key: ValueKey('avviso ${button.label}'),
+      key: ValueKey('alert ${button.label}'),
       onTap: button.onPressed,
       child: Container(
         height: alertButtonHeight,

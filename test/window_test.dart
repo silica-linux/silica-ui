@@ -16,14 +16,14 @@ void main() {
         });
   });
 
-  test('contenuto a tutta finestra', () async {
+  test('full-size content', () async {
     expect(await SilicaWindow.setFullSizeContent(52), isTrue);
     expect(calls.single.method, 'setFullSizeContent');
     expect((calls.single.arguments as Map)['toolbarHeight'], 52);
   });
 
   testWidgets(
-    'trascinare il vuoto sposta la finestra; i controlli ricevono il clic',
+    'dragging the empty part moves the window; controls receive the click',
     (tester) async {
       var tapped = 0;
       await tester.pumpWidget(
@@ -67,7 +67,7 @@ void main() {
       );
       await tester.tap(find.byKey(const ValueKey('a')));
       expect(tapped, 1);
-      // Trascinare da un controllo non sposta la finestra.
+      // Dragging from a control does not move the window.
       final fromControl = await tester.startGesture(
         tester.getCenter(find.byKey(const ValueKey('a'))),
         kind: PointerDeviceKind.mouse,
@@ -87,7 +87,7 @@ void main() {
     },
   );
 
-  testWidgets('le capsule seguono l\'aspetto del sistema', (tester) async {
+  testWidgets('capsules follow the system appearance', (tester) async {
     Color? drawn;
     Future<void> pump(Brightness b) => tester.pumpWidget(
       MediaQuery(
@@ -115,7 +115,7 @@ void main() {
     expect(drawn, ToolbarColors.dark.icon);
   });
 
-  group('stati dei controlli (MU-07)', () {
+  group('control states (MU-07)', () {
     late List<String> log;
     late Map<String, Color> glyphs;
 
@@ -126,7 +126,7 @@ void main() {
           enabled: enabled,
           chosen: chosen,
           onTap: () => log.add('tap $name'),
-          onLongPress: () => log.add('lungo $name'),
+          onLongPress: () => log.add('long $name'),
           icon: (color) {
             glyphs[name] = color;
             return const SizedBox(width: 10, height: 10);
@@ -144,10 +144,7 @@ void main() {
             child: Center(
               child: ToolbarCapsule(
                 separators: true,
-                children: [
-                  segment('indietro'),
-                  segment('avanti', enabled: false),
-                ],
+                children: [segment('back'), segment('forward', enabled: false)],
               ),
             ),
           ),
@@ -158,79 +155,71 @@ void main() {
     Color? pill(WidgetTester tester, String name) {
       final found = find.descendant(
         of: find.byKey(ValueKey(name)),
-        matching: find.byKey(const ValueKey('pillola')),
+        matching: find.byKey(const ValueKey('pill')),
       );
       if (found.evaluate().isEmpty) return null;
       return (tester.widget<Container>(found).decoration! as BoxDecoration)
           .color;
     }
 
-    testWidgets('passaggio, pressione, rilascio; separatore nascosto', (
-      tester,
-    ) async {
+    testWidgets('hover, press, release; separator hidden', (tester) async {
       await pump(tester);
-      expect(pill(tester, 'indietro'), isNull);
+      expect(pill(tester, 'back'), isNull);
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
-      await mouse.moveTo(
-        tester.getCenter(find.byKey(const ValueKey('indietro'))),
-      );
+      await mouse.moveTo(tester.getCenter(find.byKey(const ValueKey('back'))));
       await tester.pump();
-      expect(pill(tester, 'indietro'), ToolbarColors.light.hover);
+      expect(pill(tester, 'back'), ToolbarColors.light.hover);
       final separator = tester
           .widgetList<Container>(find.byType(Container))
           .where((c) => c.constraints?.maxWidth == 1);
       expect(separator.single.color, isNull);
-      await mouse.down(
-        tester.getCenter(find.byKey(const ValueKey('indietro'))),
-      );
+      await mouse.down(tester.getCenter(find.byKey(const ValueKey('back'))));
       await tester.pump();
-      expect(pill(tester, 'indietro'), ToolbarColors.light.pressed);
-      expect(glyphs['indietro'], ToolbarColors.light.iconPressed);
+      expect(pill(tester, 'back'), ToolbarColors.light.pressed);
+      expect(glyphs['back'], ToolbarColors.light.iconPressed);
       expect(log, isEmpty);
       await mouse.up();
       await tester.pump();
-      expect(log, ['tap indietro']);
-      // Disattivato: nessuna pillola, nessuna azione.
+      expect(log, ['tap back']);
+      // Disabled: no pill, no action.
       await mouse.moveTo(
-        tester.getCenter(find.byKey(const ValueKey('avanti'))),
+        tester.getCenter(find.byKey(const ValueKey('forward'))),
       );
       await tester.pump();
-      expect(pill(tester, 'avanti'), isNull);
-      await mouse.down(tester.getCenter(find.byKey(const ValueKey('avanti'))));
+      expect(pill(tester, 'forward'), isNull);
+      await mouse.down(tester.getCenter(find.byKey(const ValueKey('forward'))));
       await mouse.up();
       await tester.pump();
-      expect(log, ['tap indietro']);
+      expect(log, ['tap back']);
     });
 
-    testWidgets('pressione lunga: il menu, e il rilascio non agisce', (
+    testWidgets('long press: the menu, and the release does not act', (
       tester,
     ) async {
       await pump(tester);
-      final at = tester.getCenter(find.byKey(const ValueKey('indietro')));
+      final at = tester.getCenter(find.byKey(const ValueKey('back')));
       final g = await tester.startGesture(at, kind: PointerDeviceKind.mouse);
       await tester.pump(const Duration(milliseconds: 200));
       expect(log, isEmpty);
       await tester.pump(const Duration(milliseconds: 120));
-      expect(log, ['lungo indietro']);
+      expect(log, ['long back']);
       await g.up();
       await tester.pump();
-      expect(log, ['lungo indietro']);
+      expect(log, ['long back']);
     });
 
-    testWidgets('finestra inattiva: glifo spento, il passaggio lo riaccende', (
+    testWidgets('inactive window: dim glyph, hovering lights it up', (
       tester,
     ) async {
       await pump(tester, active: false);
-      expect(glyphs['indietro'], ToolbarColors.light.iconInactive);
+      expect(glyphs['back'], ToolbarColors.light.iconInactive);
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
-      await mouse.moveTo(
-        tester.getCenter(find.byKey(const ValueKey('indietro'))),
-      );
+      await mouse.moveTo(tester.getCenter(find.byKey(const ValueKey('back'))));
       await tester.pump();
-      expect(glyphs['indietro'], ToolbarColors.light.icon);
-      expect(pill(tester, 'indietro'), ToolbarColors.light.hoverInactive);
+      expect(glyphs['back'], ToolbarColors.light.icon);
+      expect(pill(tester, 'back'), ToolbarColors.light.hoverInactive);
     });
   });
 }

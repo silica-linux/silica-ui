@@ -1,28 +1,28 @@
-// Le icone a livelli del repo silica-icons (specifica: docs/icon-format.md di quel repo):
-// dove sono installate, il manifest icon.json, le cartelle speciali. Le icone sono
-// file dell'utente o del sistema (licenza CC BY-SA 4.0), non asset di questo repository.
+// The layered icons of the silica-icons repo (specification: docs/icon-format.md of that repo):
+// where they are installed, the icon.json manifest, the special folders. The icons are
+// user or system files (CC BY-SA 4.0 license), not assets of this repository.
 
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' show Color, Rect;
 
-/// `app`: la shell ritaglia il corpo e aggiunge bordo e ombra; `file`: forma libera.
+/// `app`: the shell clips the body and adds edge and shadow; `file`: free shape.
 enum IconKind { app, file }
 
-/// Un livello SVG sulla tela 1024, con la variante per i temi scuri se c'è.
+/// An SVG layer on the 1024 canvas, with the variant for dark themes if there is one.
 class IconLayer {
   const IconLayer(this.path, {this.darkPath, this.shadow = false});
 
   final String path;
   final String? darkPath;
 
-  /// La shell disegna sotto il livello un'ombra neutra (`"shadow": "neutral"`).
+  /// The shell draws a neutral shadow under the layer (`"shadow": "neutral"`).
   final bool shadow;
 
   String pathFor({required bool dark}) => dark ? darkPath ?? path : path;
 }
 
-/// Un testo disegnato dalla shell (mese e giorno del calendario).
+/// A text drawn by the shell (month and day of the calendar).
 class IconText {
   const IconText({
     required this.size,
@@ -41,18 +41,18 @@ class IconText {
   final Color color;
   final Color darkColor;
 
-  /// Riquadro sulla tela 1024; il testo è centrato.
+  /// Box on the 1024 canvas; the text is centered.
   final Rect box;
   final double? maxWidth;
   final bool upper;
 }
 
-/// Contenuto aggiornato a runtime.
+/// Content updated at runtime.
 sealed class IconDynamic {
   const IconDynamic();
 }
 
-/// Lancette che ruotano attorno a (512, 512), con il perno sopra.
+/// Hands rotating around (512, 512), with the cap on top.
 class ClockHands extends IconDynamic {
   const ClockHands({
     required this.hour,
@@ -67,7 +67,7 @@ class ClockHands extends IconDynamic {
   final IconLayer cap;
 }
 
-/// Mese e giorno scritti sul primo piano.
+/// Month and day written on the foreground.
 class CalendarText extends IconDynamic {
   const CalendarText({required this.month, required this.day});
 
@@ -75,8 +75,8 @@ class CalendarText extends IconDynamic {
   final IconText day;
 }
 
-/// Una fascia di dimensioni della cartella generica: da `minSize` pt (lato del corpo) in su il
-/// simbolo usa `weight`, scalato di `scale` attorno al centro del riquadro.
+/// A size band of the generic folder: from `minSize` pt (canvas side) up the
+/// symbol uses `weight`, scaled by `scale` around the center of the box.
 class SymbolBand {
   const SymbolBand({
     required this.minSize,
@@ -87,16 +87,16 @@ class SymbolBand {
 
   final double minSize;
 
-  /// `light`, `regular` o `semibold`: la cartella di `symbols/`.
+  /// `light`, `regular` or `semibold`: the folder in `symbols/`.
   final String weight;
   final double scale;
 
-  /// Disegna il riflesso dello scavo (sotto 64 pt no: mezzo pixel impasterebbe il simbolo).
+  /// Draws the highlight of the engraving (not below 64 pt: half a pixel would smudge the symbol).
   final bool highlight;
 }
 
-/// L'effetto inciso del simbolo in un tema: il riflesso spostato in basso di `offset`, poi il
-/// simbolo.
+/// The engraved effect of the symbol in a theme: the highlight shifted down by `offset`, then the
+/// symbol.
 class SymbolEffect {
   const SymbolEffect({
     required this.color,
@@ -111,12 +111,12 @@ class SymbolEffect {
   final Color highlight;
   final double highlightOpacity;
 
-  /// Sulla tela 1024.
+  /// On the 1024 canvas.
   final double offset;
 }
 
-/// La tinta della cartella: la luminanza del disegno composto va da tinta × `shade` (a `low`)
-/// alla tinta schiarita verso il bianco di `glow` (a `high`).
+/// The folder tint: the luminance of the composed drawing goes from tint × `shade` (at `low`)
+/// to the tint lightened towards white by `glow` (at `high`).
 class TintRamp {
   const TintRamp({
     required this.low,
@@ -130,7 +130,7 @@ class TintRamp {
   final double shade;
   final double glow;
 
-  /// La matrice 4 × 5 di `ColorFilter.matrix` (scostamenti in 0–255) per la tinta.
+  /// The 4 × 5 matrix of `ColorFilter.matrix` (offsets in 0–255) for the tint.
   List<double> matrix(Color tint) {
     const lum = [0.2126, 0.7152, 0.0722];
     final rows = <double>[];
@@ -150,7 +150,7 @@ class TintRamp {
   }
 }
 
-/// La cartella generica: un simbolo di `symbols/` inciso sul pannello e una tinta.
+/// The generic folder: a symbol from `symbols/` engraved on the panel, and a tint.
 class FolderSymbol extends IconDynamic {
   const FolderSymbol({
     required this.box,
@@ -165,29 +165,29 @@ class FolderSymbol extends IconDynamic {
     this.fallback,
   });
 
-  /// La tela 24 × 24 del simbolo sulla tela 1024.
+  /// The 24 × 24 canvas of the symbol on the 1024 canvas.
   final Rect box;
 
-  /// Dalla più grande alla più piccola.
+  /// From the largest to the smallest.
   final List<SymbolBand> bands;
   final SymbolEffect light;
   final SymbolEffect dark;
 
-  /// `symbols/` del repo da cui viene l'icona.
+  /// `symbols/` of the repo the icon comes from.
   final String symbolsDir;
   final TintRamp? lightTint;
   final TintRamp? darkTint;
 
-  /// Le etichette con il loro colore (`red` → #f2382e…).
+  /// The tags with their color (`red` → #f2382e…).
   final Map<String, Color> labels;
 
-  /// Chiave della cartella speciale (DOCUMENTS, HOME…) → nome del simbolo.
+  /// Special folder key (DOCUMENTS, HOME…) → symbol name.
   final Map<String, String> folders;
 
-  /// L'icona da usare senza simbolo né tinta (la cartella semplice).
+  /// The icon to use without symbol or tint (the plain folder).
   final String? fallback;
 
-  /// La fascia per un'icona di `side` pt; null sotto l'ultima (niente simbolo).
+  /// The band for an icon of `side` pt; null below the last one (no symbol).
   SymbolBand? bandFor(double side) {
     for (final band in bands) {
       if (side >= band.minSize) return band;
@@ -195,21 +195,21 @@ class FolderSymbol extends IconDynamic {
     return null;
   }
 
-  /// Il file del simbolo `name` nel peso `weight`, se esiste.
+  /// The file of the symbol `name` in weight `weight`, if it exists.
   String? symbolFile(String name, String weight) {
     if (!_idPattern.hasMatch(name) || !_weights.contains(weight)) return null;
     final path = '$symbolsDir/$weight/$name.svg';
     return File(path).existsSync() ? path : null;
   }
 
-  /// Un colore `#rrggbb` o il nome di un'etichetta; null se non è né l'uno né l'altro.
+  /// A `#rrggbb` color or the name of a tag; null if it is neither.
   Color? tintFor(String? value) =>
       value == null ? null : labels[value] ?? _parseColor(value);
 }
 
-/// Un'icona di silica-icons, pronta da comporre.
-/// Il file generico: l'estensione scritta sul foglio, colorata per categoria, e la mappa del
-/// repo da tipo MIME ed estensione all'icona (icon-format.md, "File generico").
+/// A silica-icons icon, ready to compose.
+/// The generic file: the extension written on the sheet, colored by category, and the repo's map
+/// from MIME type and extension to icon (icon-format.md, "Generic file").
 class FileLabelRules extends IconDynamic {
   const FileLabelRules({
     required this.box,
@@ -223,29 +223,29 @@ class FileLabelRules extends IconDynamic {
     required this.fallback,
   });
 
-  /// Riquadro dell'etichetta sulla tela 1024, corpo del testo e limiti.
+  /// Label box on the 1024 canvas, text size and limits.
   final Rect box;
   final double size;
   final int maxChars;
   final double maxWidth;
 
-  /// Categoria → colore (chiaro, scuro).
+  /// Category → color (light, dark).
   final Map<String, (Color, Color)> colors;
 
-  /// Estensione → categoria (String) o colore (Color).
+  /// Extension → category (String) or color (Color).
   final Map<String, Object> overrides;
 
-  /// Tipo MIME (anche `image/*`) → id dell'icona (e la categoria quando porta al file
-  /// generico), ed estensione → id.
+  /// MIME type (also `image/*`) → icon id (and the category when it leads to the generic
+  /// file), and extension → id.
   final Map<String, (String, String?)> mime;
   final Map<String, String> extensions;
 
-  /// L'icona per i file senza estensione o con un'estensione troppo lunga.
+  /// The icon for files without an extension or with an extension too long.
   final String fallback;
 }
 
-/// L'etichetta di un'icona di tipo (`file-type-label`, icon-format.md "Icone dei tipi di
-/// file"): l'estensione in maiuscolo nel riquadro, in un solo colore.
+/// The label of a type icon (`file-type-label`, icon-format.md "File type
+/// icons"): the extension in uppercase in the box, in a single color.
 class TypeLabel extends IconDynamic {
   const TypeLabel({
     required this.box,
@@ -265,10 +265,10 @@ class TypeLabel extends IconDynamic {
   final Color color;
   final Color darkColor;
 
-  /// Il testo senza estensione (o con una troppo lunga); null: nessuna etichetta.
+  /// The text without an extension (or with one too long); null: no label.
   final String? noExtension;
 
-  /// Sotto questo lato del corpo l'etichetta non si disegna.
+  /// Below this canvas side the label is not drawn.
   final double minSize;
 }
 
@@ -283,7 +283,7 @@ class LayeredIcon {
   final String id;
   final IconKind kind;
 
-  /// Dal basso verso l'alto: per le app il fondo e i primi piani, per i file l'artwork.
+  /// From bottom to top: for apps the background and the foregrounds, for files the artwork.
   final List<IconLayer> layers;
   final IconDynamic? dynamic;
 }
@@ -294,7 +294,7 @@ final RegExp _labelPattern = RegExp(r'^[a-z][a-z0-9-]{0,31}$');
 const Set<String> _weights = {'light', 'regular', 'semibold'};
 final RegExp _filePattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.svg$');
 
-/// Legge `icon.json` della cartella `dir`; null se il manifest non è valido o un file manca.
+/// Reads `icon.json` of the folder `dir`; null if the manifest is invalid or a file is missing.
 LayeredIcon? parseManifest(String dir, String text) {
   Object? json;
   try {
@@ -399,7 +399,7 @@ IconDynamic? _parseDynamic(
   }
 }
 
-/// `dynamic` di tipo `file-label` (il file generico, icon-format.md "File generico").
+/// `dynamic` of type `file-label` (the generic file, icon-format.md "Generic file").
 FileLabelRules? _parseFileLabel(Map raw) {
   final label = raw['label'];
   if (label is! Map) return null;
@@ -435,7 +435,7 @@ FileLabelRules? _parseFileLabel(Map raw) {
           key.toLowerCase(): value,
   };
   final icons = raw['icons'];
-  // Le voci di `icons.mime`: un id, o `{icon, category}` (il file generico con una categoria).
+  // The entries of `icons.mime`: an id, or `{icon, category}` (the generic file with a category).
   final mime = <String, (String, String?)>{};
   final rawMime = icons is Map ? icons['mime'] : null;
   if (rawMime is Map) {
@@ -475,7 +475,7 @@ FileLabelRules? _parseFileLabel(Map raw) {
   );
 }
 
-/// `dynamic` di tipo `file-type-label`.
+/// `dynamic` of type `file-type-label`.
 TypeLabel? _parseTypeLabel(Map raw) {
   final label = raw['label'];
   if (label is! Map) return null;
@@ -504,7 +504,7 @@ TypeLabel? _parseTypeLabel(Map raw) {
 double? _number(Object? v, double min, double max) =>
     v is num && v.isFinite && v >= min && v <= max ? v.toDouble() : null;
 
-/// `dynamic` di tipo `folder-symbol`; null se una parte obbligatoria manca o è fuori misura.
+/// `dynamic` of type `folder-symbol`; null if a required part is missing or out of range.
 FolderSymbol? _parseFolder(Map raw, String dir) {
   final symbol = raw['symbol'];
   if (symbol is! Map) return null;
@@ -649,8 +649,8 @@ Color? _parseColor(Object? raw) {
   return Color((alpha << 24) | rgb);
 }
 
-/// Le cartelle con le icone, dalla più importante: `SILICA_ICONS_DIR` (sviluppo), poi
-/// `silica/icons` nelle cartelle dei dati XDG.
+/// The folders with the icons, most important first: `SILICA_ICONS_DIR` (development), then
+/// `silica/icons` in the XDG data folders.
 List<String> silicaIconDirs(Map<String, String> env) => [
   if (env['SILICA_ICONS_DIR'] case final dir? when dir.isNotEmpty) dir,
   for (final dir in xdgDataDirs(env)) '$dir/silica/icons',
@@ -658,7 +658,7 @@ List<String> silicaIconDirs(Map<String, String> env) => [
 
 final Map<String, LayeredIcon?> _cache = {};
 
-/// L'icona `id` (cartella `apps/<id>` o `files/<id>`), o null.
+/// The icon `id` (folder `apps/<id>` or `files/<id>`), or null.
 LayeredIcon? findSilicaIcon(String id, {Map<String, String>? env}) {
   if (!_idPattern.hasMatch(id)) return null;
   final environment = env ?? Platform.environment;
@@ -684,7 +684,7 @@ LayeredIcon? findSilicaIcon(String id, {Map<String, String>? env}) {
   return found;
 }
 
-/// Le cartelle dei dati secondo la specifica XDG Base Directory: prima quella dell'utente.
+/// The data folders according to the XDG Base Directory specification: the user's first.
 List<String> xdgDataDirs(Map<String, String> env) {
   final home = env['HOME'] ?? '';
   final dataHome = env['XDG_DATA_HOME'] ?? '$home/.local/share';
@@ -694,9 +694,9 @@ List<String> xdgDataDirs(Map<String, String> env) {
   return [dataHome, ...dataDirs];
 }
 
-/// Le cartelle di xdg-user-dirs (`~/.config/user-dirs.dirs`), per chiave: DESKTOP,
-/// DOCUMENTS, DOWNLOAD, MUSIC, PICTURES, VIDEOS, TEMPLATES, PUBLICSHARE. Una voce uguale alla
-/// home è disattivata (specifica di xdg-user-dirs) e non compare.
+/// The xdg-user-dirs folders (`~/.config/user-dirs.dirs`), by key: DESKTOP,
+/// DOCUMENTS, DOWNLOAD, MUSIC, PICTURES, VIDEOS, TEMPLATES, PUBLICSHARE. An entry equal to the
+/// home is disabled (xdg-user-dirs specification) and does not appear.
 Map<String, String> xdgUserDirs(Map<String, String> env) {
   final home = _trimSlash(env['HOME'] ?? '');
   if (home.isEmpty) return const {};
@@ -735,10 +735,10 @@ String _trimSlash(String path) {
   return p;
 }
 
-/// La chiave della cartella speciale `path` (per `folders` della cartella generica): le chiavi
-/// di xdg-user-dirs, poi `HOME`, `APPLICATIONS` (`~/Applications` e `applications` nelle
-/// cartelle dei dati XDG) e `LIBRARY` (`~/.local/share`). `SHARED` e `NETWORK` non hanno un
-/// percorso: li passa chi conosce la cartella. Null per una cartella qualsiasi.
+/// The special folder key of `path` (for `folders` of the generic folder): the keys
+/// of xdg-user-dirs, then `HOME`, `APPLICATIONS` (`~/Applications` and `applications` in the
+/// XDG data folders) and `LIBRARY` (`~/.local/share`). `SHARED` and `NETWORK` have no
+/// path: they are passed by whoever knows the folder. Null for any other folder.
 String? specialFolderKey(String path, {Map<String, String>? env}) {
   final environment = env ?? Platform.environment;
   final p = _trimSlash(path);
@@ -757,22 +757,22 @@ String? specialFolderKey(String path, {Map<String, String>? env}) {
   return null;
 }
 
-/// La cartella da disegnare: l'icona (la cartella generica o quella semplice), il simbolo
-/// inciso e la tinta.
+/// The folder to draw: the icon (the generic folder or the plain one), the engraved
+/// symbol and the tint.
 class FolderIcon {
   const FolderIcon(this.icon, {this.symbol, this.tint});
 
   final LayeredIcon icon;
 
-  /// Nome di un simbolo di `symbols/` (solo con la cartella generica).
+  /// Name of a symbol in `symbols/` (only with the generic folder).
   final String? symbol;
   final Color? tint;
 }
 
-/// L'icona della cartella `path`: il simbolo della cartella speciale (o `symbol`, che vince;
-/// `key` per le cartelle senza percorso fisso, come `SHARED` e `NETWORK`) e la tinta (`#rrggbb`
-/// o il nome di un'etichetta). Senza simbolo né tinta, o se il simbolo non esiste, la cartella
-/// semplice (`fallback`). Null se non c'è nessuna icona di cartella.
+/// The icon of the folder `path`: the symbol of the special folder (or `symbol`, which wins;
+/// `key` for folders without a fixed path, like `SHARED` and `NETWORK`) and the tint (`#rrggbb`
+/// or the name of a tag). Without symbol or tint, or if the symbol does not exist, the plain
+/// folder (`fallback`). Null if there is no folder icon at all.
 FolderIcon? resolveFolderIcon(
   String path, {
   String? symbol,
@@ -797,8 +797,8 @@ FolderIcon? resolveFolderIcon(
   return FolderIcon(generic, symbol: valid ? name : null, tint: color);
 }
 
-/// L'id dell'icona di silica-icons per un file, dall'estensione del nome (senza estensione:
-/// `file-unknown`; estensione sconosciuta: `file-generic`).
+/// The silica-icons icon id for a file, from the extension of the name (no extension:
+/// `file-unknown`; unknown extension: `file-generic`).
 String fileIconId(String name) {
   final lower = name.toLowerCase();
   final dot = lower.lastIndexOf('.');
@@ -837,7 +837,7 @@ String fileIconId(String name) {
   };
 }
 
-/// L'icona di un file (`fileIconId`), o quella generica se manca.
+/// The icon of a file (`fileIconId`), or the generic one if it is missing.
 LayeredIcon? fileIconFor(String name, {Map<String, String>? env}) =>
     findSilicaIcon(fileIconId(name), env: env) ??
     findSilicaIcon('file-generic', env: env);

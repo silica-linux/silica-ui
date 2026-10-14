@@ -1,14 +1,14 @@
-// Menu a tendina e contestuali: un pannello di vetro spesso con voci da 24 pt, separatori da
-// 11 pt, intestazioni di sezione, spunte, scorciatoie e sottomenu.
+// Pull-down and context menus: a thick glass panel with 24 pt items, 11 pt separators,
+// section headers, checkmarks, shortcuts and submenus.
 //
-// Metriche (pt): margine interno 5 sopra e sotto; testo a 17 dal bordo (38 con le icone, 50
-// con spunte e icone), corpo 13; scorciatoie e freccia del sottomenu che finiscono a 20 dal
-// bordo destro; evidenziazione blu (#007aff) a 5 pt dai lati, raggio 8, testo bianco;
-// separatore di 1 pt al centro dei suoi 11, a 16 pt dai lati; raggio del pannello 12.
-// Un sottomenu si apre ~295 ms dopo l'arrivo del puntatore sulla sua voce, 5 pt sopra la
-// voce e sovrapposto di 5 pt al menu madre; resta aperto mentre il puntatore va in diagonale
-// verso di lui (tolleranza a triangolo). Scelta: la voce lampeggia (spenta subito, riaccesa a
-// ~74 ms) e il menu sfuma in ~190 ms da ~114 ms; Esc sfuma allo stesso modo.
+// Metrics (pt): inner margin 5 above and below; text at 17 from the edge (38 with icons, 50
+// with checkmarks and icons), size 13; shortcuts and the submenu arrow ending 20 from the
+// right edge; blue highlight (#007aff) 5 pt from the sides, radius 8, white text;
+// 1 pt separator in the middle of its 11, 16 pt from the sides; panel radius 12.
+// A submenu opens ~295 ms after the pointer reaches its item, 5 pt above the item and
+// overlapping the parent menu by 5 pt; it stays open while the pointer moves diagonally
+// towards it (triangle tolerance). Choice: the item blinks (off at once, back on at
+// ~74 ms) and the menu fades in ~190 ms from ~114 ms; Esc fades the same way.
 
 import 'dart:async';
 
@@ -21,13 +21,13 @@ import 'glass.dart';
 import 'liquid_glass.dart';
 import 'window_glass.dart';
 
-/// Una riga di un menu.
+/// A row of a menu.
 @immutable
 sealed class MenuEntry {
   const MenuEntry();
 }
 
-/// Una voce: etichetta, scorciatoia, spunta, icona, sottomenu.
+/// An item: label, shortcut, checkmark, icon, submenu.
 class MenuAction extends MenuEntry {
   const MenuAction(
     this.label, {
@@ -41,10 +41,10 @@ class MenuAction extends MenuEntry {
 
   final String label;
 
-  /// Testo della scorciatoia, già con i simboli dei modificatori (es. "⌘N").
+  /// Shortcut text, already with the modifier symbols (e.g. "⌘N").
   final String? shortcut;
 
-  /// Un'icona di ~14 pt, disegnata nel colore che riceve.
+  /// An icon of ~14 pt, drawn in the color it receives.
   final Widget Function(Color color)? icon;
   final bool checked;
   final bool enabled;
@@ -54,14 +54,14 @@ class MenuAction extends MenuEntry {
   bool get selectable => enabled && (submenu == null || submenu!.isNotEmpty);
 }
 
-/// Linea di separazione.
+/// Separator line.
 class MenuDivider extends MenuEntry {
   const MenuDivider();
 }
 
-/// Una riga disegnata da chi apre il menu (la fila dei cerchi delle etichette): alta `height`,
-/// larga almeno `width`; `builder` riceve la funzione che chiude il menu. Non si sceglie con la
-/// tastiera e il rilascio del puntatore sopra di lei non chiude il menu: gestisce i suoi tocchi.
+/// A row drawn by whoever opens the menu (the row of tag circles): `height` high,
+/// at least `width` wide; `builder` receives the function that closes the menu. It is not chosen
+/// with the keyboard and releasing the pointer over it does not close the menu: it handles its own taps.
 class MenuCustom extends MenuEntry {
   const MenuCustom({
     required this.height,
@@ -74,13 +74,13 @@ class MenuCustom extends MenuEntry {
   final Widget Function(BuildContext context, VoidCallback close) builder;
 }
 
-/// Intestazione grigia di un gruppo, non selezionabile.
+/// Gray header of a group, not selectable.
 class MenuSection extends MenuEntry {
   const MenuSection(this.label);
   final String label;
 }
 
-/// Le misure dei menu.
+/// The menu measurements.
 abstract final class MenuMetrics {
   static const double itemHeight = 24;
   static const double dividerHeight = 11;
@@ -104,25 +104,25 @@ abstract final class MenuMetrics {
   static const double chevronWidth = 6;
   static const double minWidth = 120;
 
-  /// Punta verso l'oggetto: alta 8, base 22, lati concavi; il corpo comincia 27 pt a
-  /// sinistra del vertice.
+  /// Tip towards the object: 8 high, 22 base, concave sides; the body starts 27 pt to the
+  /// left of the apex.
   static const double tipHeight = 8;
   static const double tipBase = 22;
   static const double tipBodyLeft = 27;
 
-  /// Sottomenu: sovrapposto di 5 pt e 5 pt sopra la voce.
+  /// Submenu: overlapping by 5 pt and 5 pt above the item.
   static const double submenuOverlap = 5;
   static const Duration submenuDelay = Duration(milliseconds: 295);
   static const Duration triangleGrace = Duration(milliseconds: 300);
 
-  /// Lampeggio e dissolvenza della scelta.
+  /// Blink and fade of the choice.
   static const Duration blinkOff = Duration(milliseconds: 7);
   static const Duration blinkOn = Duration(milliseconds: 74);
   static const Duration fadeStart = Duration(milliseconds: 114);
   static const Duration fade = Duration(milliseconds: 190);
 }
 
-/// I colori del menu, chiaro e scuro (menubar.md, "Menu · testo" e "Menu · separatori").
+/// The menu colors, light and dark (menubar.md, "Menu · text" and "Menu · separators").
 @immutable
 class MenuColors {
   const MenuColors({
@@ -142,14 +142,14 @@ class MenuColors {
   final Color divider;
   final Color shadow;
 
-  /// Il filo del menu dentro una finestra ([MenuPanel.opaque]).
+  /// The hairline of a menu inside a window ([MenuPanel.opaque]).
   final Color opaqueBorder;
 
-  /// L'evidenziazione: uguale in chiaro e in scuro.
+  /// The highlight: the same in light and dark.
   static const Color highlight = Color(0xFF007AFF);
   static const Color highlightText = Color(0xFFFFFFFF);
 
-  /// Dentro una finestra il vetro lo fa Flutter ([WindowGlass]): sul bianco `#fcfcfd`
+  /// Inside a window Flutter makes the glass ([WindowGlass]): on white `#fcfcfd`
   /// (mustache.md MU-50).
   static const MenuColors light = MenuColors(
     text: Color(0xD9000000),
@@ -161,9 +161,9 @@ class MenuColors {
     opaqueBorder: Color(0x1F000000),
   );
 
-  /// Testo bianco all'85 %, disattivato al 26 %, scorciatoie al 30 %, separatore al 14 %;
-  /// ombra più fonda (−14 % contro −11 % a destra). Filo esterno nero ~86 %. L'intestazione di sezione è
-  /// *stimata* come il disattivato (non misurata in scuro).
+  /// White text at 85 %, disabled at 26 %, shortcuts at 30 %, separator at 14 %;
+  /// deeper shadow (−14 % against −11 % on the right). Outer hairline black ~86 %. The section header is
+  /// *estimated* like the disabled one (not measured in dark).
   static const MenuColors dark = MenuColors(
     text: Color(0xD9FFFFFF),
     disabled: Color(0x42FFFFFF),
@@ -174,7 +174,7 @@ class MenuColors {
     opaqueBorder: Color(0xDB000000),
   );
 
-  /// Secondo l'aspetto del sistema (`MediaQuery.platformBrightness`).
+  /// Following the system appearance (`MediaQuery.platformBrightness`).
   static MenuColors of(BuildContext context) =>
       MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
       ? dark
@@ -203,7 +203,7 @@ double _entryHeight(MenuEntry entry) => switch (entry) {
   MenuCustom(:final height) => height,
 };
 
-/// La colonna del testo: dipende da spunte e icone presenti nel menu.
+/// The text column: it depends on the checkmarks and icons in the menu.
 double menuTextLeft(List<MenuEntry> entries) {
   final actions = entries.whereType<MenuAction>();
   final checks = actions.any((a) => a.checked);
@@ -216,7 +216,7 @@ double menuTextLeft(List<MenuEntry> entries) {
   };
 }
 
-/// La dimensione del pannello di un menu.
+/// The size of a menu panel.
 Size menuSize(List<MenuEntry> entries) {
   final left = menuTextLeft(entries);
   var width = MenuMetrics.minWidth;
@@ -238,9 +238,9 @@ Size menuSize(List<MenuEntry> entries) {
                 ? MenuMetrics.shortcutGap + MenuMetrics.chevronWidth
                 : 0) +
             MenuMetrics.right,
-      // L'intestazione conta come una voce del corpo normale, anche se è disegnata più
-      // piccola (d06-pila-menu: "Visualizza contenuti come" fa largo il menu 220 pt =
-      // 29 + il testo a 13 pt + 20).
+      // The header counts as an item in the normal body size, even if it is drawn smaller
+      // (d06-pila-menu: "Visualizza contenuti come" makes the menu 220 pt wide =
+      // 29 + the text at 13 pt + 20).
       MenuSection(:final label) =>
         left +
             _textWidth(
@@ -259,7 +259,7 @@ Size menuSize(List<MenuEntry> entries) {
   return Size(width.ceilToDouble(), height);
 }
 
-/// La cima di ogni riga, dal bordo superiore del pannello.
+/// The top of each row, from the top edge of the panel.
 List<double> menuRowTops(List<MenuEntry> entries) {
   final tops = <double>[];
   var y = MenuMetrics.padding;
@@ -270,7 +270,7 @@ List<double> menuRowTops(List<MenuEntry> entries) {
   return tops;
 }
 
-/// Un menu aperto: le voci, il rettangolo e la voce evidenziata.
+/// An open menu: the items, the rectangle and the highlighted item.
 class _Level {
   _Level(this.entries, this.rect);
   final List<MenuEntry> entries;
@@ -288,9 +288,9 @@ class _Level {
   }
 }
 
-/// Un menu con i suoi sottomenu, disegnato in un'area che lo contiene (un layer a schermo
-/// intero, la superficie della barra allungata). Il menu principale sta con l'angolo in alto a
-/// sinistra in `anchor`, o con il bordo inferiore lì se `upwards`.
+/// A menu with its submenus, drawn in an area that contains it (a full-screen layer, the
+/// stretched bar surface). The main menu has its top-left corner at `anchor`, or its bottom
+/// edge there if `upwards`.
 class MenuHost extends StatefulWidget {
   const MenuHost({
     super.key,
@@ -312,33 +312,33 @@ class MenuHost extends StatefulWidget {
   final Offset anchor;
   final bool upwards;
 
-  /// La punta di un menu che indica un oggetto sotto di sé (un'icona del Dock): il vertice in
-  /// coordinate dell'area. Il menu sta sopra, con il corpo che comincia 27 pt a sinistra della
-  /// punta e il fondo 8 pt sopra il vertice; `anchor` e `upwards` non contano.
+  /// The tip of a menu pointing at an object below it (a Dock icon): the apex in
+  /// area coordinates. The menu sits above, with the body starting 27 pt to the left of the
+  /// tip and the bottom 8 pt above the apex; `anchor` and `upwards` do not count.
   final Offset? tip;
 
-  /// La punta in alto: il menu sta **sotto** il vertice (un popover che indica il pulsante da
-  /// cui si apre), con il corpo che comincia 27 pt a sinistra della punta e la cima 8 pt sotto
-  /// il vertice.
+  /// The tip on top: the menu sits **below** the apex (a popover pointing at the button it
+  /// opens from), with the body starting 27 pt to the left of the tip and the top 8 pt below
+  /// the apex.
   final bool tipUp;
 
-  /// Il menu è sparito (scelta, Esc o clic fuori), a dissolvenza finita.
+  /// The menu is gone (choice, Esc or click outside), once the fade has finished.
   final VoidCallback? onDismissed;
 
-  /// → e ← senza sottomenu: il menu accanto (nella barra).
+  /// → and ← without a submenu: the next menu (in the menu bar).
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
   final bool autofocus;
 
-  /// Falso: il puntatore lo passa chi ospita il menu (`pointerMoved`, `pointerDown`,
-  /// `pointerUp`), per esempio una barra in cui si preme su una voce e si rilascia nel menu.
+  /// False: the pointer is passed by whoever hosts the menu (`pointerMoved`, `pointerDown`,
+  /// `pointerUp`), for example a bar where you press on an item and release in the menu.
   final bool handlesPointer;
 
-  /// I rettangoli dei menu aperti sono cambiati (un sottomenu si apre o si chiude): chi ospita
-  /// il menu allarga la regione d'input. Chiamato dopo il frame.
+  /// The rectangles of the open menus have changed (a submenu opens or closes): whoever hosts
+  /// the menu widens the input region. Called after the frame.
   final ValueChanged<List<Rect>>? onRectsChanged;
 
-  /// Menu dentro una finestra: il vetro lo fa Flutter ([MenuPanel.opaque]).
+  /// A menu inside a window: Flutter makes the glass ([MenuPanel.opaque]).
   final bool opaque;
 
   @override
@@ -360,7 +360,7 @@ class MenuHostState extends State<MenuHost>
     value: 1,
   )..addListener(() => setState(() {}));
 
-  /// I rettangoli dei menu aperti (per la regione d'input).
+  /// The rectangles of the open menus (for the input region).
   List<Rect> get rects => [for (final l in _levels) l.rect];
 
   @override
@@ -376,8 +376,8 @@ class MenuHostState extends State<MenuHost>
         (old.tip == null) != (widget.tip == null)) {
       _reset();
     } else if (old.anchor != widget.anchor || old.tip != widget.tip) {
-      // La superficie che ospita il menu è cambiata (il Dock che si allunga): i menu aperti
-      // si spostano insieme, senza chiudere il sottomenu.
+      // The surface hosting the menu has changed (the Dock stretching): the open menus
+      // move with it, without closing the submenu.
       final tip = widget.tip;
       final oldTip = old.tip;
       final shift = tip != null && oldTip != null
@@ -433,8 +433,8 @@ class MenuHostState extends State<MenuHost>
     });
   }
 
-  /// Il puntatore va verso il sottomenu aperto: dentro il triangolo fra la posizione di
-  /// prima e il lato sinistro del sottomenu.
+  /// The pointer is heading to the open submenu: inside the triangle between the previous
+  /// position and the left side of the submenu.
   bool _towardSubmenu(int level, Offset p) {
     final from = _lastPointer;
     if (from == null || level + 1 >= _levels.length) return false;
@@ -449,16 +449,16 @@ class MenuHostState extends State<MenuHost>
     return !(negative && positive);
   }
 
-  /// Il puntatore si muove (coordinate dell'area del menu).
+  /// The pointer moves (menu area coordinates).
   void pointerMoved(Offset p) => _hover(p);
 
-  /// Pressione: una voce, un sottomenu, o fuori (chiude).
+  /// Press: an item, a submenu, or outside (closes).
   void pointerDown(Offset p) => _press(p);
 
-  /// Rilascio: sceglie la voce evidenziata sotto il puntatore.
+  /// Release: chooses the highlighted item under the pointer.
   void pointerUp(Offset p) => _release(p);
 
-  /// Il punto è sopra uno dei menu aperti.
+  /// The point is over one of the open menus.
   bool contains(Offset p) => _levels.any((l) => l.rect.contains(p));
 
   void _release(Offset p) {
@@ -479,7 +479,7 @@ class MenuHostState extends State<MenuHost>
     for (var level = _levels.length - 1; level >= 0; level--) {
       final row = _levels[level].rowAt(p);
       if (row == null && !_levels[level].rect.contains(p)) continue;
-      // Verso il sottomenu: la voce madre resta evidenziata ancora per un po'.
+      // Towards the submenu: the parent item stays highlighted a little longer.
       if (level + 1 < _levels.length && _towardSubmenu(level, p)) {
         _graceTimer ??= Timer(MenuMetrics.triangleGrace, () {
           _graceTimer = null;
@@ -495,7 +495,7 @@ class MenuHostState extends State<MenuHost>
       final selectable = entry is MenuAction && entry.selectable;
       setState(() {
         current.highlighted = selectable ? row : null;
-        // Su un'altra voce il sottomenu di prima si chiude.
+        // On another item the previous submenu closes.
         if (level + 1 < _levels.length) {
           _levels.removeRange(level + 1, _levels.length);
         }
@@ -530,11 +530,11 @@ class MenuHostState extends State<MenuHost>
       _choose(level, row);
       return;
     }
-    // Fuori da tutti i menu: si chiude senza scegliere.
+    // Outside all menus: it closes without choosing.
     close();
   }
 
-  /// Sceglie una voce: lampeggio, poi l'azione e la dissolvenza.
+  /// Chooses an item: blink, then the action and the fade.
   Future<void> _choose(int level, int row) async {
     if (_closing) return;
     final entry = _levels[level].entries[row];
@@ -554,7 +554,7 @@ class MenuHostState extends State<MenuHost>
     widget.onDismissed?.call();
   }
 
-  /// Chiude con la dissolvenza (Esc, clic fuori).
+  /// Closes with the fade (Esc, click outside).
   Future<void> close() async {
     if (_closing) return;
     _closing = true;
@@ -621,7 +621,7 @@ class MenuHostState extends State<MenuHost>
           }
         }
       default:
-        // Una lettera: la prima voce che comincia così.
+        // A letter: the first item starting with it.
         final char = event.character?.toLowerCase();
         if (char == null || char.trim().isEmpty) return KeyEventResult.ignored;
         final index = level.entries.indexWhere(
@@ -697,7 +697,7 @@ class MenuHostState extends State<MenuHost>
   }
 }
 
-/// Il pannello di un menu: vetro, ombra, righe. La dimensione la decide chi lo posiziona
+/// A menu panel: glass, shadow, rows. The size is decided by whoever places it
 /// (`menuSize`).
 class MenuPanel extends StatelessWidget {
   const MenuPanel({
@@ -714,22 +714,22 @@ class MenuPanel extends StatelessWidget {
   final List<MenuEntry> entries;
   final int? highlighted;
 
-  /// Chiude il menu (per le righe [MenuCustom]).
+  /// Closes the menu (for [MenuCustom] rows).
   final VoidCallback? onClose;
 
-  /// Il gruppo del vetro ([Glass.group]): un sottomenu ha il suo, e non si fonde con il
-  /// menu madre su cui è disegnato.
+  /// The glass group ([Glass.group]): a submenu has its own, and does not merge with the
+  /// parent menu it is drawn on.
   final int group;
 
-  /// Un menu disegnato dentro una finestra, dove il vetro del compositor starebbe sotto il
-  /// contenuto: il vetro lo fa Flutter ([WindowGlass]), con lo stesso materiale (sul bianco
+  /// A menu drawn inside a window, where the compositor's glass would sit under the
+  /// content: Flutter makes the glass ([WindowGlass]) with the same material (on white
   /// `#fcfcfd`, mustache.md MU-50).
   final bool opaque;
 
-  /// Centro della punta sotto il pannello, dal suo bordo sinistro (null: niente punta).
+  /// Center of the tip under the panel, from its left edge (null: no tip).
   final double? tipX;
 
-  /// La punta sul bordo superiore, rivolta in alto.
+  /// The tip on the top edge, pointing up.
   final bool tipUp;
 
   @override
@@ -743,7 +743,7 @@ class MenuPanel extends StatelessWidget {
       painter: _MenuShadow(tipX, colors.shadow, up: tipUp),
       child: opaque
           ? WindowGlass(
-              key: const ValueKey('menu nella finestra'),
+              key: const ValueKey('in-window menu'),
               radius: MenuMetrics.radius,
               border: colors.opaqueBorder,
               child: _rows(colors, left, checks, tops),
@@ -753,15 +753,15 @@ class MenuPanel extends StatelessWidget {
               material: GlassMaterial.thick,
               interactive: false,
               group: group,
-              // La punta è parte del vetro (una sola forma con il corpo, il bordo continuo).
+              // The tip is part of the glass (a single shape with the body, the edge continuous).
               tip: tipX == null
                   ? null
                   : GlassTip(
                       x: tipX,
-                      // Sui pixel di dock-context-light.png la punta scende ~10 pt sotto il corpo
-                      // (y 1338 → 1347) e si stringe di ~0,7 pt per lato a ogni riga. Il vertice
-                      // arrotondato (3,5 pt) e i raccordi dell'unione morbida allargano la base:
-                      // sul corpo torna larga ~22 pt.
+                      // On the pixels of dock-context-light.png the tip goes ~10 pt below the body
+                      // (y 1338 → 1347) and narrows by ~0.7 pt per side at each row. The rounded
+                      // apex (3.5 pt) and the fillets of the smooth union widen the base:
+                      // on the body it is ~22 pt wide again.
                       width: MenuMetrics.tipBase - 14,
                       height: MenuMetrics.tipHeight + 2,
                       up: tipUp,
@@ -811,7 +811,7 @@ class MenuPanel extends StatelessWidget {
             color: colors.divider,
           ),
         );
-      // Allineata al testo delle voci (con le spunte a 29, d06-pila-menu).
+      // Aligned with the item text (with checkmarks at 29, d06-pila-menu).
       case MenuSection(:final label):
         return Padding(
           padding: EdgeInsets.only(left: textLeft),
@@ -918,8 +918,8 @@ class MenuPanel extends StatelessWidget {
   }
 }
 
-/// Ombra fuori dal pannello: più lunga in basso (~20 pt) che ai lati (~16 pt). Non cade
-/// sul vetro, punta compresa.
+/// Shadow outside the panel: longer below (~20 pt) than on the sides (~16 pt). It does not fall
+/// on the glass, tip included.
 class _MenuShadow extends CustomPainter {
   const _MenuShadow(this.tipX, this.color, {this.up = false});
   final double? tipX;
@@ -936,8 +936,8 @@ class _MenuShadow extends CustomPainter {
     final x = tipX;
     if (x != null) {
       const half = MenuMetrics.tipBase / 2 - 3;
-      // La punta come la disegna il compositor: lati dritti raccordati al corpo da curve
-      // concave di ~4 pt (l'unione morbida del vetro) e il vertice appena arrotondato.
+      // The tip as the compositor draws it: straight sides joined to the body by concave
+      // ~4 pt curves (the smooth union of the glass) and a slightly rounded apex.
       const h = MenuMetrics.tipHeight + 2;
       final top = size.height;
       final side = Offset(half, h) / Offset(half, h).distance;
@@ -967,7 +967,7 @@ class _MenuShadow extends CustomPainter {
           ..lineTo(x + half + fillet, top - 1)
           ..close(),
       );
-      // In alto: la stessa forma specchiata (il corpo è simmetrico).
+      // On top: the same shape mirrored (the body is symmetric).
       if (up) {
         glass = glass.transform(
           (Matrix4.identity()

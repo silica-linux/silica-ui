@@ -1,13 +1,13 @@
-// La finestra dell'app e la barra degli strumenti unificata (windows.md, mustache-spec 1.2).
+// The app window and the unified toolbar (windows.md, mustache-spec 1.2).
 //
-// Con il contenuto a tutta finestra (`silica-window-v1` di Ossido, canale `silica/window`
-// dell'embedder) Ossido non aggiunge la sua barra del titolo: l'app disegna la barra degli
-// strumenti in cima (52 pt) e Ossido mette i pulsanti della finestra sopra, centrati in quella
-// fascia. Trascinando il vuoto della barra si sposta la finestra (`WindowDragArea`).
+// With full-size content (Ossido's `silica-window-v1`, the embedder's `silica/window`
+// channel) Ossido does not add its title bar: the app draws the toolbar at the top (52 pt)
+// and Ossido puts the window buttons over it, centered in that band. Dragging the empty
+// part of the bar moves the window (`WindowDragArea`).
 //
-// Le capsule della barra: alte 38 con 7 pt sopra e sotto, raggio 19; fondo `#f6f6f6` →
-// `#fdfdfd`, contorno `#ebebeb` sopra, `#e8e7e8` sotto, `#c1c1c1` ai lati; il segmento scelto è
-// una pillola 34 × 28 rientrata di 5 pt, `#e2e2e2` → `#e7e7e7`.
+// The toolbar capsules: 38 high with 7 pt above and below, radius 19; fill `#f6f6f6` →
+// `#fdfdfd`, outline `#ebebeb` above, `#e8e7e8` below, `#c1c1c1` on the sides; the chosen segment
+// is a 34 × 28 pill inset by 5 pt, `#e2e2e2` → `#e7e7e7`.
 
 import 'dart:async';
 
@@ -16,19 +16,19 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Altezza della barra degli strumenti unificata.
+/// Height of the unified toolbar.
 const double toolbarHeight = 52;
 const double toolbarCapsuleHeight = 38;
 
-/// La finestra dell'app verso Ossido.
+/// The app window, towards Ossido.
 abstract final class SilicaWindow {
   static const MethodChannel channel = MethodChannel(
     'silica/window',
     JSONMethodCodec(),
   );
 
-  /// Contenuto a tutta finestra con una barra degli strumenti alta `toolbar` (0: torna alla
-  /// barra di Ossido). Vero se Ossido lo offre.
+  /// Full-size content with a toolbar `toolbar` high (0: back to Ossido's
+  /// title bar). True if Ossido offers it.
   static Future<bool> setFullSizeContent(double toolbar) async {
     try {
       final reply = await channel.invokeMethod<Object?>('setFullSizeContent', {
@@ -42,20 +42,20 @@ abstract final class SilicaWindow {
     }
   }
 
-  /// Sposta la finestra con il puntatore premuto (dalla barra degli strumenti).
+  /// Moves the window with the pointer pressed (from the toolbar).
   static Future<void> startMove() async {
     try {
       await channel.invokeMethod<Object?>('startMove');
     } on MissingPluginException {
-      // Fuori da Silica la finestra non si sposta da qui.
+      // Outside Silica the window does not move from here.
     } on PlatformException {
-      // Idem.
+      // Likewise.
     }
   }
 }
 
-/// Il vuoto della barra degli strumenti: trascinandolo si sposta la finestra. I controlli
-/// dentro `child` ricevono i loro clic come sempre.
+/// The empty part of the toolbar: dragging it moves the window. Controls inside
+/// `child` receive their clicks as usual.
 class WindowDragArea extends StatelessWidget {
   const WindowDragArea({super.key, required this.child});
   final Widget child;
@@ -74,8 +74,8 @@ class WindowDragArea extends StatelessWidget {
   );
 }
 
-/// I colori della barra degli strumenti (mustache-spec 1.2; stati da mustache.md M6 › MU-07,
-/// misurati al centro della pillola, fuori dal glifo).
+/// The toolbar colors (mustache-spec 1.2; states from mustache.md M6 › MU-07, measured at
+/// the center of the pill, outside the glyph).
 @immutable
 class ToolbarColors {
   const ToolbarColors({
@@ -103,8 +103,8 @@ class ToolbarColors {
     required this.titleInactive,
   });
 
-  /// Il fondo della capsula a riposo; con il puntatore nella barra (in scuro +7 livelli);
-  /// nella finestra inattiva.
+  /// The capsule fill at rest; with the pointer in the bar (in dark +7 levels);
+  /// in the inactive window.
   final Color fill;
   final Color fillBarHover;
   final Color fillInactive;
@@ -112,19 +112,19 @@ class ToolbarColors {
   final Color borderBottom;
   final Color borderSide;
 
-  /// La pillola sotto il puntatore (attiva e inattiva) e premuta.
+  /// The pill under the pointer (active and inactive) and pressed.
   final Color hover;
   final Color hoverInactive;
   final Color pressed;
 
-  /// Il segmento scelto: riposo, sotto il puntatore, premuto; nella finestra inattiva.
+  /// The chosen segment: at rest, under the pointer, pressed; in the inactive window.
   final Color chosen;
   final Color chosenHover;
   final Color chosenPressed;
   final Color chosenInactive;
   final Color chosenHoverInactive;
 
-  /// Un segmento disattivato premuto (in scuro una pillola tenue; in chiaro niente).
+  /// A disabled segment pressed (in dark a faint pill; in light nothing).
   final Color? disabledPressed;
   final Color separator;
   final Color icon;
@@ -159,8 +159,8 @@ class ToolbarColors {
     titleInactive: Color(0xFFBEBEBE),
   );
 
-  /// Scuro: capsula `#434344` (`#4a4a4b` con il puntatore nella barra), contorno
-  /// `#79797b` / `#6c6e6e` / `#131313`, separatore `#7a7a7a`, titolo `#e9e9e9` / `#646464`.
+  /// Dark: capsule `#434344` (`#4a4a4b` with the pointer in the bar), outline
+  /// `#79797b` / `#6c6e6e` / `#131313`, separator `#7a7a7a`, title `#e9e9e9` / `#646464`.
   static const ToolbarColors dark = ToolbarColors(
     fill: Color(0xFF434344),
     fillBarHover: Color(0xFF4A4A4B),
@@ -186,15 +186,15 @@ class ToolbarColors {
     titleInactive: Color(0xFF646464),
   );
 
-  /// Secondo l'aspetto del sistema (`MediaQuery.platformBrightness`).
+  /// Following the system appearance (`MediaQuery.platformBrightness`).
   static ToolbarColors of(BuildContext context) =>
       MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
       ? dark
       : light;
 }
 
-/// Lo stato della barra che i controlli leggono: la finestra attiva e il puntatore nella barra
-/// (in scuro le capsule si schiariscono di 7 livelli).
+/// The bar state the controls read: the active window and the pointer in the bar
+/// (in dark the capsules lighten by 7 levels).
 class ToolbarScope extends InheritedWidget {
   const ToolbarScope({
     super.key,
@@ -214,12 +214,12 @@ class ToolbarScope extends InheritedWidget {
       old.active != active || old.hovered != hovered;
 }
 
-/// Il ritardo della pressione lunga (menu della cronologia su Indietro e Avanti, MU-07).
+/// The long-press delay (history menu on Back and Forward, MU-07).
 const Duration toolbarLongPress = Duration(milliseconds: 295);
 
-/// Una capsula della barra: alta 38, raggio 19, con i segmenti in fila. Un solo segmento largo
-/// quanto è alto diventa un cerchio (Cerca). Accanto al segmento sotto il puntatore i
-/// separatori spariscono; con un segmento premuto la capsula cresce di 1 pt per lato.
+/// A toolbar capsule: 38 high, radius 19, with the segments in a row. A single segment as wide
+/// as it is high becomes a circle (Search). Next to the segment under the pointer the
+/// separators disappear; with a segment pressed the capsule grows by 1 pt per side.
 class ToolbarCapsule extends StatefulWidget {
   const ToolbarCapsule({
     super.key,
@@ -229,7 +229,7 @@ class ToolbarCapsule extends StatefulWidget {
 
   final List<Widget> children;
 
-  /// Una riga di 1 × 21 fra i segmenti (Indietro / Avanti).
+  /// A 1 × 21 line between the segments (Back / Forward).
   final bool separators;
 
   @override
@@ -263,7 +263,7 @@ class _ToolbarCapsuleState extends State<ToolbarCapsule> {
     final children = widget.children;
     final capsule = Container(
       height: toolbarCapsuleHeight,
-      // Il contorno: un anello di 1 pt chiaro sopra e sotto, più scuro ai lati.
+      // The outline: a 1 pt ring, light above and below, darker on the sides.
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -302,12 +302,12 @@ class _ToolbarCapsuleState extends State<ToolbarCapsule> {
         ),
       ),
     );
-    // Premuta: +1 pt per lato (Indietro/Avanti 407–481 → 406–482).
+    // Pressed: +1 pt per side (Back/Forward 407–481 → 406–482).
     return _GrowByOne(grow: _pressed != null, child: capsule);
   }
 }
 
-/// La capsula premuta: 1 pt in più per lato, attorno al centro (solo nel disegno).
+/// The pressed capsule: 1 pt more per side, around the center (only when painting).
 class _GrowByOne extends SingleChildRenderObjectWidget {
   const _GrowByOne({required this.grow, super.child});
   final bool grow;
@@ -357,7 +357,7 @@ class _CapsuleSlot extends InheritedWidget {
 
   final int index;
 
-  /// L'unico segmento: la pillola è la capsula rientrata di 1 pt (Cerca 36 × 34).
+  /// The only segment: the pill is the capsule inset by 1 pt (Search 36 × 34).
   final bool single;
   final void Function(int index, bool on) onHover;
   final void Function(int index, bool on) onPress;
@@ -370,11 +370,11 @@ class _CapsuleSlot extends InheritedWidget {
       old.index != index || old.single != single;
 }
 
-/// Un segmento di capsula: largo `width`, con l'icona disegnata nel colore che riceve.
-/// La pillola (alta 28, larga il segmento − 3) compare sotto il puntatore e si scurisce alla
-/// pressione; il segmento scelto la tiene sempre. Disattivato: nessuna pillola, nessuna azione.
-/// Il clic agisce al rilascio; con [onLongPress], tenuto [toolbarLongPress] apre il menu e il
-/// rilascio non agisce più. [onPress] agisce alla pressione (i pulsanti con un menu).
+/// A capsule segment: `width` wide, with the icon drawn in the color it receives.
+/// The pill (28 high, the segment width − 3) appears under the pointer and darkens on
+/// press; the chosen segment always keeps it. Disabled: no pill, no action.
+/// The click acts on release; with [onLongPress], held for [toolbarLongPress] it opens the menu and
+/// the release no longer acts. [onPress] acts on press (buttons with a menu).
 class ToolbarSegment extends StatefulWidget {
   const ToolbarSegment({
     super.key,
@@ -494,8 +494,8 @@ class _ToolbarSegmentState extends State<ToolbarSegment> {
         onPointerDown: _down,
         onPointerUp: _up,
         onPointerCancel: (_) => _cancel(),
-        // Il segmento tiene per sé tocco e trascinamento: da un controllo la finestra non si
-        // sposta (WindowDragArea), MU-08.
+        // The segment keeps tap and drag to itself: a drag from a control does not move the
+        // window (WindowDragArea), MU-08.
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {},
@@ -508,7 +508,7 @@ class _ToolbarSegmentState extends State<ToolbarSegment> {
               children: [
                 if (pill != null)
                   Container(
-                    key: const ValueKey('pillola'),
+                    key: const ValueKey('pill'),
                     width: pillWidth,
                     height: pillHeight,
                     decoration: BoxDecoration(

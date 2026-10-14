@@ -51,7 +51,7 @@ const Map<String, Object> labelRules = {
   'fallback': 'file-unknown',
 };
 
-/// Un repo finto: il file generico con le regole, alcune icone dei tipi e i badge.
+/// A fake repo: the generic file with the rules, some type icons and the badges.
 Directory iconTree() {
   final root = Directory.systemTemp.createTempSync('silica-file-icons-');
   for (final id in [
@@ -111,7 +111,7 @@ application/json application/javascript
 );
 
 void main() {
-  test('MIME: glob più lungo, maiuscole, letterali, genitori, alias', () {
+  test('MIME: longest glob, case, literals, parents, aliases', () {
     expect(mime.typeForName('a.pdf'), 'application/pdf');
     expect(mime.typeForName('A.PDF'), 'application/pdf');
     expect(mime.typeForName('x.tar.gz'), 'application/x-compressed-tar');
@@ -130,7 +130,7 @@ void main() {
     expect(ambiguous.isAmbiguousName('a.pdf'), isFalse);
   });
 
-  test('MIME dal contenuto: ELF, script, testo, binario, vuoto', () {
+  test('MIME from the content: ELF, script, text, binary, empty', () {
     final dir = Directory.systemTemp.createTempSync('mime-');
     addTearDown(() => dir.deleteSync(recursive: true));
     File(
@@ -152,7 +152,7 @@ void main() {
     expect(mime.typeOf('${dir.path}/sparito'), octetStream);
   });
 
-  group('icona di un file', () {
+  group('file icon', () {
     late Directory root;
     late Map<String, String> env;
 
@@ -163,17 +163,17 @@ void main() {
     tearDown(() => root.deleteSync(recursive: true));
 
     FileIcon? resolve(String name, {bool? executable}) => resolveFileIcon(
-      '/nessuna/cartella/$name',
+      '/no/folder/$name',
       mime: mime,
       env: env,
       executable: executable,
       type: mime.typeForName(name) ?? octetStream,
     );
 
-    test('ordine: tipo, tipo con *, genitori, estensione, etichetta', () {
+    test('order: type, type with *, parents, extension, label', () {
       expect(resolve('a.pdf')?.icon.id, 'file-pdf');
-      expect(resolve('foto.png')?.icon.id, 'file-image');
-      // text/x-csrc non è in mappa, il genitore text/plain sì.
+      expect(resolve('photo.png')?.icon.id, 'file-image');
+      // text/x-csrc is not in the map, its parent text/plain is.
       expect(resolve('main.c')?.icon.id, 'file-text');
       expect(resolve('conti.xls')?.icon.id, 'file-generic');
       expect(resolve('conti.xlsx')?.icon.id, 'file-spreadsheet');
@@ -181,40 +181,43 @@ void main() {
       expect(json?.icon.id, 'file-generic');
       expect(json?.label, 'JSON');
       expect(json?.labelColor?.$1, const Color(0xFF1F9D55));
-      // La voce esplicita vince sul genitore (application/javascript), con l'etichetta.
+      // The explicit entry wins over the parent (application/javascript), with the label.
       expect(json?.labelBox, isNotNull);
       expect(resolve('progetto.skt')?.labelColor?.$1, const Color(0xFFF7B500));
       expect(resolve('LEGGIMI')?.icon.id, 'file-unknown');
       expect(resolve('troppo.lunghissima')?.icon.id, 'file-unknown');
     });
 
-    test('eseguibile senza estensione: file-executable solo con il bit x', () {
-      final dir = Directory.systemTemp.createTempSync('exec-');
-      addTearDown(() => dir.deleteSync(recursive: true));
-      final script = File('${dir.path}/avvia')
-        ..writeAsStringSync('#!/bin/sh\n');
-      expect(
-        resolveFileIcon(
-          script.path,
-          mime: mime,
-          env: env,
-          executable: true,
-        )?.icon.id,
-        'file-executable',
-      );
-      // Senza x resta il suo tipo (uno script è testo per i genitori).
-      expect(
-        resolveFileIcon(
-          script.path,
-          mime: mime,
-          env: env,
-          executable: false,
-        )?.icon.id,
-        'file-executable',
-      );
-    });
+    test(
+      'executable without extension: file-executable only with the x bit',
+      () {
+        final dir = Directory.systemTemp.createTempSync('exec-');
+        addTearDown(() => dir.deleteSync(recursive: true));
+        final script = File('${dir.path}/avvia')
+          ..writeAsStringSync('#!/bin/sh\n');
+        expect(
+          resolveFileIcon(
+            script.path,
+            mime: mime,
+            env: env,
+            executable: true,
+          )?.icon.id,
+          'file-executable',
+        );
+        // Without x it keeps its type (a script is text through its parents).
+        expect(
+          resolveFileIcon(
+            script.path,
+            mime: mime,
+            env: env,
+            executable: false,
+          )?.icon.id,
+          'file-executable',
+        );
+      },
+    );
 
-    testWidgets('l\'etichetta sta nel riquadro, nel colore della categoria', (
+    testWidgets('the label sits in its box, in the color of the category', (
       tester,
     ) async {
       final icon = resolve('dati.json')!;
@@ -228,72 +231,77 @@ void main() {
       );
       final text = tester.widget<Text>(find.text('JSON'));
       expect(text.style?.color, const Color(0xFF1F9D55));
-      // Un solo testo: l'ombra ridipinge lo stesso figlio, non lo duplica.
+      // A single text: the shadow repaints the same child, it does not duplicate it.
       expect(find.text('JSON'), findsOneWidget);
       final box = tester.getRect(
         find.ancestor(of: find.text('JSON'), matching: find.byType(FittedBox)),
       );
       final body = tester.getTopLeft(find.byType(SilicaIcon));
-      // Un file ha per lato la tela intera: il riquadro (245, 376, 534, 194) a 1024 pt.
+      // A file has the whole canvas as its side: the box (245, 376, 534, 194) at 1024 pt.
       expect(box.left - body.dx, closeTo(245, 0.5));
       expect(box.top - body.dy, closeTo(376, 0.5));
       expect(box.width, closeTo(534, 0.5));
     });
 
-    testWidgets('badge: alias a sinistra, a destra il primo; sotto 32 uno solo', (
-      tester,
-    ) async {
-      expect(
-        visibleBadges({IconBadge.alias, IconBadge.cloud, IconBadge.locked}, 64),
-        [IconBadge.alias, IconBadge.locked],
-      );
-      expect(visibleBadges({IconBadge.alias, IconBadge.unreadable}, 20), [
-        IconBadge.unreadable,
-      ]);
-      expect(visibleBadges({IconBadge.alias}, 12), isEmpty);
+    testWidgets(
+      'badges: alias on the left, the first on the right; below 32 just one',
+      (tester) async {
+        expect(
+          visibleBadges({
+            IconBadge.alias,
+            IconBadge.cloud,
+            IconBadge.locked,
+          }, 64),
+          [IconBadge.alias, IconBadge.locked],
+        );
+        expect(visibleBadges({IconBadge.alias, IconBadge.unreadable}, 20), [
+          IconBadge.unreadable,
+        ]);
+        expect(visibleBadges({IconBadge.alias}, 12), isEmpty);
 
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: Center(
-            child: SilicaIcon(
-              FileSource(resolve('a.pdf')!),
-              side: 64,
-              dark: false,
-              badges: const {IconBadge.alias, IconBadge.locked},
-              env: env,
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Center(
+              child: SilicaIcon(
+                FileSource(resolve('a.pdf')!),
+                side: 64,
+                dark: false,
+                badges: const {IconBadge.alias, IconBadge.locked},
+                env: env,
+              ),
             ),
           ),
-        ),
-      );
-      final body = tester.getRect(find.byType(SilicaIcon));
-      final positioned = tester
-          .widgetList<Positioned>(find.byType(Positioned))
-          .where((p) => p.width != null && p.width! < 64)
-          .toList();
-      expect(positioned, hasLength(2));
-      // Il file ha per lato la tela: badge 315/1024 di 64, nel riquadro fra il bordo del
-      // corpo delle app (100…924 della tela) e la linea aurea; la sua tela sborda di 100 k.
-      const t = 64 / 1024;
-      const edge = 315 * t;
-      const k = edge / 824;
-      final lefts = positioned.map((p) => p.left!).toList()..sort();
-      final tops = positioned.map((p) => p.top!).toSet();
-      expect(lefts.first, closeTo(100 * t - 100 * k, 0.01));
-      expect(lefts.last, closeTo(924 * t - edge - 100 * k, 0.01));
-      expect(tops.single, closeTo(924 * t - edge - 100 * k, 0.01));
-      expect(body.width, 64);
-    });
+        );
+        final body = tester.getRect(find.byType(SilicaIcon));
+        final positioned = tester
+            .widgetList<Positioned>(find.byType(Positioned))
+            .where((p) => p.width != null && p.width! < 64)
+            .toList();
+        expect(positioned, hasLength(2));
+        // The file has the canvas as its side: badge 315/1024 of 64, in the box between the edge of the
+        // app body (100…924 of the canvas) and the golden line; its canvas spills by 100 k.
+        const t = 64 / 1024;
+        const edge = 315 * t;
+        const k = edge / 824;
+        final lefts = positioned.map((p) => p.left!).toList()..sort();
+        final tops = positioned.map((p) => p.top!).toSet();
+        expect(lefts.first, closeTo(100 * t - 100 * k, 0.01));
+        expect(lefts.last, closeTo(924 * t - edge - 100 * k, 0.01));
+        expect(tops.single, closeTo(924 * t - edge - 100 * k, 0.01));
+        expect(body.width, 64);
+      },
+    );
 
-    test('badge dal disco: collegamento, rotto, illeggibile', () {
+    test('badges from disk: symlink, broken, unreadable', () {
       final dir = Directory.systemTemp.createTempSync('badge-');
       addTearDown(() => dir.deleteSync(recursive: true));
       File('${dir.path}/vero').writeAsStringSync('x');
       Link('${dir.path}/link').createSync('vero');
-      Link('${dir.path}/rotto').createSync('non-esiste');
+      Link('${dir.path}/broken').createSync('missing');
       expect(badgesOf('${dir.path}/vero'), isEmpty);
       expect(badgesOf('${dir.path}/link'), {IconBadge.alias});
-      expect(badgesOf('${dir.path}/rotto'), {
+      expect(badgesOf('${dir.path}/broken'), {
         IconBadge.alias,
         IconBadge.unreadable,
       });
@@ -301,7 +309,7 @@ void main() {
     });
   });
 
-  test('volumi: rete, immagine, ottico, esterno, interno', () {
+  test('volumes: network, image, optical, external, internal', () {
     expect(volumeIconId(const VolumeInfo(fsType: 'cifs')), 'volume-network');
     expect(volumeIconId(const VolumeInfo(scheme: 'sftp')), 'volume-network');
     expect(
@@ -331,7 +339,7 @@ void main() {
     expect(mounts.last.device, '/dev/sdb1');
   });
 
-  testWidgets('l\'etichetta di un tipo non si scrive sotto min_size', (
+  testWidgets('the label of a type is not written below min_size', (
     tester,
   ) async {
     final root = iconTree();
@@ -357,7 +365,7 @@ void main() {
       ),
     );
     final icon = resolveFileIcon(
-      '/x/foto.png',
+      '/x/photo.png',
       mime: mime,
       env: env,
       type: 'image/png',
@@ -376,7 +384,7 @@ void main() {
     }
   });
 
-  test('il repo vero e il database del sistema, se ci sono', () {
+  test('the real repo and the system database, if present', () {
     final repo =
         Platform.environment['SILICA_ICONS_DIR'] ??
         '${Platform.environment['HOME']}/silica/silica-icons';
@@ -400,7 +408,7 @@ void main() {
     expect(id('pagina.html'), 'file-web');
     expect(id('font.ttf'), 'file-font');
     expect(id('disco.iso'), 'file-disk-image');
-    expect(id('foto.jpg'), 'file-image');
+    expect(id('photo.jpg'), 'file-image');
     expect(id('main.rs'), 'file-code');
     FileIcon? icon(String name) => resolveFileIcon(
       '/tmp/$name',
@@ -409,14 +417,14 @@ void main() {
       type: db.typeForName(name),
       executable: false,
     );
-    // L'estensione vera sulle icone dei tipi, nel colore del tipo.
-    expect(icon('foto.jpg')?.label, 'JPG');
-    expect(icon('foto.jpg')?.labelColor?.$1, const Color(0xFF30B0C7));
+    // The real extension on the type icons, in the color of the type.
+    expect(icon('photo.jpg')?.label, 'JPG');
+    expect(icon('photo.jpg')?.labelColor?.$1, const Color(0xFF30B0C7));
     expect(icon('font.ttf')?.label, 'TTF');
-    // JSON: voce esplicita al file generico, categoria data (non il codice del genitore).
+    // JSON: explicit entry to the generic file, given category (not the code of the parent).
     expect(icon('dati.json')?.icon.id, 'file-generic');
     expect(icon('dati.json')?.labelColor?.$1, const Color(0xFF1F9D55));
-    // Passo 0b: .ts è ambiguo nel database del sistema, decide l'estensione.
+    // Step 0b: .ts is ambiguous in the system database, the extension decides.
     expect(
       resolveFileIcon(
         '/tmp/main.ts',
@@ -433,7 +441,7 @@ void main() {
     );
   });
 
-  test('ombra a terra: le misure di IC-01 e in mezzo', () {
+  test('ground shadow: the IC-01 measurements and in between', () {
     for (final (side, opacity, sigma, offset) in [
       (32.0, 0.35, 1.2, 0.55),
       (64.0, 0.20, 1.45, 0.8),

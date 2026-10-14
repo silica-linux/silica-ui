@@ -1,4 +1,4 @@
-/// Design system di Silica per Flutter.
+/// The Silica design system for Flutter.
 library;
 
 import 'package:flutter/widgets.dart';
@@ -24,10 +24,10 @@ export 'src/menu.dart';
 export 'src/window.dart';
 export 'src/window_glass.dart';
 
-/// Il font dell'interfaccia: Inter (OFL), servito dal pacchetto.
+/// The interface font: Inter (OFL), served by the package.
 const String uiFontFamily = 'Inter';
 
-/// Uno stile di testo in Inter, servito da questo pacchetto.
+/// A text style in Inter, served by this package.
 TextStyle uiText({required double size, required Color color}) => TextStyle(
   fontFamily: uiFontFamily,
   package: 'silica_ui',

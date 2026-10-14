@@ -1,7 +1,7 @@
-// Il trascinamento fra app (`wl_data_device` di Ossido), canale `silica/drag` dell'embedder:
-// un'app porta fuori dalla sua finestra un elenco di file (`text/uri-list`) e ne riceve da
-// altre. Dentro la finestra il trascinamento resta di Flutter (`Draggable`): si passa a Ossido
-// quando il puntatore esce, e l'embedder annulla il gesto di Flutter.
+// Drag and drop between apps (Ossido's `wl_data_device`), on the embedder's `silica/drag`
+// channel: an app carries a list of files (`text/uri-list`) out of its window and receives
+// them from others. Inside the window the drag stays Flutter's (`Draggable`): it is handed to
+// Ossido when the pointer leaves, and the embedder cancels Flutter's gesture.
 
 import 'dart:async';
 import 'dart:convert';
@@ -10,44 +10,44 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// Un evento del trascinamento fra app.
+/// An event of a drag between apps.
 @immutable
 sealed class SilicaDragEvent {
   const SilicaDragEvent();
 }
 
-/// Un trascinamento con dei file entra nella finestra, o vi si muove (coordinate logiche).
+/// A drag carrying files enters the window, or moves over it (logical coordinates).
 class SilicaDragOver extends SilicaDragEvent {
   const SilicaDragOver(this.position, {required this.entered});
   final ui.Offset position;
   final bool entered;
 }
 
-/// Il trascinamento esce dalla finestra senza rilascio.
+/// The drag leaves the window without a drop.
 class SilicaDragLeave extends SilicaDragEvent {
   const SilicaDragLeave();
 }
 
-/// Il rilascio nella finestra, con gli URI dei file.
+/// The drop in the window, with the URIs of the files.
 class SilicaDrop extends SilicaDragEvent {
   const SilicaDrop(this.position, this.uris);
   final ui.Offset position;
   final List<Uri> uris;
 
-  /// I percorsi locali (`file://`), gli altri URI esclusi.
+  /// The local paths (`file://`), other URIs left out.
   List<String> get paths => [
     for (final uri in uris)
       if (uri.scheme == 'file') uri.toFilePath(),
   ];
 }
 
-/// Il trascinamento uscito da questa finestra è finito: `copy`, `move` o `none` (annullato).
+/// The drag that left this window has finished: `copy`, `move` or `none` (cancelled).
 class SilicaDragFinished extends SilicaDragEvent {
   const SilicaDragFinished(this.action);
   final String action;
 }
 
-/// Il trascinamento fra app verso Ossido.
+/// Drag and drop between apps, through Ossido.
 abstract final class SilicaDrag {
   static const MethodChannel channel = MethodChannel(
     'silica/drag',
@@ -57,7 +57,7 @@ abstract final class SilicaDrag {
   static final StreamController<SilicaDragEvent> _events =
       StreamController.broadcast(onListen: _listen);
 
-  /// Gli eventi del trascinamento fra app.
+  /// The events of drags between apps.
   static Stream<SilicaDragEvent> get events => _events.stream;
 
   static void _listen() => channel.setMethodCallHandler((call) async {
@@ -66,7 +66,7 @@ abstract final class SilicaDrag {
     return null;
   });
 
-  /// Un evento dalla chiamata dell'embedder; null se non lo è.
+  /// An event from the embedder's call; null if it is not one.
   static SilicaDragEvent? parse(String method, Object? args) {
     final map = args is Map ? args : const {};
     final x = map['x'], y = map['y'];
@@ -88,14 +88,14 @@ abstract final class SilicaDrag {
     };
   }
 
-  /// Porta fuori dalla finestra i file `paths` (con il pulsante ancora premuto), con
-  /// l'immagine `icon` sul puntatore. Vero se Ossido l'ha preso.
+  /// Carries the files `paths` out of the window (with the button still pressed), with the
+  /// image `icon` on the pointer. True if Ossido took it.
   static Future<bool> start(List<String> paths, {ui.Image? icon}) async {
     final args = <String, Object?>{
       'uris': [for (final p in paths) Uri.file(p).toString()],
     };
     if (icon != null) {
-      // rawRgba: premoltiplicato, come vuole Wayland.
+      // rawRgba: premultiplied, as Wayland wants.
       final bytes = await icon.toByteData(format: ui.ImageByteFormat.rawRgba);
       if (bytes != null) {
         args['icon'] = {

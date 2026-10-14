@@ -1,7 +1,7 @@
-// L'icona di un'app o di un luogo come la disegna la shell. Le icone a livelli di
-// silica-icons prendono forma, bordo e ombra da qui (icon-format.md: i livelli non li
-// contengono); le icone freedesktop già composte vanno ridotte al keyline su un fondo neutro;
-// senza icona, la tessera con l'iniziale.
+// The icon of an app or a place as the shell draws it. The layered icons of silica-icons
+// take shape, edge and shadow from here (icon-format.md: the layers do not contain them);
+// already composed freedesktop icons are reduced to the keyline on a neutral background;
+// without an icon, the tile with the initial.
 
 import 'dart:async';
 import 'dart:io';
@@ -16,30 +16,30 @@ import '../../silica_ui.dart' show uiFontFamily, uiText;
 import 'file_icons.dart';
 import 'silica_icons.dart';
 
-/// Tela delle icone: 1024, corpo 824 a 100 dal bordo, keyline quadrato 600.
+/// Icon canvas: 1024, body 824 at 100 from the edge, square keyline 600.
 const double canvasSide = 1024;
 const double bodyInset = 100;
 const double bodySide = 824;
 const double keylineSide = 600;
 
-/// Maschera del corpo: superellisse per angolo con n ≈ 2,6 e raggio ≈ 0,32 × lato
-/// (plan/reference/icons.md, misurata sul selettore delle app).
+/// Body mask: a superellipse per corner with n ≈ 2.6 and radius ≈ 0.32 × side
+/// (plan/reference/icons.md, measured on the app switcher).
 const double maskExponent = 2.6;
 const double maskRadiusRatio = 0.32;
 
-/// Ombra dell'icona sul fondo: ~3 % del lato sotto, sfocata altrettanto (dock.md).
+/// Shadow of the icon on the background: ~3 % of the side below, blurred as much (dock.md).
 const double dropOffsetRatio = 0.03;
 const Color dropColor = Color(0x55000000);
 
-/// Ombra del primo piano sul fondo (`"shadow": "neutral"`).
+/// Shadow of the foreground on the background (`"shadow": "neutral"`).
 const double layerShadowRatio = 0.012;
 const Color layerShadowColor = Color(0x38000000);
 
-/// L'ombra a terra di un'icona (plan/reference/icons.md, IC-01: ombra gaussiana nera
-/// adattata, uguale in tutti i temi). Misure per lato della tela: 32 → opacità 0,35, σ 1,2,
-/// in basso 0,55; 64 → 0,20, 1,45, 0,8; 128 → 0,28, 2,7, 1,2; 512 → 0,25, 7,5, 3,1 (pt).
-/// Fra le misure σ e spostamento seguono il lato in proporzione, l'opacità si interpola;
-/// a 128 l'ombra sborda di ~5 pt per lato, come dice silica-icons.
+/// The ground shadow of an icon (plan/reference/icons.md, IC-01: a fitted black Gaussian
+/// shadow, the same in every theme). Measurements per canvas side: 32 → opacity 0.35, σ 1.2,
+/// down 0.55; 64 → 0.20, 1.45, 0.8; 128 → 0.28, 2.7, 1.2; 512 → 0.25, 7.5, 3.1 (pt).
+/// Between the measurements σ and offset follow the side in proportion, the opacity is interpolated;
+/// at 128 the shadow spills ~5 pt per side, as silica-icons says.
 @immutable
 class IconShadow {
   const IconShadow(this.opacity, this.sigma, this.offset);
@@ -69,7 +69,7 @@ class IconShadow {
       final (s0, a0, g0, d0) = _measured[i - 1];
       final (s1, a1, g1, d1) = _measured[i];
       if (side > s1) continue;
-      // Sulla scala logaritmica del lato, come i rapporti misurati.
+      // On the logarithmic scale of the side, like the measured ratios.
       final t = (math.log(side) - math.log(s0)) / (math.log(s1) - math.log(s0));
       double lerp(double a, double b) => a + (b - a) * t;
       return IconShadow(
@@ -82,11 +82,11 @@ class IconShadow {
   }
 }
 
-/// Fondo neutro delle icone senza livelli.
+/// Neutral background of icons without layers.
 const List<Color> neutralLight = [Color(0xFFFFFFFF), Color(0xFFEDEDF0)];
 const List<Color> neutralDark = [Color(0xFF3A3A3C), Color(0xFF161618)];
 
-/// Mesi per l'icona del calendario (la shell è in italiano).
+/// Months for the calendar icon (the shell is in Italian).
 const List<String> monthNames = [
   'gennaio',
   'febbraio',
@@ -102,12 +102,12 @@ const List<String> monthNames = [
   'dicembre',
 ];
 
-/// Il contorno del corpo nel rettangolo `r`.
+/// The outline of the body in the rectangle `r`.
 Path iconBodyPath(Rect r) {
   final radius = math.min(r.width, r.height) * maskRadiusRatio;
   const steps = 16;
   final path = Path();
-  // Un angolo: centro (cx, cy), direzioni (sx, sy) verso l'esterno; da lato a lato.
+  // A corner: center (cx, cy), directions (sx, sy) outwards; from side to side.
   void corner(double cx, double cy, double sx, double sy, bool first) {
     for (var i = 0; i <= steps; i++) {
       final t = (sx * sy > 0 ? i : steps - i) / steps * math.pi / 2;
@@ -128,7 +128,7 @@ Path iconBodyPath(Rect r) {
   return path..close();
 }
 
-/// Da dove viene l'icona.
+/// Where the icon comes from.
 sealed class IconSource {
   const IconSource();
 }
@@ -138,28 +138,28 @@ class LayeredSource extends IconSource {
   final LayeredIcon icon;
 }
 
-/// Una cartella: la cartella generica con simbolo e tinta, o quella semplice
+/// A folder: the generic folder with symbol and tint, or the plain one
 /// (`resolveFolderIcon`).
 class FolderSource extends IconSource {
   const FolderSource(this.folder);
   final FolderIcon folder;
 }
 
-/// Un file (`resolveFileIcon`): l'icona del tipo, o il file generico con l'estensione.
+/// A file (`resolveFileIcon`): the icon of the type, or the generic file with the extension.
 class FileSource extends IconSource {
   const FileSource(this.file);
   final FileIcon file;
 }
 
-/// Un file SVG o PNG già composto (tema freedesktop).
+/// An already composed SVG or PNG file (freedesktop theme).
 class FlatSource extends IconSource {
   const FlatSource(this.path);
   final String path;
 }
 
-/// L'icona di `side` × `side`. Per un'app `side` è il corpo e la tela sborda di
-/// `side × 100 / 824` per lato, come nel disegno; per file, cartelle, volumi e Cestino `side`
-/// è la tela intera (silica-icons 0.2: icon-format.md, "Principio"), salvo [besideApps].
+/// The icon of `side` × `side`. For an app `side` is the body and the canvas spills
+/// `side × 100 / 824` per side, as in the drawing; for files, folders, volumes and Trash `side`
+/// is the whole canvas (silica-icons 0.2: icon-format.md, "Principle"), unless [besideApps].
 class SilicaIcon extends StatelessWidget {
   const SilicaIcon(
     this.source, {
@@ -171,11 +171,11 @@ class SilicaIcon extends StatelessWidget {
     this.besideApps = false,
   });
 
-  /// Un luogo (cartella, Cestino) accanto alle app, come nel Dock: anche lui ha `side` per
-  /// corpo e la tela delle app attorno.
+  /// A place (folder, Trash) next to the apps, as in the Dock: it too has `side` as its
+  /// body and the app canvas around it.
   final bool besideApps;
 
-  /// La tela dell'icona coincide con `side` (file, cartelle, volumi fuori dal Dock).
+  /// The icon canvas coincides with `side` (files, folders, volumes outside the Dock).
   bool get fullCanvas =>
       !besideApps &&
       switch (source) {
@@ -184,22 +184,22 @@ class SilicaIcon extends StatelessWidget {
         FlatSource() => false,
       };
 
-  /// Il lato della tela 1024, in pt: con questo si confrontano le fasce `min_size`.
+  /// The side of the 1024 canvas, in pt: the `min_size` bands are compared with it.
   double get canvasExtent => fullCanvas ? side : side * canvasSide / bodySide;
 
-  /// I badge da sovrapporre (alias, illeggibile, bloccato, nuvola): quanti e dove dipende dal
-  /// lato (icon-format.md, "Badge").
+  /// The badges to overlay (alias, unreadable, locked, cloud): how many and where depends on the
+  /// side (icon-format.md, "Badges").
   final Set<IconBadge> badges;
 
-  /// L'ambiente per trovare i badge (test).
+  /// The environment for finding the badges (tests).
   final Map<String, String>? env;
 
   final IconSource source;
   final double side;
 
-  /// La variante scura. È lo stile delle icone (icons.md IC-01: Impostazioni › Aspetto ›
-  /// Stile icone, "Scuro"), non l'aspetto del sistema: in aspetto scuro con lo stile normale
-  /// le icone restano le stesse (appswitcher.md; mu20-list-dark). Null: chiara.
+  /// The dark variant. It is the icon style (icons.md IC-01: Settings › Appearance ›
+  /// Icon style, "Dark"), not the system appearance: in dark appearance with the normal style
+  /// the icons stay the same (appswitcher.md; mu20-list-dark). Null: light.
   final bool? dark;
 
   @override
@@ -225,8 +225,8 @@ class SilicaIcon extends StatelessWidget {
       FlatSource(:final path) => _flat(path, canvas, body, isDark),
       FileSource(:final file) => _file(file, canvas, isDark),
     };
-    // File, cartelle, volumi e Cestino sono piatti: l'ombra del contesto la mette chi li
-    // disegna (icon-format.md › "Cosa NON va nei livelli"), sotto la forma del disegno.
+    // Files, folders, volumes and Trash are flat: the context shadow is added by whoever
+    // draws them (icon-format.md › "What does NOT go in the layers"), under the shape of the drawing.
     final grounded = switch (source) {
       LayeredSource(:final icon) => icon.kind != IconKind.app,
       FileSource() || FolderSource() => true,
@@ -260,13 +260,13 @@ class SilicaIcon extends StatelessWidget {
     );
   }
 
-  /// L'icona con la sua ombra a terra: la stessa forma, nera, sfocata e spostata in basso.
+  /// The icon with its ground shadow: the same shape, black, blurred and shifted down.
   Widget _grounded(Widget content, double canvas) =>
       _GroundShadow(shadow: IconShadow.forSide(canvas), child: content);
 
-  /// Un badge sopra l'icona composta, senza ombra: lato 315/1024 della tela da 32 pt, 509 se è
-  /// l'unico (16–31 pt); appoggiato all'angolo in basso del corpo delle app (100…924 sulla
-  /// tela), non al disegno.
+  /// A badge over the composed icon, without shadow: side 315/1024 of the canvas from 32 pt, 509 if it is
+  /// the only one (16–31 pt); resting on the bottom corner of the app body (100…924 on the
+  /// canvas), not on the drawing.
   Widget _badge(IconBadge badge, double canvas, double inset, bool isDark) {
     final path = findBadgeRules(env: env)?.pathFor(badge, dark: isDark);
     if (path == null) return const SizedBox.shrink();
@@ -274,9 +274,9 @@ class SilicaIcon extends StatelessWidget {
     final edge = (canvas >= 32 ? 315.0 : 509.0) * scale;
     final near = bodyInset * scale - inset;
     final far = (bodyInset + bodySide) * scale - inset;
-    // alias in basso a sinistra, gli altri in basso a destra.
+    // alias at the bottom left, the others at the bottom right.
     final left = badge == IconBadge.alias ? near : far - edge;
-    // La tela 1024 del badge, scalata di edge/824, con il suo corpo sul riquadro.
+    // The 1024 canvas of the badge, scaled by edge/824, with its body on the box.
     final k = edge / bodySide;
     return Positioned(
       left: left - bodyInset * k,
@@ -287,8 +287,8 @@ class SilicaIcon extends StatelessWidget {
     );
   }
 
-  /// Un file: i livelli e l'etichetta (l'estensione) nel suo riquadro, centrata sulla riga
-  /// naturale di Inter; più larga del riquadro, il corpo scende (`shrink`).
+  /// A file: the layers and the label (the extension) in its box, centered on the natural
+  /// line of Inter; wider than the box, the size goes down (`shrink`).
   Widget _file(FileIcon file, double canvas, bool isDark) {
     final box = file.labelBox;
     final label = file.label;
@@ -383,8 +383,8 @@ class SilicaIcon extends StatelessWidget {
     );
   }
 
-  /// La cartella: livelli, simbolo inciso (riflesso spostato in basso, poi il simbolo) e
-  /// tinta sulla luminanza del tutto (icon-format.md, "Cartella generica").
+  /// The folder: layers, engraved symbol (highlight shifted down, then the symbol) and
+  /// tint on the luminance of the whole (icon-format.md, "Generic folder").
   Widget _folder(FolderIcon folder, double canvas, bool isDark) {
     final icon = folder.icon;
     final dyn = icon.dynamic;
@@ -495,13 +495,13 @@ class SilicaIcon extends StatelessWidget {
 Widget _svg(String path, double canvas) =>
     SvgPicture.string(svgText(path), width: canvas, height: canvas);
 
-/// Gli SVG esportati da Sketch usano i filtri, che flutter_svg non applica:
-/// - i passaggi d'ombra (una copia del tracciato con un `filter`, nera per difetto) si
-///   tolgono, altrimenti verrebbero disegnati neri pieni;
-/// - ellissi e cerchi sfocati (ombre a terra, bagliori) diventano un gradiente radiale
-///   che sfuma per ~2σ oltre il bordo;
-/// - ogni altro attributo `filter` si ignora;
-/// - il testo in Inter usa l'Inter del pacchetto silica_ui (Sketch scrive
+/// SVGs exported from Sketch use filters, which flutter_svg does not apply:
+/// - the shadow passes (a copy of the path with a `filter`, black by default) are
+///   removed, otherwise they would be drawn solid black;
+/// - blurred ellipses and circles (ground shadows, glows) become a radial gradient
+///   fading over ~2σ beyond the edge;
+/// - any other `filter` attribute is ignored;
+/// - text in Inter uses the Inter of the silica_ui package (Sketch writes
 ///   `font-family="Inter-Regular_Medium, Inter"`).
 final RegExp _filteredUse = RegExp(
   r'<use\b[^>]*\bfilter="[^"]*"[^>]*?(/>|>\s*</use>)',
@@ -562,7 +562,7 @@ const String _emptySvg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"/>';
 final Map<String, String> _svgCache = {};
 
-/// Il testo dell'SVG pronto per flutter_svg; vuoto se il file non si legge.
+/// The SVG text ready for flutter_svg; empty if the file cannot be read.
 String svgText(String path) => _svgCache.putIfAbsent(path, () {
   try {
     return withoutFilters(File(path).readAsStringSync());
@@ -604,7 +604,7 @@ class _DropPainter extends CustomPainter {
   bool shouldRepaint(_DropPainter old) => old.body != body;
 }
 
-/// Il bordo luminoso del corpo: più chiaro in alto, sfuma in basso.
+/// The bright edge of the body: lighter at the top, fading at the bottom.
 class _RimPainter extends CustomPainter {
   const _RimPainter(this.body, this.side, this.dark);
   final Rect body;
@@ -633,8 +633,8 @@ class _RimPainter extends CustomPainter {
   bool shouldRepaint(_RimPainter old) => old.body != body || old.dark != dark;
 }
 
-/// Le lancette all'ora corrente: ore (h mod 12 + m/60 + s/3600) × 30°, minuti
-/// (m + s/60) × 6°, secondi s × 6°; il perno sopra. I secondi solo da 64 pt.
+/// The hands at the current time: hours (h mod 12 + m/60 + s/3600) × 30°, minutes
+/// (m + s/60) × 6°, seconds s × 6°; the cap on top. Seconds only from 64 pt.
 class _Clock extends StatefulWidget {
   const _Clock({
     required this.hands,
@@ -703,7 +703,7 @@ class _ClockState extends State<_Clock> {
   }
 }
 
-/// Mese e giorno di oggi, aggiornati a mezzanotte.
+/// Today's month and day, updated at midnight.
 class _Calendar extends StatefulWidget {
   const _Calendar({
     required this.text,
@@ -788,8 +788,8 @@ class _CalendarState extends State<_Calendar> {
   }
 }
 
-/// Dipinge il figlio due volte: prima nero, sfocato e spostato (l'ombra), poi com'è. Un solo
-/// figlio nell'albero (niente testi doppi per chi cerca nei widget).
+/// Paints the child twice: first black, blurred and shifted (the shadow), then as it is. A single
+/// child in the tree (no duplicate texts for whoever searches the widgets).
 class _GroundShadow extends SingleChildRenderObjectWidget {
   const _GroundShadow({required this.shadow, super.child});
   final IconShadow shadow;

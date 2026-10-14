@@ -1,17 +1,17 @@
-// Il tipo MIME di un file secondo shared-mime-info (specifica freedesktop "Shared MIME-info
-// Database"): i glob di `mime/globs2` (peso, maiuscole), le gerarchie di `mime/subclasses` e
-// gli alias di `mime/aliases`, nelle cartelle dei dati XDG (prima quella dell'utente).
+// The MIME type of a file according to shared-mime-info (freedesktop specification "Shared
+// MIME-info Database"): the globs of `mime/globs2` (weight, case), the hierarchies of
+// `mime/subclasses` and the aliases of `mime/aliases`, in the XDG data folders (the user's first).
 //
-// Dal contenuto si riconosce solo quello che i glob non dicono e che serve alle icone: ELF
-// (eseguibili e librerie), script con `#!`, testo semplice contro dati binari. Il resto del
-// database magic non è letto.
+// From the content only what the globs do not tell and the icons need is recognized: ELF
+// (executables and libraries), scripts with `#!`, plain text versus binary data. The rest of
+// the magic database is not read.
 
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'silica_icons.dart' show xdgDataDirs;
 
-/// Il tipo di un file di cui non si sa niente.
+/// The type of a file nothing is known about.
 const String octetStream = 'application/octet-stream';
 
 class _Glob {
@@ -31,7 +31,7 @@ class MimeDatabase {
   MimeDatabase._(this._globs, this._subclasses, this._aliases) {
     for (final glob in _globs) {
       final p = glob.pattern;
-      // "*.ext" senza altri caratteri speciali: si cerca per estensione.
+      // "*.ext" without other special characters: looked up by extension.
       if (p.startsWith('*.') && !_special(p.substring(2))) {
         final ext = p.substring(2);
         _byExtension
@@ -45,8 +45,8 @@ class MimeDatabase {
     }
   }
 
-  /// Il database dalle cartelle `mime/` dei dati XDG; vuoto se non c'è (allora conta solo il
-  /// contenuto).
+  /// The database from the `mime/` folders of the XDG data; empty if there is none (then only
+  /// the content counts).
   factory MimeDatabase.load({Map<String, String>? env}) {
     final globs = <_Glob>[];
     final subclasses = <String, List<String>>{};
@@ -60,7 +60,7 @@ class MimeDatabase {
         if (parts.length < 3) continue;
         final weight = int.tryParse(parts[0]) ?? 50;
         final key = '${parts[1]}:${parts[2]}';
-        // La prima cartella vince (quella dell'utente).
+        // The first folder wins (the user's).
         if (!seenGlobs.add(key)) continue;
         globs.add(
           _Glob(
@@ -86,7 +86,7 @@ class MimeDatabase {
     return MimeDatabase._(globs, subclasses, aliases);
   }
 
-  /// Un database dai testi dei file (test).
+  /// A database from the texts of the files (tests).
   factory MimeDatabase.fromText({
     String globs2 = '',
     String subclasses = '',
@@ -136,11 +136,11 @@ class MimeDatabase {
   static bool _special(String s) =>
       s.contains('*') || s.contains('?') || s.contains('[');
 
-  /// Il tipo canonico (gli alias portano al nome vero).
+  /// The canonical type (aliases lead to the real name).
   String canonical(String type) => _aliases[type] ?? type;
 
-  /// Il nome dà più tipi con lo stesso peso e lo stesso glob (es. `.ts`: Qt Linguist o
-  /// MPEG-TS)? Allora il nome da solo non decide (icon-format.md, passo 0b).
+  /// Does the name give several types with the same weight and the same glob (e.g. `.ts`: Qt
+  /// Linguist or MPEG-TS)? Then the name alone does not decide (icon-format.md, step 0b).
   bool isAmbiguousName(String name) {
     final candidates = _candidates(name);
     if (candidates.length < 2) return false;
@@ -153,18 +153,18 @@ class MimeDatabase {
     );
   }
 
-  /// Il tipo dal nome del file, o null se nessun glob corrisponde. Vince il peso più alto, poi
-  /// il glob più lungo (specifica, "Recommended checking order").
+  /// The type from the file name, or null if no glob matches. The highest weight wins, then
+  /// the longest glob (specification, "Recommended checking order").
   String? typeForName(String name) {
     final candidates = _candidates(name);
     return candidates.isEmpty ? null : canonical(candidates.first.type);
   }
 
-  /// I glob che corrispondono al nome, dal migliore: peso più alto, poi glob più lungo.
+  /// The globs matching the name, best first: highest weight, then longest glob.
   List<_Glob> _candidates(String name) {
     final candidates = <_Glob>[];
     candidates.addAll(_literal[name] ?? const []);
-    // Tutte le estensioni possibili: per "a.tar.gz" sia "tar.gz" sia "gz".
+    // All the possible extensions: for "a.tar.gz" both "tar.gz" and "gz".
     for (
       var dot = name.indexOf('.');
       dot >= 0;
@@ -196,8 +196,8 @@ class MimeDatabase {
     return candidates;
   }
 
-  /// I genitori di un tipo, dal più vicino (`sub-class-of`, poi le regole implicite: ogni
-  /// `text/*` è `text/plain`, ogni tipo è `application/octet-stream`, escluso).
+  /// The parents of a type, nearest first (`sub-class-of`, then the implicit rules: every
+  /// `text/*` is `text/plain`, every type is `application/octet-stream`, excluded).
   List<String> parentsOf(String type) {
     final out = <String>[];
     final queue = [canonical(type)];
@@ -219,7 +219,7 @@ class MimeDatabase {
     return out;
   }
 
-  /// Il tipo di un file sul disco: dal nome, e dal contenuto quando il nome non basta.
+  /// The type of a file on disk: from the name, and from the content when the name is not enough.
   String typeOf(String path) {
     final name = path.split('/').last;
     final byName = typeForName(name);
@@ -245,7 +245,7 @@ class MimeDatabase {
         head[1] == 0x45 &&
         head[2] == 0x4c &&
         head[3] == 0x46) {
-      // ELF: e_type a 16 (1 rilocabile, 2 eseguibile, 3 condiviso: anche un eseguibile PIE).
+      // ELF: e_type at 16 (1 relocatable, 2 executable, 3 shared: also a PIE executable).
       final type = head.length > 16 ? head[16] : 0;
       return switch (type) {
         2 => 'application/x-executable',
@@ -263,7 +263,7 @@ class MimeDatabase {
       if (line.contains('ruby')) return 'application/x-ruby';
       return 'text/plain';
     }
-    // Testo se non ci sono byte nulli né di controllo diversi da tab, a capo, ritorno.
+    // Text if there are no null bytes nor control bytes other than tab, newline, carriage return.
     final binary = head.any(
       (b) => b == 0 || (b < 0x20 && b != 9 && b != 10 && b != 13 && b != 12),
     );
@@ -271,7 +271,7 @@ class MimeDatabase {
   }
 }
 
-/// Un glob con `*`, `?` e classi `[...]` sul nome intero.
+/// A glob with `*`, `?` and `[...]` classes on the whole name.
 bool _matches(String pattern, String name, {required bool caseSensitive}) {
   final buffer = StringBuffer('^');
   for (var i = 0; i < pattern.length; i++) {

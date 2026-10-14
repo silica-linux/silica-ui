@@ -20,19 +20,19 @@ void main() {
         child: Align(
           alignment: Alignment.topLeft,
           child: SilicaAlert(
-            title: 'Vuoi usare .md?',
-            message: 'Il file potrebbe aprirsi con un\'altra app.',
+            title: 'Use .md?',
+            message: 'The file may open with another app.',
             sideBySide: sideBySide,
             buttons: [
               AlertButton(
-                'Mantieni',
+                'Keep',
                 role: AlertRole.cancel,
-                onPressed: () => log.add('mantieni'),
+                onPressed: () => log.add('keep'),
               ),
               AlertButton(
-                'Usa',
+                'Use',
                 role: AlertRole.primary,
-                onPressed: () => log.add('usa'),
+                onPressed: () => log.add('use'),
               ),
             ],
           ),
@@ -42,45 +42,42 @@ void main() {
     return log;
   }
 
-  testWidgets('292 pt, titolo a 99, pulsanti impilati o affiancati', (
+  testWidgets('292 pt, title at 99, buttons stacked or side by side', (
     tester,
   ) async {
     await pump(tester, sideBySide: false);
     expect(tester.getSize(find.byType(SilicaAlert)).width, alertWidth);
-    expect(
-      tester.getTopLeft(find.text('Vuoi usare .md?')),
-      const Offset(21, 99),
-    );
-    final keep = tester.getRect(find.byKey(const ValueKey('avviso Mantieni')));
-    final use = tester.getRect(find.byKey(const ValueKey('avviso Usa')));
+    expect(tester.getTopLeft(find.text('Use .md?')), const Offset(21, 99));
+    final keep = tester.getRect(find.byKey(const ValueKey('alert Keep')));
+    final use = tester.getRect(find.byKey(const ValueKey('alert Use')));
     expect(keep.size, const Size(262, 30));
     expect(keep.left, 15);
     expect(use.top - keep.bottom, alertStackedGap);
 
     await pump(tester, sideBySide: true);
-    final keep2 = tester.getRect(find.byKey(const ValueKey('avviso Mantieni')));
-    final use2 = tester.getRect(find.byKey(const ValueKey('avviso Usa')));
+    final keep2 = tester.getRect(find.byKey(const ValueKey('alert Keep')));
+    final use2 = tester.getRect(find.byKey(const ValueKey('alert Use')));
     expect(keep2.size, const Size(128, 30));
     expect(use2.left - keep2.right, alertSideGap);
   });
 
-  testWidgets('Invio sceglie il predefinito, Esc annulla', (tester) async {
+  testWidgets('Return chooses the default, Esc cancels', (tester) async {
     final log = await pump(tester, sideBySide: true);
     await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.tap(find.byKey(const ValueKey('avviso Mantieni')));
-    expect(log, ['usa', 'mantieni', 'mantieni']);
+    await tester.tap(find.byKey(const ValueKey('alert Keep')));
+    expect(log, ['use', 'keep', 'keep']);
   });
 
-  testWidgets('pieno: niente vetro, pulsante normale grigio', (tester) async {
+  testWidgets('solid: no glass, gray normal button', (tester) async {
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: Align(
           alignment: Alignment.topLeft,
           child: SilicaAlert(
-            title: 'Titolo',
+            title: 'Title',
             opaque: true,
             buttons: [
               AlertButton('OK', role: AlertRole.cancel, onPressed: () {}),
@@ -89,11 +86,11 @@ void main() {
         ),
       ),
     );
-    expect(find.byKey(const ValueKey('avviso pieno')), findsOneWidget);
+    expect(find.byKey(const ValueKey('solid alert')), findsOneWidget);
     expect(find.byType(LiquidGlass), findsNothing);
     final ok = tester.widget<Container>(
       find.descendant(
-        of: find.byKey(const ValueKey('avviso OK')),
+        of: find.byKey(const ValueKey('alert OK')),
         matching: find.byType(Container),
       ),
     );

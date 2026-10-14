@@ -6,16 +6,16 @@ import 'package:silica_ui/silica_ui.dart';
 
 void main() {
   setUp(() {
-    // Il vetro parla con il compositor: qui nessuno risponde.
+    // The glass talks to the compositor: here nobody answers.
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(GlassRegistry.channel, (call) async => true);
   });
 
-  test('righe da 24, separatori da 11, 5 pt sopra e sotto', () {
+  test('rows of 24, separators of 11, 5 pt above and below', () {
     const entries = [
-      MenuAction('Nuova'),
+      MenuAction('New'),
       MenuDivider(),
-      MenuAction('Chiudi', shortcut: '⌘W'),
+      MenuAction('Close', shortcut: '⌘W'),
     ];
     expect(menuRowTops(entries), [5, 29, 40]);
     expect(menuSize(entries).height, 5 + 24 + 11 + 24 + 5);
@@ -23,21 +23,15 @@ void main() {
     expect(menuTextLeft(const [MenuAction('A', checked: true)]), 29);
   });
 
-  test(
-    'le intestazioni contano come voci a 13 pt e stanno sul testo delle voci',
-    () {
-      const label = 'Visualizza contenuto come';
-      const withHeader = [
-        MenuSection(label),
-        MenuAction('Nome', checked: true),
-      ];
-      const asItem = [MenuAction(label), MenuAction('Nome', checked: true)];
-      // Stessa larghezza che avrebbe come voce normale (d06-pila-menu: 220 pt).
-      expect(menuSize(withHeader).width, menuSize(asItem).width);
-    },
-  );
+  test('headers count as 13 pt items and sit on the item text', () {
+    const label = 'Display content as';
+    const withHeader = [MenuSection(label), MenuAction('Name', checked: true)];
+    const asItem = [MenuAction(label), MenuAction('Name', checked: true)];
+    // The same width it would have as a normal item (d06-pila-menu: 220 pt).
+    expect(menuSize(withHeader).width, menuSize(asItem).width);
+  });
 
-  testWidgets('intestazione allineata al testo delle voci con le spunte', (
+  testWidgets('header aligned with the item text when there are checkmarks', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -47,8 +41,8 @@ void main() {
           alignment: Alignment.topLeft,
           child: MenuPanel(
             entries: [
-              MenuSection('Ordina per'),
-              MenuAction('Nome', checked: true),
+              MenuSection('Sort by'),
+              MenuAction('Name', checked: true),
             ],
             opaque: true,
           ),
@@ -56,8 +50,8 @@ void main() {
       ),
     );
     expect(
-      tester.getTopLeft(find.text('Ordina per')).dx,
-      tester.getTopLeft(find.text('Nome')).dx,
+      tester.getTopLeft(find.text('Sort by')).dx,
+      tester.getTopLeft(find.text('Name')).dx,
     );
   });
 
@@ -72,51 +66,47 @@ void main() {
         child: MenuHost(
           entries: build(log),
           anchor: const Offset(100, 31),
-          onDismissed: () => log.add('chiuso'),
+          onDismissed: () => log.add('closed'),
         ),
       ),
     );
     return log;
   }
 
-  testWidgets(
-    'la tastiera evidenzia e sceglie: lampeggio, azione, dissolvenza',
-    (tester) async {
-      final log = await openMenu(
-        tester,
-        (log) => [
-          MenuAction('Annulla', onSelected: () => log.add('annulla')),
-          const MenuAction('Ripeti', enabled: false),
-          const MenuDivider(),
-          MenuAction('Taglia', onSelected: () => log.add('taglia')),
-        ],
-      );
-      await tester.pump();
-      // ↓ salta la voce disattivata e il separatore.
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await tester.pump();
-      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pump(const Duration(milliseconds: 50));
-      expect(log, isEmpty);
-      await tester.pump(const Duration(milliseconds: 80));
-      expect(log, ['taglia']);
-      await tester.pump(const Duration(milliseconds: 250));
-      expect(log, ['taglia', 'chiuso']);
-    },
-  );
-
-  testWidgets('una lettera salta alla voce; Esc chiude senza scegliere', (
+  testWidgets('the keyboard highlights and chooses: blink, action, fade', (
     tester,
   ) async {
     final log = await openMenu(
       tester,
       (log) => [
-        MenuAction('Apri', onSelected: () => log.add('apri')),
-        MenuAction(
-          'Porta tutto in primo piano',
-          onSelected: () => log.add('porta'),
-        ),
+        MenuAction('Undo', onSelected: () => log.add('undo')),
+        const MenuAction('Redo', enabled: false),
+        const MenuDivider(),
+        MenuAction('Cut', onSelected: () => log.add('cut')),
+      ],
+    );
+    await tester.pump();
+    // ↓ skips the disabled item and the separator.
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(log, isEmpty);
+    await tester.pump(const Duration(milliseconds: 80));
+    expect(log, ['cut']);
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(log, ['cut', 'closed']);
+  });
+
+  testWidgets('a letter jumps to the item; Esc closes without choosing', (
+    tester,
+  ) async {
+    final log = await openMenu(
+      tester,
+      (log) => [
+        MenuAction('Open', onSelected: () => log.add('open')),
+        MenuAction('Put All in Front', onSelected: () => log.add('put')),
       ],
     );
     await tester.pump();
@@ -126,52 +116,50 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 150));
-    expect(log, ['chiuso']);
+    expect(log, ['closed']);
   });
 
   testWidgets(
-    'il sottomenu si apre dopo ~295 ms, 5 pt sovrapposto al menu madre',
+    'the submenu opens after ~295 ms, overlapping the parent menu by 5 pt',
     (tester) async {
       final log = await openMenu(
         tester,
         (log) => [
-          const MenuAction('Primo'),
+          const MenuAction('First'),
           MenuAction(
-            'Recenti',
-            submenu: [
-              MenuAction('Documento', onSelected: () => log.add('doc')),
-            ],
+            'Recent',
+            submenu: [MenuAction('Document', onSelected: () => log.add('doc'))],
           ),
         ],
       );
       final size = menuSize(const [
-        MenuAction('Primo'),
-        MenuAction('Recenti', submenu: []),
+        MenuAction('First'),
+        MenuAction('Recent', submenu: []),
       ]);
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
-      // Sulla voce del sottomenu (seconda riga).
+      // On the submenu item (second row).
       await mouse.moveTo(const Offset(150, 31 + 5 + 24 + 12));
       await tester.pump(const Duration(milliseconds: 200));
-      expect(find.text('Documento'), findsNothing);
+      expect(find.text('Document'), findsNothing);
       await tester.pump(const Duration(milliseconds: 120));
-      expect(find.text('Documento'), findsOneWidget);
-      final sub = tester.getTopLeft(find.text('Documento'));
+      expect(find.text('Document'), findsOneWidget);
+      final sub = tester.getTopLeft(find.text('Document'));
       expect(sub.dx, closeTo(100 + size.width - 5 + 17, 1));
-      // Clic sulla voce del sottomenu.
-      await mouse.down(tester.getCenter(find.text('Documento')));
+      // Click on the submenu item.
+      await mouse.down(tester.getCenter(find.text('Document')));
       await mouse.up();
       await tester.pump(const Duration(milliseconds: 150));
       expect(log, ['doc']);
       await tester.pump(const Duration(milliseconds: 250));
-      expect(log, ['doc', 'chiuso']);
+      expect(log, ['doc', 'closed']);
     },
   );
 
   testWidgets(
-    'con la punta il menu sta sopra: corpo 27 pt a sinistra, fondo 8 pt sopra',
+    'with a tip the menu sits above: body 27 pt to the left, bottom 8 pt above',
     (tester) async {
-      const entries = [MenuAction('Apri')];
+      const entries = [MenuAction('Open')];
       await tester.pumpWidget(
         const Directionality(
           textDirection: TextDirection.ltr,
@@ -183,7 +171,7 @@ void main() {
         ),
       );
       final size = menuSize(entries);
-      final text = tester.getTopLeft(find.text('Apri'));
+      final text = tester.getTopLeft(find.text('Open'));
       expect(text.dx, closeTo(500 - 27 + 17, 0.5));
       final panel = tester.getRect(find.byType(MenuPanel));
       expect(panel.bottom, 400 - 8);
@@ -191,7 +179,7 @@ void main() {
     },
   );
 
-  testWidgets('onRectsChanged: il sottomenu aperto entra nei rettangoli', (
+  testWidgets('onRectsChanged: the open submenu enters the rects', (
     tester,
   ) async {
     final seen = <List<Rect>>[];
@@ -200,7 +188,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: MenuHost(
           entries: const [
-            MenuAction('Opzioni', submenu: [MenuAction('Rimuovi')]),
+            MenuAction('Options', submenu: [MenuAction('Remove')]),
           ],
           anchor: const Offset(100, 31),
           onRectsChanged: seen.add,
@@ -217,30 +205,29 @@ void main() {
     await tester.pump();
     expect(seen.last.length, 2);
     expect(
-      seen.last.last.contains(tester.getCenter(find.text('Rimuovi'))),
+      seen.last.last.contains(tester.getCenter(find.text('Remove'))),
       isTrue,
     );
   });
 
-  testWidgets(
-    'la punta che si sposta sposta il menu (la superficie si allunga)',
-    (tester) async {
-      const entries = [MenuAction('Apri')];
-      Widget host(Offset tip) => Directionality(
-        textDirection: TextDirection.ltr,
-        child: MenuHost(entries: entries, anchor: Offset.zero, tip: tip),
-      );
-      await tester.pumpWidget(host(const Offset(500, 100)));
-      final before = tester.getRect(find.byType(MenuPanel));
-      await tester.pumpWidget(host(const Offset(500, 400)));
-      final after = tester.getRect(find.byType(MenuPanel));
-      expect(after.top - before.top, 300);
-      expect(find.text('Apri'), findsOneWidget);
-    },
-  );
+  testWidgets('a moving tip moves the menu (the surface stretches)', (
+    tester,
+  ) async {
+    const entries = [MenuAction('Open')];
+    Widget host(Offset tip) => Directionality(
+      textDirection: TextDirection.ltr,
+      child: MenuHost(entries: entries, anchor: Offset.zero, tip: tip),
+    );
+    await tester.pumpWidget(host(const Offset(500, 100)));
+    final before = tester.getRect(find.byType(MenuPanel));
+    await tester.pumpWidget(host(const Offset(500, 400)));
+    final after = tester.getRect(find.byType(MenuPanel));
+    expect(after.top - before.top, 300);
+    expect(find.text('Open'), findsOneWidget);
+  });
 
   testWidgets(
-    'aspetto scuro: testo chiaro dal sistema, vetro di Flutter nella finestra',
+    'dark appearance: light text from the system, Flutter glass in the window',
     (tester) async {
       await tester.pumpWidget(
         const MediaQuery(
@@ -249,8 +236,8 @@ void main() {
             textDirection: TextDirection.ltr,
             child: MenuHost(
               entries: [
-                MenuAction('Apri'),
-                MenuAction('Chiudi', enabled: false),
+                MenuAction('Open'),
+                MenuAction('Close', enabled: false),
               ],
               anchor: Offset(10, 10),
               opaque: true,
@@ -260,23 +247,23 @@ void main() {
       );
       expect(
         find.descendant(
-          of: find.byKey(const ValueKey('menu nella finestra')),
+          of: find.byKey(const ValueKey('in-window menu')),
           matching: find.byType(BackdropFilter),
         ),
         findsOneWidget,
       );
       expect(
-        tester.widget<Text>(find.text('Apri')).style?.color,
+        tester.widget<Text>(find.text('Open')).style?.color,
         MenuColors.dark.text,
       );
       expect(
-        tester.widget<Text>(find.text('Chiudi')).style?.color,
+        tester.widget<Text>(find.text('Close')).style?.color,
         MenuColors.dark.disabled,
       );
     },
   );
 
-  test('il materiale dei menu sul grigio di riferimento (menubar.md)', () {
+  test('the menu material on the reference gray (menubar.md)', () {
     void near(Color a, Color b) {
       for (final (x, y) in [(a.r, b.r), (a.g, b.g), (a.b, b.b)]) {
         expect((x - y).abs() * 255, lessThanOrEqualTo(3.01));
@@ -286,75 +273,74 @@ void main() {
     const gray = Color(0xFF7A7B80);
     near(WindowGlassMaterial.thickLight.apply(gray), const Color(0xFFC7C8CD));
     near(WindowGlassMaterial.thickDark.apply(gray), const Color(0xFF6F7075));
-    // Sul bianco la matrice satura a 255: 3 livelli sopra `#fcfcfd` misurato.
+    // On white the matrix saturates at 255: 3 levels above the measured `#fcfcfd`.
     near(
       WindowGlassMaterial.thickLight.apply(const Color(0xFFFFFFFF)),
       const Color(0xFFFCFCFD),
     );
   });
 
-  testWidgets('menu nella finestra: vetro di Flutter, non di Ossido', (
+  testWidgets('in-window menu: Flutter glass, not Ossido glass', (
     tester,
   ) async {
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
         child: MenuHost(
-          entries: [MenuAction('Apri')],
+          entries: [MenuAction('Open')],
           anchor: Offset(10, 10),
           opaque: true,
         ),
       ),
     );
-    expect(find.byKey(const ValueKey('menu nella finestra')), findsOneWidget);
+    expect(find.byKey(const ValueKey('in-window menu')), findsOneWidget);
     expect(find.byType(BackdropFilter), findsOneWidget);
     expect(find.byType(LiquidGlass), findsNothing);
   });
 
-  testWidgets(
-    'riga personalizzata: alta quanto chiede, chiude il menu dal suo tocco',
-    (tester) async {
-      var closed = false;
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: MenuHost(
-            entries: [
-              const MenuAction('Apri'),
-              MenuCustom(
-                height: 25,
-                width: 200,
-                builder: (context, close) => GestureDetector(
-                  key: const ValueKey('cerchio'),
-                  behavior: HitTestBehavior.opaque,
-                  onTap: close,
-                  child: const SizedBox(width: 14, height: 14),
-                ),
+  testWidgets('custom row: as high as it asks, closes the menu from its tap', (
+    tester,
+  ) async {
+    var closed = false;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MenuHost(
+          entries: [
+            const MenuAction('Open'),
+            MenuCustom(
+              height: 25,
+              width: 200,
+              builder: (context, close) => GestureDetector(
+                key: const ValueKey('circle'),
+                behavior: HitTestBehavior.opaque,
+                onTap: close,
+                child: const SizedBox(width: 14, height: 14),
               ),
-            ],
-            anchor: const Offset(10, 10),
-            onDismissed: () => closed = true,
-          ),
+            ),
+          ],
+          anchor: const Offset(10, 10),
+          onDismissed: () => closed = true,
         ),
-      );
-      expect(
-        menuRowTops([
-          const MenuAction('Apri'),
-          MenuCustom(height: 25, builder: (_, _) => const SizedBox()),
-          const MenuAction('Dopo'),
-        ]),
-        [5, 29, 54],
-      );
-      await tester.tap(find.byKey(const ValueKey('cerchio')));
-      for (var i = 0; i < 10; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      expect(closed, isTrue);
-    },
-  );
+      ),
+    );
+    expect(
+      menuRowTops([
+        const MenuAction('Open'),
+        MenuCustom(height: 25, builder: (_, _) => const SizedBox()),
+        const MenuAction('After'),
+      ]),
+      [5, 29, 54],
+    );
+    await tester.tap(find.byKey(const ValueKey('circle')));
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    expect(closed, isTrue);
+  });
 
   testWidgets(
-    'punta in alto: il menu sotto il vertice e il vetro con la punta in su',
+    'tip up: the menu under the apex and the glass with the tip pointing up',
     (tester) async {
       final calls = <MethodCall>[];
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -371,7 +357,7 @@ void main() {
         const Directionality(
           textDirection: TextDirection.ltr,
           child: MenuHost(
-            entries: [MenuAction('Riempi')],
+            entries: [MenuAction('Fill')],
             anchor: Offset.zero,
             tip: Offset(200, 100),
             tipUp: true,
@@ -386,7 +372,7 @@ void main() {
       final tip = regions.cast<Map<Object?, Object?>>().firstWhere(
         (r) => r['shape'] == 'tip-up',
       );
-      // La punta sta sopra il corpo, con il vertice verso il punto indicato.
+      // The tip sits above the body, with the apex towards the given point.
       expect(
         (tip['y']! as num) + (tip['height']! as num),
         closeTo(panel.top, 0.5),
