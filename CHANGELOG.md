@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.19.0 · 2026-10-14
+
+- Stati dei controlli della barra (mustache.md M6 › MU-07): pillola alta 28 (larga il
+  segmento − 3; nei pulsanti con capsula propria la capsula − 2) al passaggio, più scura alla
+  pressione con la capsula +1 pt per lato; segmento scelto a riposo, sopra e premuto;
+  disattivati senza pillola (in scuro una pillola tenue alla pressione); separatori nascosti
+  accanto al segmento sotto il puntatore. Il clic agisce al rilascio, dentro il segmento.
+- `ToolbarSegment.onLongPress` (dopo `toolbarLongPress`, 295 ms: il rilascio non agisce) e
+  `onPress` (alla pressione, per i pulsanti con un menu).
+- `ToolbarScope(active:, hovered:)`: finestra inattiva (capsula e glifo spenti, il passaggio
+  li riaccende) e puntatore nella barra (in scuro capsule +7 livelli).
+- **Cambia l'API** di `ToolbarColors`: `fill`, `fillBarHover`, `fillInactive`, `hover`,
+  `pressed`, `chosen*`, `icon*` al posto di `fillTop`/`fillBottom`/`chosenTop`/`chosenBottom`.
+
 ## 0.18.0 · 2026-10-14
 
 - `WindowGlass` e `WindowGlassMaterial`: il vetro dentro una finestra, fatto da Flutter
