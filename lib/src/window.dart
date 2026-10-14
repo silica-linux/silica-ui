@@ -494,24 +494,31 @@ class _ToolbarSegmentState extends State<ToolbarSegment> {
         onPointerDown: _down,
         onPointerUp: _up,
         onPointerCancel: (_) => _cancel(),
-        child: SizedBox(
-          width: widget.width,
-          height: toolbarCapsuleHeight - 2,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (pill != null)
-                Container(
-                  key: const ValueKey('pillola'),
-                  width: pillWidth,
-                  height: pillHeight,
-                  decoration: BoxDecoration(
-                    color: pill,
-                    borderRadius: BorderRadius.circular(pillHeight / 2),
+        // Il segmento tiene per sé tocco e trascinamento: da un controllo la finestra non si
+        // sposta (WindowDragArea), MU-08.
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {},
+          onPanStart: (_) {},
+          child: SizedBox(
+            width: widget.width,
+            height: toolbarCapsuleHeight - 2,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (pill != null)
+                  Container(
+                    key: const ValueKey('pillola'),
+                    width: pillWidth,
+                    height: pillHeight,
+                    decoration: BoxDecoration(
+                      color: pill,
+                      borderRadius: BorderRadius.circular(pillHeight / 2),
+                    ),
                   ),
-                ),
-              widget.icon(glyph),
-            ],
+                widget.icon(glyph),
+              ],
+            ),
           ),
         ),
       ),

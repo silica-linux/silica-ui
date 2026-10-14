@@ -67,6 +67,15 @@ void main() {
       );
       await tester.tap(find.byKey(const ValueKey('a')));
       expect(tapped, 1);
+      // Trascinare da un controllo non sposta la finestra.
+      final fromControl = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('a'))),
+        kind: PointerDeviceKind.mouse,
+      );
+      await fromControl.moveBy(const Offset(-40, 0));
+      await fromControl.up();
+      await tester.pump();
+      expect(calls, isEmpty);
       final gesture = await tester.startGesture(
         const Offset(20, 26),
         kind: PointerDeviceKind.mouse,

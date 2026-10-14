@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.1 · 2026-10-14
+
+- `ToolbarSegment` tiene per sé tocco e trascinamento: un clic o un trascinamento che parte
+  da un controllo non sposta la finestra (`WindowDragArea`), come prima della 0.19.0 (MU-08).
+
 ## 0.19.0 · 2026-10-14
 
 - Stati dei controlli della barra (mustache.md M6 › MU-07): pillola alta 28 (larga il
