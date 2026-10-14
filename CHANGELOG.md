@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.23.0 · 2026-10-14
+
+The controls of milestone M6 (UI components 1:1). Values not measured yet are marked
+provisional in the code and will change once measured.
+
+- **Glass toolbar over scrolling content** (silica-ui#2): `ScrollUnderToolbar(toolbar, body:
+  (context, padding) => …, header, active)` lets the body scroll under the 52 pt toolbar band
+  behind the measured veil (`ToolbarVeil.light` / `.dark`, two blurs), with the 1 pt line once
+  the content has scrolled (always in an inactive window); toolbar capsules over content get a
+  blurred rim (provisional, no refraction yet).
+- **Buttons and toggles**: `SilicaButton` (normal, primary, destructive; push, bevel,
+  borderless, circle bezels; mini to large), `HelpButton`, `ToggleButton`, `ImageButton`,
+  `DisclosureTriangle`, `DisclosureButton`, `SilicaCheckbox` (with the mixed state),
+  `SilicaRadio` and `SilicaRadioGroup`, `SilicaSwitch`, `SegmentedControl` (select one, any,
+  momentary), `PopUpButton`, `PullDownButton`, `ComboBox`.
+- **Inputs and indicators**: `SilicaTextField` (secure, with the caps lock sign),
+  `SilicaSearchField` (recents, tokens, clear), `SilicaTokenField`, `SilicaStepper`,
+  `SilicaSlider` (ticks, labels) and `SilicaCircularSlider`, `SilicaDateField`,
+  `SilicaCalendar`, `SilicaClockFace`, `SilicaColorWell` and `SilicaColorPicker`,
+  `SilicaLevelIndicator` (continuous, discrete, rating), `SilicaProgressBar` (determinate and
+  indeterminate), `SilicaSpinner`, `SilicaProgressRing`.
+- **Containers and navigation**: `SourceList` (sections, nesting, badges), `TableView` (sorting,
+  resizable columns, striping, outline mode), `CollectionView`, `SilicaScrollbar` and
+  `SilicaScrollBehavior` (overlay and legacy scrollers), `SplitView` (sidebar behaviour,
+  dividers, collapse), `WindowTabBar` and `SilicaTabView`, `PathControl`, popovers on all four
+  edges (`PopoverAnchor`, `PopoverPanel`), `showWindowSheet`, `FloatingPanel` (utility, HUD),
+  `SilicaTooltip`, `ToolbarCustomizeSheet`.
+- **Shared base**: `ControlPalette` (accent, focus ring colors, the inactive-window gray),
+  `WindowActiveScope` (with `.follow` for the app lifecycle; it falls back to `ToolbarScope`),
+  `FocusRing`, `ControlAccent`, `ChevronPainter`. Every control works light and dark, in active
+  and inactive windows, with the keyboard and with semantics; visible texts are parameters.
+- The example is now the catalog app: every group next to each other, light/dark and window
+  state switches, plus the Liquid Glass lab.
+
 ## 0.22.0 · 2026-10-14
 
 - **API change**: `GlassTip.up` becomes `GlassTip.edge` (`TipEdge.bottom`, `top`, `left`,
