@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="230" viewBox="0 0 560 230" font-family="Inter, sans-serif" font-size="10">
+  <title>Table rows and selection (CT-TB-01), 2× scale</title>
+  <rect width="560" height="230" fill="#ffffff"/>
+  <!-- 2×. Header 28 pt, line 2 px, rows 20 pt starting 6 pt below the header, insets 10 pt. -->
+  <rect x="0" y="0" width="520" height="56" fill="#ffffff"/>
+  <text x="40" y="34" fill="#4d4d4d" font-weight="600">Name</text>
+  <text x="300" y="34" fill="#808080">Date</text>
+  <line x1="290" y1="12" x2="290" y2="44" stroke="#e5e5e5" stroke-width="2"/>
+  <line x1="0" y1="57" x2="520" y2="57" stroke="#e5e5e5" stroke-width="2"/>
+  <!-- rows: y = 56 + 12 + n·40 -->
+  <rect x="20" y="108" width="480" height="40" rx="20" fill="#f4f5f5"/>
+  <!-- selection block of two rows: outer corners rounded, inner square -->
+  <path d="M36 148 H484 A16 16 0 0 1 500 164 V228 H20 V164 A16 16 0 0 1 36 148 Z" fill="#0064e1"/>
+  <line x1="20" y1="188" x2="500" y2="188" stroke="#2673e4" stroke-width="2"/>
+  <text x="40" y="94" fill="#252525" font-size="13">row</text>
+  <text x="40" y="134" fill="#252525" font-size="13">row</text>
+  <text x="40" y="174" fill="#ffffff" font-size="13">selected</text>
+  <text x="40" y="214" fill="#ffffff" font-size="13">selected</text>
+  <g stroke="#0064e1" stroke-width="0.75" fill="none">
+    <line x1="530" y1="0" x2="530" y2="56"/>
+    <line x1="526" y1="0" x2="534" y2="0"/>
+    <line x1="526" y1="56" x2="534" y2="56"/>
+    <line x1="530" y1="108" x2="530" y2="148"/>
+    <line x1="526" y1="108" x2="534" y2="108"/>
+    <line x1="526" y1="148" x2="534" y2="148"/>
+  </g>
+  <g fill="#0064e1">
+    <text x="536" y="32">28</text>
+    <text x="536" y="132">20</text>
+  </g>
+  <text x="300" y="134" fill="#808080">alternating capsule, radius 10, inset 10</text>
+</svg>

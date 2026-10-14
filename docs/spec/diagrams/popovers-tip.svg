@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="230" viewBox="-30 -15.5 60 28.75" font-family="Inter, sans-serif">
+  <title>Popover tip outline, top/bottom edge (TIP-01), 8× scale</title>
+  <rect x="-30" y="-15.5" width="60" height="28.75" fill="#ffffff"/>
+  <!-- Body above y = −10.745, tip pointing down to the apex at (0, 0). Units are pt. -->
+  <rect x="-28" y="-15.5" width="56" height="4.755" fill="#e9e9ec"/>
+  <path d="M-16.193,-10.745 A8.053,8.053 0 0 1 -10.382,-8.267 L-4.147,-1.768 A5.747,5.747 0 0 0 4.147,-1.768 L10.382,-8.267 A8.053,8.053 0 0 1 16.193,-10.745 Z" fill="#e9e9ec"/>
+  <path d="M-28,-10.745 H-16.193 A8.053,8.053 0 0 1 -10.382,-8.267 L-4.147,-1.768 A5.747,5.747 0 0 0 4.147,-1.768 L10.382,-8.267 A8.053,8.053 0 0 1 16.193,-10.745 H28" fill="none" stroke="#3a3a3a" stroke-width="0.12"/>
+  <!-- construction circles -->
+  <circle cx="0" cy="-5.747" r="5.747" fill="none" stroke="#0064e1" stroke-width="0.06" stroke-dasharray="0.4 0.3"/>
+  <circle cx="-16.193" cy="-2.692" r="8.053" fill="none" stroke="#b0b0b0" stroke-width="0.06" stroke-dasharray="0.4 0.3"/>
+  <circle cx="16.193" cy="-2.692" r="8.053" fill="none" stroke="#b0b0b0" stroke-width="0.06" stroke-dasharray="0.4 0.3"/>
+  <g stroke="#0064e1" stroke-width="0.08" fill="none">
+    <line x1="-16.193" y1="4" x2="16.193" y2="4"/>
+    <line x1="-16.193" y1="3.5" x2="-16.193" y2="4.5"/>
+    <line x1="16.193" y1="3.5" x2="16.193" y2="4.5"/>
+    <line x1="21" y1="-10.745" x2="21" y2="0"/>
+    <line x1="20.5" y1="0" x2="21.5" y2="0"/>
+  </g>
+  <g fill="#0064e1" font-size="1.4">
+    <text x="0" y="6.2" text-anchor="middle">2W = 32.4 pt</text>
+    <text x="21.8" y="-4.6">D = 10.75</text>
+    <text x="1.2" y="-6">rₐ = 5.75</text>
+  </g>
+  <g fill="#808080" font-size="1.2">
+    <text x="-27" y="-12.2">body edge</text>
+    <text x="-27" y="9.5">fillet r_f = 8.05 · flank α = 46.2° · fixed in pt</text>
+    <text x="-27" y="11.3">rotate 180° / ±90° for the other edges (side tips: D 11.75, W 19.5, r_f 13.8)</text>
+  </g>
+</svg>

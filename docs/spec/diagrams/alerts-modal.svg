@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="200" viewBox="0 0 500 200" font-family="Inter, sans-serif" font-size="10">
+  <title>Modal alert (CT-AL-01), 1× scale</title>
+  <rect width="500" height="200" fill="#f0f0f0"/>
+  <!-- 1×: 420 × 132, radius 15, header 32 + 1 pt line, buttons 80 × 24 radius 8, 12 apart, 20 from edges. -->
+  <rect x="40" y="30" width="420" height="132" rx="15" fill="#ffffff" stroke="#a0a0a0" stroke-width="1"/>
+  <line x1="40" y1="62.5" x2="460" y2="62.5" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="58" y="51" fill="#595959" font-size="13" font-weight="600">Title</text>
+  <text x="59" y="94" fill="#272727" font-size="13">Message</text>
+  <rect x="268" y="118" width="80" height="24" rx="8" fill="#ececec"/>
+  <rect x="360" y="118" width="80" height="24" rx="8" fill="#007aff"/>
+  <text x="308" y="134" fill="#242424" text-anchor="middle" font-size="12">Cancel</text>
+  <text x="400" y="134" fill="#ffffff" text-anchor="middle" font-size="12">OK</text>
+  <g stroke="#0064e1" stroke-width="0.75" fill="none">
+    <line x1="40" y1="178" x2="460" y2="178"/>
+    <line x1="40" y1="174" x2="40" y2="182"/>
+    <line x1="460" y1="174" x2="460" y2="182"/>
+    <line x1="472" y1="30" x2="472" y2="162"/>
+    <line x1="468" y1="30" x2="476" y2="30"/>
+    <line x1="468" y1="162" x2="476" y2="162"/>
+    <line x1="348" y1="110" x2="360" y2="110"/>
+    <line x1="440" y1="152" x2="460" y2="152"/>
+    <line x1="450" y1="142" x2="450" y2="162"/>
+  </g>
+  <g fill="#0064e1">
+    <text x="250" y="194" text-anchor="middle">420</text>
+    <text x="478" y="100">132</text>
+    <text x="354" y="106" text-anchor="middle">12</text>
+    <text x="440" y="172">20</text>
+  </g>
+  <text x="58" y="24" fill="#808080">header 32 pt · radius 15 · buttons 80 × 24, radius 8</text>
+</svg>
