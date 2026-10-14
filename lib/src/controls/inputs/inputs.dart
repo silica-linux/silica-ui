@@ -7,3 +7,5 @@ export 'input_style.dart';
 export 'text_field.dart';
 export 'search_field.dart';
 export 'token_field.dart';
+export 'slider.dart';
+export 'stepper.dart';

@@ -29,6 +29,7 @@ class InputColors {
     required this.selectionInactive,
     required this.glyph,
     required this.track,
+    required this.trackFill,
     required this.knob,
     required this.knobBorder,
     required this.knobShadow,
@@ -77,6 +78,9 @@ class InputColors {
   /// Slider and progress track (MU-04: `#e5e5e5`, `#434343`).
   final Color track;
 
+  /// The filled part of a slider (MU-04: sRGB `#0176f7` light, `#0d7bfb` dark).
+  final Color trackFill;
+
   /// The knob (MU-04: white with a shadow in light, solid `#dfdfdf` in dark).
   final Color knob;
   final Color knobBorder;
@@ -122,6 +126,7 @@ class InputColors {
     selectionInactive: Color(0xFFDCDCDC),
     glyph: Color(0xFF808080),
     track: Color(0xFFE5E5E5),
+    trackFill: Color(0xFF0176F7),
     knob: Color(0xFFFFFFFF),
     knobBorder: Color(0x1F000000),
     knobShadow: Color(0x40000000),
@@ -153,6 +158,7 @@ class InputColors {
     selectionInactive: Color(0xFF464646),
     glyph: Color(0xFFA1A1A1),
     track: Color(0xFF434343),
+    trackFill: Color(0xFF0D7BFB),
     knob: Color(0xFFDFDFDF),
     knobBorder: Color(0x00000000),
     knobShadow: Color(0x59000000),
