@@ -10,3 +10,8 @@ export 'split_view.dart';
 export 'tab_view.dart';
 export 'collection_view.dart';
 export 'path_control.dart';
+export 'popover.dart';
+export 'sheet.dart';
+export 'panel.dart';
+export 'tooltip.dart';
+export 'toolbar_customize.dart';
