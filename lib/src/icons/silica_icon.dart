@@ -222,7 +222,7 @@ class SilicaIcon extends StatelessWidget {
 
   /// The dark variant. It is the icon style (icons.md IC-01: Settings › Appearance ›
   /// Icon style, "Dark"), not the system appearance: in dark appearance with the normal style
-  /// the icons stay the same (appswitcher.md; mu20-list-dark). Null: light.
+  /// the icons stay the same (appswitcher.md; silica-reference MU-20). Null: light.
   final bool? dark;
 
   @override

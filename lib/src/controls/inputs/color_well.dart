@@ -1,9 +1,9 @@
 // Color well and color picker.
 //
-// Measured: nothing of the shape (terminal.md › Settings › Profili reads only the colors in
-// the wells). Provisional: the well 44 × 23, radius 5, the swatch inset 3 with a hairline;
-// pressed and "picking" states (accent border); the picker panel (a 160 pt hue and saturation
-// wheel, brightness and opacity sliders, a row of swatches) in the menu panel color.
+// Measured: nothing of the shape (silica-reference TE-01, terminal profile settings, reads only
+// the colors in the wells). Provisional: the well 44 × 23, radius 5, the swatch inset 3 with a
+// hairline; pressed and "picking" states (accent border); the picker panel (a 160 pt hue and
+// saturation wheel, brightness and opacity sliders, a row of swatches) in the menu panel color.
 
 import 'dart:math' as math;
 

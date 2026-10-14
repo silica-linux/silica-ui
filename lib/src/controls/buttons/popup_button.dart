@@ -3,10 +3,10 @@
 //
 // Measured: pop-up buttons 24 high (Clock 224 × 24; Save card 232 × 26 in AX), the menu opens
 // on press with the checked item over the control (mustache.md › MU-02 title menu, MU-07 menus
-// on press); the pull-down chevron is 7 × 4 (Raggruppa, mustache-spec 1.2). Paddings, the ⌃⌄
-// glyph, the gap of the pull-down menu and the whole combo box are provisional (silica-reference
-// C-01). The menus are silica_ui's in-window menus ([MenuHost] with `opaque`), in the nearest
-// [Overlay].
+// on press); the pull-down chevron is 7 × 4 (the toolbar grouping pull-down, mustache-spec
+// 1.2). Paddings, the ⌃⌄ glyph, the gap of the pull-down menu and the whole combo box are
+// provisional (silica-reference C-01). The menus are silica_ui's in-window menus ([MenuHost]
+// with `opaque`), in the nearest [Overlay].
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -408,7 +408,7 @@ class _PullDownButtonState extends State<PullDownButton>
                 const SizedBox(width: 6),
                 CustomPaint(
                   key: const ValueKey('pull-down chevron'),
-                  // Measured: 7 × 4 (Raggruppa).
+                  // Measured: 7 × 4 (the toolbar grouping button).
                   size: Size(7 * scale, 4 * scale),
                   painter: ChevronPainter(
                     ChevronDirection.down,

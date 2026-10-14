@@ -23,11 +23,11 @@ class _GlassLabState extends State<GlassLab> {
     const Offset(325, 180),
   ];
   final List<String> labels = [
-    'Rete',
+    'Network',
     'Bluetooth',
-    'Condividi',
-    'Luce',
-    'Suono',
+    'Sharing',
+    'Light',
+    'Sound',
   ];
 
   @override

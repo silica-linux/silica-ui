@@ -123,7 +123,7 @@ provisional in the code and will change once measured.
 
 - `SilicaIcon`: without `dark` the icon is always the light one. The dark variant belongs to
   the icon style (a separate setting), not to the system appearance: in dark appearance the
-  icons of apps and files stay the same (icons.md IC-01, mu20-list-dark).
+  icons of apps and files stay the same (icons.md IC-01, silica-reference MU-20).
 
 ## 0.15.0 · 2026-10-14
 
@@ -148,7 +148,7 @@ provisional in the code and will change once measured.
 ## 0.13.1 · 2026-10-14
 
 - Menus: a header (`MenuSection`) counts in the width as a 13 pt item and is aligned with the
-  item text (at 29 with checkmarks), as in the Dock stack menu (d06-pila-menu: 220 pt).
+  item text (at 29 with checkmarks), as in the Dock stack menu (silica-reference SH-DK-25: 220 pt).
 
 ## 0.13.0 · 2026-10-14
 

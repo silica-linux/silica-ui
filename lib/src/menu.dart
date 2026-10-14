@@ -109,7 +109,7 @@ abstract final class MenuMetrics {
   static const double tipHeight = 8;
   static const double tipBase = 24;
 
-  /// The depth of the drawn drop: it reaches 2 pt past the anchor, as on dock-context-light.
+  /// The depth of the drawn drop: it reaches 2 pt past the anchor (silica-reference SH-DK-17).
   static const double tipDepth = 10;
   static const double tipBodyLeft = 27;
 
@@ -242,7 +242,7 @@ Size menuSize(List<MenuEntry> entries) {
                 : 0) +
             MenuMetrics.right,
       // The header counts as an item in the normal body size, even if it is drawn smaller
-      // (d06-pila-menu: "Visualizza contenuti come" makes the menu 220 pt wide =
+      // (silica-reference SH-DK-25: the Dock stack menu header makes the menu 220 pt wide =
       // 29 + the text at 13 pt + 20).
       MenuSection(:final label) =>
         left +
@@ -761,7 +761,7 @@ class MenuPanel extends StatelessWidget {
                   ? null
                   : GlassTip(
                       x: tipX,
-                      // The drop measured on dock-context-light.png: 24 pt base, 10 pt deep,
+                      // The drop measured in silica-reference SH-DK-17: 24 pt base, 10 pt deep,
                       // glass widths per row 24 20 18 16 14 12 10 8 6 2 (Ossido draws it).
                       width: MenuMetrics.tipBase,
                       height: MenuMetrics.tipDepth,
@@ -812,7 +812,7 @@ class MenuPanel extends StatelessWidget {
             color: colors.divider,
           ),
         );
-      // Aligned with the item text (with checkmarks at 29, d06-pila-menu).
+      // Aligned with the item text (with checkmarks at 29, silica-reference SH-DK-25).
       case MenuSection(:final label):
         return Padding(
           padding: EdgeInsets.only(left: textLeft),

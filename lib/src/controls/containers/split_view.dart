@@ -45,7 +45,7 @@ class SplitBehavior {
   /// Dragged with the pointer closer than this to the outer edge, the pane collapses.
   final double? collapseBelow;
 
-  /// The Finder sidebar (MU-11).
+  /// The file manager sidebar (measured in silica-reference MU-11).
   static const SplitBehavior sidebar = SplitBehavior(
     min: 135,
     otherMin: 316,

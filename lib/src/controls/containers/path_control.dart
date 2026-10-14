@@ -1,7 +1,8 @@
 // Path control (CT-PA-01; mustache-spec 1.4, MU-03), generalized from Mustache's path bar: 28 pt
 // tall with a 1 pt line above, one segment per level from x 13: 16 pt icon, text 5 pt after it,
-// 5 × 7 chevron. When space runs out, the middle segments shrink equally down to 29 pt, then the
-// first, then the second to last; the last stays whole; cut text fades out on the right.
+// 5 × 7 chevron. Short of space, the middle segments shrink together to 29 pt; after them the
+// first segment shrinks, then the one before the last, which never shrinks; cut text fades out
+// on the right.
 
 import 'dart:math' as math;
 

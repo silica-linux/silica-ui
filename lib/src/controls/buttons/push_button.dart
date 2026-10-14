@@ -29,7 +29,7 @@ enum ButtonBezel {
   circle,
 }
 
-/// The horizontal padding of the label (provisional; Save card: "Annulla" in 69 pt).
+/// The horizontal padding of the label (provisional; the Save card Cancel button is 69 pt wide).
 double _padding(ControlSize size) => switch (size) {
   ControlSize.mini => 6,
   ControlSize.small => 10,

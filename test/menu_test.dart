@@ -27,7 +27,7 @@ void main() {
     const label = 'Display content as';
     const withHeader = [MenuSection(label), MenuAction('Name', checked: true)];
     const asItem = [MenuAction(label), MenuAction('Name', checked: true)];
-    // The same width it would have as a normal item (d06-pila-menu: 220 pt).
+    // The same width it would have as a normal item (silica-reference SH-DK-25: 220 pt).
     expect(menuSize(withHeader).width, menuSize(asItem).width);
   });
 

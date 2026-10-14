@@ -20,7 +20,7 @@ enum SliderSize {
   /// 6 pt track, 20 × 16 knob.
   regular,
 
-  /// 4 pt track, 18 × 14 knob (the Finder icon-size slider).
+  /// 4 pt track, 18 × 14 knob (the file manager icon-size slider).
   small,
 }
 

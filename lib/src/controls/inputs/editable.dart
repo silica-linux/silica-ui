@@ -112,7 +112,7 @@ class _InputEditableState extends State<InputEditable>
       minLines: widget.minLines,
       textAlign: widget.textAlign,
       style: style,
-      // The caret: 1 pt in the text color at the field size (the Spotlight one is 2 pt at
+      // The caret: 1 pt in the text color at the field size (the system search panel one is 2 pt at
       // 26 pt type, spotlight.md); hidden in an inactive window.
       cursorColor: colors.text,
       cursorWidth: 1,

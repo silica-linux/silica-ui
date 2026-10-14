@@ -1,9 +1,9 @@
 // The system alert: 292 pt wide, thick glass with radius ~26, a 66 pt icon at the top left
 // (19, 19), bold title at y 99 over 250 pt, message below, buttons 30 pt high.
 // Buttons are stacked full width (262, 4 pt apart: Empty Trash, a busy volume, a single OK)
-// or side by side (128 each, 6 pt apart: two equal choices,
-// like "Usa .md" / "Mantieni .txt" or Cancel / Delete). The default one is blue (sRGB `#007aff`,
-// white text), a destructive action has a pinkish background and red text.
+// or side by side (128 each, 6 pt apart: two equal choices, like keeping one of two file
+// extensions, or Cancel / Delete). The default one is blue (sRGB `#007aff`, white text), a
+// destructive action has a pinkish background and red text.
 //
 // Measurements: dock.md D-07 (Trash alert), mustache-spec R2.13, R8.4, R8.5, R9.11.
 
