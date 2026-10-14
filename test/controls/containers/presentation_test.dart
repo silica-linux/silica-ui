@@ -262,35 +262,95 @@ void main() {
   });
 
   group('tooltip', () {
-    testWidgets('appears after a second at rest, hides on press', (
+    testWidgets(
+      'appears after 1.54 s in one frame; fades 0.3 s after a press',
+      (tester) async {
+        await tester.pumpWidget(
+          window(
+            const Center(
+              child: SilicaTooltip(
+                message: 'Show the alternate functions',
+                child: SizedBox(width: 60, height: 40),
+              ),
+            ),
+          ),
+        );
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer(location: Offset.zero);
+        await gesture.moveTo(const Offset(400, 300));
+        await tester.pump(const Duration(milliseconds: 1500));
+        expect(find.byKey(const ValueKey('tooltip')), findsNothing);
+        await tester.pump(const Duration(milliseconds: 50));
+        await tester.pump();
+        expect(find.byKey(const ValueKey('tooltip')), findsOneWidget);
+        // No fade-in: fully opaque in the first frame.
+        expect(
+          tester
+              .widget<FadeTransition>(
+                find.ancestor(
+                  of: find.byKey(const ValueKey('tooltip')),
+                  matching: find.byType(FadeTransition),
+                ),
+              )
+              .opacity
+              .value,
+          1,
+        );
+        expect(
+          tester.getTopLeft(find.byKey(const ValueKey('tooltip'))).dy,
+          300 + TooltipMetrics.below,
+        );
+        await gesture.down(const Offset(400, 300));
+        await tester.pump(const Duration(milliseconds: 250));
+        expect(find.byKey(const ValueKey('tooltip')), findsOneWidget);
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.byKey(const ValueKey('tooltip')), findsNothing);
+        await gesture.up();
+      },
+    );
+
+    testWidgets('a neighbouring control replaces it after ~240 ms', (
       tester,
     ) async {
       await tester.pumpWidget(
         window(
           const Center(
-            child: SilicaTooltip(
-              message: 'Show the alternate functions',
-              child: SizedBox(width: 60, height: 40),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SilicaTooltip(
+                  message: 'Back',
+                  child: SizedBox(width: 60, height: 40),
+                ),
+                SilicaTooltip(
+                  message: 'Share',
+                  child: SizedBox(width: 60, height: 40),
+                ),
+              ],
             ),
           ),
         ),
       );
+      final left = tester.getCenter(find.byType(SilicaTooltip).first);
+      final right = tester.getCenter(find.byType(SilicaTooltip).last);
       final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await gesture.addPointer(location: Offset.zero);
-      await gesture.moveTo(const Offset(400, 300));
-      await tester.pump(const Duration(milliseconds: 900));
-      expect(find.byKey(const ValueKey('tooltip')), findsNothing);
+      await gesture.moveTo(left);
+      await tester.pump(TooltipMetrics.delay);
+      await tester.pump();
+      expect(find.text('Back'), findsOneWidget);
+      await gesture.moveTo(right);
       await tester.pump(const Duration(milliseconds: 200));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('tooltip')), findsOneWidget);
-      expect(
-        tester.getTopLeft(find.byKey(const ValueKey('tooltip'))).dy,
-        300 + TooltipMetrics.below,
-      );
-      await gesture.down(const Offset(400, 300));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('tooltip')), findsNothing);
-      await gesture.up();
+      expect(find.text('Share'), findsNothing);
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump();
+      expect(find.text('Share'), findsOneWidget);
+      expect(find.text('Back'), findsNothing);
+      await gesture.removePointer();
+      await tester.pump(const Duration(seconds: 2));
     });
   });
 

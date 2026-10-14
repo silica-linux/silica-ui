@@ -144,7 +144,7 @@ Status:
 | CT-TL-01 | Toolbar | `ToolbarCapsule`, `ToolbarScope` | done | [toolbar](toolbar.md) |
 | CT-TL-02 | Customize-toolbar sheet | `ToolbarCustomizeSheet` | partial | [sheets and panels](sheets-and-panels.md#sheet-attached-to-the-toolbar-ct-sh-01-ct-tl-02) |
 | CT-TL-03 | Veil under the toolbar | `ScrollUnderToolbar` | done | [toolbar](toolbar.md#the-veil-over-scrolling-content-ct-tl-03-r19) |
-| CT-TT-01 | Tooltip | `SilicaTooltip` | provisional | [tooltips](tooltips.md) |
+| CT-TT-01 | Tooltip | `SilicaTooltip` | done (dark look provisional) | [tooltips](tooltips.md) |
 | CT-SC-01 | Overlay scroller | `SilicaScrollbar` | provisional | [scrollers](scrollers.md) |
 | CT-SC-02 | Legacy scroller | `SilicaScrollbar(style: legacy)` | provisional | [scrollers](scrollers.md) |
 | CT-SC-03 | Scroll elasticity | `SilicaScrollBehavior` | provisional | [scrollers](scrollers.md#not-measured) |
