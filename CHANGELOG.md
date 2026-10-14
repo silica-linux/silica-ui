@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.25.0 · 2026-10-14
 
 - **Menus stay on screen:** `MenuHost` places the open levels inside its area and places them
   again on every layout.
