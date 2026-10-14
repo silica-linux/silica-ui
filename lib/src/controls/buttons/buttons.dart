@@ -6,6 +6,7 @@ library;
 export 'checkbox.dart';
 export 'control_style.dart';
 export 'disclosure.dart';
+export 'popup_button.dart';
 export 'push_button.dart';
 export 'segmented.dart';
 export 'switch.dart';
