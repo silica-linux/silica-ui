@@ -1,10 +1,14 @@
 // What every control shares: the system palette (accent, focus rings, the inactive gray), the
 // active-window state, the accent scope and the keyboard focus ring.
 //
-// Measured (silica-reference): the accent sRGB `#007aff` (misc.md › Alert); the 3 pt text field
-// ring `#8fb4fb` / `#296692` (mustache.md › MU-32); the control ring `#89aff7` / `#3d7aa6`
-// (MU-10); the ring fades in over ~200 ms (MU-70); in an inactive window accent fills turn gray,
-// `#545555` in dark (calculator.md › Inactive window).
+// Measured (docs/spec/focus-and-accent.md): the nine system accents, light and dark, each with
+// its plain color (default button, progress fill), its control fill (about 2 % darker in light,
+// slightly lighter in dark: toggles, selected segments, switches, checkboxes, radios, slider
+// fills) and its focus ring (the accent at about 50 % over the window) (CT-CL-01); the keyboard
+// focus ring 3 pt outside the control, jumping without animation from control to control, while
+// a text field's ring fades in over ~200 ms (CT-TF-09, MU-70); in an inactive window every accent
+// fill turns neutral gray, `#cfcfcf` / `#505051` (`#c5c5c5` / `#585859` for slider fills); a
+// pressed fill is one step (10 %) darker in light, lighter in dark (INV-B).
 
 import 'package:flutter/widgets.dart';
 
@@ -12,28 +16,205 @@ import '../window.dart' show ToolbarScope;
 
 /// The system colors the control groups share, light and dark.
 abstract final class ControlPalette {
-  /// The system accent (misc.md › Alert: OK in sRGB `#007aff`, light and dark).
+  /// The system accent (CT-CL-01: multicolor and blue, sRGB `#007aff` light and dark).
   static const Color accent = Color(0xFF007AFF);
 
-  /// Accent fills in an inactive window: dark measured (calculator.md); light provisional (not
-  /// measured: the dark gray's distance from the dark window background, mirrored).
-  static const Color inactiveAccentLight = Color(0xFFB4B4B6);
-  static const Color inactiveAccentDark = Color(0xFF545555);
+  /// Accent fills in an inactive window (INV-B gallery: default button, toggle, segment,
+  /// switch, checkbox and radio).
+  static const Color inactiveAccentLight = Color(0xFFCFCFCF);
+  static const Color inactiveAccentDark = Color(0xFF505051);
 
-  /// The 3 pt ring of text fields (MU-32).
+  /// Slider fills in an inactive window (INV-B gallery).
+  static const Color inactiveTrackFillLight = Color(0xFFC5C5C5);
+  static const Color inactiveTrackFillDark = Color(0xFF585859);
+
+  /// The 3 pt ring of text fields (MU-32), the same as the controls' ring with the default
+  /// accent (CT-TF-09).
   static const Color fieldRingLight = Color(0xFF8FB4FB);
   static const Color fieldRingDark = Color(0xFF296692);
 
-  /// The ring of buttons and other controls (MU-10).
-  static const Color controlRingLight = Color(0xFF89AFF7);
-  static const Color controlRingDark = Color(0xFF3D7AA6);
+  /// The ring of buttons and other controls with the default accent (CT-TF-09).
+  static const Color controlRingLight = fieldRingLight;
+  static const Color controlRingDark = fieldRingDark;
 
-  /// The ring fades in and out over ~200 ms (MU-70).
+  /// A text field's ring fades in and out over ~200 ms (MU-70); controls' rings jump.
   static const Duration ringFade = Duration(milliseconds: 200);
+
+  /// A pressed fill: one step, 10 % towards black in light and towards white in dark, for gray
+  /// and accent fills alike (INV-B: `#ececec` → `#d5d5d5`, `#373738` → `#4b4b4c`, `#e6e6e6` →
+  /// `#cfcfcf`, `#3c3c3d` → `#4f4f50`, the accent likewise).
+  static const double pressedStep = 0.10;
 
   /// The accent gray of an inactive window in one appearance.
   static Color inactiveAccent({required bool dark}) =>
       dark ? inactiveAccentDark : inactiveAccentLight;
+
+  /// The gray of an inactive window's slider fill.
+  static Color inactiveTrackFill({required bool dark}) =>
+      dark ? inactiveTrackFillDark : inactiveTrackFillLight;
+
+  /// One pressed step of `fill`.
+  static Color pressed(Color fill, {required bool dark}) => Color.lerp(
+    fill,
+    dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+    pressedStep,
+  )!;
+}
+
+/// The nine system accent colors (CT-CL-01). [multicolor] looks blue in standard controls.
+enum SilicaAccent {
+  multicolor,
+  blue,
+  purple,
+  pink,
+  red,
+  orange,
+  yellow,
+  green,
+  graphite,
+}
+
+/// The colors of one accent in one appearance (CT-CL-01, sRGB).
+@immutable
+class AccentColors {
+  const AccentColors({
+    required this.plain,
+    required this.fill,
+    required this.ring,
+  });
+
+  /// The colors of an app's own accent (not one of the nine): the same color for the fills and
+  /// a ring at 50 % over the window background.
+  factory AccentColors.custom(Color color, {required bool dark}) =>
+      AccentColors(
+        plain: color,
+        fill: color,
+        ring: Color.lerp(
+          color,
+          dark ? const Color(0xFF272728) : const Color(0xFFFFFFFF),
+          0.5,
+        )!,
+      );
+
+  /// The exact system color: the default button and the progress fill.
+  final Color plain;
+
+  /// Toggles on, selected segments, switches on, checkboxes and radios on, slider fills: about
+  /// 2 % darker than [plain] in light, slightly lighter in dark.
+  final Color fill;
+
+  /// The keyboard focus ring: the accent at about 50 % over the window.
+  final Color ring;
+
+  /// The measured colors of `accent`.
+  static AccentColors of(SilicaAccent accent, {required bool dark}) =>
+      (dark ? _dark : _light)[accent]!;
+
+  @override
+  bool operator ==(Object other) =>
+      other is AccentColors &&
+      other.plain == plain &&
+      other.fill == fill &&
+      other.ring == ring;
+
+  @override
+  int get hashCode => Object.hash(plain, fill, ring);
+
+  static const Map<SilicaAccent, AccentColors> _light = {
+    SilicaAccent.multicolor: AccentColors(
+      plain: Color(0xFF007AFF),
+      fill: Color(0xFF0077F9),
+      ring: ControlPalette.controlRingLight,
+    ),
+    SilicaAccent.blue: AccentColors(
+      plain: Color(0xFF007AFF),
+      fill: Color(0xFF0077F9),
+      ring: ControlPalette.controlRingLight,
+    ),
+    SilicaAccent.purple: AccentColors(
+      plain: Color(0xFF953D96),
+      fill: Color(0xFF913B92),
+      ring: Color(0xFFC393C3),
+    ),
+    SilicaAccent.pink: AccentColors(
+      plain: Color(0xFFF74F9F),
+      fill: Color(0xFFF04E9A),
+      ring: Color(0xFFF9A0C6),
+    ),
+    SilicaAccent.red: AccentColors(
+      plain: Color(0xFFE0393E),
+      fill: Color(0xFFDB373D),
+      ring: Color(0xFFEC9894),
+    ),
+    SilicaAccent.orange: AccentColors(
+      plain: Color(0xFFF7821B),
+      fill: Color(0xFFF17E1B),
+      ring: Color(0xFFF8B88A),
+    ),
+    SilicaAccent.yellow: AccentColors(
+      plain: Color(0xFFFFC727),
+      fill: Color(0xFFF9C225),
+      ring: Color(0xFFF9DC92),
+    ),
+    SilicaAccent.green: AccentColors(
+      plain: Color(0xFF62BA46),
+      fill: Color(0xFF5FB644),
+      ring: Color(0xFFA9D59A),
+    ),
+    SilicaAccent.graphite: AccentColors(
+      plain: Color(0xFF989898),
+      fill: Color(0xFF949494),
+      ring: Color(0xFF9A9A9E),
+    ),
+  };
+
+  static const Map<SilicaAccent, AccentColors> _dark = {
+    SilicaAccent.multicolor: AccentColors(
+      plain: Color(0xFF007AFF),
+      fill: Color(0xFF0D7DFF),
+      ring: ControlPalette.controlRingDark,
+    ),
+    SilicaAccent.blue: AccentColors(
+      plain: Color(0xFF007AFF),
+      fill: Color(0xFF0D7DFF),
+      ring: ControlPalette.controlRingDark,
+    ),
+    SilicaAccent.purple: AccentColors(
+      plain: Color(0xFFA650A7),
+      fill: Color(0xFFA755A9),
+      ring: Color(0xFF825084),
+    ),
+    SilicaAccent.pink: AccentColors(
+      plain: Color(0xFFF74F9F),
+      fill: Color(0xFFF854A1),
+      ring: Color(0xFF93507E),
+    ),
+    SilicaAccent.red: AccentColors(
+      plain: Color(0xFFFF5257),
+      fill: Color(0xFFFF565B),
+      ring: Color(0xFF945154),
+    ),
+    SilicaAccent.orange: AccentColors(
+      plain: Color(0xFFF7821B),
+      fill: Color(0xFFF78622),
+      ring: Color(0xFF936E33),
+    ),
+    SilicaAccent.yellow: AccentColors(
+      plain: Color(0xFFFFC601),
+      fill: Color(0xFFFFC811),
+      ring: Color(0xFF93912A),
+    ),
+    SilicaAccent.green: AccentColors(
+      plain: Color(0xFF62BA46),
+      fill: Color(0xFF66BC4A),
+      ring: Color(0xFF5B8F4A),
+    ),
+    SilicaAccent.graphite: AccentColors(
+      plain: Color(0xFF8C8C8C),
+      fill: Color(0xFF8F8F8F),
+      ring: Color(0xFF737374),
+    ),
+  };
 }
 
 /// Whether the window of the controls under it is the active one.
@@ -98,22 +279,57 @@ class _LifecycleActiveState extends State<_LifecycleActive> {
       WindowActiveScope(active: _active, child: widget.child);
 }
 
-/// The accent color of the controls under it (default button, checkbox, radio, switch on).
-/// The system accent is [ControlPalette.accent]; an app may use its own (Clock uses orange).
+/// The accent of the controls under it (default button, checkbox, radio, switch on, slider
+/// fill, focus ring): one of the nine system accents ([ControlAccent.palette], what the system
+/// appearance setting picks) or an app's own color (Clock uses orange). Without a scope the
+/// controls use [SilicaAccent.multicolor].
 class ControlAccent extends InheritedWidget {
-  const ControlAccent({super.key, required this.color, required super.child});
+  /// An app's own accent color.
+  const ControlAccent({
+    super.key,
+    required Color this.color,
+    required super.child,
+  }) : accent = null;
 
-  final Color color;
+  /// One of the system accents.
+  const ControlAccent.palette({
+    super.key,
+    required SilicaAccent this.accent,
+    required super.child,
+  }) : color = null;
 
-  /// The system accent.
+  /// The app's own color, or null for a system accent.
+  final Color? color;
+
+  /// The system accent, or null for an app's own color.
+  final SilicaAccent? accent;
+
+  /// The plain color of the default accent.
   static const Color system = ControlPalette.accent;
 
-  static Color of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<ControlAccent>()?.color ??
-      system;
+  /// The colors of the accent in effect, in the current appearance.
+  static AccentColors colorsOf(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<ControlAccent>();
+    final dark =
+        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    if (scope?.color case final color?) {
+      return AccentColors.custom(color, dark: dark);
+    }
+    return AccentColors.of(
+      scope?.accent ?? SilicaAccent.multicolor,
+      dark: dark,
+    );
+  }
+
+  /// The plain accent color (the default button, the progress fill).
+  static Color of(BuildContext context) => colorsOf(context).plain;
+
+  /// The control fill of the accent (toggles, segments, switches, checkboxes, radios, slider).
+  static Color fillOf(BuildContext context) => colorsOf(context).fill;
 
   @override
-  bool updateShouldNotify(ControlAccent old) => old.color != color;
+  bool updateShouldNotify(ControlAccent old) =>
+      old.color != color || old.accent != accent;
 }
 
 /// Which way a chevron points.
@@ -169,17 +385,19 @@ class ChevronPainter extends CustomPainter {
       old.direction != direction || old.color != color || old.stroke != stroke;
 }
 
-/// Which measured ring color a [FocusRing] uses.
+/// What a [FocusRing] surrounds: the same color, different motion.
 enum FocusRingKind {
-  /// Text fields (MU-32).
+  /// Text fields: the ring fades in and out (MU-70).
   field,
 
-  /// Buttons and the other controls (MU-10).
+  /// Buttons and the other controls: the ring jumps in one frame (CT-TF-09).
   control,
 }
 
-/// The keyboard focus ring: a band of `width` around the child's rounded rectangle, outside it.
-/// It fades in and out ([ControlPalette.ringFade]) and is hidden in an inactive window.
+/// The keyboard focus ring: a band of `width` around the child's rounded rectangle, outside it
+/// (3 pt, CT-TF-09), in the ring color of the accent in effect ([ControlAccent]). A text field's
+/// ring fades in and out ([ControlPalette.ringFade]); a control's ring appears and moves in one
+/// frame. Hidden in an inactive window.
 ///
 /// `radius` is the child's corner radius; null makes a capsule (half the shorter side).
 /// `inset` moves the ring into the child (the toolbar ring sits 1 pt inside its box).
@@ -210,18 +428,7 @@ class FocusRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shown = visible && WindowActiveScope.of(context);
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
-    final ringColor =
-        color ??
-        switch (kind) {
-          FocusRingKind.field =>
-            dark ? ControlPalette.fieldRingDark : ControlPalette.fieldRingLight,
-          FocusRingKind.control =>
-            dark
-                ? ControlPalette.controlRingDark
-                : ControlPalette.controlRingLight,
-        };
+    final ringColor = color ?? ControlAccent.colorsOf(context).ring;
     return Stack(
       alignment: Alignment.topLeft,
       textDirection: TextDirection.ltr,
@@ -232,7 +439,9 @@ class FocusRing extends StatelessWidget {
           child: IgnorePointer(
             child: TweenAnimationBuilder<double>(
               tween: Tween(end: shown ? 1 : 0),
-              duration: ControlPalette.ringFade,
+              duration: kind == FocusRingKind.field
+                  ? ControlPalette.ringFade
+                  : Duration.zero,
               // While shown the ring is in the tree from the first frame, fading in.
               builder: (context, t, _) => !shown && t == 0
                   ? const SizedBox.shrink()

@@ -3,8 +3,9 @@
 //
 // Measured: the triangle is a 5 × 8 chevron in a 15 pt box, and it turns at once on the click
 // (one frame, no animation), mustache.md › MU-20 Nesting; the triangle acts on release (MU-25).
-// The disclosure button is 26 × 26 in AX (24 × 24 visible), ⌄ collapsed and ∧ expanded
-// (dialogs.md › Save). The triangle color is provisional (the list header's gray).
+// The disclosure button is 26 × 26 in AX (24 × 24 visible), a rounded square, ⌄ collapsed and ∧
+// expanded (dialogs.md › Save, CT-BTN-07). The chevron is `#bfbfbf` in light and `#808080` in
+// dark (CT-BTN-06, INV-B gallery). Provisional: the disclosure button's corner radius.
 
 import 'dart:math' as math;
 
@@ -40,6 +41,10 @@ class DisclosureTriangle extends StatelessWidget {
   /// The chevron (measured: 5 × 8 pointing right).
   static const Size chevron = Size(5, 8);
 
+  /// The chevron color in light and dark (CT-BTN-06).
+  static const Color colorLight = Color(0xFFBFBFBF);
+  static const Color colorDark = Color(0xFF808080);
+
   @override
   Widget build(BuildContext context) {
     final onChanged = this.onChanged;
@@ -72,7 +77,7 @@ class DisclosureTriangle extends StatelessWidget {
               ? colors.textDisabled
               : state.pressed
               ? colors.glyphPressed
-              : color ?? colors.glyph;
+              : color ?? (colors.dark ? colorDark : colorLight);
           return FocusRing(
             visible: state.focused,
             kind: FocusRingKind.control,
@@ -130,6 +135,7 @@ class DisclosureButton extends StatelessWidget {
         focusNode: focusNode,
         builder: (context, state) => ButtonFace(
           state: state,
+          bezel: ButtonBezel.bevel,
           size: size,
           width: side,
           padding: EdgeInsets.zero,

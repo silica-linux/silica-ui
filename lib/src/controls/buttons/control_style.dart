@@ -1,15 +1,15 @@
 // What the buttons and toggles share: sizes, colors (light and dark), the accent, the active
 // window, the keyboard focus ring and the pointer and keyboard interaction.
 //
-// Measured (silica-reference): push button 24 high, radius ~8, normal fill `#ececec` / `#373737`
-// with text `#242424` / `#e0e0e0`, default fill sRGB `#007aff` with white text (misc.md ›
-// Alert); small buttons 22 high (mustache-spec MU-41); the control focus ring color sRGB
-// `#89aff7` / `#3d7aa6` (MU-10); in an inactive window the accent fills turn gray (`#545555` in
-// dark, calculator.md › Inactive window); pressed fills appear in the first frame and go back
-// in the first frame after the release, with the action on release; a pressed fill in dark is
-// ~12 % lighter (clock.md › Button and row states).
-// Values marked "provisional" are not measured yet (silica-reference C-01, C-02): they come from
-// the closest measured control and will be replaced once measured.
+// Measured (docs/spec/buttons.md, toggles.md, focus-and-accent.md; INV-B gallery): push buttons
+// are full capsules 28 / 24 / 20 / 16 pt tall (large, regular, small, mini), fill `#ececec` /
+// `#373738` with text `#242424` / `#e0e0e0`, no border; the default button sRGB `#007aff` with
+// white text; no hover look on any control; pressed = one fill step (10 %) darker in light,
+// lighter in dark, in the first frame, with the action on release; in an inactive window every
+// accent fill turns gray (`#cfcfcf` / `#505051`); checkboxes 16 / 14 / 12 pt, off `#e6e6e6` /
+// `#3c3c3d`; glyph buttons `#808080` → `#262626` pressed (dark `#9e9e9e` → `#dfdfdf`).
+// Values still marked "provisional" are not measured yet: they come from the closest measured
+// control and will be replaced once measured.
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
@@ -22,23 +22,17 @@ export '../control_base.dart';
 /// The size of a control, as in the system: mini, small, regular, large.
 enum ControlSize { mini, small, regular, large }
 
-/// The height of a push button (or pop-up, pull-down, combo box) of `size`: 24 regular
-/// (measured), 22 small (measured, MU-41), 16 mini and 30 large (provisional).
+/// The height of a push button (or pop-up, pull-down, combo box) of `size`: 28 large, 24
+/// regular, 20 small, 16 mini (CT-BTN-01/03).
 double buttonHeight(ControlSize size) => switch (size) {
   ControlSize.mini => 16,
-  ControlSize.small => 22,
+  ControlSize.small => 20,
   ControlSize.regular => 24,
-  ControlSize.large => 30,
+  ControlSize.large => 28,
 };
 
-/// The corner radius of a push button: ~8 at 24 (measured), the others in proportion
-/// (provisional).
-double buttonRadius(ControlSize size) => switch (size) {
-  ControlSize.mini => 5,
-  ControlSize.small => 7,
-  ControlSize.regular => 8,
-  ControlSize.large => 10,
-};
+/// The corner radius of a push button: a full capsule, half the height (CT-BTN-01).
+double buttonRadius(ControlSize size) => buttonHeight(size) / 2;
 
 /// The label size: 13 regular and large, 11 small, 9 mini (provisional except 13).
 double controlFontSize(ControlSize size) => switch (size) {
@@ -47,12 +41,12 @@ double controlFontSize(ControlSize size) => switch (size) {
   ControlSize.regular || ControlSize.large => 13,
 };
 
-/// The side of a checkbox or the diameter of a radio button (provisional: 14 regular).
+/// The side of a checkbox or the diameter of a radio button: 16 regular, 14 small, 12 mini
+/// (CT-CB-01, CT-RB-01); large as regular (provisional: no large checkbox in the gallery).
 double toggleSide(ControlSize size) => switch (size) {
-  ControlSize.mini => 10,
-  ControlSize.small => 12,
-  ControlSize.regular => 14,
-  ControlSize.large => 16,
+  ControlSize.mini => 12,
+  ControlSize.small => 14,
+  ControlSize.regular || ControlSize.large => 16,
 };
 
 /// A label style in Inter (this package's font).
@@ -69,13 +63,10 @@ TextStyle controlTextStyle(
   height: 1.2,
 );
 
-/// The pressed fill: ~12 % towards white in dark (measured on Clock's capsules), ~12 % towards
-/// black in light (provisional).
-Color controlPressedFill(Color fill, {required bool dark}) => Color.lerp(
-  fill,
-  dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
-  0.12,
-)!;
+/// The pressed fill: one step, 10 % towards black in light and towards white in dark
+/// ([ControlPalette.pressed], INV-B).
+Color controlPressedFill(Color fill, {required bool dark}) =>
+    ControlPalette.pressed(fill, dark: dark);
 
 /// The colors of buttons and toggles, light and dark.
 @immutable
@@ -108,8 +99,8 @@ class ControlColors {
 
   final bool dark;
 
-  /// Push button fill: at rest (measured), pressed and a toggle button on (provisional; the
-  /// Calculator's 2nd key lightens by ~38 levels when on).
+  /// Push button fill: at rest and pressed (measured), and a toggle button on in an inactive
+  /// window (the gray every accent fill takes; in an active window it is the accent).
   final Color bezel;
   final Color bezelPressed;
   final Color bezelOn;
@@ -125,18 +116,18 @@ class ControlColors {
   /// Text and marks on the accent.
   final Color accentText;
 
-  /// An accent fill in an inactive window (dark measured, light provisional).
+  /// An accent fill in an inactive window (measured).
   final Color inactiveAccent;
 
-  /// The keyboard focus ring (measured color).
+  /// The keyboard focus ring with the default accent (measured; [FocusRing] follows the accent).
   final Color focusRing;
 
-  /// Checkbox and radio button off: fill, pressed and border (provisional).
+  /// Checkbox and radio button off: fill and pressed (measured), border (provisional).
   final Color box;
   final Color boxPressed;
   final Color boxBorder;
 
-  /// Switch: the track off (dark measured on Clock), the knob on and off.
+  /// Switch: the track off (measured), the knob on and off.
   final Color switchOff;
   final Color knob;
   final Color knobOff;
@@ -145,19 +136,19 @@ class ControlColors {
   final Color label;
   final Color labelDisabled;
 
-  /// Glyphs without a bezel (disclosure triangle, image button): rest and pressed.
+  /// Glyphs without a bezel (disclosure chevron, image button): rest and pressed (measured).
   final Color glyph;
   final Color glyphPressed;
 
-  /// The text part of a combo box (provisional).
+  /// The text part of a combo box: fill (measured) and border (provisional).
   final Color field;
   final Color fieldBorder;
 
   static const ControlColors light = ControlColors(
     dark: false,
     bezel: Color(0xFFECECEC),
-    bezelPressed: Color(0xFFD0D0D0), // ~12 % towards black, provisional
-    bezelOn: Color(0xFFD4D4D4), // provisional
+    bezelPressed: Color(0xFFD5D5D5),
+    bezelOn: ControlPalette.inactiveAccentLight,
     text: Color(0xFF242424),
     textDisabled: Color(0xFFADADAD),
     destructive: Color(0xFFFCCCCA),
@@ -165,25 +156,25 @@ class ControlColors {
     accentText: Color(0xFFFFFFFF),
     inactiveAccent: ControlPalette.inactiveAccentLight,
     focusRing: ControlPalette.controlRingLight,
-    box: Color(0xFFFFFFFF), // provisional
-    boxPressed: Color(0xFFE6E6E6), // provisional
+    box: Color(0xFFE6E6E6),
+    boxPressed: Color(0xFFCFCFCF),
     boxBorder: Color(0xFFC4C4C6), // provisional
-    switchOff: Color(0xFFE3E3E5), // provisional
+    switchOff: Color(0xFFE2E2E2),
     knob: Color(0xFFFFFFFF),
-    knobOff: Color(0xFFFFFFFF), // provisional
+    knobOff: Color(0xFFFFFFFF),
     label: Color(0xFF1A1A1A),
     labelDisabled: Color(0xFFADADAD),
-    glyph: Color(0xFF808080), // the list header's gray, provisional
-    glyphPressed: Color(0xFF4D4D4D), // provisional
-    field: Color(0xFFFFFFFF), // provisional
+    glyph: Color(0xFF808080),
+    glyphPressed: Color(0xFF262626),
+    field: Color(0xFFFFFFFF),
     fieldBorder: Color(0xFFD1D1D1), // provisional
   );
 
   static const ControlColors darkColors = ControlColors(
     dark: true,
-    bezel: Color(0xFF373737),
-    bezelPressed: Color(0xFF4F4F4F), // the 12 % rule of Clock
-    bezelOn: Color(0xFF5D5D5D), // provisional
+    bezel: Color(0xFF373738),
+    bezelPressed: Color(0xFF4B4B4C),
+    bezelOn: ControlPalette.inactiveAccentDark,
     text: Color(0xFFE0E0E0),
     textDisabled: Color(0xFF787879),
     destructive: Color(0xFF734545),
@@ -191,17 +182,17 @@ class ControlColors {
     accentText: Color(0xFFFFFFFF),
     inactiveAccent: ControlPalette.inactiveAccentDark,
     focusRing: ControlPalette.controlRingDark,
-    box: Color(0xFF454547), // provisional
-    boxPressed: Color(0xFF5C5C5E), // provisional
+    box: Color(0xFF3C3C3D),
+    boxPressed: Color(0xFF4F4F50),
     boxBorder: Color(0xFF5E5E60), // provisional
     switchOff: Color(0xFF454545),
     knob: Color(0xFFFFFFFF),
     knobOff: Color(0xFFE3E3E3),
     label: Color(0xFFEBEBEB),
     labelDisabled: Color(0xFF787879),
-    glyph: Color(0xFFABABAB), // provisional
-    glyphPressed: Color(0xFFFFFFFF), // provisional
-    field: Color(0xFF2B2B2B), // provisional
+    glyph: Color(0xFF9E9E9E),
+    glyphPressed: Color(0xFFDFDFDF),
+    field: Color(0xFF191919),
     fieldBorder: Color(0xFF4A4A4A), // provisional
   );
 

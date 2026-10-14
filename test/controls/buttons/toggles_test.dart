@@ -130,7 +130,7 @@ void main() {
       );
       expect(
         tester.getSize(find.byKey(const ValueKey('checkbox'))),
-        const Size(14, 14),
+        const Size(16, 16),
       );
       await tester.tap(find.byKey(const ValueKey('checkbox')));
       await tester.pump();
@@ -194,11 +194,12 @@ void main() {
       await tester.pumpWidget(
         harness(SilicaCheckbox(value: true, onChanged: (_) {})),
       );
-      expect(fill(), ControlAccent.system);
+      // The accent's control fill (CT-CL-01): `#0077f9` with the default accent.
+      expect(fill(), const Color(0xFF0077F9));
       await tester.pumpWidget(
         harness(SilicaCheckbox(value: true, onChanged: (_) {}), active: false),
       );
-      expect(fill(), ControlColors.light.inactiveAccent);
+      expect(fill(), const Color(0xFFCFCFCF));
       await tester.pumpWidget(
         harness(
           SilicaCheckbox(value: true, onChanged: (_) {}),
@@ -206,8 +207,8 @@ void main() {
           dark: true,
         ),
       );
-      // Measured: the Calculator's accent keys in an inactive window.
-      expect(fill(), const Color(0xFF545555));
+      // Measured: the gallery's accent fills in an inactive window (INV-B).
+      expect(fill(), const Color(0xFF505051));
       await tester.pumpWidget(
         harness(
           ControlAccent(
@@ -320,7 +321,7 @@ void main() {
       );
       expect(
         tester.getSize(find.byKey(const ValueKey('radio'))),
-        const Size(14, 14),
+        const Size(16, 16),
       );
     });
   });
@@ -335,7 +336,7 @@ void main() {
                 as BoxDecoration)
             .color!;
 
-    testWidgets('measured: 54 × 24, knob 32 × 20, on #0074f8', (tester) async {
+    testWidgets('measured: 54 × 24, knob 32 × 20, on #0176f7', (tester) async {
       var value = false;
       await tester.pumpWidget(
         stateful<bool>(
@@ -361,7 +362,7 @@ void main() {
       await tester.tap(find.byType(SilicaSwitch));
       await tester.pumpAndSettle();
       expect(value, isTrue);
-      expect(track(tester), const Color(0xFF0074F8));
+      expect(track(tester), const Color(0xFF0176F7));
       // The knob 2 pt from the right edge.
       expect(
         tester.getTopRight(find.byKey(const ValueKey('switch track'))).dx -
@@ -370,9 +371,24 @@ void main() {
       );
     });
 
-    testWidgets('large matches Clock (68 × 30); dark off measured', (
+    testWidgets('sizes 64 × 28, 54 × 24, 44 × 20, 36 × 16; dark off measured', (
       tester,
     ) async {
+      for (final (size, dims) in [
+        (ControlSize.large, const Size(64, 28)),
+        (ControlSize.regular, const Size(54, 24)),
+        (ControlSize.small, const Size(44, 20)),
+        (ControlSize.mini, const Size(36, 16)),
+      ]) {
+        await tester.pumpWidget(
+          harness(SilicaSwitch(value: false, size: size, onChanged: (_) {})),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.getSize(find.byKey(const ValueKey('switch track'))),
+          dims,
+        );
+      }
       await tester.pumpWidget(
         harness(
           SilicaSwitch(
@@ -383,9 +399,6 @@ void main() {
           dark: true,
         ),
       );
-      final size = tester.getSize(find.byKey(const ValueKey('switch track')));
-      expect(size.height, 30);
-      expect(size.width, closeTo(68, 1));
       expect(track(tester), const Color(0xFF454545));
     });
 

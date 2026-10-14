@@ -1,11 +1,14 @@
 // Push buttons (normal, default, destructive; push, bevel, borderless and round bezels), the
 // help button, toggle buttons and image buttons.
 //
-// Measured: push button 24 high with radius ~8, normal `#ececec` / `#373737`, default sRGB
-// `#007aff` with white text (misc.md › Alert); small 22 high (MU-41); the toggle key of the
-// Calculator lightens when on (calculator.md › States); image buttons of the Control Center media
-// module: 30 × 30, glyph `#b7b8bd` at rest, `#bebfc4` under the pointer, white `#f7f7f8` pressed,
-// `#9d9ea3` disabled, no pill and no size change (controlcenter.md › Now Playing).
+// Measured (docs/spec/buttons.md): push buttons are full capsules 28 / 24 / 20 / 16 pt tall,
+// `#ececec` / `#373738`, no border, no hover look; the default button the plain accent with white
+// text, static; a toggle button on takes the accent fill; pressed = one fill step; in an inactive
+// window the accent fills turn gray (CT-BTN-01/02/03/09, INV-B). The help button is a 24 pt
+// circle (CT-BTN-05). Image buttons in a window: glyph `#808080` → `#262626` pressed (dark
+// `#9e9e9e` → `#dfdfdf`); on the Control Center's glass module: 30 × 30, glyph `#b7b8bd` at
+// rest, `#bebfc4` under the pointer, white `#f7f7f8` pressed, `#9d9ea3` disabled
+// (controlcenter.md › Now Playing).
 
 import 'package:flutter/widgets.dart';
 
@@ -16,7 +19,7 @@ enum ButtonRole { normal, primary, destructive }
 
 /// The shape of a button.
 enum ButtonBezel {
-  /// The rounded push button (radius ~8 at 24 pt).
+  /// The push button: a full capsule.
   push,
 
   /// A squarer bezel for icons and options (radius 4, provisional).
@@ -201,15 +204,19 @@ class ButtonFace extends StatelessWidget {
         pressed ? controlPressedFill(rest, dark: !colors.dark) : rest,
       );
     }
+    // An accent fill: the default button takes the plain accent, a toggle on the control fill;
+    // in an inactive window both turn gray (INV-B). The text on the gray is provisional.
+    if ((role == ButtonRole.primary || on) && role != ButtonRole.destructive) {
+      if (!state.active) return (colors.inactiveAccent, colors.text);
+      final accent = role == ButtonRole.primary
+          ? ControlAccent.of(context)
+          : ControlAccent.fillOf(context);
+      return (
+        pressed ? controlPressedFill(accent, dark: colors.dark) : accent,
+        colors.accentText,
+      );
+    }
     switch (role) {
-      // In an inactive window the default button loses the accent (provisional: the normal
-      // button; the accent fills turn gray, calculator.md).
-      case ButtonRole.primary when state.active:
-        final accent = ControlAccent.of(context);
-        return (
-          pressed ? controlPressedFill(accent, dark: colors.dark) : accent,
-          colors.accentText,
-        );
       case ButtonRole.destructive:
         return (
           pressed
@@ -218,19 +225,12 @@ class ButtonFace extends StatelessWidget {
           colors.destructiveText,
         );
       default:
-        return (
-          pressed
-              ? colors.bezelPressed
-              : on
-              ? colors.bezelOn
-              : colors.bezel,
-          colors.text,
-        );
+        return (pressed ? colors.bezelPressed : colors.bezel, colors.text);
     }
   }
 }
 
-/// The help button: a round button with "?" (provisional size: the button height).
+/// The help button: a round button with "?", as tall as a push button (24 pt regular, CT-BTN-05).
 class HelpButton extends StatelessWidget {
   const HelpButton({
     super.key,
@@ -269,7 +269,7 @@ class HelpButton extends StatelessWidget {
   );
 }
 
-/// A button that stays on or off (the Calculator's 2nd key): lighter when on.
+/// A button that stays on or off: the accent fill with white text when on (CT-BTN-09).
 class ToggleButton extends StatelessWidget {
   const ToggleButton({
     super.key,
@@ -357,18 +357,26 @@ class ImageButtonColors {
     disabled: Color(0xFF9D9EA3),
   );
 
-  /// On a light window background (provisional: the same steps, darker).
+  /// In a light window: no hover look, darker when pressed (INV-B); disabled provisional.
   static const ImageButtonColors light = ImageButtonColors(
-    rest: Color(0xFF6E6E73),
-    hover: Color(0xFF5F5F64),
-    pressed: Color(0xFF1A1A1A),
-    disabled: Color(0xFFB4B4B8),
+    rest: Color(0xFF808080),
+    hover: Color(0xFF808080),
+    pressed: Color(0xFF262626),
+    disabled: Color(0xFFC6C6C6),
   );
 
-  /// On a dark window background: the measured module colors.
+  /// In a dark window: no hover look, lighter when pressed (INV-B); disabled provisional.
+  static const ImageButtonColors dark = ImageButtonColors(
+    rest: Color(0xFF9E9E9E),
+    hover: Color(0xFF9E9E9E),
+    pressed: Color(0xFFDFDFDF),
+    disabled: Color(0xFF5A5A5B),
+  );
+
+  /// In a window, following the system appearance ([onGlass] is for glass modules).
   static ImageButtonColors of(BuildContext context) =>
       MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? onGlass
+      ? dark
       : light;
 }
 

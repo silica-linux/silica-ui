@@ -1,12 +1,15 @@
 // Buttons that open a menu: the pop-up button (a choice among values, ⌃⌄), the pull-down
 // button (a fixed title and a list of actions, ⌄) and the combo box (a text field with a list).
 //
-// Measured: pop-up buttons 24 high (Clock 224 × 24; Save card 232 × 26 in AX), the menu opens
-// on press with the checked item over the control (mustache.md › MU-02 title menu, MU-07 menus
-// on press); the pull-down chevron is 7 × 4 (the toolbar grouping pull-down, mustache-spec
-// 1.2). Paddings, the ⌃⌄ glyph, the gap of the pull-down menu and the whole combo box are
-// provisional (silica-reference C-01). The menus are silica_ui's in-window menus ([MenuHost]
-// with `opaque`), in the nearest [Overlay].
+// Measured: pop-up and pull-down buttons are 24 pt gray capsules with the chevrons at the
+// trailing edge (CT-BTN-16/17, INV-B gallery; Clock 224 × 24; Save card 232 × 26 in AX), no hover
+// look; the menu opens on press with the checked item over the control (mustache.md › MU-02
+// title menu, MU-07 menus on press); the pull-down chevron is 7 × 4 (the toolbar grouping
+// pull-down, mustache-spec 1.2); the combo box is a white field (`#191919` in dark) with a small
+// gray chevron button at the right and the keyboard ring 3 pt outside (CT-BTN-18). Provisional:
+// the paddings, the ⌃⌄ glyph's size, the gap of the pull-down menu, the combo box's border and
+// arrow geometry. The menus are silica_ui's in-window menus ([MenuHost] with `opaque`), in the
+// nearest [Overlay].
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';

@@ -85,5 +85,59 @@ void main() {
     );
     expect(ControlColors.light.focusRing, InputColors.light.focusRingControl);
     expect(InputColors.light.accent, ControlAccent.system);
+    // INV-B: the gallery's inactive gray.
+    expect(ControlPalette.inactiveAccentLight, const Color(0xFFCFCFCF));
+    expect(ControlPalette.inactiveAccentDark, const Color(0xFF505051));
+  });
+
+  test('accents: the measured table (CT-CL-01)', () {
+    expect(SilicaAccent.values, hasLength(9));
+    final multi = AccentColors.of(SilicaAccent.multicolor, dark: false);
+    expect(multi, AccentColors.of(SilicaAccent.blue, dark: false));
+    expect(multi.plain, const Color(0xFF007AFF));
+    expect(multi.fill, const Color(0xFF0077F9));
+    expect(multi.ring, const Color(0xFF8FB4FB));
+    final redDark = AccentColors.of(SilicaAccent.red, dark: true);
+    expect(redDark.plain, const Color(0xFFFF5257));
+    expect(redDark.fill, const Color(0xFFFF565B));
+    expect(redDark.ring, const Color(0xFF945154));
+    expect(
+      AccentColors.of(SilicaAccent.graphite, dark: false).plain,
+      const Color(0xFF989898),
+    );
+  });
+
+  test('pressed: one 10 % step (INV-B)', () {
+    expect(
+      ControlPalette.pressed(const Color(0xFF373738), dark: true),
+      isSameColorAs(const Color(0xFF4B4B4C)),
+    );
+    expect(
+      ControlPalette.pressed(const Color(0xFFE6E6E6), dark: false),
+      isSameColorAs(const Color(0xFFCFCFCF)),
+    );
+  });
+
+  testWidgets('a system accent colors the controls and the ring', (
+    tester,
+  ) async {
+    Color? fill, ring;
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(platformBrightness: Brightness.light),
+        child: ControlAccent.palette(
+          accent: SilicaAccent.red,
+          child: Builder(
+            builder: (context) {
+              fill = ControlAccent.fillOf(context);
+              ring = ControlAccent.colorsOf(context).ring;
+              return const SizedBox();
+            },
+          ),
+        ),
+      ),
+    );
+    expect(fill, const Color(0xFFDB373D));
+    expect(ring, const Color(0xFFEC9894));
   });
 }

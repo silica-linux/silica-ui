@@ -111,7 +111,9 @@ void main() {
     );
   });
 
-  testWidgets('hover highlight, then press, release acts', (tester) async {
+  testWidgets('window style: no hover, pressed #c5c5c5, accent pill (INV-B)', (
+    tester,
+  ) async {
     final pressed = <int>[];
     await tester.pumpWidget(
       harness(
@@ -122,16 +124,21 @@ void main() {
         ),
       ),
     );
-    final mouse = await hover(tester, find.text('Alarms'));
     expect(
-      pillColor(tester, const ValueKey('hover 1')),
-      SegmentedColors.light.hover,
+      pillColor(tester, const ValueKey('chosen pill')),
+      const Color(0xFF0077F9),
     );
+    expect(
+      tester.widget<Text>(find.text('Alarms').first).style?.color,
+      const Color(0xFF242424),
+    );
+    final mouse = await hover(tester, find.text('Alarms'));
+    expect(find.byKey(const ValueKey('hover 1')), findsNothing);
     await mouse.down(tester.getCenter(find.text('Alarms')));
     await tester.pump();
     expect(
       pillColor(tester, const ValueKey('pressed 1')),
-      SegmentedColors.light.pressed,
+      const Color(0xFFC5C5C5),
     );
     expect(pressed, isEmpty);
     await mouse.up();

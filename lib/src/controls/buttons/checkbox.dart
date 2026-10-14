@@ -1,9 +1,10 @@
 // Checkboxes (off, on, mixed) and radio buttons, alone or in a group, with their label.
 //
-// Seen, not measured (clock.md › Alarms, mustache.md › MU-60, MU-97): on is filled with the
-// accent (orange in Clock, which uses its own accent) with a white mark. Sizes, radius, border,
-// pressed, disabled and inactive window are provisional (silica-reference C-01); in an inactive
-// window the accent fill turns gray, as the Calculator's accent keys do (measured).
+// Measured (docs/spec/toggles.md, INV-B gallery): checkboxes are 16 / 14 / 12 pt rounded squares
+// (radius ~4 at 16), radios 16 pt circles; off filled `#e6e6e6` / `#3c3c3d` without a border, on
+// the accent fill with a white check, dash (mixed) or dot; pressed = one fill step; in an inactive
+// window the accent fill turns gray (CT-CB-01/02, CT-RB-01). The focus ring surrounds only the
+// box. Provisional: the label gap and the radio dot size.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -23,12 +24,12 @@ const double toggleLabelGap = 6;
   if (!on) {
     return (
       state.pressed ? colors.boxPressed : colors.box,
-      colors.boxBorder,
+      null,
       colors.accentText,
     );
   }
   final accent = state.active
-      ? ControlAccent.of(context)
+      ? ControlAccent.fillOf(context)
       : colors.inactiveAccent;
   return (
     state.pressed ? controlPressedFill(accent, dark: colors.dark) : accent,
@@ -156,10 +157,10 @@ class _CheckboxPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final s = size.width;
-    // Radius 4 at 14 (provisional).
+    // Radius ~4 at 16 (CT-CB-01).
     final rrect = RRect.fromRectAndRadius(
       Offset.zero & size,
-      Radius.circular(s * 0.28),
+      Radius.circular(s * 0.25),
     );
     canvas.drawRRect(rrect, Paint()..color = fill);
     final border = this.border;
@@ -290,7 +291,7 @@ class _RadioPainter extends CustomPainter {
           ..color = border,
       );
     }
-    // The dot: 6 at 14 (provisional).
+    // The dot: ~7 at 16 (provisional: not measured).
     if (selected)
       canvas.drawCircle(c, size.width * 0.215, Paint()..color = mark);
   }

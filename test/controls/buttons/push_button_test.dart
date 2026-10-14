@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,13 +11,16 @@ const face = ValueKey('button face');
 void main() {
   tearDown(resetHighlight);
 
-  testWidgets('measured sizes: 24 regular, 22 small', (tester) async {
+  testWidgets('measured sizes: capsules 28, 24, 20, 16 (CT-BTN-01/03)', (
+    tester,
+  ) async {
     for (final (size, height) in [
       (ControlSize.mini, 16.0),
-      (ControlSize.small, 22.0),
+      (ControlSize.small, 20.0),
       (ControlSize.regular, 24.0),
-      (ControlSize.large, 30.0),
+      (ControlSize.large, 28.0),
     ]) {
+      expect(buttonRadius(size), height / 2);
       await tester.pumpWidget(
         harness(SilicaButton(label: 'OK', size: size, onPressed: () {})),
       );
@@ -28,9 +32,7 @@ void main() {
     expect(tester.getSize(find.byKey(face)), const Size(80, 24));
   });
 
-  testWidgets('colors at rest, light and dark (misc.md › Alert)', (
-    tester,
-  ) async {
+  testWidgets('colors at rest, light and dark (CT-BTN-01/02)', (tester) async {
     await tester.pumpWidget(
       harness(SilicaButton(label: 'A', onPressed: () {})),
     );
@@ -40,7 +42,7 @@ void main() {
     await tester.pumpWidget(
       harness(SilicaButton(label: 'A', onPressed: () {}), dark: true),
     );
-    expect(fillOf(tester, face), const Color(0xFF373737));
+    expect(fillOf(tester, face), const Color(0xFF373738));
     expect(textColor(tester, find.byKey(face)), const Color(0xFFE0E0E0));
 
     for (final dark in [false, true]) {
@@ -99,16 +101,60 @@ void main() {
     expect(fillOf(tester, face), const Color(0xFFFF9230));
   });
 
-  testWidgets('inactive window: the default button loses the accent', (
+  testWidgets('inactive window: the accent fills turn gray (INV-B)', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      harness(
-        SilicaButton(label: 'OK', role: ButtonRole.primary, onPressed: () {}),
-        active: false,
-      ),
+    for (final (dark, gray) in [
+      (false, const Color(0xFFCFCFCF)),
+      (true, const Color(0xFF505051)),
+    ]) {
+      await tester.pumpWidget(
+        harness(
+          SilicaButton(label: 'OK', role: ButtonRole.primary, onPressed: () {}),
+          active: false,
+          dark: dark,
+        ),
+      );
+      expect(fillOf(tester, face), gray);
+    }
+  });
+
+  testWidgets('pressed is one fill step: #d5d5d5 light, #4b4b4c dark', (
+    tester,
+  ) async {
+    for (final (dark, pressed) in [
+      (false, const Color(0xFFD5D5D5)),
+      (true, const Color(0xFF4B4B4C)),
+    ]) {
+      await tester.pumpWidget(
+        harness(
+          SilicaButton(label: 'A', onPressed: () {}),
+          dark: dark,
+        ),
+      );
+      final press = await tester.startGesture(
+        tester.getCenter(find.byKey(face)),
+      );
+      await tester.pump();
+      expect(fillOf(tester, face), pressed);
+      await press.up();
+      await tester.pump();
+    }
+    expect(
+      controlPressedFill(const Color(0xFFECECEC), dark: false),
+      isSameColorAs(const Color(0xFFD5D5D5)),
     );
-    expect(fillOf(tester, face), ControlColors.light.bezel);
+  });
+
+  testWidgets('no hover look (INV-B)', (tester) async {
+    await tester.pumpWidget(
+      harness(SilicaButton(label: 'A', onPressed: () {})),
+    );
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: tester.getCenter(find.byKey(face)));
+    await tester.pump();
+    expect(fillOf(tester, face), const Color(0xFFECECEC));
+    await mouse.removePointer();
   });
 
   testWidgets(
@@ -218,7 +264,7 @@ void main() {
     );
   });
 
-  testWidgets('toggle button: lighter when on, toggles on release', (
+  testWidgets('toggle button: the accent fill when on, toggles on release', (
     tester,
   ) async {
     var value = false;
@@ -238,11 +284,7 @@ void main() {
     await tester.tap(find.byKey(face));
     await tester.pump();
     expect(value, isTrue);
-    expect(fillOf(tester, face), ControlColors.darkColors.bezelOn);
-    expect(
-      ControlColors.darkColors.bezelOn.computeLuminance(),
-      greaterThan(ControlColors.darkColors.bezel.computeLuminance()),
-    );
+    expect(fillOf(tester, face), const Color(0xFF0D7DFF));
   });
 
   testWidgets('image button: only the glyph changes (CC media module)', (

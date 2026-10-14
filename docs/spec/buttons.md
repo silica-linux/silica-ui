@@ -24,7 +24,9 @@ Measured in a test gallery with a short label (seven characters):
   rows of the default button are 1 pt lighter (light `#3779fb`, dark `#296bed`, display values).
 - **Destructive:** not observed in the gallery; silica_ui uses a pale red fill with red text
   (light `#fcccca` / `#ff383c`, dark `#734545` / `#f01d14`, *provisional*).
-- Sizes mini and large have *provisional* corner radii in silica_ui (5 / 10) and label paddings.
+- silica_ui draws all four sizes as capsules of the measured heights. The label paddings are
+  *provisional*. In an inactive window the default button turns gray (`#cfcfcf` / `#505051`); the
+  text colour on that gray is *provisional*.
 
 ## Bevel and square buttons (CT-BTN-04)
 
@@ -53,8 +55,9 @@ A 24 pt gray circle with a question mark, same fills and pressed rule as a push 
 - Borderless: 28 × 28 frame, glyph about 15 × 14.
 - Glyph `#808080` → pressed `#262626` (light); `#9e9e9e` → `#dfdfdf` (dark).
 - On glass (the media module of the Control Center): hover, press and release states were
-  captured in light only; silica_ui's `ImageButtonColors.onGlass` follows them, the light-background
-  colours are *provisional*.
+  captured in light only, and silica_ui's `ImageButtonColors.onGlass` follows them. In a window
+  (`ImageButtonColors.light` / `.dark`) there is no hover look. The disabled glyph is
+  *provisional*.
 
 ## Toggle buttons (CT-BTN-09)
 

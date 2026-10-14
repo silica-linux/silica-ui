@@ -27,7 +27,8 @@ IDs: CT-SW-01…03, CT-CB-01, CT-CB-02, CT-RB-01. State rules in
   opacity.
 - **"Show borders"** accessibility setting: only the on switch changes, gaining a darker accent
   outline.
-- The knob animation was not measured; silica_ui uses 200 ms ease-out (*provisional*).
+- The knob animation was not measured; silica_ui uses 200 ms ease-out, and the knob widens by
+  6 pt while pressed (both *provisional*).
 
 ## Checkbox (CT-CB-01, 02)
 
@@ -40,13 +41,14 @@ IDs: CT-SW-01…03, CT-CB-01, CT-CB-02, CT-RB-01. State rules in
 - Rounded square, radius about 4 pt at 16 pt.
 - Off: `#e6e6e6` light, `#3c3c3d` dark. Pressed: `#cfcfcf` / `#4f4f50`.
 - On: accent fill with a white check. Mixed: accent fill with a white dash.
-- No hover. Disabled and inactive follow the shared rules. The keyboard focus ring was not
-  captured.
-- silica_ui scales the corner radius as 0.28 × side (*provisional* for 12 and 14 pt).
+- No hover. Disabled and inactive follow the shared rules. The keyboard focus ring surrounds only
+  the box (CT-TF-09).
+- silica_ui scales the corner radius as 0.25 × side.
 
 ## Radio button (CT-RB-01)
 
 - A 16 pt circle. Off: `#e6e6e6` (dark `#3c3c3d`). On: accent with a white centre dot.
 - Pressed, disabled and inactive follow the shared rules.
 - The dot diameter was not measured separately; silica_ui uses 0.43 × the circle (*provisional*).
+- The keyboard focus ring is a circle around the button (CT-TF-09).
 - In a group the arrow keys move the choice (silica_ui behaviour, not measured).

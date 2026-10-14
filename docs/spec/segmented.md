@@ -10,7 +10,11 @@ IDs: CT-SEG-01…05.
   capsule with white text.
 - Pressed segment: `#c5c5c5` light, `#585859` dark. No hover.
 - Inactive window: the selected segment turns gray. Disabled: reduced contrast.
-- Regular height 24; mini 18 and the 2 pt pill inset are *provisional* in silica_ui.
+- Regular height 24; mini 18 and the 2 pt pill inset are *provisional* in silica_ui. The track is
+  drawn in the push button gray (`#ececec` / `#373738`, *provisional*: the exact track gray was
+  not sampled).
+- The keyboard focus ring surrounds only the focused segment (CT-TF-09).
+
 
 ## Toolbar segmented group (CT-SEG-01)
 

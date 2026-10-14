@@ -17,11 +17,11 @@ Status:
 | --- | --- | --- | --- | --- |
 | CT-BTN-01 | Push button, normal | `SilicaButton` | done | [buttons](buttons.md#push-buttons-ct-btn-01-02-03) |
 | CT-BTN-02 | Push button, default (accent) | `SilicaButton(role: primary)` | done | [buttons](buttons.md#push-buttons-ct-btn-01-02-03) |
-| CT-BTN-03 | Push button sizes (large, regular, small, mini) | `SilicaButton(size:)` | provisional | [buttons](buttons.md#push-buttons-ct-btn-01-02-03) |
+| CT-BTN-03 | Push button sizes (large, regular, small, mini) | `SilicaButton(size:)` | done | [buttons](buttons.md#push-buttons-ct-btn-01-02-03) |
 | CT-BTN-04 | Bevel and small square buttons | `ButtonBezel.bevel` | provisional | [buttons](buttons.md#bevel-and-square-buttons-ct-btn-04) |
-| CT-BTN-05 | Help button | `HelpButton` | provisional | [buttons](buttons.md#help-button-ct-btn-05) |
-| CT-BTN-06 | Disclosure triangle | `DisclosureTriangle` | provisional | [buttons](buttons.md#disclosure-ct-btn-06-07) |
-| CT-BTN-07 | Disclosure button | `DisclosureButton` | provisional | [buttons](buttons.md#disclosure-ct-btn-06-07) |
+| CT-BTN-05 | Help button | `HelpButton` | done | [buttons](buttons.md#help-button-ct-btn-05) |
+| CT-BTN-06 | Disclosure triangle | `DisclosureTriangle` | done | [buttons](buttons.md#disclosure-ct-btn-06-07) |
+| CT-BTN-07 | Disclosure button | `DisclosureButton` | provisional (corner radius) | [buttons](buttons.md#disclosure-ct-btn-06-07) |
 | CT-BTN-08 | Image button | `ImageButton` | done | [buttons](buttons.md#image-buttons-ct-btn-08) |
 | CT-BTN-09 | Toggle button | `ToggleButton` | done | [buttons](buttons.md#toggle-buttons-ct-btn-09) |
 | CT-BTN-10 | Calculator key | — | app | — |
@@ -49,8 +49,8 @@ Status:
 
 | ID | Control | silica_ui | Status | Spec |
 | --- | --- | --- | --- | --- |
-| CT-SW-01 | Switch | `SilicaSwitch` | provisional (light off colours, knob animation) | [toggles](toggles.md#switch-ct-sw-01-02-03) |
-| CT-SW-02 | Switch sizes | `SilicaSwitch(size:)` | provisional | [toggles](toggles.md#switch-ct-sw-01-02-03) |
+| CT-SW-01 | Switch | `SilicaSwitch` | provisional (knob animation and stretch) | [toggles](toggles.md#switch-ct-sw-01-02-03) |
+| CT-SW-02 | Switch sizes | `SilicaSwitch(size:)` | done | [toggles](toggles.md#switch-ct-sw-01-02-03) |
 | CT-SW-03 | Switch in Settings rows | `SilicaSwitch(size: mini)` | partial | [toggles](toggles.md#switch-ct-sw-01-02-03) |
 | CT-CB-01 | Checkbox off / on / mixed | `SilicaCheckbox` | done | [toggles](toggles.md#checkbox-ct-cb-01-02) |
 | CT-CB-02 | Checkbox states | `SilicaCheckbox` | done | [toggles](toggles.md#checkbox-ct-cb-01-02) |
@@ -155,6 +155,7 @@ Status:
 
 | ID | Control | silica_ui | Status | Spec |
 | --- | --- | --- | --- | --- |
-| CT-CL-01 | Accent colour per element | `ControlPalette` (one accent) | missing (no accent setting) | [focus and accent](focus-and-accent.md#accent-colour-ct-cl-01-partial) |
-| CT-CL-02 | Controls in an inactive window | `WindowActiveScope` | partial | [focus and accent](focus-and-accent.md#state-rules-control-gallery) |
+| CT-CL-01 | Accent colour per element | `SilicaAccent`, `AccentColors`, `ControlAccent.palette` | done | [focus and accent](focus-and-accent.md#accent-colour-ct-cl-01) |
+| CT-CL-02 | Controls in an inactive window | `WindowActiveScope` | done |
+ [focus and accent](focus-and-accent.md#state-rules-control-gallery) |
 | CT-CL-03 | Increase Contrast / Reduce Transparency | — | missing | [focus and accent](focus-and-accent.md#accessibility-variants-ct-cl-03-partial) |

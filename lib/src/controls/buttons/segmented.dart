@@ -1,12 +1,15 @@
 // The segmented control in window content: select one, select any, or momentary.
 //
-// Measured: the large one is Clock's section switch, a 36 pt capsule (`#3d3d3d` in dark, rim
-// `#727274` above and `#626262` below, outer line `#0b0b0b`) with a 28 pt pill inset by 4 pt
-// (`#525252`–`#555555`, `#464646` in an inactive window), semibold 13 pt labels; the pill moves in
-// ~300 ms, decelerating; hovering shows a highlight (clock.md › Section switch). The small one is
-// 22 high (terminal.md › Find bar). Light uses the toolbar capsule colors, the closest measured
-// sibling (mustache-spec 1.2, MU-07). Regular and mini sizes, dark hover and pressed, and the
-// inactive dark text are provisional.
+// Measured (docs/spec/segmented.md): the window segmented control (every style looks the same)
+// is a gray capsule track 24 pt tall with the chosen segment an accent capsule and white text;
+// no hover look; a pressed segment `#c5c5c5` / `#585859`; in an inactive window the accent turns
+// gray; the keyboard ring surrounds only the focused segment (CT-SEG-02/05, CT-TF-09, INV-B).
+// The large one is Clock's section switch, a 36 pt capsule (`#3d3d3d` in dark, rim `#727274`
+// above and `#626262` below, outer line `#0b0b0b`) with a 28 pt pill inset by 4 pt (`#525252`–
+// `#555555`, `#464646` in an inactive window), semibold 13 pt labels; the pill moves in ~300 ms,
+// decelerating; hovering shows a highlight (clock.md › Section switch); light uses the toolbar
+// capsule colors (MU-07). Provisional: the window track's exact gray (the push button fill), the
+// mini size, Clock's dark pressed colors.
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
@@ -58,7 +61,16 @@ class SegmentedColors {
     required this.text,
     required this.textInactive,
     required this.textDisabled,
+    this.accentPill = false,
+    this.chosenText,
   });
+
+  /// The chosen pill takes the accent fill ([ControlAccent.fillOf]) instead of [pill], and its
+  /// pressed step; [pill] is unused.
+  final bool accentPill;
+
+  /// The text on the chosen pill (null: [text]).
+  final Color? chosenText;
 
   final Color track;
 
@@ -109,10 +121,55 @@ class SegmentedColors {
     textDisabled: Color(0xFF666666),
   );
 
+  /// The window segmented control, light (INV-B): gray track, accent pill, no hover.
+  static const SegmentedColors windowLight = SegmentedColors(
+    track: Color(0xFFECECEC),
+    rim: [Color(0xFFECECEC), Color(0xFFECECEC)],
+    outer: null,
+    pill: ControlPalette.accent,
+    pillInactive: ControlPalette.inactiveAccentLight,
+    hover: Color(0xFFECECEC),
+    hoverChosen: ControlPalette.accent,
+    pressed: Color(0xFFC5C5C5),
+    pressedChosen: ControlPalette.accent,
+    text: Color(0xFF242424),
+    textInactive: Color(0xFF242424),
+    textDisabled: Color(0xFFADADAD),
+    accentPill: true,
+    chosenText: Color(0xFFFFFFFF),
+  );
+
+  /// The window segmented control, dark (INV-B).
+  static const SegmentedColors windowDark = SegmentedColors(
+    track: Color(0xFF373738),
+    rim: [Color(0xFF373738), Color(0xFF373738)],
+    outer: null,
+    pill: ControlPalette.accent,
+    pillInactive: ControlPalette.inactiveAccentDark,
+    hover: Color(0xFF373738),
+    hoverChosen: ControlPalette.accent,
+    pressed: Color(0xFF585859),
+    pressedChosen: ControlPalette.accent,
+    text: Color(0xFFE0E0E0),
+    textInactive: Color(0xFFE0E0E0),
+    textDisabled: Color(0xFF787879),
+    accentPill: true,
+    chosenText: Color(0xFFFFFFFF),
+  );
+
+  /// The large (section switch) colors, following the system appearance.
   static SegmentedColors of(BuildContext context) =>
       MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
       ? dark
       : light;
+
+  /// The colors for `size`: the window control below large, the section switch at large.
+  static SegmentedColors forSize(BuildContext context, ControlSize size) {
+    if (size == ControlSize.large) return of(context);
+    return MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
+        ? windowDark
+        : windowLight;
+  }
 }
 
 /// Height, pill inset and label padding of each size.
@@ -271,8 +328,13 @@ class _SegmentedControlState extends State<SegmentedControl> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = SegmentedColors.of(context);
+    final colors = SegmentedColors.forSize(context, widget.size);
     final active = WindowActiveScope.of(context);
+    final dark =
+        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final accent = colors.accentPill ? ControlAccent.fillOf(context) : null;
+    // The window control has no hover look (INV-B).
+    final hovered = accent == null ? _hovered : null;
     final size = widget.size;
     final height = segmentedHeight(size);
     final inset = segmentedInset(size);
@@ -298,7 +360,11 @@ class _SegmentedControlState extends State<SegmentedControl> {
       ),
     );
 
-    final chosenColor = active ? colors.pill : colors.pillInactive;
+    final chosenColor = !active ? colors.pillInactive : accent ?? colors.pill;
+    final pressedChosen = accent == null
+        ? colors.pressedChosen
+        : controlPressedFill(chosenColor, dark: dark);
+    final hoverChosen = accent == null ? colors.hoverChosen : chosenColor;
     final layers = <Widget>[];
     // Hover and press under the chosen pill's layer.
     for (var i = 0; i < n; i++) {
@@ -307,7 +373,7 @@ class _SegmentedControlState extends State<SegmentedControl> {
       if (chosen) continue;
       if (pressed == i) {
         layers.add(pill(i, colors.pressed, key: ValueKey('pressed $i')));
-      } else if (_hovered == i && _enabled && widget.segments[i].enabled) {
+      } else if (hovered == i && _enabled && widget.segments[i].enabled) {
         layers.add(pill(i, colors.hover, key: ValueKey('hover $i')));
       }
     }
@@ -315,9 +381,9 @@ class _SegmentedControlState extends State<SegmentedControl> {
       case SegmentedMode.selectOne when widget.selected.isNotEmpty:
         final i = widget.selected.first.clamp(0, n - 1);
         final color = pressed == i
-            ? colors.pressedChosen
-            : _hovered == i
-            ? colors.hoverChosen
+            ? pressedChosen
+            : hovered == i
+            ? hoverChosen
             : chosenColor;
         layers.add(
           AnimatedPositioned(
@@ -340,9 +406,9 @@ class _SegmentedControlState extends State<SegmentedControl> {
             pill(
               i,
               pressed == i
-                  ? colors.pressedChosen
-                  : _hovered == i
-                  ? colors.hoverChosen
+                  ? pressedChosen
+                  : hovered == i
+                  ? hoverChosen
                   : chosenColor,
               key: ValueKey('chosen pill $i'),
             ),
@@ -357,9 +423,12 @@ class _SegmentedControlState extends State<SegmentedControl> {
       final enabled = _enabled && s.enabled;
       final chosen =
           widget.mode != SegmentedMode.momentary && widget.selected.contains(i);
+      final onPill = chosen && active && colors.chosenText != null;
       final color = !enabled
           ? colors.textDisabled
-          : !active && _hovered != i
+          : onPill
+          ? colors.chosenText!
+          : !active && hovered != i
           ? colors.textInactive
           : colors.text;
       final icon = s.icon, label = s.label;
@@ -453,19 +522,31 @@ class _SegmentedControlState extends State<SegmentedControl> {
             onPointerMove: _move,
             onPointerUp: _up,
             onPointerCancel: (_) => setState(() => _pressed = null),
-            child: FocusRing(
-              visible: _focused,
-              kind: FocusRingKind.control,
-              radius: null,
-              child: SizedBox(
-                width: width,
-                height: height,
-                child: Stack(
-                  children: [
-                    Positioned.fill(child: track),
-                    ...layers,
-                  ],
-                ),
+            child: SizedBox(
+              width: width,
+              height: height,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(child: track),
+                  ...layers,
+                  // The keyboard ring surrounds only the focused segment (CT-TF-09).
+                  if (_focused && n > 0)
+                    Positioned(
+                      left: _lefts[_focusIndex.clamp(0, n - 1)],
+                      top: inset,
+                      width: _segment,
+                      height: pillHeight,
+                      child: IgnorePointer(
+                        child: FocusRing(
+                          visible: true,
+                          kind: FocusRingKind.control,
+                          radius: null,
+                          child: const SizedBox.expand(),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
