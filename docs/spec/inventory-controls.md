@@ -120,9 +120,9 @@ Status:
 
 | ID | Control | silica_ui | Status | Spec |
 | --- | --- | --- | --- | --- |
-| CT-PO-01 | Popover, tip toward the anchor below | `PopoverAnchor`, `PopoverPanel` | partial (tip to redraw from TIP-01) | [popovers](popovers.md) |
+| CT-PO-01 | Popover, tip toward the anchor below | `PopoverAnchor`, `PopoverPanel` | done (TIP-01 outline) | [popovers](popovers.md) |
 | CT-PO-02 | Popover, tip above | `PopoverPanel` | provisional | [popovers](popovers.md) |
-| CT-PO-03 | Popover, tip left / right | `PopoverPanel` | partial (tip to redraw from TIP-01) | [popovers](popovers.md#tip-outline-tip-01) |
+| CT-PO-03 | Popover, tip left / right | `PopoverPanel` | done (TIP-01 outline) | [popovers](popovers.md#tip-outline-tip-01) |
 | CT-PO-04 | Popover with a list | `PopoverPanel` | provisional | [popovers](popovers.md) |
 | CT-SH-01 | Sheet attached to the toolbar | `showWindowSheet(style: attached)` | partial | [sheets and panels](sheets-and-panels.md#sheet-attached-to-the-toolbar-ct-sh-01-ct-tl-02) |
 | CT-SH-02 | Compact card | `showWindowSheet(style: card)` | done | [sheets and panels](sheets-and-panels.md#compact-card-ct-sh-02) |

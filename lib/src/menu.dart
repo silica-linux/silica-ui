@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart';
 import '../silica_ui.dart' show uiFontFamily;
 import 'glass.dart';
 import 'liquid_glass.dart';
+import 'tip_outline.dart';
 import 'window_glass.dart';
 
 /// A row of a menu.
@@ -104,12 +105,15 @@ abstract final class MenuMetrics {
   static const double chevronWidth = 6;
   static const double minWidth = 120;
 
-  /// Tip towards the object: 8 high, 22 base, concave sides; the body starts 27 pt to the
+  /// Tip towards the object: the body edge 8 pt from the anchor; the body starts 27 pt to the
   /// left of the apex.
   static const double tipHeight = 8;
-  static const double tipBase = 24;
 
-  /// The depth of the drawn drop: it reaches 2 pt past the anchor (silica-reference SH-DK-17).
+  /// The tip rectangle sent to Ossido, which draws the measured outline [TipOutline.menu]
+  /// (TIP-01): 31 pt base.
+  static const double tipBase = 31;
+
+  /// The depth of the drawn tip: it reaches 2 pt past the anchor (SH-DK-17, TIP-01).
   static const double tipDepth = 10;
   static const double tipBodyLeft = 27;
 
@@ -761,8 +765,8 @@ class MenuPanel extends StatelessWidget {
                   ? null
                   : GlassTip(
                       x: tipX,
-                      // The drop measured in silica-reference SH-DK-17: 24 pt base, 10 pt deep,
-                      // glass widths per row 24 20 18 16 14 12 10 8 6 2 (Ossido draws it).
+                      // The rectangle of the measured Dock-menu tip, 31 × 10 pt (TIP-01):
+                      // Ossido draws the outline [TipOutline.menu].
                       width: MenuMetrics.tipBase,
                       height: MenuMetrics.tipDepth,
                       edge: tipUp ? TipEdge.top : TipEdge.bottom,
@@ -936,21 +940,10 @@ class _MenuShadow extends CustomPainter {
     var glass = Path()..addRRect(body);
     final x = tipX;
     if (x != null) {
-      // The drop as the compositor draws it: the glass widths measured per row (24 20 18 16
-      // 14 12 10 8 6 2 over the 10 pt depth), joined by straight segments.
-      const widths = [24.0, 20, 18, 16, 14, 12, 10, 8, 6, 2];
-      final top = size.height;
-      final tip = Path()..moveTo(x - widths.first / 2, top - 1);
-      for (var row = 0; row < widths.length; row++) {
-        tip.lineTo(x - widths[row] / 2, top + row);
-      }
-      tip.lineTo(x, top + MenuMetrics.tipDepth);
-      for (var row = widths.length - 1; row >= 0; row--) {
-        tip.lineTo(x + widths[row] / 2, top + row);
-      }
-      tip
-        ..lineTo(x + widths.first / 2, top - 1)
-        ..close();
+      // The tip as the compositor draws it: the measured outline (TIP-01).
+      final tip = TipOutline.menu
+          .path(overlap: 1)
+          .shift(Offset(x, size.height));
       glass = Path.combine(PathOperation.union, glass, tip);
       // On top: the same shape mirrored (the body is symmetric).
       if (up) {

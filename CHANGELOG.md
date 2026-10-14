@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.23.2 · 2026-10-14
+
+The measured tip outline (TIP-01), as Ossido now draws it.
+
+- `TipOutline`: the outline from its four measured parameters (flank angle, apex radius, fillet
+  radius, depth), with the presets `menu`, `popover` and `popoverSide`.
+- Menu tip: `MenuMetrics.tipBase` 24 → 31 (depth 10), so Ossido picks the Dock-menu outline; the
+  menu shadow cut-out follows the same outline instead of the per-row widths.
+- Popovers: tip 32 × 11 on the top and bottom edges (`tipBase`, `tipDepth`), 39 × 12 on the sides
+  (`sideTipBase`, `sideTipDepth`); `popoverPath` draws the measured outline and `placePopover`
+  keeps the side tip's depth from the anchor.
+
 ## 0.23.1 · 2026-10-14
 
 - `ScrollUnderToolbar.showLine`: false when the content draws its own line under the band

@@ -1,5 +1,6 @@
 // Popovers inside a window (CT-PO-01…04; MU-62): a rounded body (radius ~18) with an arrow
-// towards the control it opens from, 10 pt deep with a ~30 pt base, a dark 1 px border and the
+// towards the control it opens from (the measured TIP-01 outline: 32 × 11 pt on the top and bottom
+// edges, 39 × 12 pt on the sides), a dark 1 px border and the
 // menu shadow. Light body `#f8f8f9` → `#f6f6f7`, dark `#474748` → `#505051`. The arrow goes on any
 // edge ([TipEdge]); the popover goes on the preferred side of its anchor and flips when it does
 // not fit, sliding along the edge to stay in the window while the arrow keeps pointing at the
@@ -14,14 +15,34 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../glass.dart' show TipEdge;
+import '../../tip_outline.dart';
 import 'common.dart';
 
 enum PopoverBehavior { transient, semitransient, applicationDefined }
 
 abstract final class PopoverMetrics {
   static const double radius = 18;
-  static const double tipDepth = 10;
-  static const double tipBase = 30;
+
+  /// The tip on the top and bottom edges (TIP-01, [TipOutline.popover]).
+  static const double tipDepth = 11;
+  static const double tipBase = 32;
+
+  /// The tip on the left and right edges (TIP-01, [TipOutline.popoverSide]).
+  static const double sideTipDepth = 12;
+  static const double sideTipBase = 39;
+
+  static bool _side(TipEdge edge) =>
+      edge == TipEdge.left || edge == TipEdge.right;
+
+  /// The tip's depth away from `edge`.
+  static double depthOn(TipEdge edge) => _side(edge) ? sideTipDepth : tipDepth;
+
+  /// The tip's base along `edge`.
+  static double baseOn(TipEdge edge) => _side(edge) ? sideTipBase : tipBase;
+
+  /// The measured outline for `edge`.
+  static TipOutline outlineOn(TipEdge edge) =>
+      _side(edge) ? TipOutline.popoverSide : TipOutline.popover;
 
   /// Between the apex and the anchor. *Provisional.*
   static const double gap = 1;
@@ -62,20 +83,14 @@ class PopoverColors {
 /// that edge (from the left or the top). The arrow is outside `size`.
 Path popoverPath(Size size, TipEdge edge, double tip) {
   const r = PopoverMetrics.radius;
-  const d = PopoverMetrics.tipDepth;
-  const half = PopoverMetrics.tipBase / 2;
   final body = Path()
     ..addRRect(
       RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(r)),
     );
-  // The arrow drawn on the top edge pointing up, then turned onto its edge: concave sides and
-  // a rounded apex, like the menu drop.
-  final arrow = Path()
-    ..moveTo(-half, 0.5)
-    ..cubicTo(-half * 0.45, 0.5, -half * 0.3, -d + 1.5, -1.6, -d + 0.4)
-    ..quadraticBezierTo(0, -d - 0.4, 1.6, -d + 0.4)
-    ..cubicTo(half * 0.3, -d + 1.5, half * 0.45, 0.5, half, 0.5)
-    ..close();
+  // The measured outline on the top edge pointing up, then turned onto its edge.
+  final arrow = PopoverMetrics.outlineOn(
+    edge,
+  ).path().transform((Matrix4.identity()..scaleByDouble(1, -1, 1, 1)).storage);
   final placed = switch (edge) {
     TipEdge.top => arrow.shift(Offset(tip, 0)),
     TipEdge.bottom => arrow.transform(
@@ -109,13 +124,14 @@ Path popoverPath(Size size, TipEdge edge, double tip) {
   TipEdge preferred = TipEdge.bottom,
 }) {
   const space = PopoverMetrics.tipDepth + PopoverMetrics.gap;
+  const sideSpace = PopoverMetrics.sideTipDepth + PopoverMetrics.gap;
   final m = PopoverMetrics.margin;
   // `preferred` is the side of the anchor the popover goes to.
   bool fits(TipEdge side) => switch (side) {
     TipEdge.bottom => anchor.bottom + space + size.height <= bounds.bottom - m,
     TipEdge.top => anchor.top - space - size.height >= bounds.top + m,
-    TipEdge.right => anchor.right + space + size.width <= bounds.right - m,
-    TipEdge.left => anchor.left - space - size.width >= bounds.left + m,
+    TipEdge.right => anchor.right + sideSpace + size.width <= bounds.right - m,
+    TipEdge.left => anchor.left - sideSpace - size.width >= bounds.left + m,
   };
   final opposite = switch (preferred) {
     TipEdge.bottom => TipEdge.top,
@@ -125,6 +141,7 @@ Path popoverPath(Size size, TipEdge edge, double tip) {
   };
   final side = fits(preferred) || !fits(opposite) ? preferred : opposite;
   const minTip = PopoverMetrics.radius + PopoverMetrics.tipBase / 2;
+  const minSideTip = PopoverMetrics.radius + PopoverMetrics.sideTipBase / 2;
   double slide(double center, double length, double lo, double hi) {
     final start = (center - length / 2).clamp(
       lo + m,
@@ -164,11 +181,11 @@ Path popoverPath(Size size, TipEdge edge, double tip) {
         bounds.bottom,
       );
       final left = side == TipEdge.right
-          ? anchor.right + space
-          : anchor.left - space - size.width;
+          ? anchor.right + sideSpace
+          : anchor.left - sideSpace - size.width;
       final tip = (anchor.center.dy - top).clamp(
-        minTip,
-        math.max(minTip, size.height - minTip),
+        minSideTip,
+        math.max(minSideTip, size.height - minSideTip),
       );
       return (
         rect: Rect.fromLTWH(left, top, size.width, size.height),

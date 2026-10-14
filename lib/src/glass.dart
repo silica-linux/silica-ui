@@ -52,8 +52,9 @@ enum TipEdge { bottom, top, left, right }
 
 /// The tip of a glass, a drop shape that merges into the body (silica-glass-v1 versions 4–6).
 /// `x` is the center along the edge (from the left for top and bottom, from the top for left
-/// and right), `width` the base along the edge, `height` the depth away from it. The menu tip
-/// measured on the Dock is 24 × 10 pt.
+/// and right), `width` the base along the edge, `height` the depth away from it. Ossido draws
+/// the measured outline (TIP-01, `TipOutline`) picked by this rectangle: the Dock menu tip is
+/// 31 × 10 pt, the popover tip 32 × 11 pt on the top and bottom edges and 39 × 12 pt on the sides.
 @immutable
 class GlassTip {
   const GlassTip({
