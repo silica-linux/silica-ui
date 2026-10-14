@@ -4,7 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
-import 'package:silica_ui/src/icons/silica_icon.dart' show monthName;
+import 'package:silica_ui/src/icons/silica_icon.dart'
+    show monthName, withoutFilters;
 
 const String svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">'
@@ -522,5 +523,37 @@ void main() {
     expect(monthName(10, 'en'), 'October');
     expect(monthName(10, 'de'), 'October');
     expect(monthName(10, null), 'October');
+  });
+
+  group('withoutFilters', () {
+    String blurred(String attr) =>
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><defs>'
+        '<filter id="b"><feGaussianBlur stdDeviation="2"/></filter>'
+        '<mask id="m"><rect width="5" height="5" fill="#fff"/></mask>'
+        '<clipPath id="c"><rect width="5" height="5"/></clipPath></defs>'
+        '<circle cx="5" cy="5" r="3" fill="#ff0000" filter="url(#b)" $attr/>'
+        '</svg>';
+
+    test('keeps mask and its definition', () {
+      final out = withoutFilters(blurred('mask="url(#m)"'));
+      expect(out, contains('<g mask="url(#m)">'));
+      expect(out, contains('<mask id="m">'));
+      expect(out, isNot(contains('filter=')));
+      expect(out, contains('radialGradient'));
+    });
+
+    test('keeps clip-path and its definition', () {
+      final out = withoutFilters(blurred('clip-path="url(#c)"'));
+      expect(out, contains('<g clip-path="url(#c)">'));
+      expect(out, contains('<clipPath id="c">'));
+    });
+
+    test('keeps transform, and adds no group without attributes', () {
+      expect(
+        withoutFilters(blurred('transform="translate(1 2)"')),
+        contains('<g transform="translate(1 2)">'),
+      );
+      expect(withoutFilters(blurred('')), isNot(contains('<g')));
+    });
   });
 }

@@ -522,7 +522,8 @@ Widget _svg(String path, double canvas) =>
 /// - the shadow passes (a copy of the path with a `filter`, black by default) are
 ///   removed, otherwise they would be drawn solid black;
 /// - blurred ellipses and circles (ground shadows, glows) become a radial gradient
-///   fading over ~2σ beyond the edge;
+///   fading over ~2σ beyond the edge (their `mask`, `clip-path` and `transform`
+///   are kept on a wrapping group; the referenced defs are left untouched);
 /// - any other `filter` attribute is ignored;
 /// - text in Inter uses the Inter of the silica_ui package (Sketch writes
 ///   `font-family="Inter-Regular_Medium, Inter"`).
@@ -564,13 +565,21 @@ String withoutFilters(String svg) {
         (math.min(rx, ry) - sigma).clamp(0, double.infinity) /
         (math.min(rx, ry) + grow);
     final id = 'silica-soft-${soft++}';
-    return '<defs><radialGradient id="$id">'
+    // Keep the element's mask, clip-path and transform by wrapping the
+    // rewritten ellipse in a group (opacity is already baked into the stops).
+    final wrap = [
+      for (final name in const ['mask', 'clip-path', 'transform'])
+        if (attr(name) != null) '$name="${attr(name)}"',
+    ].join(' ');
+    final open = wrap.isEmpty ? '' : '<g $wrap>';
+    final close = wrap.isEmpty ? '' : '</g>';
+    return '$open<defs><radialGradient id="$id">'
         '<stop offset="0" stop-color="$fill" stop-opacity="$alpha"/>'
         '<stop offset="$inner" stop-color="$fill" stop-opacity="$alpha"/>'
         '<stop offset="1" stop-color="$fill" stop-opacity="0"/>'
         '</radialGradient></defs>'
         '<ellipse cx="$cx" cy="$cy" rx="${rx + grow}" ry="${ry + grow}" '
-        'fill="url(#$id)"/>';
+        'fill="url(#$id)"/>$close';
   });
   return shapes
       .replaceAll(_filteredUse, '')
