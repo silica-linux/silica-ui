@@ -8,6 +8,8 @@
 // heading. Nested items have a disclosure triangle and a 15 pt indent (provisional: the sidebar
 // nesting is not measured, the list view's is).
 
+import 'dart:math' as math;
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -328,14 +330,19 @@ class _SourceListState extends State<SourceList> with TickerProviderStateMixin {
         if (first) {
           children.add(
             SizedBox(
-              height: widget.topInset - SourceListMetrics.headingToRow - 24,
+              height: math.max(
+                0,
+                widget.topInset - SourceListMetrics.headingToRow - 24,
+              ),
             ),
           );
         }
         children.add(_heading(section, colors));
       } else if (first) {
         children.add(
-          SizedBox(height: widget.topInset - SourceListMetrics.row / 2),
+          SizedBox(
+            height: math.max(0, widget.topInset - SourceListMetrics.row / 2),
+          ),
         );
       }
       first = false;
