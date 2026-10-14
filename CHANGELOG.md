@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.0 · 2026-10-14
+
+- `SilicaDrag` (canale `silica/drag` dell'embedder): il trascinamento fra app di Ossido.
+  `start(paths, icon:)` porta fuori dalla finestra un elenco di file (`text/uri-list`) con
+  l'immagine sul puntatore; `events` dà ingresso, movimento, uscita e rilascio
+  (`SilicaDrop` con gli URI e i percorsi) dei file trascinati da altre app, e la fine
+  (`SilicaDragFinished`: `copy`, `move`, `none`) di quelli usciti da qui.
+
 ## 0.15.1 · 2026-10-14
 
 - `SilicaIcon`: senza `dark` l'icona è sempre quella chiara. La variante scura appartiene

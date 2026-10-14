@@ -4,6 +4,7 @@ library;
 import 'package:flutter/widgets.dart';
 
 export 'src/alert.dart';
+export 'src/drag.dart';
 export 'src/glass.dart';
 export 'src/icons/silica_icon.dart'
     show
