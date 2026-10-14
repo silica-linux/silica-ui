@@ -1,7 +1,7 @@
 // Text fields: rounded or square bezel, secure with the caps lock indicator, multi-line.
 //
-// Measured: 26 pt height (dialogs.md › Save "Salva col nome" 232 × 26, clock.md › Alarms
-// "Etichetta" 224 × 26); 13 pt text 4 pt from the edge, 3 pt focus ring and 1 pt inner border
+// Measured: 26 pt height (dialogs.md › Save, the name field 232 × 26; clock.md › Alarms,
+// the label field 224 × 26); 13 pt text 4 pt from the edge, 3 pt focus ring and 1 pt inner border
 // (mustache.md › MU-32). Provisional: the bezel radius (6), the disabled look (text in the
 // placeholder color), the caps lock glyph (not captured).
 

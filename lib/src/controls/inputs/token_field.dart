@@ -1,7 +1,7 @@
 // Token field (tags): capsule tokens before the text, inline completion, ⌫ selects then
 // removes the last token.
 //
-// Measured: the field 27 tall (dialogs.md › Save, "Tag" 232 × 27); the token a capsule 14 pt
+// Measured: the field 27 tall (dialogs.md › Save, the tags field 232 × 27); the token a capsule 14 pt
 // tall colored with the tag color; typing completes inline with the remainder selected, and
 // Return turns the text into a token (mustache.md › MU-62). Provisional: the token text size
 // (11), the selected-token look (accent fill, white text), the wrap to more lines.
