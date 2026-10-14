@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.1 · 2026-10-14
+
+- Menu: un'intestazione (`MenuSection`) conta nella larghezza come una voce a 13 pt e sta
+  allineata al testo delle voci (a 29 con le spunte), come nel menu delle pile del Dock
+  (d06-pila-menu: 220 pt).
+
 ## 0.13.0 · 2026-10-14
 
 - `SilicaWindow` (canale `silica/window`): `setFullSizeContent(toolbar)` chiede a Ossido il

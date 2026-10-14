@@ -23,6 +23,44 @@ void main() {
     expect(menuTextLeft(const [MenuAction('A', checked: true)]), 29);
   });
 
+  test(
+    'le intestazioni contano come voci a 13 pt e stanno sul testo delle voci',
+    () {
+      const label = 'Visualizza contenuto come';
+      const withHeader = [
+        MenuSection(label),
+        MenuAction('Nome', checked: true),
+      ];
+      const asItem = [MenuAction(label), MenuAction('Nome', checked: true)];
+      // Stessa larghezza che avrebbe come voce normale (d06-pila-menu: 220 pt).
+      expect(menuSize(withHeader).width, menuSize(asItem).width);
+    },
+  );
+
+  testWidgets('intestazione allineata al testo delle voci con le spunte', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: MenuPanel(
+            entries: [
+              MenuSection('Ordina per'),
+              MenuAction('Nome', checked: true),
+            ],
+            opaque: true,
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester.getTopLeft(find.text('Ordina per')).dx,
+      tester.getTopLeft(find.text('Nome')).dx,
+    );
+  });
+
   Future<List<String>> openMenu(
     WidgetTester tester,
     List<MenuEntry> Function(List<String> log) build,

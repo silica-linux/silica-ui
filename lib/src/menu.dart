@@ -58,7 +58,6 @@ class MenuDivider extends MenuEntry {
   const MenuDivider();
 }
 
-/// Intestazione grigia di un gruppo, non selezionabile.
 /// Una riga disegnata da chi apre il menu (la fila dei cerchi delle etichette): alta `height`,
 /// larga almeno `width`; `builder` riceve la funzione che chiude il menu. Non si sceglie con la
 /// tastiera e il rilascio del puntatore sopra di lei non chiude il menu: gestisce i suoi tocchi.
@@ -74,6 +73,7 @@ class MenuCustom extends MenuEntry {
   final Widget Function(BuildContext context, VoidCallback close) builder;
 }
 
+/// Intestazione grigia di un gruppo, non selezionabile.
 class MenuSection extends MenuEntry {
   const MenuSection(this.label);
   final String label;
@@ -191,12 +191,12 @@ Size menuSize(List<MenuEntry> entries) {
                 ? MenuMetrics.shortcutGap + MenuMetrics.chevronWidth
                 : 0) +
             MenuMetrics.right,
+      // L'intestazione conta come una voce del corpo normale, anche se è disegnata più
+      // piccola (d06-pila-menu: "Visualizza contenuti come" fa largo il menu 220 pt =
+      // 29 + il testo a 13 pt + 20).
       MenuSection(:final label) =>
-        MenuMetrics.textLeft +
-            _textWidth(
-              label,
-              _style(MenuMetrics.sectionFontSize, MenuColors.section),
-            ) +
+        left +
+            _textWidth(label, _style(MenuMetrics.fontSize, MenuColors.text)) +
             MenuMetrics.right,
       MenuDivider() => 0.0,
       MenuCustom(:final width) => width,
@@ -738,9 +738,10 @@ class MenuPanel extends StatelessWidget {
             color: MenuColors.divider,
           ),
         );
+      // Allineata al testo delle voci (con le spunte a 29, d06-pila-menu).
       case MenuSection(:final label):
         return Padding(
-          padding: const EdgeInsets.only(left: MenuMetrics.textLeft),
+          padding: EdgeInsets.only(left: textLeft),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
