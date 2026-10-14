@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.0 · 2026-10-14
+
+- `SilicaWindow.setSize`, `setSizeLimits`, `setFixedSize`: the app chooses its window size and
+  the resize limits (min = max: a fixed-size window, the zoom button disabled by Ossido). They
+  need the silica-desktop embedder with the `setSize` / `setSizeLimits` window calls.
+
 ## 0.20.0 · 2026-10-14
 
 - The calendar icon writes the month in the language of the window (`Localizations`, or the

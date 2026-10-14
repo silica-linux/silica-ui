@@ -42,6 +42,34 @@ abstract final class SilicaWindow {
     }
   }
 
+  /// Chooses the window size (logical pixels). True if Silica applied it.
+  static Future<bool> setSize(Size size) =>
+      _call('setSize', {'width': size.width, 'height': size.height});
+
+  /// Limits for resizing the window; `null` for no limit. `min` = `max` makes the window
+  /// fixed-size: Ossido disables the zoom button. True if Silica applied them.
+  static Future<bool> setSizeLimits({Size? min, Size? max}) =>
+      _call('setSizeLimits', {
+        if (min != null) 'minWidth': min.width,
+        if (min != null) 'minHeight': min.height,
+        if (max != null) 'maxWidth': max.width,
+        if (max != null) 'maxHeight': max.height,
+      });
+
+  /// A fixed-size window of `size` (limits and size together).
+  static Future<bool> setFixedSize(Size size) async =>
+      await setSizeLimits(min: size, max: size) && await setSize(size);
+
+  static Future<bool> _call(String method, Map<String, Object?> args) async {
+    try {
+      return await channel.invokeMethod<Object?>(method, args) == true;
+    } on MissingPluginException {
+      return false;
+    } on PlatformException {
+      return false;
+    }
+  }
+
   /// Moves the window with the pointer pressed (from the toolbar).
   static Future<void> startMove() async {
     try {

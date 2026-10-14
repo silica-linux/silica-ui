@@ -16,6 +16,18 @@ void main() {
         });
   });
 
+  test('size and size limits go to the embedder', () async {
+    expect(await SilicaWindow.setFixedSize(const Size(230, 408)), isFalse);
+    final methods = calls.map((c) => c.method).toList();
+    expect(methods, ['setSizeLimits']);
+    expect(calls.single.arguments, {
+      'minWidth': 230.0,
+      'minHeight': 408.0,
+      'maxWidth': 230.0,
+      'maxHeight': 408.0,
+    });
+  });
+
   test('full-size content', () async {
     expect(await SilicaWindow.setFullSizeContent(52), isTrue);
     expect(calls.single.method, 'setFullSizeContent');
