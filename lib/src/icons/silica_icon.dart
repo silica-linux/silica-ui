@@ -86,21 +86,44 @@ class IconShadow {
 const List<Color> neutralLight = [Color(0xFFFFFFFF), Color(0xFFEDEDF0)];
 const List<Color> neutralDark = [Color(0xFF3A3A3C), Color(0xFF161618)];
 
-/// Months for the calendar icon (the shell is in Italian).
-const List<String> monthNames = [
-  'gennaio',
-  'febbraio',
-  'marzo',
-  'aprile',
-  'maggio',
-  'giugno',
-  'luglio',
-  'agosto',
-  'settembre',
-  'ottobre',
-  'novembre',
-  'dicembre',
-];
+/// Months for the calendar icon, by language: English is the source, Italian the first
+/// translation; other languages fall back to English.
+const Map<String, List<String>> monthNamesByLanguage = {
+  'en': [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ],
+  'it': [
+    'gennaio',
+    'febbraio',
+    'marzo',
+    'aprile',
+    'maggio',
+    'giugno',
+    'luglio',
+    'agosto',
+    'settembre',
+    'ottobre',
+    'novembre',
+    'dicembre',
+  ],
+};
+
+/// The name of `month` (1–12) in `language` (`it`, `en`…), English if not translated.
+String monthName(int month, String? language) {
+  final names = monthNamesByLanguage[language] ?? monthNamesByLanguage['en']!;
+  return names[(month - 1).clamp(0, 11)];
+}
 
 /// The outline of the body in the rectangle `r`.
 Path iconBodyPath(Rect r) {
@@ -781,7 +804,15 @@ class _CalendarState extends State<_Calendar> {
 
     return Stack(
       children: [
-        line(widget.text.month, monthNames[_today.month - 1]),
+        line(
+          widget.text.month,
+          monthName(
+            _today.month,
+            (Localizations.maybeLocaleOf(context) ??
+                    WidgetsBinding.instance.platformDispatcher.locale)
+                .languageCode,
+          ),
+        ),
         line(widget.text.day, '${_today.day}'),
       ],
     );

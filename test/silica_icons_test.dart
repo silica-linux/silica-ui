@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
+import 'package:silica_ui/src/icons/silica_icon.dart' show monthName;
 
 const String svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">'
@@ -514,5 +515,12 @@ void main() {
     // A hidden file without an extension does not take its name as the extension.
     expect(fileIconId('.bashrc'), 'file-unknown');
     expect(fileIconId('dati.xyz'), 'file-generic');
+  });
+
+  test('calendar month names follow the language, English by default', () {
+    expect(monthName(10, 'it'), 'ottobre');
+    expect(monthName(10, 'en'), 'October');
+    expect(monthName(10, 'de'), 'October');
+    expect(monthName(10, null), 'October');
   });
 }

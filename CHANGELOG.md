@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.20.0 · 2026-10-14
+
+- The calendar icon writes the month in the language of the window (`Localizations`, or the
+  platform locale): English by default, Italian when the system is Italian. Before it was
+  always Italian.
+
 ## 0.19.3 · 2026-10-14
 
 - Everything in English: comments, tests, changelog. Internal widget keys renamed:
