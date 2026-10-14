@@ -1,54 +1,68 @@
-# silica_ui
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/silica-logo-dark.svg">
+    <img alt="Silica" src=".github/silica-logo-light.svg" width="200">
+  </picture>
+</p>
 
-Il design system di [Silica](https://github.com/silica-linux/silica-desktop) per le app Flutter: il
-font dell'interfaccia e il vetro. Lo usano la shell di Silica e le app (Mustache,
-Impostazioni, …), ognuna nel suo repository.
+<h1 align="center">silica_ui</h1>
+
+<p align="center">
+  <b>The design system of Silica for Flutter apps.</b><br>
+  Inter, glass and Liquid Glass, toolbar, menus, alerts, icons and drag and drop between apps.
+</p>
+
+<p align="center">
+  <img alt="Flutter: package" src="https://img.shields.io/badge/Flutter-package-02569B?style=flat-square&logo=flutter">
+  <img alt="version: v0.19.2" src="https://img.shields.io/badge/version-v0.19.2-2f7bf5?style=flat-square">
+  <img alt="license: MIT / Apache-2.0" src="https://img.shields.io/badge/license-MIT%20%2F%20Apache--2.0-3a3a3a?style=flat-square">
+</p>
+
+Used by the Silica shell and by the apps (Mustache, Settings, …), each in its own repository.
 
 ```yaml
 dependencies:
   silica_ui:
     git:
       url: https://github.com/silica-linux/silica-ui.git
-      ref: v0.2.0
+      ref: v0.19.2
 ```
 
-## Cosa c'è
+## What's inside
 
-| API | Cosa fa |
+| API | What it does |
 | --- | --- |
-| `uiFontFamily`, `uiText(size:, color:)` | Inter (OFL), il font dell'interfaccia, servito dal pacchetto |
-| `Glass(radius:, material:, child:)` | un'area di vetro grande quanto il figlio: lo sfondo sfocato lo compone Ossido, il figlio disegna sopra |
-| `GlassMaterial` | `clear` (Dock), `thick` (menu, ricerca), `regular` (Liquid Glass dei controlli), `notification` (banner) |
-| `LiquidGlass(radius:, material:, interactive:, child:)` | vetro che reagisce: si gonfia alla pressione, il riflesso segue il puntatore |
-| `GlassRegistry` | raccoglie le aree di vetro dopo ogni frame e le manda al compositor quando cambiano |
+| `uiFontFamily`, `uiText(size:, color:)` | Inter (OFL), the interface font, served by the package |
+| `Glass`, `LiquidGlass`, `GlassMaterial` | glass areas composed by the Ossido compositor; Liquid Glass reacts to press and pointer |
+| `WindowGlass` | glass drawn by Flutter inside a window (menus over the app's own content) |
+| `SilicaWindow`, `WindowDragArea`, `ToolbarCapsule`, `ToolbarSegment`, `ToolbarScope` | the unified toolbar and its control states |
+| `MenuHost`, `MenuPanel`, `MenuColors` | menus with submenus, sections, custom rows, light and dark |
+| `SilicaIcon`, `resolveFileIcon`, `resolveFolderIcon` | layered icons from silica-icons, with badges and ground shadows |
+| `SilicaDrag` | drag and drop of files between apps (`text/uri-list`) |
 
-## Come funziona il vetro
+## How the glass works
 
-Il pacchetto non disegna il vetro: dichiara le aree al compositor sul canale `silica/glass`
-dell'embedder di Silica (`setRegions` con `x`, `y`, `width`, `height`, `radius`, `material`,
-`opacity` in pixel logici della superficie), e Ossido le compone con il protocollo `silica-glass-v1`.
-Fuori da Silica (test, altri embedder) il canale non risponde e il vetro non c'è: l'app deve
-restare leggibile anche così.
+The package does not draw the compositor glass: it declares the areas on the `silica/glass`
+channel of the Silica embedder, and Ossido composes them with the `silica-glass-v1` protocol.
+Outside Silica (tests, other embedders) the channel does not answer and there is no glass: the
+app must stay readable that way.
 
-## Stabilità
+## Stability
 
-Versioni [semver](https://semver.org/lang/it/) con tag `vX.Y.Z` e [`CHANGELOG.md`](CHANGELOG.md).
-Nomi, tipi e comportamento dell'API pubblica cambiano solo con una versione maggiore (in 0.x:
-minore). I valori misurati o provvisori (scala della pressione, molle, colori) possono
-cambiare in una versione minore quando arrivano misure nuove: sono la parità con il
-riferimento, non un contratto.
+[Semver](https://semver.org/) versions with `vX.Y.Z` tags and a [`CHANGELOG.md`](CHANGELOG.md).
+Names, types and behavior of the public API change only with a major version (in 0.x: minor).
+Measured or provisional values (press scale, springs, colors) may change in a minor version
+when new measurements arrive: they are parity with the reference, not a contract.
 
-## Sviluppo
+## Development
 
-```
+```sh
 flutter analyze --fatal-infos && flutter test
-cd example && flutter test      # il laboratorio del vetro
+cd example && flutter test      # the glass lab
 ```
 
-Il laboratorio (`example/`) si prova dentro Silica con l'embedder del repo principale.
+## License
 
-## Licenza
-
-Codice: MIT OR Apache-2.0 ([LICENSE-MIT](LICENSE-MIT), [LICENSE-APACHE](LICENSE-APACHE)).
-Font: Inter, OFL 1.1 ([fonts/OFL.txt](fonts/OFL.txt)). Ogni asset ha una riga in
+Code: MIT OR Apache-2.0 ([LICENSE-MIT](LICENSE-MIT), [LICENSE-APACHE](LICENSE-APACHE)).
+Font: Inter, OFL 1.1 ([fonts/OFL.txt](fonts/OFL.txt)). Every asset has a row in
 [ASSETS.md](ASSETS.md).
