@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.3 · 2026-10-14
+
+- Everything in English: comments, tests, changelog. Internal widget keys renamed:
+  `'pillola'` → `'pill'`, `'menu nella finestra'` → `'in-window menu'`, `'avviso pieno'` →
+  `'solid alert'`, `'avviso <label>'` → `'alert <label>'` (tests that look them up must follow).
+
 ## 0.19.2 · 2026-10-14
 
 - `SilicaIcon`: files, folders, volumes and Trash have a ground shadow under the shape of the
