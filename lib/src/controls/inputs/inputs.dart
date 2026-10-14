@@ -11,3 +11,5 @@ export 'slider.dart';
 export 'stepper.dart';
 export 'progress.dart';
 export 'level_indicator.dart';
+export 'date_picker.dart';
+export 'color_well.dart';
