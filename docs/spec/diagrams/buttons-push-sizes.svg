@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="190" viewBox="0 0 440 190" font-family="Inter, sans-serif" font-size="10">
+  <title>Push button sizes (CT-BTN-03), 2× scale</title>
+  <rect width="440" height="190" fill="#ffffff"/>
+  <!-- Drawn at 2×: 1 pt = 2 px. Capsules with radius = height / 2, fill #ececec. -->
+  <g fill="#ececec" stroke="#b0b0b0" stroke-width="0.5">
+    <rect x="20" y="20" width="146" height="56" rx="28"/>
+    <rect x="200" y="24" width="138" height="48" rx="24"/>
+    <rect x="20" y="110" width="118" height="40" rx="20"/>
+    <rect x="200" y="114" width="98" height="32" rx="16"/>
+  </g>
+  <g fill="#3a3a3a" text-anchor="middle">
+    <text x="93" y="52">Large</text>
+    <text x="269" y="52">Regular</text>
+    <text x="79" y="134">Small</text>
+    <text x="249" y="134">Mini</text>
+  </g>
+  <g fill="#0064e1" text-anchor="middle">
+    <text x="93" y="94">73 × 28 pt</text>
+    <text x="269" y="94">69 × 24 pt</text>
+    <text x="79" y="168">59 × 20 pt</text>
+    <text x="249" y="168">49 × 16 pt</text>
+  </g>
+  <text x="360" y="120" fill="#808080">radius = h / 2</text>
+  <text x="360" y="134" fill="#808080">fill #ececec</text>
+  <text x="360" y="148" fill="#808080">dark #373738</text>
+</svg>
