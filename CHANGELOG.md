@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.24.0 · 2026-10-14
+
+The measured control gallery (INV-B, INV-D) replaces most provisional values, and the app
+lifecycle comes in.
+
+- **Accents:** `SilicaAccent` (9 measured accents, light and dark) with `AccentColors`,
+  applied through `ControlAccent.palette`.
+- **Focus ring:** the accent's ring colour, 3 pt outside the control.
+- **Inactive windows and pressed states:** accents turn grey in inactive windows; pressed is
+  one step darker; no hover fills.
+- **Buttons, toggles and segmented controls:**
+  - push buttons are capsules 28/24/20/16 pt;
+  - checkboxes and radios 16/14/12;
+  - switches 64×28 to 36×16;
+  - segmented controls get an accent pill below the large size.
+- **Inputs and indicators:**
+  - slider, progress bar and stepper take the measured values;
+  - the spinner has 8 spokes;
+  - the calendar marks the selected day with a grey square;
+  - the colour well and the level indicator take the measured values.
+- **Tooltips:** appear after 1.54 s, move to a neighbour in 240 ms, fade out in 450 ms.
+- **`SilicaApp` and `SilicaAppWindow`:** the measured app lifecycle (silica-desktop#142).
+  Closing the last window keeps the app running, a reopen builds a new window, and
+  single-window apps quit with their window.
+
 ## 0.23.2 · 2026-10-14
 
 The measured tip outline (TIP-01), as Ossido now draws it.
