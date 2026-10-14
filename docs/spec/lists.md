@@ -46,6 +46,10 @@ lists the Reduce Transparency and Increase Contrast variants.
   Collapse starts ~70 ms after the click and lasts ~190 ms; expansion starts ~120 ms after and
   lasts ~190 ms; both decelerate.
 
+**Plain source list.** A source list in a generic split view (control gallery) uses a tighter
+pitch, rows about 24 pt apart, with the same gray rounded selection. The 32 pt pitch above is the
+file manager's.
+
 **Hiding the sidebar** slides it out to the left in ~240 ms (S curve); showing it takes ~230 ms.
 Dragging the edge below the minimum keeps 135 until the pointer is within ~65 pt of the window's
 left edge, then the sidebar hides.
