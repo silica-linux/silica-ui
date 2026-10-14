@@ -14,6 +14,7 @@ export 'src/icons/silica_icon.dart'
         FolderSource,
         FlatSource,
         FileSource,
+        IconShadow,
         iconBodyPath;
 export 'src/icons/file_icons.dart';
 export 'src/icons/mime.dart';

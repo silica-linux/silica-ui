@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.2 · 2026-10-14
+
+- `SilicaIcon`: file, cartelle, volumi e Cestino hanno l'ombra a terra sotto la forma del
+  disegno (icons.md IC-01: a 128 opacità 0,28, σ 2,7, 1,2 pt in basso; `IconShadow`).
+  silica-icons li disegna piatti e lascia l'ombra a chi li mostra.
+
 ## 0.19.1 · 2026-10-14
 
 - `ToolbarSegment` tiene per sé tocco e trascinamento: un clic o un trascinamento che parte

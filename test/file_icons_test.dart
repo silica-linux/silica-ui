@@ -228,6 +228,8 @@ void main() {
       );
       final text = tester.widget<Text>(find.text('JSON'));
       expect(text.style?.color, const Color(0xFF1F9D55));
+      // Un solo testo: l'ombra ridipinge lo stesso figlio, non lo duplica.
+      expect(find.text('JSON'), findsOneWidget);
       final box = tester.getRect(
         find.ancestor(of: find.text('JSON'), matching: find.byType(FittedBox)),
       );
@@ -429,5 +431,22 @@ void main() {
       findBadgeRules(env: env)?.pathFor(IconBadge.alias, dark: true),
       endsWith('alias-dark.svg'),
     );
+  });
+
+  test('ombra a terra: le misure di IC-01 e in mezzo', () {
+    for (final (side, opacity, sigma, offset) in [
+      (32.0, 0.35, 1.2, 0.55),
+      (64.0, 0.20, 1.45, 0.8),
+      (128.0, 0.28, 2.7, 1.2),
+      (512.0, 0.25, 7.5, 3.1),
+    ]) {
+      final s = IconShadow.forSide(side);
+      expect(s.opacity, closeTo(opacity, 1e-9));
+      expect(s.sigma, closeTo(sigma, 1e-9));
+      expect(s.offset, closeTo(offset, 1e-9));
+    }
+    final mid = IconShadow.forSide(90);
+    expect(mid.sigma, inExclusiveRange(1.45, 2.7));
+    expect(IconShadow.forSide(16).sigma, closeTo(0.6, 1e-9));
   });
 }

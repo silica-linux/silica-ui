@@ -6,8 +6,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
+import 'dart:ui' show ImageFilter, TileMode;
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -33,6 +34,53 @@ const Color dropColor = Color(0x55000000);
 /// Ombra del primo piano sul fondo (`"shadow": "neutral"`).
 const double layerShadowRatio = 0.012;
 const Color layerShadowColor = Color(0x38000000);
+
+/// L'ombra a terra di un'icona (plan/reference/icons.md, IC-01: ombra gaussiana nera
+/// adattata, uguale in tutti i temi). Misure per lato della tela: 32 → opacità 0,35, σ 1,2,
+/// in basso 0,55; 64 → 0,20, 1,45, 0,8; 128 → 0,28, 2,7, 1,2; 512 → 0,25, 7,5, 3,1 (pt).
+/// Fra le misure σ e spostamento seguono il lato in proporzione, l'opacità si interpola;
+/// a 128 l'ombra sborda di ~5 pt per lato, come dice silica-icons.
+@immutable
+class IconShadow {
+  const IconShadow(this.opacity, this.sigma, this.offset);
+
+  final double opacity;
+  final double sigma;
+  final double offset;
+
+  static const List<(double, double, double, double)> _measured = [
+    (32, 0.35, 1.2, 0.55),
+    (64, 0.20, 1.45, 0.8),
+    (128, 0.28, 2.7, 1.2),
+    (512, 0.25, 7.5, 3.1),
+  ];
+
+  static IconShadow forSide(double side) {
+    final first = _measured.first, last = _measured.last;
+    if (side <= first.$1) {
+      final k = side / first.$1;
+      return IconShadow(first.$2, first.$3 * k, first.$4 * k);
+    }
+    if (side >= last.$1) {
+      final k = side / last.$1;
+      return IconShadow(last.$2, last.$3 * k, last.$4 * k);
+    }
+    for (var i = 1; i < _measured.length; i++) {
+      final (s0, a0, g0, d0) = _measured[i - 1];
+      final (s1, a1, g1, d1) = _measured[i];
+      if (side > s1) continue;
+      // Sulla scala logaritmica del lato, come i rapporti misurati.
+      final t = (math.log(side) - math.log(s0)) / (math.log(s1) - math.log(s0));
+      double lerp(double a, double b) => a + (b - a) * t;
+      return IconShadow(
+        lerp(a0, a1),
+        side * lerp(g0 / s0, g1 / s1),
+        side * lerp(d0 / s0, d1 / s1),
+      );
+    }
+    return IconShadow(last.$2, last.$3, last.$4);
+  }
+}
 
 /// Fondo neutro delle icone senza livelli.
 const List<Color> neutralLight = [Color(0xFFFFFFFF), Color(0xFFEDEDF0)];
@@ -177,6 +225,13 @@ class SilicaIcon extends StatelessWidget {
       FlatSource(:final path) => _flat(path, canvas, body, isDark),
       FileSource(:final file) => _file(file, canvas, isDark),
     };
+    // File, cartelle, volumi e Cestino sono piatti: l'ombra del contesto la mette chi li
+    // disegna (icon-format.md › "Cosa NON va nei livelli"), sotto la forma del disegno.
+    final grounded = switch (source) {
+      LayeredSource(:final icon) => icon.kind != IconKind.app,
+      FileSource() || FolderSource() => true,
+      FlatSource() => false,
+    };
     final shown = badges.isEmpty
         ? const <IconBadge>[]
         : visibleBadges(
@@ -195,13 +250,19 @@ class SilicaIcon extends StatelessWidget {
             top: -inset,
             width: canvas,
             height: canvas,
-            child: IgnorePointer(child: content),
+            child: IgnorePointer(
+              child: grounded ? _grounded(content, canvas) : content,
+            ),
           ),
           for (final badge in shown) _badge(badge, canvas, inset, isDark),
         ],
       ),
     );
   }
+
+  /// L'icona con la sua ombra a terra: la stessa forma, nera, sfocata e spostata in basso.
+  Widget _grounded(Widget content, double canvas) =>
+      _GroundShadow(shadow: IconShadow.forSide(canvas), child: content);
 
   /// Un badge sopra l'icona composta, senza ombra: lato 315/1024 della tela da 32 pt, 509 se è
   /// l'unico (16–31 pt); appoggiato all'angolo in basso del corpo delle app (100…924 sulla
@@ -724,5 +785,70 @@ class _CalendarState extends State<_Calendar> {
         line(widget.text.day, '${_today.day}'),
       ],
     );
+  }
+}
+
+/// Dipinge il figlio due volte: prima nero, sfocato e spostato (l'ombra), poi com'è. Un solo
+/// figlio nell'albero (niente testi doppi per chi cerca nei widget).
+class _GroundShadow extends SingleChildRenderObjectWidget {
+  const _GroundShadow({required this.shadow, super.child});
+  final IconShadow shadow;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderGroundShadow(shadow);
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderGroundShadow render) =>
+      render.shadow = shadow;
+}
+
+class _RenderGroundShadow extends RenderProxyBox {
+  _RenderGroundShadow(this._shadow);
+
+  IconShadow _shadow;
+  set shadow(IconShadow value) {
+    if (value.opacity == _shadow.opacity &&
+        value.sigma == _shadow.sigma &&
+        value.offset == _shadow.offset) {
+      return;
+    }
+    _shadow = value;
+    markNeedsPaint();
+  }
+
+  final LayerHandle<ImageFilterLayer> _layer = LayerHandle<ImageFilterLayer>();
+
+  @override
+  bool get alwaysNeedsCompositing => child != null;
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final child = this.child;
+    if (child == null) return;
+    final filter = ImageFilter.compose(
+      outer: ImageFilter.blur(
+        sigmaX: _shadow.sigma,
+        sigmaY: _shadow.sigma,
+        tileMode: TileMode.decal,
+      ),
+      inner: ColorFilter.mode(
+        Color.fromRGBO(0, 0, 0, _shadow.opacity),
+        BlendMode.srcIn,
+      ),
+    );
+    final layer = (_layer.layer ??= ImageFilterLayer())..imageFilter = filter;
+    context.pushLayer(
+      layer,
+      (context, offset) => context.paintChild(child, offset),
+      offset + Offset(0, _shadow.offset),
+    );
+    context.paintChild(child, offset);
+  }
+
+  @override
+  void dispose() {
+    _layer.layer = null;
+    super.dispose();
   }
 }
