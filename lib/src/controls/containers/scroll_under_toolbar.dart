@@ -152,6 +152,14 @@ class ToolbarVeilLayer extends StatelessWidget {
   }
 }
 
+/// The vertical scrollable directly in the body.
+bool defaultScrollUnderPredicate(ScrollMetrics metrics, int depth) =>
+    depth == 0 && metrics.axis == Axis.vertical;
+
+/// Any vertical scrollable in the body, at any depth.
+bool anyVerticalScrollUnderPredicate(ScrollMetrics metrics, int depth) =>
+    metrics.axis == Axis.vertical;
+
 /// A window body that scrolls under the glass toolbar: [toolbar] in the top [bandHeight], an
 /// optional [header] right below it (a column header, a tab bar) inside the same veiled band, and
 /// the [body] filling the whole area. The body receives the padding that puts its first row below
@@ -175,6 +183,8 @@ class ScrollUnderToolbar extends StatefulWidget {
     this.bandHeight = toolbarHeight,
     this.active,
     this.veil,
+    this.showLine = true,
+    this.scrollPredicate = defaultScrollUnderPredicate,
   });
 
   /// The toolbar row (capsules, title), laid out in the top [bandHeight].
@@ -195,6 +205,14 @@ class ScrollUnderToolbar extends StatefulWidget {
   /// Null: following the system appearance.
   final ToolbarVeil? veil;
 
+  /// False when the content draws its own line under the band (a column header).
+  final bool showLine;
+
+  /// Which scrollables move the line: by default the vertical one at depth 0. Views with
+  /// nested lists (columns, a list that also scrolls sideways) pass
+  /// [anyVerticalScrollUnderPredicate].
+  final bool Function(ScrollMetrics metrics, int depth) scrollPredicate;
+
   @override
   State<ScrollUnderToolbar> createState() => _ScrollUnderToolbarState();
 }
@@ -205,7 +223,7 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
   bool _onScroll(ScrollNotification n) => _onMetrics(n.metrics, n.depth);
 
   bool _onMetrics(ScrollMetrics m, int depth) {
-    if (depth != 0 || m.axis != Axis.vertical) return false;
+    if (!widget.scrollPredicate(m, depth)) return false;
     final scrolled = m.extentBefore > 0;
     if (scrolled != _scrolled) setState(() => _scrolled = scrolled);
     return false;
@@ -215,7 +233,9 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
   Widget build(BuildContext context) {
     final band = widget.bandHeight + widget.headerHeight;
     final veil = widget.veil ?? ToolbarVeil.of(context);
-    final line = _scrolled || !containerActive(context, widget.active);
+    final line =
+        widget.showLine &&
+        (_scrolled || !containerActive(context, widget.active));
     return Stack(
       children: [
         Positioned.fill(

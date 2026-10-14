@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.23.1 · 2026-10-14
+
+- `ScrollUnderToolbar.showLine`: false when the content draws its own line under the band
+  (a column header).
+- `ScrollUnderToolbar.scrollPredicate`: which scrollables move the line;
+  `anyVerticalScrollUnderPredicate` for nested lists (column views, a list that also scrolls
+  sideways). The default stays the vertical scrollable at depth 0.
+
 ## 0.23.0 · 2026-10-14
 
 The controls of milestone M6 (UI components 1:1). Values not measured yet are marked

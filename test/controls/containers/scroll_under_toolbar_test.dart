@@ -100,6 +100,70 @@ void main() {
     expect(find.byKey(const ValueKey('toolbar line')), findsOneWidget);
   });
 
+  testWidgets('showLine: false never draws the line', (tester) async {
+    final controller = ScrollController();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: ScrollUnderToolbar(
+          veil: ToolbarVeil.light,
+          active: false,
+          showLine: false,
+          toolbar: const SizedBox(),
+          body: (context, padding) => ListView(
+            controller: controller,
+            padding: padding,
+            children: const [SizedBox(height: 2000)],
+          ),
+        ),
+      ),
+    );
+    controller.jumpTo(10);
+    await tester.pump();
+    expect(find.byKey(const ValueKey('toolbar line')), findsNothing);
+  });
+
+  testWidgets(
+    'a nested vertical list moves the line with the any-depth predicate',
+    (tester) async {
+      Widget nested(
+        bool Function(ScrollMetrics, int) predicate,
+        ScrollController c,
+      ) => Directionality(
+        textDirection: TextDirection.ltr,
+        child: ScrollUnderToolbar(
+          veil: ToolbarVeil.light,
+          active: true,
+          scrollPredicate: predicate,
+          toolbar: const SizedBox(),
+          body: (context, padding) => SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: 300,
+              height: 600,
+              child: ListView(
+                controller: c,
+                padding: padding,
+                children: const [SizedBox(height: 2000)],
+              ),
+            ),
+          ),
+        ),
+      );
+      final a = ScrollController();
+      await tester.pumpWidget(nested(defaultScrollUnderPredicate, a));
+      a.jumpTo(10);
+      await tester.pump();
+      expect(find.byKey(const ValueKey('toolbar line')), findsNothing);
+      final b = ScrollController();
+      await tester.pumpWidget(nested(anyVerticalScrollUnderPredicate, b));
+      // The new controller takes over the old position (10): move it further.
+      b.jumpTo(20);
+      await tester.pump();
+      expect(find.byKey(const ValueKey('toolbar line')), findsOneWidget);
+    },
+  );
+
   testWidgets('the body starts below the band, header included', (
     tester,
   ) async {
