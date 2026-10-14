@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
-import 'package:silica_ui/src/controls/containers/containers.dart';
 
 Future<Color> pixel(WidgetTester tester, GlobalKey key, Offset at) async {
   late Color color;

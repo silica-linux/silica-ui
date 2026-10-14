@@ -154,6 +154,7 @@ class ButtonFace extends StatelessWidget {
     final round = bezel == ButtonBezel.circle;
     return FocusRing(
       visible: state.focused,
+      kind: FocusRingKind.control,
       radius: radius,
       child: Container(
         key: const ValueKey('button face'),
@@ -195,7 +196,10 @@ class ButtonFace extends StatelessWidget {
           ? colors.destructiveText
           : colors.text;
       // Pressed: the text darkens (lightens in dark), no fill (provisional).
-      return (null, pressed ? pressedFill(rest, dark: !colors.dark) : rest);
+      return (
+        null,
+        pressed ? controlPressedFill(rest, dark: !colors.dark) : rest,
+      );
     }
     switch (role) {
       // In an inactive window the default button loses the accent (provisional: the normal
@@ -203,13 +207,13 @@ class ButtonFace extends StatelessWidget {
       case ButtonRole.primary when state.active:
         final accent = ControlAccent.of(context);
         return (
-          pressed ? pressedFill(accent, dark: colors.dark) : accent,
+          pressed ? controlPressedFill(accent, dark: colors.dark) : accent,
           colors.accentText,
         );
       case ButtonRole.destructive:
         return (
           pressed
-              ? pressedFill(colors.destructive, dark: colors.dark)
+              ? controlPressedFill(colors.destructive, dark: colors.dark)
               : colors.destructive,
           colors.destructiveText,
         );
@@ -410,6 +414,7 @@ class ImageButton extends StatelessWidget {
             : c.rest;
         return FocusRing(
           visible: state.focused,
+          kind: FocusRingKind.control,
           radius: 6,
           child: SizedBox.square(
             dimension: side,

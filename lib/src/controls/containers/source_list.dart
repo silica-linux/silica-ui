@@ -435,11 +435,11 @@ class _SourceListState extends State<SourceList> with TickerProviderStateMixin {
                             ? SourceListMetrics.chevron.width
                             : SourceListMetrics.chevron.height,
                         child: CustomPaint(
-                          painter: ContainerChevron(
-                            colors.heading,
+                          painter: ChevronPainter(
                             collapsed
-                                ? AxisDirection.right
-                                : AxisDirection.down,
+                                ? ChevronDirection.right
+                                : ChevronDirection.down,
+                            colors.heading,
                           ),
                         ),
                       ),

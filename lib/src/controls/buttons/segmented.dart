@@ -272,7 +272,7 @@ class _SegmentedControlState extends State<SegmentedControl> {
   @override
   Widget build(BuildContext context) {
     final colors = SegmentedColors.of(context);
-    final active = controlWindowActive(context);
+    final active = WindowActiveScope.of(context);
     final size = widget.size;
     final height = segmentedHeight(size);
     final inset = segmentedInset(size);
@@ -455,6 +455,7 @@ class _SegmentedControlState extends State<SegmentedControl> {
             onPointerCancel: (_) => setState(() => _pressed = null),
             child: FocusRing(
               visible: _focused,
+              kind: FocusRingKind.control,
               radius: null,
               child: SizedBox(
                 width: width,

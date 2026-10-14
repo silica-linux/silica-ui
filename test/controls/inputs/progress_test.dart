@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui/src/controls/inputs/inputs.dart';
+import 'package:silica_ui/silica_ui.dart';
 
 import 'harness.dart';
 
@@ -79,7 +79,7 @@ void main() {
       tester,
       const SilicaProgressRing(value: 0.25, diameter: 100),
     );
-    final p = painterOf<RingPainter>(tester);
+    final p = painterOf<ProgressRingPainter>(tester);
     expect(p.value, 0.25);
     expect(p.stroke, 6);
     expect(p.color, const Color(0xFFFF9230));

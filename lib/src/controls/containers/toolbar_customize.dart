@@ -331,9 +331,9 @@ class _DisplayChoice extends StatelessWidget {
                 width: 7,
                 height: 4,
                 child: CustomPaint(
-                  painter: ContainerChevron(
+                  painter: ChevronPainter(
+                    ChevronDirection.down,
                     text,
-                    AxisDirection.down,
                     stroke: 1.2,
                   ),
                 ),

@@ -3,8 +3,8 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
+
 // Until the barrel is exported by `silica_ui.dart`.
-import 'package:silica_ui/src/controls/containers/containers.dart';
 
 /// The containers page; it needs an `Overlay` above it (`WidgetsApp`).
 Widget containersCatalog() => const _ContainersCatalog();

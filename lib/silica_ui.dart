@@ -4,6 +4,10 @@ library;
 import 'package:flutter/widgets.dart';
 
 export 'src/alert.dart';
+export 'src/controls/buttons/buttons.dart';
+export 'src/controls/containers/containers.dart';
+export 'src/controls/control_base.dart';
+export 'src/controls/inputs/inputs.dart';
 export 'src/drag.dart';
 export 'src/glass.dart';
 export 'src/icons/silica_icon.dart'

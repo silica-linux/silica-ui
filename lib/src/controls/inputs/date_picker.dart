@@ -766,7 +766,7 @@ class _SilicaClockFaceState extends State<SilicaClockFace> {
               opacity: widget.enabled ? 1 : 0.5,
               child: CustomPaint(
                 size: Size.square(widget.diameter),
-                painter: ClockFacePainter(
+                painter: ClockDialPainter(
                   hour: v.hour % 12 + v.minute / 60,
                   minute: v.minute.toDouble(),
                   face: colors.panel,
@@ -785,8 +785,8 @@ class _SilicaClockFaceState extends State<SilicaClockFace> {
 }
 
 /// Paints the clock face: dial, hour marks, hour and minute hands.
-class ClockFacePainter extends CustomPainter {
-  ClockFacePainter({
+class ClockDialPainter extends CustomPainter {
+  ClockDialPainter({
     required this.hour,
     required this.minute,
     required this.face,
@@ -843,7 +843,7 @@ class ClockFacePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ClockFacePainter old) =>
+  bool shouldRepaint(ClockDialPainter old) =>
       old.hour != hour ||
       old.minute != minute ||
       old.face != face ||

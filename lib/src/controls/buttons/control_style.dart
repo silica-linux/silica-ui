@@ -15,7 +15,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../window.dart' show ToolbarScope;
+import '../control_base.dart';
+
+export '../control_base.dart';
 
 /// The size of a control, as in the system: mini, small, regular, large.
 enum ControlSize { mini, small, regular, large }
@@ -67,32 +69,9 @@ TextStyle controlTextStyle(
   height: 1.2,
 );
 
-/// The accent color of the controls under it (default button, checkbox, radio, switch on).
-/// The system accent is sRGB `#007aff`; an app may use its own (Clock uses orange).
-class ControlAccent extends InheritedWidget {
-  const ControlAccent({super.key, required this.color, required super.child});
-
-  final Color color;
-
-  /// The system accent (misc.md › Alert: OK in sRGB `#007aff`, light and dark).
-  static const Color system = Color(0xFF007AFF);
-
-  static Color of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<ControlAccent>()?.color ??
-      system;
-
-  @override
-  bool updateShouldNotify(ControlAccent old) => old.color != color;
-}
-
-/// Whether the window of `context` is the active one (from [ToolbarScope], which the app
-/// feeds from `flutter/lifecycle`); true when nobody says otherwise.
-bool controlWindowActive(BuildContext context) =>
-    ToolbarScope.maybeOf(context)?.active ?? true;
-
 /// The pressed fill: ~12 % towards white in dark (measured on Clock's capsules), ~12 % towards
 /// black in light (provisional).
-Color pressedFill(Color fill, {required bool dark}) => Color.lerp(
+Color controlPressedFill(Color fill, {required bool dark}) => Color.lerp(
   fill,
   dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
   0.12,
@@ -184,8 +163,8 @@ class ControlColors {
     destructive: Color(0xFFFCCCCA),
     destructiveText: Color(0xFFFF383C),
     accentText: Color(0xFFFFFFFF),
-    inactiveAccent: Color(0xFFB4B4B6), // provisional
-    focusRing: Color(0xFF89AFF7),
+    inactiveAccent: ControlPalette.inactiveAccentLight,
+    focusRing: ControlPalette.controlRingLight,
     box: Color(0xFFFFFFFF), // provisional
     boxPressed: Color(0xFFE6E6E6), // provisional
     boxBorder: Color(0xFFC4C4C6), // provisional
@@ -210,8 +189,8 @@ class ControlColors {
     destructive: Color(0xFF734545),
     destructiveText: Color(0xFFF01D14),
     accentText: Color(0xFFFFFFFF),
-    inactiveAccent: Color(0xFF545555),
-    focusRing: Color(0xFF3D7AA6),
+    inactiveAccent: ControlPalette.inactiveAccentDark,
+    focusRing: ControlPalette.controlRingDark,
     box: Color(0xFF454547), // provisional
     boxPressed: Color(0xFF5C5C5E), // provisional
     boxBorder: Color(0xFF5E5E60), // provisional
@@ -231,60 +210,6 @@ class ControlColors {
       MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
       ? darkColors
       : light;
-}
-
-/// The focus ring: 3 pt around the control's shape, outside it (provisional thickness and
-/// distance; the measured toolbar ring is 4 pt inside the capsule).
-const double focusRingWidth = 3;
-
-/// Draws the focus ring around `child` when `visible`: `radius` is the control's corner
-/// radius (`null`: a circle or capsule, half the height).
-class FocusRing extends StatelessWidget {
-  const FocusRing({
-    super.key,
-    required this.visible,
-    required this.child,
-    this.radius,
-  });
-
-  final bool visible;
-  final double? radius;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!visible) return child;
-    final color = ControlColors.of(context).focusRing;
-    return CustomPaint(
-      key: const ValueKey('focus ring'),
-      foregroundPainter: _RingPainter(color, radius),
-      child: child,
-    );
-  }
-}
-
-class _RingPainter extends CustomPainter {
-  const _RingPainter(this.color, this.radius);
-  final Color color;
-  final double? radius;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const half = focusRingWidth / 2;
-    final rect = (Offset.zero & size).inflate(half);
-    final r = (radius ?? size.shortestSide / 2) + half;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, Radius.circular(r)),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = focusRingWidth
-        ..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter old) =>
-      old.color != color || old.radius != radius;
 }
 
 /// The interaction state of a control.
@@ -417,7 +342,7 @@ class _ControlInteractionState extends State<ControlInteraction> {
       hovered: widget.enabled && _hovered,
       pressed: widget.enabled && _down && _inside,
       focused: widget.enabled && _focused,
-      active: controlWindowActive(context),
+      active: WindowActiveScope.of(context),
     );
     final onKey = widget.onKey;
     Widget child = FocusableActionDetector(

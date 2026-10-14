@@ -14,59 +14,6 @@ import 'package:flutter/widgets.dart';
 import 'control_style.dart';
 import 'push_button.dart';
 
-/// Which way a chevron points.
-enum ChevronDirection { up, down, left, right }
-
-/// A stroked chevron that fills its box (`>` is `right`).
-class ChevronPainter extends CustomPainter {
-  const ChevronPainter(this.direction, this.color, {this.stroke = 1.5});
-
-  final ChevronDirection direction;
-  final Color color;
-  final double stroke;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width, h = size.height;
-    final s = stroke / 2;
-    final points = switch (direction) {
-      ChevronDirection.right => [
-        Offset(s, s),
-        Offset(w - s, h / 2),
-        Offset(s, h - s),
-      ],
-      ChevronDirection.left => [
-        Offset(w - s, s),
-        Offset(s, h / 2),
-        Offset(w - s, h - s),
-      ],
-      ChevronDirection.down => [
-        Offset(s, s),
-        Offset(w / 2, h - s),
-        Offset(w - s, s),
-      ],
-      ChevronDirection.up => [
-        Offset(s, h - s),
-        Offset(w / 2, s),
-        Offset(w - s, h - s),
-      ],
-    };
-    canvas.drawPath(
-      Path()..addPolygon(points, false),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = stroke
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(ChevronPainter old) =>
-      old.direction != direction || old.color != color || old.stroke != stroke;
-}
-
 /// The disclosure triangle: a chevron pointing right when closed and down when open. It turns at
 /// once on release; Space toggles it with the keyboard focus, → opens and ← closes.
 class DisclosureTriangle extends StatelessWidget {
@@ -128,6 +75,7 @@ class DisclosureTriangle extends StatelessWidget {
               : color ?? colors.glyph;
           return FocusRing(
             visible: state.focused,
+            kind: FocusRingKind.control,
             radius: 3,
             child: SizedBox.square(
               dimension: side,

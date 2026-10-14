@@ -13,7 +13,6 @@ import 'package:flutter/widgets.dart';
 
 import '../../menu.dart';
 import 'control_style.dart';
-import 'disclosure.dart';
 import 'push_button.dart';
 
 /// The label's left padding in a pop-up or pull-down button (provisional).

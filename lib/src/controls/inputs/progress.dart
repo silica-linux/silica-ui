@@ -312,7 +312,7 @@ class SilicaProgressRing extends StatelessWidget {
     value: '${(value.clamp(0.0, 1.0) * 100).round()} %',
     child: CustomPaint(
       size: Size.square(diameter),
-      painter: RingPainter(
+      painter: ProgressRingPainter(
         value: value.clamp(0.0, 1.0),
         stroke: stroke,
         color: color,
@@ -327,8 +327,8 @@ class SilicaProgressRing extends StatelessWidget {
 }
 
 /// Paints the ring: the track and the arc from the top.
-class RingPainter extends CustomPainter {
-  RingPainter({
+class ProgressRingPainter extends CustomPainter {
+  ProgressRingPainter({
     required this.value,
     required this.stroke,
     required this.color,
@@ -359,7 +359,7 @@ class RingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(RingPainter old) =>
+  bool shouldRepaint(ProgressRingPainter old) =>
       old.value != value ||
       old.stroke != stroke ||
       old.color != color ||

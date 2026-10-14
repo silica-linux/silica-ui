@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui/src/controls/inputs/inputs.dart';
+import 'package:silica_ui/silica_ui.dart';
 
 /// A host for one control: an app (text editing shortcuts), an overlay (menus), the
 /// appearance and the window state.

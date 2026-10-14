@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui/src/controls/buttons/buttons.dart';
+import 'package:silica_ui/silica_ui.dart';
 
 import 'harness.dart';
 

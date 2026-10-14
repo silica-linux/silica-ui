@@ -280,9 +280,9 @@ class TableHeaderView extends StatelessWidget {
             child: IgnorePointer(
               child: CustomPaint(
                 key: const ValueKey('table sort arrow'),
-                painter: ContainerChevron(
+                painter: ChevronPainter(
+                  descending ? ChevronDirection.down : ChevronDirection.up,
                   colors.sortArrow,
-                  descending ? AxisDirection.down : AxisDirection.up,
                   stroke: 1.2,
                 ),
               ),

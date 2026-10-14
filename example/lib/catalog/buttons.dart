@@ -3,10 +3,9 @@
 // shown next to the enabled ones.
 
 import 'package:flutter/widgets.dart';
-import 'package:silica_ui/silica_ui.dart'
-    show MenuAction, MenuDivider, ToolbarScope;
+import 'package:silica_ui/silica_ui.dart';
+
 // Until the coordinator exports the controls from silica_ui.dart.
-import 'package:silica_ui/src/controls/buttons/buttons.dart';
 
 /// The buttons and toggles page: four panels (light/dark × active/inactive window).
 Widget buttonsCatalog() => Overlay(

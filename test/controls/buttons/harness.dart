@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui/silica_ui.dart' show GlassRegistry, ToolbarScope;
+import 'package:silica_ui/silica_ui.dart';
 
 /// A control in a window: light or dark, active or inactive, with an overlay for menus.
 Widget harness(

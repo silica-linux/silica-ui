@@ -10,6 +10,9 @@ import 'package:flutter/widgets.dart';
 
 import '../../../silica_ui.dart' show uiFontFamily;
 import '../../menu.dart';
+import '../control_base.dart';
+
+export '../control_base.dart';
 
 /// The colors of the input controls in one appearance.
 @immutable
@@ -49,8 +52,7 @@ class InputColors {
   /// for tracks (mustache.md › MU-04, `#0176f7` light, `#0d7bfb` dark).
   final Color accent;
 
-  /// Accent fills in an inactive window. Provisional: AppKit turns them gray; the gray is the
-  /// slider track one step darker, not measured.
+  /// Accent fills in an inactive window ([ControlPalette.inactiveAccent]).
   final Color accentInactive;
   final Color fieldBackground;
   final Color fieldBorder;
@@ -110,14 +112,14 @@ class InputColors {
   final Color levelEmpty;
 
   static const InputColors light = InputColors(
-    accent: Color(0xFF007AFF),
-    accentInactive: Color(0xFFB9B9B9),
+    accent: ControlPalette.accent,
+    accentInactive: ControlPalette.inactiveAccentLight,
     fieldBackground: Color(0xFFFFFFFF),
     // The labels popover field border (mustache.md › MU-62).
     fieldBorder: Color(0xFFE1E1E1),
     fieldBorderFocused: Color(0xFF649EFA),
-    focusRing: Color(0xFF8FB4FB),
-    focusRingControl: Color(0xFF89AFF7),
+    focusRing: ControlPalette.fieldRingLight,
+    focusRingControl: ControlPalette.controlRingLight,
     text: Color(0xFF1A1A1A),
     secondaryText: Color(0xFF808080),
     // Provisional: the inactive status bar text (MU-04).
@@ -143,14 +145,14 @@ class InputColors {
   );
 
   static const InputColors dark = InputColors(
-    accent: Color(0xFF007AFF),
-    accentInactive: Color(0xFF5E5E5E),
+    accent: ControlPalette.accent,
+    accentInactive: ControlPalette.inactiveAccentDark,
     // The labels popover field in dark (MU-62).
     fieldBackground: Color(0xFF1D1D1D),
     fieldBorder: Color(0xFF3A3A3A),
     fieldBorderFocused: Color(0xFF3586C5),
-    focusRing: Color(0xFF296692),
-    focusRingControl: Color(0xFF3D7AA6),
+    focusRing: ControlPalette.fieldRingDark,
+    focusRingControl: ControlPalette.controlRingDark,
     text: Color(0xFFEBEBEB),
     secondaryText: Color(0xFFA1A1A1),
     placeholder: Color(0xFF636363),
@@ -200,7 +202,7 @@ abstract final class InputMetrics {
   static const double controlRingInset = 1;
 
   /// The ring fades in over ~200 ms (mustache.md › MU-70).
-  static const Duration ringFade = Duration(milliseconds: 200);
+  static const Duration ringFade = ControlPalette.ringFade;
 
   /// The toolbar search field 242 × 38 (MU-70) and the window search field, 28 tall
   /// (controlcenter.md › Edit controls, 205 × 28).
@@ -216,64 +218,6 @@ abstract final class InputMetrics {
   static const double tokenFieldHeight = 27;
 }
 
-/// Whether the window of the controls is active. Without a scope the window counts as
-/// active; [WindowActiveScope.follow] tracks the app lifecycle, which the embedder drives
-/// from the window activation (`flutter/lifecycle`).
-class WindowActiveScope extends InheritedWidget {
-  const WindowActiveScope({
-    super.key,
-    required this.active,
-    required super.child,
-  });
-
-  final bool active;
-
-  /// A scope that follows the app lifecycle: `resumed` is active, anything else inactive.
-  static Widget follow({Key? key, required Widget child}) =>
-      _LifecycleActive(key: key, child: child);
-
-  static bool of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<WindowActiveScope>()?.active ??
-      true;
-
-  @override
-  bool updateShouldNotify(WindowActiveScope old) => old.active != active;
-}
-
-class _LifecycleActive extends StatefulWidget {
-  const _LifecycleActive({super.key, required this.child});
-  final Widget child;
-
-  @override
-  State<_LifecycleActive> createState() => _LifecycleActiveState();
-}
-
-class _LifecycleActiveState extends State<_LifecycleActive> {
-  late final AppLifecycleListener _listener;
-  bool _active = true;
-
-  @override
-  void initState() {
-    super.initState();
-    final state = WidgetsBinding.instance.lifecycleState;
-    _active = state == null || state == AppLifecycleState.resumed;
-    _listener = AppLifecycleListener(
-      onStateChange: (state) =>
-          setState(() => _active = state == AppLifecycleState.resumed),
-    );
-  }
-
-  @override
-  void dispose() {
-    _listener.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) =>
-      WindowActiveScope(active: _active, child: widget.child);
-}
-
 /// The text style of the input controls.
 TextStyle inputText(Color color, {double size = InputMetrics.fontSize}) =>
     TextStyle(
@@ -283,107 +227,6 @@ TextStyle inputText(Color color, {double size = InputMetrics.fontSize}) =>
       color: color,
       height: 1.2,
     );
-
-/// The keyboard focus ring: a band of `width` around a rounded rectangle, outside the child.
-/// It fades in and out ([InputMetrics.ringFade]); it is hidden in an inactive window.
-class FocusRing extends StatelessWidget {
-  const FocusRing({
-    super.key,
-    required this.visible,
-    required this.radius,
-    required this.child,
-    this.width = InputMetrics.fieldRing,
-    this.inset = 0,
-    this.color,
-    this.circle = false,
-  });
-
-  final bool visible;
-  final double radius;
-  final double width;
-
-  /// How far the ring enters the child (the toolbar ring sits 1 pt inside the box).
-  final double inset;
-  final Color? color;
-  final bool circle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final shown = visible && WindowActiveScope.of(context);
-    final ringColor = color ?? InputColors.of(context).focusRing;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        Positioned.fill(
-          child: IgnorePointer(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(end: shown ? 1 : 0),
-              duration: InputMetrics.ringFade,
-              builder: (context, t, _) => t == 0
-                  ? const SizedBox.shrink()
-                  : CustomPaint(
-                      painter: _RingPainter(
-                        color: ringColor.withValues(alpha: ringColor.a * t),
-                        radius: radius,
-                        width: width,
-                        inset: inset,
-                        circle: circle,
-                      ),
-                    ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RingPainter extends CustomPainter {
-  _RingPainter({
-    required this.color,
-    required this.radius,
-    required this.width,
-    required this.inset,
-    required this.circle,
-  });
-
-  final Color color;
-  final double radius;
-  final double width;
-  final double inset;
-  final bool circle;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final inner = (Offset.zero & size).deflate(inset);
-    final outer = inner.inflate(width);
-    final paint = Paint()..color = color;
-    if (circle) {
-      final path = Path()
-        ..fillType = PathFillType.evenOdd
-        ..addOval(outer)
-        ..addOval(inner);
-      canvas.drawPath(path, paint);
-      return;
-    }
-    final r = (radius - inset).clamp(0.0, double.infinity);
-    final path = Path()
-      ..fillType = PathFillType.evenOdd
-      ..addRRect(RRect.fromRectAndRadius(outer, Radius.circular(r + width)))
-      ..addRRect(RRect.fromRectAndRadius(inner, Radius.circular(r)));
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter old) =>
-      old.color != color ||
-      old.radius != radius ||
-      old.width != width ||
-      old.inset != inset ||
-      old.circle != circle;
-}
 
 /// Opens an in-window menu (the recents of a search field, a token menu) in the nearest
 /// [Overlay], with its top-left corner at `anchor` in the coordinates of `context`.

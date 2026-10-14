@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui/src/controls/containers/containers.dart';
+import 'package:silica_ui/silica_ui.dart';
 
 Widget app(Widget child, {Brightness brightness = Brightness.light}) =>
     MediaQuery(

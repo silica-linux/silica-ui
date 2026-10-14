@@ -214,9 +214,9 @@ class _PathControlState extends State<PathControl> {
                   width: 5,
                   height: 7,
                   child: CustomPaint(
-                    painter: ContainerChevron(
+                    painter: ChevronPainter(
+                      ChevronDirection.right,
                       colors.text,
-                      AxisDirection.right,
                       stroke: 1.2,
                     ),
                   ),

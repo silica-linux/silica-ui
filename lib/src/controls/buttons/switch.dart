@@ -20,7 +20,7 @@ double switchHeight(ControlSize size) => switch (size) {
 };
 
 /// The switch size for `size`: 54 × 24 scaled.
-Size switchSize(ControlSize size) {
+Size switchDimensions(ControlSize size) {
   final h = switchHeight(size);
   return Size(54 * h / 24, h);
 }
@@ -64,7 +64,7 @@ class SilicaSwitch extends StatelessWidget {
         autofocus: autofocus,
         builder: (context, state) {
           final colors = ControlColors.of(context);
-          final dims = switchSize(size);
+          final dims = switchDimensions(size);
           final s = dims.height / 24;
           final accent = ControlAccent.of(context);
           final on = !state.active
@@ -76,6 +76,7 @@ class SilicaSwitch extends StatelessWidget {
           final knob = value ? colors.knob : colors.knobOff;
           return FocusRing(
             visible: state.focused,
+            kind: FocusRingKind.control,
             radius: null,
             child: Opacity(
               opacity: state.enabled ? 1 : 0.5,
@@ -88,7 +89,7 @@ class SilicaSwitch extends StatelessWidget {
                 padding: EdgeInsets.all(2 * s),
                 decoration: BoxDecoration(
                   color: state.pressed
-                      ? pressedFill(track, dark: colors.dark)
+                      ? controlPressedFill(track, dark: colors.dark)
                       : track,
                   borderRadius: BorderRadius.circular(dims.height / 2),
                 ),
@@ -104,7 +105,7 @@ class SilicaSwitch extends StatelessWidget {
                     height: 20 * s,
                     decoration: BoxDecoration(
                       color: state.pressed
-                          ? pressedFill(knob, dark: false)
+                          ? controlPressedFill(knob, dark: false)
                           : knob,
                       borderRadius: BorderRadius.circular(10 * s),
                       boxShadow: const [

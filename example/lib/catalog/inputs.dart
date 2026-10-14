@@ -2,8 +2,8 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
+
 // The inputs are wired into the package exports at release time.
-import 'package:silica_ui/src/controls/inputs/inputs.dart';
 
 /// The inputs and indicators page, with its own overlay for menus and the color panel.
 Widget inputsCatalog() => Overlay(

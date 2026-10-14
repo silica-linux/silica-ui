@@ -31,7 +31,7 @@ const double toggleLabelGap = 6;
       ? ControlAccent.of(context)
       : colors.inactiveAccent;
   return (
-    state.pressed ? pressedFill(accent, dark: colors.dark) : accent,
+    state.pressed ? controlPressedFill(accent, dark: colors.dark) : accent,
     null,
     colors.accentText,
   );
@@ -47,6 +47,7 @@ Widget _withLabel(
 }) {
   final withRing = FocusRing(
     visible: state.focused,
+    kind: FocusRingKind.control,
     radius: ringRadius,
     child: box,
   );

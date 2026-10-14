@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui/src/controls/buttons/buttons.dart';
+import 'package:silica_ui/silica_ui.dart';
 
 import 'harness.dart';
 
@@ -149,7 +149,7 @@ void main() {
     await tester.pump();
     expect(
       fillOf(tester, face),
-      pressedFill(const Color(0xFF007AFF), dark: true),
+      controlPressedFill(const Color(0xFF007AFF), dark: true),
     );
     final c = fillOf(tester, face)!;
     expect(
