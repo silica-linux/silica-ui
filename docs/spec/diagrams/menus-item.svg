@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="220" viewBox="0 0 520 220" font-family="Inter, sans-serif" font-size="10">
+  <title>Menu item geometry (CT-MN-01), 2× scale</title>
+  <rect width="520" height="220" fill="#ffffff"/>
+  <!-- 2×. Menu body 230 pt wide; 5 pt top margin, two 24 pt items, an 11 pt separator row. -->
+  <rect x="20" y="20" width="460" height="148" rx="24" fill="#c7c8cd" stroke="#5d5d61" stroke-width="1"/>
+  <!-- highlight: inset 5 pt, 24 pt tall, radius 8 -->
+  <rect x="30" y="30" width="440" height="48" rx="16" fill="#007aff"/>
+  <text x="54" y="58" fill="#ffffff" font-size="13">Item</text>
+  <text x="440" y="58" fill="#ffffff" font-size="13" text-anchor="end">⌘N</text>
+  <text x="54" y="106" fill="#262626" font-size="13">Item</text>
+  <text x="440" y="106" fill="#9a9a9c" font-size="13" text-anchor="end">⌘O</text>
+  <line x1="52" y1="137" x2="448" y2="137" stroke="#a1a5ad" stroke-width="2"/>
+  <g stroke="#0064e1" stroke-width="0.75" fill="none">
+    <line x1="20" y1="190" x2="54" y2="190"/>
+    <line x1="20" y1="186" x2="20" y2="194"/>
+    <line x1="54" y1="186" x2="54" y2="194"/>
+    <line x1="440" y1="200" x2="480" y2="200"/>
+    <line x1="440" y1="196" x2="440" y2="204"/>
+    <line x1="480" y1="196" x2="480" y2="204"/>
+    <line x1="490" y1="30" x2="490" y2="78"/>
+    <line x1="486" y1="30" x2="494" y2="30"/>
+    <line x1="486" y1="78" x2="494" y2="78"/>
+    <line x1="490" y1="126" x2="490" y2="148"/>
+    <line x1="486" y1="126" x2="494" y2="126"/>
+    <line x1="486" y1="148" x2="494" y2="148"/>
+  </g>
+  <g fill="#0064e1">
+    <text x="37" y="206" text-anchor="middle">17</text>
+    <text x="460" y="214" text-anchor="middle">20</text>
+    <text x="496" y="58">24</text>
+    <text x="496" y="141">11</text>
+  </g>
+  <g fill="#808080">
+    <text x="30" y="14">highlight inset 5 pt, radius 8, #007aff · body radius 12 · margins 5 pt top and bottom</text>
+  </g>
+</svg>
