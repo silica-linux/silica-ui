@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:silica_ui_example/main.dart';
+import 'package:silica_ui_example/glass_lab.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 void main() {

@@ -8,11 +8,12 @@ import 'package:silica_ui/silica_ui.dart';
 // Until the coordinator exports the controls from silica_ui.dart.
 
 /// The buttons and toggles page: four panels (light/dark × active/inactive window).
-Widget buttonsCatalog() => Overlay(
+/// `inset` pads the scrolling content (the toolbar band of the catalog app).
+Widget buttonsCatalog({EdgeInsets inset = EdgeInsets.zero}) => Overlay(
   initialEntries: [
     OverlayEntry(
       builder: (context) => SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24) + inset,
         child: Wrap(
           spacing: 24,
           runSpacing: 24,

@@ -18,6 +18,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 
 import '../../window.dart';
+import 'common.dart';
 
 /// The measured veil of the band under the toolbar, light or dark.
 @immutable
@@ -172,7 +173,7 @@ class ScrollUnderToolbar extends StatefulWidget {
     this.header,
     this.headerHeight = 0,
     this.bandHeight = toolbarHeight,
-    this.active = true,
+    this.active,
     this.veil,
   });
 
@@ -187,8 +188,9 @@ class ScrollUnderToolbar extends StatefulWidget {
   /// The content: it gets the padding of the band.
   final Widget Function(BuildContext context, EdgeInsets padding) body;
 
-  /// Active window. The veil does not change; an inactive window keeps the line under the band.
-  final bool active;
+  /// Active window (null: [WindowActiveScope.of]). The veil does not change; an inactive window
+  /// keeps the line under the band.
+  final bool? active;
 
   /// Null: following the system appearance.
   final ToolbarVeil? veil;
@@ -213,7 +215,7 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
   Widget build(BuildContext context) {
     final band = widget.bandHeight + widget.headerHeight;
     final veil = widget.veil ?? ToolbarVeil.of(context);
-    final line = _scrolled || !widget.active;
+    final line = _scrolled || !containerActive(context, widget.active);
     return Stack(
       children: [
         Positioned.fill(

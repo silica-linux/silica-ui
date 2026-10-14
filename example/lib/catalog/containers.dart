@@ -4,13 +4,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
 
-// Until the barrel is exported by `silica_ui.dart`.
-
 /// The containers page; it needs an `Overlay` above it (`WidgetsApp`).
-Widget containersCatalog() => const _ContainersCatalog();
+/// `inset` pads the scrolling content (the toolbar band of the catalog app).
+Widget containersCatalog({EdgeInsets inset = EdgeInsets.zero}) =>
+    _ContainersCatalog(inset: inset);
 
 class _ContainersCatalog extends StatefulWidget {
-  const _ContainersCatalog();
+  const _ContainersCatalog({required this.inset});
+  final EdgeInsets inset;
 
   @override
   State<_ContainersCatalog> createState() => _ContainersCatalogState();
@@ -98,7 +99,7 @@ class _ContainersCatalogState extends State<_ContainersCatalog> {
       child: ScrollConfiguration(
         behavior: const SilicaScrollBehavior(),
         child: ListView(
-          padding: const EdgeInsets.only(bottom: 40),
+          padding: const EdgeInsets.only(bottom: 40) + widget.inset,
           children: [
             section('Toolbar over scrolling content', 320, _toolbar(text)),
             section('Sidebar and split view', 300, _sidebar()),

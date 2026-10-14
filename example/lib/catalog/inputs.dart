@@ -6,8 +6,9 @@ import 'package:silica_ui/silica_ui.dart';
 // The inputs are wired into the package exports at release time.
 
 /// The inputs and indicators page, with its own overlay for menus and the color panel.
-Widget inputsCatalog() => Overlay(
-  initialEntries: [OverlayEntry(builder: (_) => const _InputsCatalog())],
+/// `inset` pads the scrolling content (the toolbar band of the catalog app).
+Widget inputsCatalog({EdgeInsets inset = EdgeInsets.zero}) => Overlay(
+  initialEntries: [OverlayEntry(builder: (_) => _InputsCatalog(inset: inset))],
 );
 
 const _months = [
@@ -26,7 +27,8 @@ const _months = [
 ];
 
 class _InputsCatalog extends StatefulWidget {
-  const _InputsCatalog();
+  const _InputsCatalog({required this.inset});
+  final EdgeInsets inset;
 
   @override
   State<_InputsCatalog> createState() => _InputsCatalogState();
@@ -98,7 +100,7 @@ class _InputsCatalogState extends State<_InputsCatalog> {
     return ColoredBox(
       color: colors.panel,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24) + widget.inset,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
