@@ -7,15 +7,14 @@
 //
 // The toolbar capsules: 38 high with 7 pt above and below, radius 19; fill `#f6f6f6` →
 // `#fdfdfd`, outline `#ebebeb` above, `#e8e7e8` below, `#c1c1c1` on the sides; the chosen segment
-// is a 34 × 28 pill inset by 5 pt, `#e2e2e2` → `#e7e7e7`.
-
-import 'dart:async';
-import 'dart:ui' show ImageFilter;
+// is a 34 × 28 pill inset by 5 pt, `#e2e2e2` → `#e7e7e7`. The capsules themselves, their
+// hover highlight, the press growth and the glow are in `toolbar.dart`.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+import 'toolbar.dart' show ToolbarGlassMetrics;
 
 /// Height of the unified toolbar.
 const double toolbarHeight = 52;
@@ -130,6 +129,7 @@ class ToolbarColors {
     required this.iconDisabled,
     required this.title,
     required this.titleInactive,
+    this.glow = const Color(0x00FFFFFF),
   });
 
   /// The capsule fill at rest; with the pointer in the bar (in dark +7 levels);
@@ -153,7 +153,8 @@ class ToolbarColors {
   final Color chosenInactive;
   final Color chosenHoverInactive;
 
-  /// A disabled segment pressed (in dark a faint pill; in light nothing).
+  /// No longer drawn: a pressed disabled segment shows only the pressed glow ([glow]) and the
+  /// growth, without a pill (TITLEBAR-GLASS). Kept for API stability.
   final Color? disabledPressed;
   final Color separator;
   final Color icon;
@@ -162,6 +163,11 @@ class ToolbarColors {
   final Color iconDisabled;
   final Color title;
   final Color titleInactive;
+
+  /// The pressed glow at the pointer (TITLEBAR-GLASS): +22 levels over the dark capsule
+  /// (white at 12 %), fading as a Gaussian with σ = [ToolbarGlassMetrics.glowSigma]. In light the
+  /// glow is not visible (≤ 1 level): transparent.
+  final Color glow;
 
   static const ToolbarColors light = ToolbarColors(
     fill: Color(0xFFF8F8F8),
@@ -213,6 +219,7 @@ class ToolbarColors {
     iconDisabled: Color(0xFF787879),
     title: Color(0xFFE9E9E9),
     titleInactive: Color(0xFF646464),
+    glow: Color(0x1FFFFFFF),
   );
 
   /// Following the system appearance (`MediaQuery.platformBrightness`).
@@ -253,391 +260,4 @@ class ToolbarOverContent extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ToolbarOverContent old) => false;
-}
-
-/// The long-press delay (history menu on Back and Forward, MU-07).
-const Duration toolbarLongPress = Duration(milliseconds: 295);
-
-/// A toolbar capsule: 38 high, radius 19, with the segments in a row. A single segment as wide
-/// as it is high becomes a circle (Search). Next to the segment under the pointer the
-/// separators disappear; with a segment pressed the capsule grows by 1 pt per side.
-class ToolbarCapsule extends StatefulWidget {
-  const ToolbarCapsule({
-    super.key,
-    required this.children,
-    this.separators = false,
-  });
-
-  final List<Widget> children;
-
-  /// A 1 × 21 line between the segments (Back / Forward).
-  final bool separators;
-
-  @override
-  State<ToolbarCapsule> createState() => _ToolbarCapsuleState();
-}
-
-class _ToolbarCapsuleState extends State<ToolbarCapsule> {
-  int? _hovered;
-  int? _pressed;
-
-  void _hover(int index, bool on) {
-    final next = on ? index : (_hovered == index ? null : _hovered);
-    if (next != _hovered) setState(() => _hovered = next);
-  }
-
-  void _press(int index, bool on) {
-    final next = on ? index : (_pressed == index ? null : _pressed);
-    if (next != _pressed) setState(() => _pressed = next);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = ToolbarColors.of(context);
-    final scope = ToolbarScope.maybeOf(context);
-    final active = scope?.active ?? true;
-    final fill = !active
-        ? colors.fillInactive
-        : (scope?.hovered ?? false)
-        ? colors.fillBarHover
-        : colors.fill;
-    final children = widget.children;
-    final overContent = ToolbarOverContent.of(context);
-    final capsule = Container(
-      height: toolbarCapsuleHeight,
-      // The outline: a 1 pt ring, light above and below, darker on the sides.
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            for (final c in [
-              colors.borderTop,
-              colors.borderSide,
-              colors.borderBottom,
-            ])
-              overContent ? c.withValues(alpha: capsuleRimOutlineAlpha) : c,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(toolbarCapsuleHeight / 2),
-      ),
-      padding: const EdgeInsets.all(1),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: overContent ? null : fill,
-          borderRadius: BorderRadius.circular(toolbarCapsuleHeight / 2 - 1),
-        ),
-        position: DecorationPosition.background,
-        child: CustomPaint(
-          painter: overContent ? _RimFillPainter(fill) : null,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < children.length; i++) ...[
-                if (widget.separators && i > 0)
-                  Container(
-                    width: 1,
-                    height: 21,
-                    color: _hovered == i || _hovered == i - 1
-                        ? null
-                        : colors.separator,
-                  ),
-                _CapsuleSlot(
-                  index: i,
-                  single: children.length == 1,
-                  onHover: _hover,
-                  onPress: _press,
-                  child: children[i],
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-    // Pressed: +1 pt per side (Back/Forward 407–481 → 406–482).
-    return _GrowByOne(
-      grow: _pressed != null,
-      child: overContent ? _RefractedRim(child: capsule) : capsule,
-    );
-  }
-}
-
-/// Over content, the outermost [capsuleRim] pt of a capsule show the content under it, blurred
-/// by [capsuleRimSigma] and lightly covered by the fill: an approximation of the refraction seen
-/// at the capsule edges (MU-21, R1.9). *Provisional values: the profile is not measured.*
-const double capsuleRim = 3;
-const double capsuleRimSigma = 3;
-const double capsuleRimFillAlpha = 0.45;
-const double capsuleRimOutlineAlpha = 0.6;
-
-/// The content under the capsule, blurred, inside its shape.
-class _RefractedRim extends StatelessWidget {
-  const _RefractedRim({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      Positioned.fill(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(toolbarCapsuleHeight / 2),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: capsuleRimSigma,
-              sigmaY: capsuleRimSigma,
-              tileMode: TileMode.clamp,
-            ),
-            child: const SizedBox.expand(),
-          ),
-        ),
-      ),
-      child,
-    ],
-  );
-}
-
-/// The capsule fill over content: opaque inside, translucent on the rim.
-class _RimFillPainter extends CustomPainter {
-  const _RimFillPainter(this.fill);
-  final Color fill;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rim = capsuleRim - 1;
-    final outer = RRect.fromRectAndRadius(
-      Offset.zero & size,
-      Radius.circular(size.height / 2),
-    );
-    final inner = outer.deflate(rim);
-    canvas
-      ..drawDRRect(
-        outer,
-        inner,
-        Paint()..color = fill.withValues(alpha: capsuleRimFillAlpha),
-      )
-      ..drawRRect(inner, Paint()..color = fill);
-  }
-
-  @override
-  bool shouldRepaint(_RimFillPainter old) => old.fill != fill;
-}
-
-/// The pressed capsule: 1 pt more per side, around the center (only when painting).
-class _GrowByOne extends SingleChildRenderObjectWidget {
-  const _GrowByOne({required this.grow, super.child});
-  final bool grow;
-
-  @override
-  RenderObject createRenderObject(BuildContext context) => _RenderGrow(grow);
-
-  @override
-  void updateRenderObject(BuildContext context, _RenderGrow renderObject) =>
-      renderObject.grow = grow;
-}
-
-class _RenderGrow extends RenderProxyBox {
-  _RenderGrow(this._grow);
-
-  bool _grow;
-  bool get grow => _grow;
-  set grow(bool value) {
-    if (value == _grow) return;
-    _grow = value;
-    markNeedsPaint();
-  }
-
-  @override
-  void paint(PaintingContext context, Offset offset) {
-    final child = this.child;
-    if (child == null) return;
-    final w = size.width, h = size.height;
-    if (!_grow || w <= 0 || h <= 0) return super.paint(context, offset);
-    final sx = (w + 2) / w, sy = (h + 2) / h;
-    final transform = Matrix4.identity()
-      ..translateByDouble(w / 2, h / 2, 0, 1)
-      ..scaleByDouble(sx, sy, 1, 1)
-      ..translateByDouble(-w / 2, -h / 2, 0, 1);
-    context.pushTransform(needsCompositing, offset, transform, super.paint);
-  }
-}
-
-class _CapsuleSlot extends InheritedWidget {
-  const _CapsuleSlot({
-    required this.index,
-    required this.single,
-    required this.onHover,
-    required this.onPress,
-    required super.child,
-  });
-
-  final int index;
-
-  /// The only segment: the pill is the capsule inset by 1 pt (Search 36 × 34).
-  final bool single;
-  final void Function(int index, bool on) onHover;
-  final void Function(int index, bool on) onPress;
-
-  static _CapsuleSlot? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_CapsuleSlot>();
-
-  @override
-  bool updateShouldNotify(_CapsuleSlot old) =>
-      old.index != index || old.single != single;
-}
-
-/// A capsule segment: `width` wide, with the icon drawn in the color it receives.
-/// The pill (28 high, the segment width − 3) appears under the pointer and darkens on
-/// press; the chosen segment always keeps it. Disabled: no pill, no action.
-/// The click acts on release; with [onLongPress], held for [toolbarLongPress] it opens the menu and
-/// the release no longer acts. [onPress] acts on press (buttons with a menu).
-class ToolbarSegment extends StatefulWidget {
-  const ToolbarSegment({
-    super.key,
-    required this.icon,
-    this.onTap,
-    this.onPress,
-    this.onLongPress,
-    this.width = 38,
-    this.chosen = false,
-    this.enabled = true,
-  });
-
-  final Widget Function(Color color) icon;
-  final VoidCallback? onTap;
-  final VoidCallback? onPress;
-  final VoidCallback? onLongPress;
-  final double width;
-  final bool chosen;
-  final bool enabled;
-
-  @override
-  State<ToolbarSegment> createState() => _ToolbarSegmentState();
-}
-
-class _ToolbarSegmentState extends State<ToolbarSegment> {
-  bool _hover = false;
-  bool _pressed = false;
-  bool _held = false;
-  Timer? _hold;
-
-  @override
-  void dispose() {
-    _hold?.cancel();
-    super.dispose();
-  }
-
-  void _setHover(bool on) {
-    if (on == _hover) return;
-    setState(() => _hover = on);
-    _CapsuleSlot.maybeOf(
-      context,
-    )?.onHover(_CapsuleSlot.maybeOf(context)?.index ?? 0, on && widget.enabled);
-  }
-
-  void _setPressed(bool on) {
-    if (on == _pressed) return;
-    setState(() => _pressed = on);
-    final slot = _CapsuleSlot.maybeOf(context);
-    if (widget.enabled) slot?.onPress(slot.index, on);
-  }
-
-  void _down(PointerDownEvent e) {
-    if (e.buttons & kPrimaryButton == 0) return;
-    _setPressed(true);
-    if (!widget.enabled) return;
-    _held = false;
-    widget.onPress?.call();
-    final long = widget.onLongPress;
-    if (long != null) {
-      _hold?.cancel();
-      _hold = Timer(toolbarLongPress, () {
-        _held = true;
-        long();
-      });
-    }
-  }
-
-  void _up(PointerUpEvent e) {
-    _hold?.cancel();
-    final inside = _pressed;
-    _setPressed(false);
-    if (!widget.enabled || _held || !inside) return;
-    final box = context.findRenderObject();
-    if (box is RenderBox && box.hasSize && box.size.contains(e.localPosition)) {
-      widget.onTap?.call();
-    }
-  }
-
-  void _cancel() {
-    _hold?.cancel();
-    _setPressed(false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = ToolbarColors.of(context);
-    final active = ToolbarScope.maybeOf(context)?.active ?? true;
-    final slot = _CapsuleSlot.maybeOf(context);
-    final enabled = widget.enabled;
-    final chosen = widget.chosen;
-    final Color? pill = !enabled
-        ? (_pressed ? colors.disabledPressed : null)
-        : _pressed
-        ? (chosen ? colors.chosenPressed : colors.pressed)
-        : _hover
-        ? (chosen
-              ? (active ? colors.chosenHover : colors.chosenHoverInactive)
-              : (active ? colors.hover : colors.hoverInactive))
-        : chosen
-        ? (active ? colors.chosen : colors.chosenInactive)
-        : null;
-    final glyph = !enabled
-        ? colors.iconDisabled
-        : _pressed
-        ? colors.iconPressed
-        : (!active && !_hover)
-        ? colors.iconInactive
-        : colors.icon;
-    final single = slot?.single ?? false;
-    final pillWidth = single ? widget.width - 2 : widget.width - 3;
-    final pillHeight = single ? toolbarCapsuleHeight - 4 : 28.0;
-    return MouseRegion(
-      onEnter: (_) => _setHover(true),
-      onExit: (_) => _setHover(false),
-      child: Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: _down,
-        onPointerUp: _up,
-        onPointerCancel: (_) => _cancel(),
-        // The segment keeps tap and drag to itself: a drag from a control does not move the
-        // window (WindowDragArea), MU-08.
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {},
-          onPanStart: (_) {},
-          child: SizedBox(
-            width: widget.width,
-            height: toolbarCapsuleHeight - 2,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (pill != null)
-                  Container(
-                    key: const ValueKey('pill'),
-                    width: pillWidth,
-                    height: pillHeight,
-                    decoration: BoxDecoration(
-                      color: pill,
-                      borderRadius: BorderRadius.circular(pillHeight / 2),
-                    ),
-                  ),
-                widget.icon(glyph),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

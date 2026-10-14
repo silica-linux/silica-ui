@@ -1,5 +1,49 @@
 # Changelog
 
+## Unreleased
+
+The toolbar glass controls as measured (TITLEBAR-GLASS, #86): back/forward, segmented groups and
+view selectors, single round buttons, toolbar menu buttons and the search button. Behavior changes
+(minor version in 0.x).
+
+- **Hover:** a round highlight on the segment under the pointer, fading in and out in ~170 ms
+  (it used to appear in one frame).
+  - Button pairs (`separators: true`) use a 28 pt circle; segmented groups a pill the size of the
+    selection (segment width − 6, 28 tall); single buttons light as a whole.
+  - The neighbouring separators hide. Disabled segments get no highlight.
+- **Press:** the whole capsule grows 1 pt per side in 45 ms (it used to jump) and stays grown
+  while held, also with the pointer outside; disabled segments grow too.
+  - **Release outside:** a spring back in ~100 ms with a ~10 % undershoot.
+  - **Click:** the pressed size is held 100 ms after mouse-up, then back in 40 ms. The action
+    still fires on mouse-up.
+- **Pressed glow (dark):** a light spot on the pointer (`ToolbarColors.glow`, Gaussian σ 26 pt),
+  clipped to the capsule. It follows the pointer with a 30 ms lag, shows on disabled segments,
+  and fades with the distance outside the bounds. Light: not drawn.
+- **Held groups:** the capsule tracks the pointer for all its segments. The highlight jumps to
+  the enabled segment under the pointer and goes off at the capsule edge. **Releasing over
+  another enabled segment acts on that segment**: before, only the pressed segment could act.
+- **Reduced motion** (`MediaQuery.disableAnimations`): fades, growth and springs are immediate;
+  the glow follows without lag.
+- **The selection pill** is 34 × 28 on a 40 pt segment (segment width − 6; it was width − 3).
+- **Disabled segments:** no pill on press (`ToolbarColors.disabledPressed` is no longer drawn,
+  kept for API stability).
+- **New API:**
+  - `ToolbarCapsule.highlight` (`ToolbarHighlight.circle` / `.selection`; default by `separators`).
+  - `ToolbarSegment.onLongPressMenu(Rect)`: the long press with the segment's global rect across
+    the capsule height, so the history menu opens at `rect.bottomLeft`.
+  - `ToolbarGlassMetrics`: the measured sizes and timings.
+  - `ToolbarGrow`: paints a child grown by n pt per side.
+  - `ToolbarGlowPainter`: the pressed glow.
+  - `ToolbarColors.glow`: an optional constructor argument, transparent by default.
+- **Moved:** `ToolbarCapsule`, `ToolbarSegment`, `toolbarLongPress` and the `capsuleRim*`
+  constants moved from `src/window.dart` to `src/toolbar.dart`. The `package:silica_ui/silica_ui.dart`
+  export is unchanged.
+- **Breaking for direct use:** a `ToolbarSegment` outside a `ToolbarCapsule` no longer reacts to
+  the pointer.
+- **Narrow toolbars:** silica_ui has no toolbar layout widget. The overflow "»" button and the
+  collapsed view selector are documented in `docs/spec/toolbar.md` › Narrowing and in
+  `src/toolbar.dart`.
+
 ## 0.25.0 · 2026-10-14
 
 - **Menus stay on screen:** `MenuHost` places the open levels inside its area and places them

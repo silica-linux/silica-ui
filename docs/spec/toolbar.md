@@ -1,6 +1,7 @@
 # Window toolbar and the veil over scrolling content
 
-IDs: CT-TL-01, CT-TL-03, CT-BTN-11, CT-BTN-12, CT-SEG-01, MU-02, MU-07, MU-98, MU-99, R1.9.
+IDs: CT-TL-01, CT-TL-03, CT-BTN-11, CT-BTN-12, CT-SEG-01, MU-02, MU-07, MU-98, MU-99, R1.9,
+TITLEBAR-GLASS.
 
 ## Geometry (CT-TL-01)
 
@@ -38,20 +39,35 @@ Colours at the centre of the pill, outside the glyph:
 | Hover pill (glyph) | `#eeeeee` | `#5e5e5f` | `#e6e6e6` (glyph `#000000`) | `#565657` (glyph `#ffffff`) |
 | Pressed pill / glyph | `#e8e8e8` / `#232323` | `#737374` / `#f8f8f8` | as active | `#6d6d6e` |
 | Selected segment: rest / hover / pressed | `#e5e5e5` / `#dbdbdb` / `#d2d2d2` | `#575758` / `#727273` / `#757576` | `#dcdcdc` / `#d2d2d2` / — | `#565657` / `#6a6a6b` / — |
-| Disabled | no hover pill | no pill; a faint one when pressed | — | — |
+| Disabled | no hover highlight | no highlight; only the pressed glow | — | — |
 
-- **Hover pill:** 28 pt tall, 5 pt inside the 38 pt capsule, about 3 pt narrower than its segment
-  (a button with its own capsule: the capsule minus 2 pt). It appears and disappears in one frame.
-  The separators next to the hovered segment hide.
+- **Hover highlight** (TITLEBAR-GLASS): round, on the segment under the pointer. In a button pair
+  (back / forward, button groups) a 28 pt circle centred on the segment; in a segmented group (view
+  switcher) a pill the size of the selection (segment width − 6, 28 tall, 5 pt inside the capsule);
+  a single round button lights as a whole (the capsule minus 2 pt). Dark +20 levels over the
+  capsule, light −10. It fades in and out in ~170 ms. The separators next to it hide. Disabled
+  segments get none.
 - **Press:** the pill darkens (light −16 levels, dark +48) and the **whole capsule grows by 1 pt on
-  each side**, in the first frame, without a fade.
+  each side** in 40–50 ms; it stays grown for the whole hold, also with the pointer outside.
+  Enabled glyphs lose a little contrast.
+- **Pressed glow (dark):** a soft light spot centred on the pointer, clipped to the capsule: about
+  +22 levels at the centre with a Gaussian falloff of σ ≈ 26 pt. It fades in over ~100 ms, follows
+  the pointer continuously with ~30 ms of lag, and shows on disabled segments too (growth and glow,
+  no action, no highlight). Outside the capsule it weakens with the distance (about +8 levels at
+  15 pt, +3 at 55 pt) and spreads out. Not visible in light.
+- **Held:** the highlight jumps (one frame, no sliding) to the enabled segment under the pointer;
+  over the selected segment the selection pill takes the pressed colour. Crossing the capsule edge
+  turns it off; coming back turns it on again. Releasing over an enabled segment acts on it.
+- **Release:** outside the capsule (cancel) a spring back to rest in ~100 ms with a ~10 %
+  undershoot; the glow fades in ~200 ms. A click keeps the pressed size ~100 ms after mouse-up,
+  then returns in ≤ 40 ms. The action fires on mouse-up.
 - In dark, with the pointer anywhere in the band, the band lightens (`#272828` → `#2e3030`) and the
   capsules lift by about 7 levels.
 - **Inactive window:** the pointer over a control relights it (pill and full-strength glyph); a
   click activates the window and performs the action.
-- **Timing:** a back click navigates ~96 ms after the release; a view change happens ~100 ms after
-  the release and the selected pill jumps (no sliding). Holding back or forward for ~0.3 s opens the
-  history menu; releasing over the button then closes the menu without navigating.
+- **Timing:** the selected pill of a view change jumps (no sliding). Holding back or forward for
+  ~0.3 s opens the history menu below the capsule; releasing then does not navigate.
+- **Reduced motion:** fades, growth and springs become immediate; the glow follows without lag.
 - Menu buttons (group, action, overflow, view switcher) open on **press**; share and tag buttons
   open their popovers on **release**; the search button opens the field on release.
 
@@ -60,7 +76,13 @@ Colours at the centre of the pill, outside the glyph:
 As the window narrows, items leave from the right (the search button always stays) and move into an
 **overflow menu** behind a 38 pt glass circle placed before search. The view switcher first becomes a
 48 × 38 pop-up. The overflow menu opens to the right of its button, text-only items in bar order,
-139 pt wide, 24 pt items.
+139 pt wide, 24 pt items. At the minimum width only the title, the overflow button and search
+remain.
+
+silica_ui has no toolbar layout widget: the app lays the bar out (usually in a `LayoutBuilder`) and
+builds the overflow button as a single-segment `ToolbarCapsule` whose `ToolbarSegment.onPress`
+opens a menu of the hidden items, and the collapsed view switcher as one segment showing the
+current view with up/down chevrons and a menu on press.
 
 ## Background
 
