@@ -1,9 +1,10 @@
 // Color well and color picker.
 //
-// Measured: nothing of the shape (silica-reference TE-01, terminal profile settings, reads only
-// the colors in the wells). Provisional: the well 44 × 23, radius 5, the swatch inset 3 with a
-// hairline; pressed and "picking" states (accent border); the picker panel (a 160 pt hue and
-// saturation wheel, brightness and opacity sliders, a row of swatches) in the menu panel color.
+// Measured (CT-DP-03, INV-B gallery): the well is a 44 × 28 capsule with the color, the default
+// style with a light ring. Provisional: the swatch inset 3 with a hairline; pressed and "picking"
+// states (accent border); the picker panel (measured about 264 × 450 with a mode toolbar, a
+// wheel, brightness and opacity sliders and swatches, CT-DP-04; silica_ui draws a 160 pt wheel,
+// the sliders and a row of swatches in the menu panel color).
 
 import 'dart:math' as math;
 
@@ -13,10 +14,10 @@ import 'package:flutter/widgets.dart';
 import 'input_style.dart';
 import 'slider.dart';
 
-/// The color well measurements (provisional).
+/// The color well measurements: a 44 × 28 capsule (CT-DP-03); the inset provisional.
 abstract final class ColorWellMetrics {
-  static const Size size = Size(44, 23);
-  static const double radius = 5;
+  static const Size size = Size(44, 28);
+  static const double radius = 14;
   static const double inset = 3;
 }
 

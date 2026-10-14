@@ -64,9 +64,9 @@ Status:
 | CT-SL-02 | Small slider | `SilicaSlider(size: small)` | done | [sliders](sliders.md#linear-slider-ct-sl-01-02-03) |
 | CT-SL-03 | Regular slider | `SilicaSlider` | done | [sliders](sliders.md#linear-slider-ct-sl-01-02-03) |
 | CT-SL-04 | Slider with tick marks | `SilicaSlider(ticks:)` | provisional | [sliders](sliders.md#slider-with-tick-marks-ct-sl-04) |
-| CT-SL-05 | Circular slider | `SilicaCircularSlider` | provisional | [sliders](sliders.md#circular-slider-ct-sl-05) |
+| CT-SL-05 | Circular slider | `SilicaCircularSlider` | provisional (indicator dot) | [sliders](sliders.md#circular-slider-ct-sl-05) |
 | CT-SL-06 | Timer wheel | — | missing | [sliders](sliders.md#timer-wheel-ct-sl-06-partial) |
-| CT-SL-07 | Stepper | `SilicaStepper` | provisional | [sliders](sliders.md#stepper-ct-sl-07-partial) |
+| CT-SL-07 | Stepper | `SilicaStepper` | provisional (radius, pressed halves, repeat timing) | [sliders](sliders.md#stepper-ct-sl-07-partial) |
 
 ## Text input
 
@@ -87,8 +87,9 @@ Status:
 | ID | Control | silica_ui | Status | Spec |
 | --- | --- | --- | --- | --- |
 | CT-DP-01 | Time field with parts | `SilicaDateField` | provisional | [pickers](pickers.md#time-field-with-parts-ct-dp-01-partial) |
-| CT-DP-02 | Date picker (text, stepper, calendar) | `SilicaDateField`, `SilicaCalendar` | provisional | [pickers](pickers.md#date-picker-ct-dp-02) |
-| CT-DP-03 | Colour well | `SilicaColorWell` | provisional | [pickers](pickers.md#colour-well-ct-dp-03) |
+| CT-DP-02 | Date picker (text, stepper, calendar) | `SilicaDateField`, `SilicaCalendar` | provisional (calendar cell size, square gray) |
+ [pickers](pickers.md#date-picker-ct-dp-02) |
+| CT-DP-03 | Colour well | `SilicaColorWell` | done | [pickers](pickers.md#colour-well-ct-dp-03) |
 | CT-DP-04 | Colour panel | `SilicaColorPicker` | provisional | [pickers](pickers.md#colour-panel-ct-dp-04-partial) |
 | CT-DP-05 | Unit picker popover | — | missing | [pickers](pickers.md#unit-picker-popover-ct-dp-05-partial) |
 
@@ -96,10 +97,10 @@ Status:
 
 | ID | Control | silica_ui | Status | Spec |
 | --- | --- | --- | --- | --- |
-| CT-LV-01 | Level indicator | `SilicaLevelIndicator` | provisional | [indicators](indicators.md#level-indicator-ct-lv-01) |
+| CT-LV-01 | Level indicator | `SilicaLevelIndicator` | done (warning and critical colours provisional) | [indicators](indicators.md#level-indicator-ct-lv-01) |
 | CT-PR-01 | Progress bar | `SilicaProgressBar` | done | [indicators](indicators.md#progress-bar-determinate-ct-pr-01) |
 | CT-PR-02 | Indeterminate progress bar | `SilicaProgressBar(value: null)` | provisional | [indicators](indicators.md#progress-bar-indeterminate-ct-pr-02-partial) |
-| CT-PR-03 | Spinner | `SilicaSpinner` | provisional (12 spokes, measured 8) | [indicators](indicators.md#spinner-ct-pr-03) |
+| CT-PR-03 | Spinner | `SilicaSpinner` | done (speed provisional) | [indicators](indicators.md#spinner-ct-pr-03) |
 | CT-PR-04 | Circular progress ring | `SilicaProgressRing` | provisional | [indicators](indicators.md#circular-progress-ring-ct-pr-04-partial) |
 
 ## Lists and containers

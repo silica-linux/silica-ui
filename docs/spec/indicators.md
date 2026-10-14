@@ -11,8 +11,9 @@ IDs: CT-LV-01, CT-PR-01…04.
 | Relevance | 160 × 18 (11) | gray hatching |
 | Rating | 160 × 18 | stars |
 
-Warning and critical colours, cell spacing and star size were not measured; silica_ui's values for
-them are *provisional*.
+silica_ui draws the continuous bar 16 pt tall in `#59c660`, the discrete cells 12 pt tall and the
+stars 11 pt. The warning and critical colours, the cell spacing and the star gap were not
+measured; silica_ui's values for them are *provisional*.
 
 ## Progress bar, determinate (CT-PR-01)
 
@@ -23,7 +24,9 @@ them are *provisional*.
 | Copy window (whole panel) | 404 × 88 | — |
 
 - Fill accent (display `#296ffb`); track `#f0f0f0` light, `#383839` dark; rounded ends.
-- In an inactive window the fill turns gray.
+- In an inactive window the fill turns gray (silica_ui: `#c5c5c5` / `#585859`, the slider fill's
+  gray).
+- silica_ui draws the regular bar 8 pt thick in the plain accent on the measured track.
 
 ## Progress bar, indeterminate (CT-PR-02, partial)
 
@@ -33,8 +36,7 @@ sweeps a third of the bar every 1.2 s (*provisional*).
 ## Spinner (CT-PR-03)
 
 - Regular 32 × 32, small 16 × 16.
-- **Eight** gray spokes. silica_ui currently draws twelve spokes turning once per second: the spoke
-  count must be brought to eight, the speed is *provisional*.
+- **Eight** gray spokes. silica_ui draws eight; its speed (one turn per second) is *provisional*.
 
 ## Circular progress ring (CT-PR-04, partial)
 

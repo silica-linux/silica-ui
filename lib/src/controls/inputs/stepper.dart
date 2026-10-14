@@ -1,8 +1,8 @@
 // Stepper: two arrows stacked in a small bezel, with auto-repeat while held.
 //
-// Not measured (inventory CT-SL-07 missing): 13 × 23 pt, radius 5, the bezel and pressed colors
-// of the alert normal button (misc.md › Alert), repeat after 400 ms then every 80 ms — all
-// provisional.
+// Measured (CT-SL-07, INV-B gallery): a 20 × 24 gray rounded pill with up and down chevrons.
+// Provisional: the radius (half the width), the bezel and pressed colors (the alert normal
+// button, misc.md › Alert), the repeat after 400 ms then every 80 ms.
 
 import 'dart:async';
 
@@ -11,10 +11,10 @@ import 'package:flutter/widgets.dart';
 import 'input_style.dart';
 import 'slider.dart' show keyboardValue;
 
-/// The stepper measurements (provisional).
+/// The stepper measurements: the size (CT-SL-07), the rest provisional.
 abstract final class StepperMetrics {
-  static const Size size = Size(13, 23);
-  static const double radius = 5;
+  static const Size size = Size(20, 24);
+  static const double radius = 10;
   static const Duration repeatDelay = Duration(milliseconds: 400);
   static const Duration repeatInterval = Duration(milliseconds: 80);
 }

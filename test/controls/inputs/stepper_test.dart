@@ -24,9 +24,10 @@ void main() {
 
   setUp(() => value = 5);
 
-  testWidgets('13 × 23; arrows add and subtract', (tester) async {
+  testWidgets('20 × 24; arrows add and subtract', (tester) async {
     await pumpControl(tester, stepper());
-    expect(tester.getSize(find.byType(SilicaStepper)), const Size(13, 23));
+    expect(tester.getSize(find.byType(SilicaStepper)), const Size(20, 24));
+
     await tester.tap(find.byKey(const ValueKey('stepperUp')));
     await tester.pump();
     expect(value, 6);

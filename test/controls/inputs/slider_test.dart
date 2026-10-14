@@ -61,9 +61,11 @@ void main() {
   testWidgets('dark and inactive colors', (tester) async {
     await pumpControl(tester, slider(), dark: true);
     expect(sliderPainter(tester).knob, InputColors.dark.knob);
-    expect(sliderPainter(tester).fill, InputColors.dark.trackFill);
+    // The regular slider takes the accent's fill (CT-CL-01) on a gallery track.
+    expect(sliderPainter(tester).fill, const Color(0xFF0D7DFF));
+    expect(sliderPainter(tester).track, const Color(0xFF3C3C3D));
     await pumpControl(tester, slider(), active: false);
-    expect(sliderPainter(tester).fill, InputColors.light.accentInactive);
+    expect(sliderPainter(tester).fill, const Color(0xFFC5C5C5));
   });
 
   testWidgets('tap and drag set the value, the knob center follows', (
@@ -84,7 +86,7 @@ void main() {
 
   testWidgets('divisions snap; ticks are drawn', (tester) async {
     await pumpControl(tester, slider(divisions: 4, ticks: true));
-    expect(tester.getSize(find.byType(SilicaSlider)).height, 16 + 3 + 4);
+    expect(tester.getSize(find.byType(SilicaSlider)).height, 16 + 3 + 3);
     expect(sliderPainter(tester).ticks, 4);
     final rect = tester.getRect(find.byType(SilicaSlider));
     await tester.tapAt(Offset(rect.left + 35, rect.top + 8));

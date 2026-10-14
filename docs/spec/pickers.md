@@ -16,8 +16,8 @@ IDs: CT-DP-01…05.
 - **Calendar:** a header with the abbreviated month and year and three controls (previous, today,
   next); the grid starts on Monday in the observed locale. Today's number is drawn in the accent
   colour; the selected day sits on a gray square.
-- silica_ui's calendar cell (22) and selection mark (20) are *provisional*. The measured selected
-  day is a gray **square**; silica_ui draws a circle today, to be changed.
+- silica_ui draws the selected day as a gray square (`#dcdcdc` / `#464646`, radius 4) and today's
+  number in the accent. The cell (22), the square (20) and its gray are *provisional*.
 
 ## Time field with parts (CT-DP-01, partial)
 
@@ -35,7 +35,7 @@ captured). silica_ui fills the focused part with the accent.
 
 - A capsule filled with the colour; the default style has a light ring around the swatch; the
   expanded style adds a button that opens the colour panel.
-- silica_ui's well (44 × 23, radius 5, swatch inset 3) is *provisional* against these frames.
+- silica_ui's well is a 44 × 28 capsule; the swatch inset (3) is *provisional*.
 
 ## Colour panel (CT-DP-04, partial)
 

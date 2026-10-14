@@ -26,12 +26,12 @@ IDs: CT-SL-01…07.
 - **Disabled** (a brightness slider for an external display): only the track, `#86878c`–`#88898e`,
   no fill and no knob.
 - **Vertical slider:** 24 × 110, the linear slider rotated.
-- In an inactive window the fill turns gray.
+- In an inactive window the fill turns gray (`#c5c5c5` / `#585859`).
 
 ## Slider with tick marks (CT-SL-04)
 
-200 × 30: the same track with 11 tick dots below. silica_ui draws ticks 1 × 4 pt, 3 pt from the
-track (*provisional*).
+200 × 30: the same track with 11 tick dots below. silica_ui draws 3 pt dots, 3 pt below the knob
+(the dot size is *provisional*).
 
 ## Circular slider (CT-SL-05)
 
@@ -45,5 +45,7 @@ silica_ui.
 ## Stepper (CT-SL-07, partial)
 
 - 20 × 24: a gray rounded pill with up and down chevrons.
-- The pressed halves were not captured. silica_ui draws it 13 × 23 with radius 5 and repeats
-  after 400 ms, then every 80 ms, while held (*provisional*).
+- The pressed halves were not captured. silica_ui draws it 20 × 24 as a pill (radius 10) and
+  repeats after 400 ms, then every 80 ms, while held (the radius and the timing are
+  *provisional*).
+

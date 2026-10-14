@@ -20,9 +20,9 @@ void main() {
 
   setUp(() => color = const Color(0xFF0021B2));
 
-  testWidgets('44 × 23; tap opens the picker, a swatch picks', (tester) async {
+  testWidgets('44 × 28; tap opens the picker, a swatch picks', (tester) async {
     await pumpControl(tester, well());
-    expect(tester.getSize(find.byType(SilicaColorWell)), const Size(44, 23));
+    expect(tester.getSize(find.byType(SilicaColorWell)), const Size(44, 28));
     expect(find.byType(SilicaColorPicker), findsNothing);
     await tester.tap(find.byType(SilicaColorWell));
     await tester.pump();

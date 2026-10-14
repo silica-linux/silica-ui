@@ -219,6 +219,19 @@ void main() {
           .first,
     );
     expect((panel.decoration! as BoxDecoration).color, InputColors.dark.panel);
+    // The selected day is a gray square, not an accent circle (CT-DP-02).
+    final squares = tester
+        .widgetList<Container>(
+          find.descendant(
+            of: find.byType(SilicaCalendar),
+            matching: find.byType(Container),
+          ),
+        )
+        .map((c) => c.decoration)
+        .whereType<BoxDecoration>()
+        .where((d) => d.color == SilicaCalendar.selectionDark);
+    expect(squares, hasLength(1));
+    expect(squares.single.shape, BoxShape.rectangle);
   });
 
   testWidgets('clock face: drag hands, keyboard', (tester) async {

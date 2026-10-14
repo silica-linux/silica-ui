@@ -22,35 +22,44 @@ void main() {
     expect(tester.getSize(find.byType(SilicaProgressBar)), const Size(309, 20));
     final p = painterOf<ProgressBarPainter>(tester);
     expect(p.value, 0.4);
-    expect(p.thickness, 6);
-    expect(p.fill, InputColors.light.trackFill);
+    expect(p.thickness, 8);
+    expect(p.fill, const Color(0xFF007AFF));
+    expect(p.track, const Color(0xFFF0F0F0));
     final node = tester.getSemantics(find.byType(SilicaProgressBar));
     expect(node.label, 'Copying');
     expect(node.value, '40 %');
     handle.dispose();
   });
 
-  testWidgets('small bar 12 tall, 4 pt track; inactive and dark', (
-    tester,
-  ) async {
-    await pumpControl(
-      tester,
-      const SilicaProgressBar(value: 1, width: 154, size: ProgressSize.small),
-      dark: true,
-    );
-    expect(tester.getSize(find.byType(SilicaProgressBar)), const Size(154, 12));
-    expect(painterOf<ProgressBarPainter>(tester).thickness, 4);
-    expect(painterOf<ProgressBarPainter>(tester).track, InputColors.dark.track);
-    await pumpControl(
-      tester,
-      const SilicaProgressBar(value: 0.5),
-      active: false,
-    );
-    expect(
-      painterOf<ProgressBarPainter>(tester).fill,
-      InputColors.light.accentInactive,
-    );
-  });
+  testWidgets(
+    'small bar 12 tall, 4 pt track; gray fill in an inactive window',
+    (tester) async {
+      await pumpControl(
+        tester,
+        const SilicaProgressBar(value: 1, width: 154, size: ProgressSize.small),
+        dark: true,
+      );
+      expect(
+        tester.getSize(find.byType(SilicaProgressBar)),
+        const Size(154, 12),
+      );
+      expect(painterOf<ProgressBarPainter>(tester).thickness, 4);
+      expect(
+        painterOf<ProgressBarPainter>(tester).track,
+        InputColors.dark.track,
+      );
+      await pumpControl(
+        tester,
+        const SilicaProgressBar(value: 0.5),
+        active: false,
+      );
+      // Gray in an inactive window, as the slider fill (INV-B).
+      expect(
+        painterOf<ProgressBarPainter>(tester).fill,
+        const Color(0xFFC5C5C5),
+      );
+    },
+  );
 
   testWidgets('indeterminate bar sweeps', (tester) async {
     await pumpControl(tester, const SilicaProgressBar(value: null));
@@ -72,6 +81,9 @@ void main() {
     expect(painterOf<SpinnerPainter>(tester).phase, isNot(first));
     await pumpControl(tester, const SilicaSpinner(animating: false));
     await tester.pumpAndSettle();
+    // Eight spokes (CT-PR-03): the phase runs over 0–7.
+    expect(SilicaSpinner.spokes, 8);
+    expect(painterOf<SpinnerPainter>(tester).phase, lessThan(8));
   });
 
   testWidgets('ring: measured timer colors, value', (tester) async {

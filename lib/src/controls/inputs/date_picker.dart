@@ -2,9 +2,11 @@
 // calendar and the clock face.
 //
 // Measured: the time field with parts, the focused part filled with the accent (clock.md ›
-// Alarms, orange `#c87524` in Clock, whose accent is orange). Provisional (CT-DP-02 missing):
-// the field metrics (the text field ones), the calendar (7 × 6 grid of 22 pt cells, 20 pt
-// selection circle, header 24 pt), the clock face (120 pt, hands 1.5 / 1 pt).
+// Alarms, orange `#c87524` in Clock, whose accent is orange); the textual date picker 24 pt tall
+// with its stepper; the graphical calendar 139 × 148, a month header with ◀ ● ▶, Monday-first
+// grid, today in the accent's text color, the selected day a gray square (CT-DP-02, INV-B
+// gallery). Provisional: the cell size (22 pt), the square's gray and radius, the field metrics
+// (the text field ones), the clock face (120 pt, hands 1.5 / 1 pt).
 
 import 'dart:math' as math;
 
@@ -403,9 +405,15 @@ class SilicaCalendar extends StatefulWidget {
   final bool enabled;
   final FocusNode? focusNode;
 
-  /// Cell side and selection circle (provisional).
+  /// Cell side and the selected day's square (provisional sizes).
   static const double cell = 22;
   static const double selection = 20;
+
+  /// The selected day's gray square, light and dark (provisional gray: the inactive list
+  /// selection) and its radius (provisional).
+  static const Color selectionLight = Color(0xFFDCDCDC);
+  static const Color selectionDark = Color(0xFF464646);
+  static const double selectionRadius = 4;
 
   @override
   State<SilicaCalendar> createState() => _SilicaCalendarState();
@@ -466,7 +474,11 @@ class _SilicaCalendarState extends State<SilicaCalendar> {
   Widget build(BuildContext context) {
     final colors = InputColors.of(context);
     final active = WindowActiveScope.of(context);
-    final accent = colors.accentFor(active: active);
+    final dark =
+        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final accent = active
+        ? ControlAccent.of(context)
+        : colors.accentFor(active: false);
     final today = widget.today ?? DateTime.now();
     final labels = widget.labels;
     const cell = SilicaCalendar.cell;
@@ -551,9 +563,7 @@ class _SilicaCalendarState extends State<SilicaCalendar> {
                   final inMonth = day.month == _month.month;
                   final selected = same(day, widget.value);
                   final isToday = same(day, today);
-                  final color = selected
-                      ? const Color(0xFFFFFFFF)
-                      : isToday
+                  final color = isToday
                       ? accent
                       : inMonth
                       ? colors.text
@@ -575,10 +585,15 @@ class _SilicaCalendarState extends State<SilicaCalendar> {
                             alignment: Alignment.center,
                             decoration: selected
                                 ? BoxDecoration(
-                                    color: accent,
-                                    shape: BoxShape.circle,
+                                    color: dark
+                                        ? SilicaCalendar.selectionDark
+                                        : SilicaCalendar.selectionLight,
+                                    borderRadius: BorderRadius.circular(
+                                      SilicaCalendar.selectionRadius,
+                                    ),
                                   )
                                 : null,
+
                             child: Text(
                               '${day.day}',
                               style: inputText(color, size: 11).copyWith(

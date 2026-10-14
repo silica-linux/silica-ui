@@ -1,12 +1,13 @@
 // Sliders: linear (with or without tick marks and labels) and circular.
 //
-// Measured: the small slider (mustache.md › MU-04: 4 pt capsule track, 18 × 14 knob, white with
-// a shadow in light and solid `#dfdfdf` in dark, track `#e5e5e5` / `#434343`, fill in the
-// accent); the regular one from the Control Center detail (controlcenter.md › CC · sliders:
-// 6 pt track, 20 × 16 capsule knob, the fill ends at the knob center:
-// x0 + knob / 2 + v · (L − knob)). Provisional: the window placement of the regular size, the
-// pressed knob, ticks (1 × 4 pt, 3 pt from the track), the circular slider (24 pt dial,
-// 4 pt dot), the disabled look (50 % opacity), the gray fill in an inactive window.
+// Measured: the regular slider (INV-B gallery and controlcenter.md › CC · sliders: 6 pt track
+// `#e6e6e6` / `#3c3c3d`, the accent's fill, a 20 × 16 capsule knob, white with a shadow in light
+// and `#dfdfdf` in dark, the fill ending at the knob center: x0 + knob / 2 + v · (L − knob));
+// the small one (mustache.md › MU-04: 4 pt track `#e5e5e5` / `#434343`, 18 × 14 knob); the tick
+// marks are dots below the track, the whole slider 30 pt tall instead of 24; in an inactive
+// window the fill turns `#c5c5c5` / `#585859`; the circular slider shows a 24 pt dial
+// (CT-SL-03/04/05, INV-B). Provisional: the pressed knob, the tick dot size (3 pt, 3 pt below),
+// the circular slider's dot, the disabled look (50 % opacity).
 
 import 'dart:math' as math;
 
@@ -47,9 +48,13 @@ class SliderMetrics {
   static SliderMetrics of(SliderSize size) =>
       size == SliderSize.small ? small : regular;
 
-  /// Tick marks: 1 × 4 pt, 3 pt from the track (provisional).
-  static const Size tick = Size(1, 4);
+  /// Tick marks: dots below the track (CT-SL-04); 3 pt, 3 pt from the knob (provisional).
+  static const Size tick = Size(3, 3);
   static const double tickGap = 3;
+
+  /// The regular track, light and dark (INV-B gallery).
+  static const Color trackLight = Color(0xFFE6E6E6);
+  static const Color trackDark = Color(0xFF3C3C3D);
 }
 
 /// The value change of a key on a slider, stepper or dial: arrows by one step, Page Up/Down
@@ -201,6 +206,8 @@ class _SilicaSliderState extends State<SilicaSlider> {
   Widget build(BuildContext context) {
     final colors = InputColors.of(context);
     final active = WindowActiveScope.of(context);
+    final dark =
+        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
     final m = _m;
     final tickRow = widget.ticks && (widget.divisions ?? 0) > 0;
     final tickSpace = tickRow
@@ -215,8 +222,21 @@ class _SilicaSliderState extends State<SilicaSlider> {
         painter: SliderPainter(
           t: _t,
           metrics: m,
-          track: colors.track,
-          fill: active ? colors.trackFill : colors.accentInactive,
+          track: widget.size == SliderSize.small
+              ? colors.track
+              : (dark ? SliderMetrics.trackDark : SliderMetrics.trackLight),
+          // The accent's fill; the small slider keeps its own measured blue (MU-04) with the
+          // default accent.
+          fill: !active
+              ? ControlPalette.inactiveTrackFill(dark: dark)
+              : widget.size == SliderSize.small &&
+                    context
+                            .dependOnInheritedWidgetOfExactType<
+                              ControlAccent
+                            >() ==
+                        null
+              ? colors.trackFill
+              : ControlAccent.fillOf(context),
           knob: _pressed ? colors.bezelPressed : colors.knob,
           knobBorder: colors.knobBorder,
           knobShadow: colors.knobShadow,
@@ -390,7 +410,7 @@ class SliderPainter extends CustomPainter {
       final y = ticksAbove ? 0.0 : k.height + SliderMetrics.tickGap;
       for (var i = 0; i <= ticks; i++) {
         final x = k.width / 2 + i / ticks * (size.width - k.width);
-        canvas.drawRect(
+        canvas.drawOval(
           Rect.fromLTWH(
             x - SliderMetrics.tick.width / 2,
             y,

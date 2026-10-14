@@ -1,9 +1,9 @@
 // Level indicators: continuous and discrete capacity, rating.
 //
-// Not measured (inventory CT-LV-01 missing). Provisional: the continuous bar (6 pt capsule,
-// like the progress track), the discrete segments (12 pt tall, 2 pt gap, radius 2), the stars
-// (13 pt, 2 pt gap); the level colors are the label dot colors green, yellow and red
-// (mustache.md › MU-62).
+// Measured (CT-LV-01, INV-B gallery): the continuous bar 16 pt tall, filled green `#59c660`; the
+// discrete cells 12 pt tall; the rating stars 11 pt. Provisional: the discrete gap and radius
+// (2 / 2), the star gap (2 pt), the yellow and red levels (the label dot colors, mustache.md ›
+// MU-62), the dark green.
 
 import 'dart:math' as math;
 
@@ -26,8 +26,8 @@ enum LevelIndicatorStyle {
 
 /// The level colors (the label dots, MU-62).
 abstract final class LevelColors {
-  static const Color normalLight = Color(0xFF65D27B);
-  static const Color normalDark = Color(0xFF65DA7C);
+  static const Color normalLight = Color(0xFF59C660);
+  static const Color normalDark = Color(0xFF59C660);
   static const Color warningLight = Color(0xFFFFD54C);
   static const Color warningDark = Color(0xFFFFDE4D);
   static const Color criticalLight = Color(0xFFFF6663);
@@ -68,9 +68,13 @@ class SilicaLevelIndicator extends StatefulWidget {
   final String? semanticLabel;
   final String Function(double value)? semanticValue;
 
-  /// Star side and gap (provisional).
-  static const double star = 13;
+  /// Star side (CT-LV-01) and gap (provisional).
+  static const double star = 11;
   static const double starGap = 2;
+
+  /// The height of the continuous bar and the discrete cells (CT-LV-01).
+  static const double barHeight = 16;
+  static const double cellHeight = 12;
 
   @override
   State<SilicaLevelIndicator> createState() => _SilicaLevelIndicatorState();
@@ -130,7 +134,9 @@ class _SilicaLevelIndicatorState extends State<SilicaLevelIndicator> {
           )
         : Size(
             widget.width,
-            widget.style == LevelIndicatorStyle.discrete ? 12 : 6,
+            widget.style == LevelIndicatorStyle.discrete
+                ? SilicaLevelIndicator.cellHeight
+                : SilicaLevelIndicator.barHeight,
           );
     final fill = rating
         ? (WindowActiveScope.of(context) ? colors.glyph : colors.placeholder)

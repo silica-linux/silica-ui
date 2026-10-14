@@ -63,8 +63,10 @@ class InputColors {
   /// The 3 pt text field ring (MU-32: `#8fb4fb`, `#296692`).
   final Color focusRing;
 
-  /// The 4 pt ring of buttons and other controls (MU-10: `#89aff7`, `#3d7aa6`).
+  /// The ring of buttons and other controls with the default accent (CT-TF-09: `#8fb4fb`,
+  /// `#296692`); [FocusRing] follows the accent in effect.
   final Color focusRingControl;
+
   final Color text;
   final Color secondaryText;
   final Color placeholder;
@@ -196,12 +198,12 @@ abstract final class InputMetrics {
   static const double fieldPadding = 4;
   static const double fontSize = 13;
 
-  /// Focus rings: 3 pt around text fields (MU-32), 4 pt inset 1 around other controls (MU-10).
+  /// Focus rings: 3 pt outside text fields and every other control (MU-32, CT-TF-09).
   static const double fieldRing = 3;
-  static const double controlRing = 4;
-  static const double controlRingInset = 1;
+  static const double controlRing = 3;
+  static const double controlRingInset = 0;
 
-  /// The ring fades in over ~200 ms (mustache.md › MU-70).
+  /// A field's ring fades in over ~200 ms (mustache.md › MU-70); a control's ring jumps.
   static const Duration ringFade = ControlPalette.ringFade;
 
   /// The toolbar search field 242 × 38 (MU-70) and the window search field, 28 tall

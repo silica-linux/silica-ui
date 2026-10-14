@@ -1,11 +1,13 @@
 // Progress indicators: bar (determinate and indeterminate), spinner, ring.
 //
-// Measured: the copy window bar 309 wide in a 20 pt frame, in the accent color (mustache.md ›
-// MU-41 / MU-43); the Now Playing bar 154 × 12 with a 3–4 pt track and the elapsed part sRGB
-// `#1482ff` (controlcenter.md › Now Playing); the timer ring, stroke 6 at 360 pt, orange
-// sRGB `#ff9230` on `#3b3b3d`, shrinking from the top (clock.md › Timer). Provisional: the
-// 6 pt track of the regular bar, the track color (the slider track), the indeterminate sweep
-// (a third of the bar, 1.2 s), the spinner (12 spokes, 1 turn per second, 32 / 16 pt).
+// Measured: the regular bar is an 8 pt capsule in a 20 pt frame, filled with the plain accent
+// (`#007aff`, gray in an inactive window) on a `#f0f0f0` / `#383839` track; the spinner has
+// 8 gray spokes, 32 pt regular and 16 pt small (CT-PR-01/03, INV-B gallery); the copy window bar
+// 309 wide (mustache.md › MU-41 / MU-43); the Now Playing bar 154 × 12 with a 3–4 pt track and
+// the elapsed part sRGB `#1482ff` (controlcenter.md › Now Playing); the timer ring, stroke 6 at
+// 360 pt, orange sRGB `#ff9230` on `#3b3b3d`, shrinking from the top (clock.md › Timer).
+// Provisional: the indeterminate sweep (a lighter third of the bar, 1.2 s) and the spinner's
+// speed (1 turn per second).
 
 import 'dart:math' as math;
 
@@ -15,7 +17,7 @@ import 'input_style.dart';
 
 /// The size of a progress bar.
 enum ProgressSize {
-  /// 20 pt frame, 6 pt track.
+  /// 20 pt frame, 8 pt track (CT-PR-01).
   regular,
 
   /// 12 pt frame, 4 pt track (Now Playing).
@@ -48,6 +50,10 @@ class SilicaProgressBar extends StatefulWidget {
 
   /// The indeterminate sweep period (provisional).
   static const Duration sweep = Duration(milliseconds: 1200);
+
+  /// The track of the regular bar, light and dark (CT-PR-01).
+  static const Color trackLight = Color(0xFFF0F0F0);
+  static const Color trackDark = Color(0xFF383839);
 
   @override
   State<SilicaProgressBar> createState() => _SilicaProgressBarState();
@@ -89,11 +95,19 @@ class _SilicaProgressBarState extends State<SilicaProgressBar>
   @override
   Widget build(BuildContext context) {
     final colors = InputColors.of(context);
-    final active = WindowActiveScope.of(context);
     final small = widget.size == ProgressSize.small;
     final value = widget.value?.clamp(0.0, 1.0);
+    final dark =
+        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    // The plain accent; gray in an inactive window, as the slider fill (INV-B gallery).
     final fill =
-        widget.color ?? (active ? colors.trackFill : colors.accentInactive);
+        widget.color ??
+        (WindowActiveScope.of(context)
+            ? ControlAccent.of(context)
+            : ControlPalette.inactiveTrackFill(dark: dark));
+    final track = small
+        ? colors.track
+        : (dark ? SilicaProgressBar.trackDark : SilicaProgressBar.trackLight);
     return Semantics(
       label: widget.semanticLabel,
       value: value == null
@@ -108,9 +122,9 @@ class _SilicaProgressBarState extends State<SilicaProgressBar>
             painter: ProgressBarPainter(
               value: value,
               phase: _sweep.value,
-              track: colors.track,
+              track: track,
               fill: fill,
-              thickness: small ? 4 : 6,
+              thickness: small ? 4 : 8,
             ),
           ),
         ),
@@ -187,7 +201,7 @@ class ProgressBarPainter extends CustomPainter {
       old.thickness != thickness;
 }
 
-/// The activity indicator: twelve spokes turning, the brightest leading.
+/// The activity indicator: eight gray spokes turning, the brightest leading (CT-PR-03).
 class SilicaSpinner extends StatefulWidget {
   const SilicaSpinner({
     super.key,
@@ -197,7 +211,7 @@ class SilicaSpinner extends StatefulWidget {
     this.semanticLabel,
   });
 
-  /// 32 regular, 16 small (provisional).
+  /// 32 regular, 16 small (CT-PR-03).
   final double size;
   final Color? color;
   final bool animating;
@@ -205,6 +219,9 @@ class SilicaSpinner extends StatefulWidget {
 
   /// One turn (provisional).
   static const Duration period = Duration(seconds: 1);
+
+  /// The number of spokes (CT-PR-03).
+  static const int spokes = 8;
 
   @override
   State<SilicaSpinner> createState() => _SilicaSpinnerState();
@@ -247,7 +264,7 @@ class _SilicaSpinnerState extends State<SilicaSpinner>
         builder: (context, _) => CustomPaint(
           size: Size.square(widget.size),
           painter: SpinnerPainter(
-            phase: (_turn.value * 12).floor(),
+            phase: (_turn.value * SilicaSpinner.spokes).floor(),
             color: color,
           ),
         ),
@@ -256,7 +273,7 @@ class _SilicaSpinnerState extends State<SilicaSpinner>
   }
 }
 
-/// Paints the twelve spokes; `phase` is the leading spoke.
+/// Paints the spokes; `phase` is the leading spoke.
 class SpinnerPainter extends CustomPainter {
   SpinnerPainter({required this.phase, required this.color});
 
@@ -270,10 +287,12 @@ class SpinnerPainter extends CustomPainter {
     final paint = Paint()
       ..strokeWidth = r * 0.16
       ..strokeCap = StrokeCap.round;
-    for (var i = 0; i < 12; i++) {
-      final age = (phase - i) % 12;
-      paint.color = color.withValues(alpha: color.a * (1 - age / 12 * 0.75));
-      final a = i / 12 * 2 * math.pi;
+    const n = SilicaSpinner.spokes;
+    for (var i = 0; i < n; i++) {
+      final age = (phase - i) % n;
+      paint.color = color.withValues(alpha: color.a * (1 - age / n * 0.75));
+      final a = i / n * 2 * math.pi;
+
       final dir = Offset(math.sin(a), -math.cos(a));
       canvas.drawLine(c + dir * r * 0.5, c + dir * r * 0.92, paint);
     }

@@ -20,7 +20,7 @@ void main() {
     await pumpControl(tester, level(3));
     expect(
       tester.getSize(find.byType(SilicaLevelIndicator)),
-      const Size(100, 6),
+      const Size(100, 16),
     );
     expect(levelPainter(tester).fill, LevelColors.normalLight);
     expect(levelPainter(tester).t, 0.3);
@@ -68,13 +68,13 @@ void main() {
     );
     expect(
       tester.getSize(find.byType(SilicaLevelIndicator)),
-      const Size(5 * 13 + 4 * 2, 13),
+      const Size(5 * 11 + 4 * 2, 11),
     );
     final rect = tester.getRect(find.byType(SilicaLevelIndicator));
-    await tester.tapAt(rect.topLeft + const Offset(4 * 15 + 6, 6));
+    await tester.tapAt(rect.topLeft + const Offset(4 * 13 + 5, 5));
     await tester.pump();
     expect(stars, 5);
-    await tester.tapAt(rect.topLeft + const Offset(6, 6));
+    await tester.tapAt(rect.topLeft + const Offset(5, 5));
     await tester.pump();
     expect(stars, 1);
     focus.requestFocus();
