@@ -171,16 +171,26 @@ abstract final class SilicaWindows {
     final id = args is Map ? args['viewId'] : null;
     switch (method) {
       case 'closeRequested':
+        final request = args is Map ? args['request'] : null;
         final window = _withId(id);
         if (window == null) {
           // The main window: true tells the embedder the app dealt with it (kept it open);
           // false lets the embedder close it.
           final ask = id == 0 ? _onMainCloseRequested : null;
-          return ask != null && !await ask();
+          if (ask == null) return false;
+          _asking(id, request);
+          return !await ask();
         }
         final ask = window.onCloseRequested;
-        if (ask != null && !await ask()) return true;
+        if (ask != null) {
+          _asking(id, request);
+          if (!await ask()) return true;
+        }
         await window.close();
+        return true;
+      case 'closeProbe':
+        // Sent right after closeRequested: true tells the embedder this app says
+        // closeAsking when it asks, so it may close a window that does not answer.
         return true;
       case 'windowClosed':
         final window = _withId(id);
@@ -193,6 +203,22 @@ abstract final class SilicaWindows {
     }
     return null;
   }
+
+  /// The app is asking before window [id] closes (a confirmation may stay up as long as the
+  /// user wants): the embedder waits for the answer instead of closing the window after its
+  /// short wait (silica-desktop#192).
+  static void _asking(Object? id, Object? request) {
+    unawaited(
+      _invoke<Object?>('closeAsking', {'viewId': id, 'request': ?request}),
+    );
+  }
+
+  /// Answers the embedder's calls on `silica/window` from now on, so a close request is
+  /// answered at once (with no listener the engine holds it, and the window closes only
+  /// after the embedder's wait). silica_ui calls it with the first window call
+  /// ([SilicaWindow.setFullSizeContent], `setSize`, …), [openWindow] and
+  /// [onMainCloseRequested]; calling it again does nothing.
+  static void listen() => _listen();
 
   static void _listen() {
     if (_listening) return;
@@ -221,6 +247,7 @@ abstract final class SilicaWindows {
     }
     _open.value = const [];
     _onMainCloseRequested = null;
+    if (_listening) SilicaWindow.channel.setMethodCallHandler(null);
     _listening = false;
   }
 }

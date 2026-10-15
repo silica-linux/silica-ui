@@ -17,6 +17,7 @@ import 'package:flutter/widgets.dart';
 
 import 'appearance.dart';
 import 'toolbar.dart' show ToolbarGlassMetrics;
+import 'windows.dart' show SilicaWindows;
 
 /// Height of the unified toolbar.
 const double toolbarHeight = 52;
@@ -41,6 +42,7 @@ abstract final class SilicaWindow {
     double toolbar, {
     int viewId = 0,
   }) async {
+    SilicaWindows.listen();
     try {
       final reply = await channel.invokeMethod<Object?>('setFullSizeContent', {
         'toolbarHeight': toolbar,
@@ -94,6 +96,7 @@ abstract final class SilicaWindow {
       viewId == 0 ? const {} : {'viewId': viewId};
 
   static Future<bool> _call(String method, Map<String, Object?> args) async {
+    SilicaWindows.listen();
     try {
       return await channel.invokeMethod<Object?>(method, args) == true;
     } on MissingPluginException {

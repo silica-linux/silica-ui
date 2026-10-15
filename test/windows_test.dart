@@ -97,16 +97,27 @@ void main() {
     ))!;
     calls.clear();
 
-    // Kept: the app answers, nothing is closed.
+    // Kept: the app says it is asking, then answers; nothing is closed.
     window.onCloseRequested = () async => false;
-    expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
-    expect(calls, isEmpty);
+    expect(
+      await SilicaWindows.handle('closeRequested', {'viewId': 0, 'request': 3}),
+      isTrue,
+    );
+    expect(calls.single.method, 'closeAsking');
+    expect(calls.single.arguments, {'viewId': 0, 'request': 3});
+    calls.clear();
 
     // Agreed: the window closes itself.
     window.onCloseRequested = () async => true;
     expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
+    expect(calls.map((call) => call.method), ['closeAsking', 'closeWindow']);
+    expect(calls.last.arguments, {'viewId': 0});
+
+    // No question: it closes without asking.
+    window.onCloseRequested = null;
+    calls.clear();
+    expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
     expect(calls.single.method, 'closeWindow');
-    expect(calls.single.arguments, {'viewId': 0});
 
     // Gone: the controller completes and leaves the list.
     var closed = false;
@@ -125,14 +136,21 @@ void main() {
   });
 
   test('the main window asks the app before it closes', () async {
-    // No handler: the embedder closes the window.
+    // No handler: the embedder closes the window, nothing is asked.
     expect(
-      await SilicaWindows.handle('closeRequested', {'viewId': 0}),
+      await SilicaWindows.handle('closeRequested', {'viewId': 0, 'request': 1}),
       isFalse,
     );
-    // Kept (a confirmation said no): the app answers, the embedder keeps the window.
+    expect(calls, isEmpty);
+    // Kept (a confirmation said no): the app says it is asking (the embedder waits with no
+    // limit), then answers; the embedder keeps the window.
     SilicaWindows.onMainCloseRequested = () async => false;
-    expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
+    expect(
+      await SilicaWindows.handle('closeRequested', {'viewId': 0, 'request': 2}),
+      isTrue,
+    );
+    expect(calls.single.method, 'closeAsking');
+    expect(calls.single.arguments, {'viewId': 0, 'request': 2});
     // Agreed: the embedder closes it.
     SilicaWindows.onMainCloseRequested = () async => true;
     expect(
@@ -147,6 +165,31 @@ void main() {
     );
     SilicaWindows.onMainCloseRequested = null;
     expect(SilicaWindows.onMainCloseRequested, isNull);
+    // The probe after a request: this app says closeAsking when it asks.
+    expect(await SilicaWindows.handle('closeProbe', {'viewId': 0}), isTrue);
+  });
+
+  test('the first window call answers close requests from then on', () async {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    Future<Object?> request() async {
+      final reply = await messenger.handlePlatformMessage(
+        SilicaWindow.channel.name,
+        const JSONMethodCodec().encodeMethodCall(
+          const MethodCall('closeRequested', {'viewId': 0, 'request': 1}),
+        ),
+        null,
+      );
+      return reply == null
+          ? null
+          : const JSONMethodCodec().decodeEnvelope(reply);
+    }
+
+    // No listener yet: nobody answers (the engine would hold the request).
+    expect(await request(), isNull);
+    await SilicaWindow.setFullSizeContent(52);
+    // Listening: the main window with no handler closes at once.
+    expect(await request(), isFalse);
   });
 
   test('window calls name their view, the main one as before', () async {

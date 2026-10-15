@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.38.0 · 2026-10-15
+
+Windows close at once from their close button (silica-desktop#192).
+
+- **Added:** `SilicaWindows.listen()`: answers the embedder's calls on `silica/window` from
+  then on. The first window call (`SilicaWindow.setFullSizeContent`, `setSize`,
+  `setSizeLimits`, `setAppearance`) calls it, so an app answers a close request at once even
+  with no `onMainCloseRequested`; before, with no listener the engine held the request and the
+  window did not close.
+- **Changed:** with `onMainCloseRequested` or `SilicaWindowController.onCloseRequested` set,
+  a close request is acknowledged at once with `closeAsking {viewId, request}`: the embedder
+  waits for the answer (a confirmation) instead of closing the window after its short wait.
+  `closeProbe` is answered true, so the embedder knows the app says it.
+
 ## 0.37.0 · 2026-10-15
 
 App icons from silica-icons 0.6 (the `rendered` manifest field).
