@@ -11,6 +11,15 @@
 // as the content scrolls (light ×0.9, dark +7 % white); in an inactive window it is always there
 // (windows.md, Conflicts 18: to verify whether the inactive line shows with the content at the
 // top). The capsules of the bar show the content refracted at their edges ([ToolbarCapsule]).
+//
+// The bar itself has no colour of its own in an active window: it shows the content background
+// unchanged (windows.md › Toolbar: light 254–255, dark 39–41 over a `#272728` content), while
+// the formula above would turn `#272728` into `#2f2f2f` and draw a band (silica-ui#87). So when
+// the app passes the [ScrollUnderToolbar.background] the veil is anchored to it: an extra
+// per-channel offset that maps the background onto itself, the rest of the formula unchanged.
+// In an inactive window the bar is the unanchored veil of the background (measured `#2f2f30`
+// over `#272728`, with the line). PROVISIONAL: the anchoring is a fit of the two measurements,
+// not measured on scrolled content over a non-white background (SIDEBAR-GLASS requested).
 
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -31,6 +40,7 @@ class ToolbarVeil {
     required this.wideSigma,
     required this.wideWeight,
     required this.line,
+    this.anchor = const [0, 0, 0],
   });
 
   /// The formula `offset + scale · (L + saturation · (in − L))`, on 0–255 sRGB values.
@@ -45,6 +55,31 @@ class ToolbarVeil {
 
   /// The 1 pt line under the band, drawn over the content.
   final Color line;
+
+  /// An extra offset per channel (R, G, B, 0–255) added to [offset]: see [anchoredTo].
+  final List<double> anchor;
+
+  /// The same veil with an [anchor] that leaves `background` unchanged: the bar over the
+  /// content background shows that background, without a band (silica-ui#87).
+  ToolbarVeil anchoredTo(Color background) {
+    final rgb = [background.r * 255, background.g * 255, background.b * 255];
+    final l = rgb[0] * _luma[0] + rgb[1] * _luma[1] + rgb[2] * _luma[2];
+    return ToolbarVeil(
+      offset: offset,
+      scale: scale,
+      saturation: saturation,
+      sharpSigma: sharpSigma,
+      wideSigma: wideSigma,
+      wideWeight: wideWeight,
+      line: line,
+      anchor: [
+        for (var c = 0; c < 3; c++)
+          // Clamped: a background the veil already saturates (white in light) needs nothing.
+          rgb[c] -
+              (offset + scale * (l + saturation * (rgb[c] - l))).clamp(0, 255),
+      ],
+    );
+  }
 
   static const ToolbarVeil light = ToolbarVeil(
     offset: 135.3,
@@ -81,7 +116,7 @@ class ToolbarVeil {
       for (var col = 0; col < 3; col++)
         scale * ((1 - saturation) * _luma[col] + (row == col ? saturation : 0)),
       0,
-      offset,
+      offset + anchor[row],
     ],
     0, 0, 0, 1, 0, //
   ];
@@ -90,9 +125,10 @@ class ToolbarVeil {
   Color apply(Color content) {
     final rgb = [content.r * 255, content.g * 255, content.b * 255];
     final l = rgb[0] * _luma[0] + rgb[1] * _luma[1] + rgb[2] * _luma[2];
-    int channel(int c) => (offset + scale * (l + saturation * (rgb[c] - l)))
-        .round()
-        .clamp(0, 255);
+    int channel(int c) =>
+        (offset + anchor[c] + scale * (l + saturation * (rgb[c] - l)))
+            .round()
+            .clamp(0, 255);
     return Color.fromARGB(255, channel(0), channel(1), channel(2));
   }
 
@@ -103,10 +139,13 @@ class ToolbarVeil {
 
 /// The veil itself: blurs and tints what is painted behind it, as large as its parent.
 class ToolbarVeilLayer extends StatelessWidget {
-  const ToolbarVeilLayer({super.key, this.veil});
+  const ToolbarVeilLayer({super.key, this.veil, this.name = 'toolbar veil'});
 
   /// Null: following the system appearance.
   final ToolbarVeil? veil;
+
+  /// The `ValueKey` of the layer's filters, for finding it (the sidebar's: 'sidebar bar veil').
+  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +157,7 @@ class ToolbarVeilLayer extends StatelessWidget {
     );
     return IgnorePointer(
       child: Stack(
-        key: const ValueKey('toolbar veil'),
+        key: ValueKey(name),
         children: [
           // The sharp Gaussian replaces the content…
           pass(
@@ -150,6 +189,16 @@ class ToolbarVeilLayer extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A column of the body with its own background under the band, left to right: a list and a
+/// reader side by side (Mail). [width] null takes the remaining width.
+@immutable
+class ToolbarVeilColumn {
+  const ToolbarVeilColumn(this.background, {this.width});
+
+  final Color background;
+  final double? width;
 }
 
 /// The vertical scrollable directly in the body.
@@ -185,6 +234,8 @@ class ScrollUnderToolbar extends StatefulWidget {
     this.veil,
     this.showLine = true,
     this.scrollPredicate = defaultScrollUnderPredicate,
+    this.background,
+    this.columns,
   });
 
   /// The toolbar row (capsules, title), laid out in the top [bandHeight].
@@ -213,6 +264,15 @@ class ScrollUnderToolbar extends StatefulWidget {
   /// [anyVerticalScrollUnderPredicate].
   final bool Function(ScrollMetrics metrics, int depth) scrollPredicate;
 
+  /// The colour of the content background under the band. Given, in an active window the bar
+  /// shows it unchanged (no band, silica-ui#87; [ToolbarVeil.anchoredTo]); null keeps the plain
+  /// veil, as under a column header (the measured `#2f2f2f` header band in dark).
+  final Color? background;
+
+  /// Columns with different backgrounds side by side (a list and a reader): each anchors its
+  /// part of the band. Takes precedence over [background].
+  final List<ToolbarVeilColumn>? columns;
+
   @override
   State<ScrollUnderToolbar> createState() => _ScrollUnderToolbarState();
 }
@@ -233,9 +293,16 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
   Widget build(BuildContext context) {
     final band = widget.bandHeight + widget.headerHeight;
     final veil = widget.veil ?? ToolbarVeil.of(context);
-    final line =
-        widget.showLine &&
-        (_scrolled || !containerActive(context, widget.active));
+    final active = containerActive(context, widget.active);
+    final line = widget.showLine && (_scrolled || !active);
+    // Inactive: the plain veil of the background (windows.md: `#2f2f30` over `#272728`).
+    final columns = !active
+        ? null
+        : widget.columns ??
+              [
+                if (widget.background case final background?)
+                  ToolbarVeilColumn(background),
+              ];
     return Stack(
       children: [
         Positioned.fill(
@@ -252,7 +319,27 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
           right: 0,
           top: 0,
           height: band,
-          child: ToolbarVeilLayer(veil: veil),
+          child: columns == null || columns.isEmpty
+              ? ToolbarVeilLayer(veil: veil)
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final column in columns)
+                      if (column.width case final width?)
+                        SizedBox(
+                          width: width,
+                          child: ToolbarVeilLayer(
+                            veil: veil.anchoredTo(column.background),
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: ToolbarVeilLayer(
+                            veil: veil.anchoredTo(column.background),
+                          ),
+                        ),
+                  ],
+                ),
         ),
         if (line)
           Positioned(

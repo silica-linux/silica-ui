@@ -31,6 +31,91 @@ void main() {
     expect(dark.apply(const Color(0xFFFFFFFF)).r * 255, closeTo(0x85, 1));
   });
 
+  test('anchored to a background, the veil leaves it unchanged', () {
+    const content = Color(0xFF272728);
+    // Plain: `#272728` → `#2f2f2f`, the band of silica-ui#87 (and the inactive bar).
+    expect(ToolbarVeil.dark.apply(content).r * 255, closeTo(0x2F, 1));
+    final anchored = ToolbarVeil.dark.anchoredTo(content);
+    expect(anchored.apply(content), isSameColorAs(content));
+    // White in light is already saturated: nothing to correct.
+    expect(
+      ToolbarVeil.light.anchoredTo(const Color(0xFFFFFFFF)).anchor,
+      everyElement(closeTo(0, 1e-9)),
+    );
+  });
+
+  testWidgets('with a background the bar has the content colour at rest', (
+    tester,
+  ) async {
+    const content = Color(0xFF272728);
+    Future<Color> bar({required bool active}) async {
+      final key = GlobalKey();
+      await tester.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: ColoredBox(
+              color: content,
+              child: ScrollUnderToolbar(
+                veil: ToolbarVeil.dark,
+                active: active,
+                background: content,
+                toolbar: const SizedBox(),
+                body: (context, padding) => ListView(
+                  padding: padding,
+                  children: const [SizedBox(height: 2000)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      return pixel(tester, key, const Offset(400, 26));
+    }
+
+    expect((await bar(active: true)).r * 255, closeTo(0x27, 1));
+    // Inactive: the plain veil, `#2f2f30` measured (windows.md).
+    expect((await bar(active: false)).r * 255, closeTo(0x2F, 1));
+  });
+
+  testWidgets('columns anchor their own part of the band', (tester) async {
+    const list = Color(0xFF272728), reader = Color(0xFF1B1B1B);
+    final key = GlobalKey();
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: ScrollUnderToolbar(
+            veil: ToolbarVeil.dark,
+            active: true,
+            columns: const [
+              ToolbarVeilColumn(list, width: 300),
+              ToolbarVeilColumn(reader),
+            ],
+            toolbar: const SizedBox(),
+            body: (context, padding) => const Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(width: 300, child: ColoredBox(color: list)),
+                Expanded(child: ColoredBox(color: reader)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(
+      (await pixel(tester, key, const Offset(150, 26))).r * 255,
+      closeTo(0x27, 1),
+    );
+    expect(
+      (await pixel(tester, key, const Offset(600, 26))).r * 255,
+      closeTo(0x1B, 1),
+    );
+  });
+
   Widget window({
     required ScrollController controller,
     bool active = true,
