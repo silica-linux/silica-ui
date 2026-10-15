@@ -321,11 +321,58 @@ void main() {
                 as GlassLensPainter;
         final colors = dark ? SegmentedColors.dark : SegmentedColors.light;
         final style = dark ? GlassLensStyle.dark : GlassLensStyle.light;
-        expect(painter.style.fill, colors.pill);
+        expect(painter.style.fill.a, 0);
+        expect(
+          tester
+              .widget<DecoratedBox>(
+                find.descendant(
+                  of: find.byKey(pillKey),
+                  matching: find.byType(DecoratedBox),
+                ),
+              )
+              .decoration,
+          isA<BoxDecoration>().having(
+            (d) => d.color!.a,
+            'pill alpha',
+            closeTo(0, 0.01),
+          ),
+        );
+        expect(colors.pill.a, greaterThan(0));
         expect(painter.style.highlight, style.highlight);
         await press.up();
         await tester.pumpAndSettle();
       }
+    });
+
+    testWidgets('pressed: a regular glass region; at rest none', (
+      tester,
+    ) async {
+      await pumpClock(tester, []);
+      expect(find.byType(Glass), findsNothing);
+      final press = await tester.startGesture(segmentCenter(tester, 0));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 40));
+      final mid = tester
+          .widget<DecoratedBox>(
+            find.descendant(
+              of: find.byKey(pillKey),
+              matching: find.byType(DecoratedBox),
+            ),
+          )
+          .decoration;
+      final midAlpha = (mid as BoxDecoration).color!.a;
+      await tester.pumpAndSettle();
+      final glass = tester.widget<Glass>(find.byType(Glass));
+      expect(glass.material, GlassMaterial.regular);
+      expect(midAlpha, greaterThan(0));
+      expect(
+        midAlpha,
+        lessThan(SegmentedColors.dark.pill.a),
+        reason: 'the pill fill is fading out while the lens swells',
+      );
+      await press.up();
+      await tester.pumpAndSettle();
+      expect(find.byType(Glass), findsNothing);
     });
 
     testWidgets('off by default below large; on when asked', (tester) async {

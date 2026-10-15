@@ -43,6 +43,13 @@ abstract final class GlassLensMetrics {
   static final SpringDescription disappearSpring =
       SpringDescription.withDampingRatio(mass: 1, stiffness: 700, ratio: 0.9);
 
+  /// The glass the pressed lens declares to Ossido (*provisional*: LENS, silica-reference #92).
+  static const GlassMaterial material = GlassMaterial.regular;
+
+  /// The body of the pressed lens: clear, so the glass and the content show through
+  /// (*provisional*: LENS, silica-reference #92).
+  static const Color clearFill = Color(0x00FFFFFF);
+
   /// The refracting band along the edge, as a fraction of the lens's half height.
   static const double refractionRim = 0.45;
 

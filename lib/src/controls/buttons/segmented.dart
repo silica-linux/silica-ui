@@ -625,13 +625,17 @@ class _SegmentedControlState extends State<SegmentedControl>
       case SegmentedMode.selectOne
           when widget.selected.isNotEmpty || _lens.value > 0:
         final i = _restIndex;
-        final color = lensHeld
+        final base = lensHeld
             ? chosenColor
             : pressed == i
             ? pressedChosen
             : hovered == i
             ? hoverChosen
             : chosenColor;
+        // The solid pill fades out as the lens swells and in again as it shrinks.
+        final color = base.withValues(
+          alpha: base.a * (1 - _lens.value.clamp(0.0, 1.0)),
+        );
         pillRect = Rect.fromLTWH(_pill.value, inset, _segment, pillHeight);
         layers.add(
           Positioned.fromRect(
@@ -703,7 +707,10 @@ class _SegmentedControlState extends State<SegmentedControl>
           child: GlassLens(
             rect: glassLensRect(pillRect, presence),
             presence: presence,
-            style: GlassLensStyle.of(context).copyWith(fill: chosenColor),
+            material: GlassLensMetrics.material,
+            style: GlassLensStyle.of(
+              context,
+            ).copyWith(fill: GlassLensMetrics.clearFill),
             content: Stack(
               children: [
                 for (var i = 0; i < n; i++)

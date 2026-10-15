@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.28.2 · 2026-10-15
+
+- **Fix:** the segmented control's pressed lens is clear Liquid Glass, not a solid body: it
+  declares a `GlassMaterial.regular` region to Ossido (`GlassLens.material`) with a transparent
+  fill, over the magnified content, the edge refraction, the rim and the shadow. The solid pill
+  fades out as the lens swells and back in as it shrinks. Without the shader (Skia) only the
+  magnified content shows. *Provisional:* the material and the clear fill (`GlassLensMetrics.material`,
+  `GlassLensMetrics.clearFill`) await the LENS measurement (silica-reference #92); the pill at
+  rest keeps its measured colours.
+
 ## 0.28.1 · 2026-10-15
 
 - **Fix:** a press on a control in the toolbar (segmented controls, buttons, search fields) no
