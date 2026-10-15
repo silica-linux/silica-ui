@@ -53,7 +53,7 @@ App icons from silica-icons 0.6 (the `rendered` manifest field).
 - **Fixed:** `FocusRing` lays its child out with the incoming constraints (`StackFit.passthrough`)
   instead of loose ones, so a field in a tight box fills it. `SilicaSearchField` (toolbar and
   window styles) had its fill, magnifier and text at the top of the capsule instead of centered
-  (silica-linux/preview#8).
+  (silica-os/preview#8).
 ## 0.34.0 · 2026-10-15
 
 Several windows in one app (silica-desktop#146).

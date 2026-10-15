@@ -24,7 +24,7 @@ Used by the Silica shell and by the apps (Mustache, Settings, …), each in its 
 dependencies:
   silica_ui:
     git:
-      url: https://github.com/silica-linux/silica-ui.git
+      url: https://github.com/silica-os/silica-ui.git
       ref: v0.19.2
 ```
 
