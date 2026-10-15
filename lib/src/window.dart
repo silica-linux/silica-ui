@@ -103,6 +103,24 @@ abstract final class SilicaWindow {
     }
   }
 
+  /// The window's identifier for another app (`"wayland:<handle>"`, an xdg-foreign v2 export
+  /// that lives as long as the window): the `parent_window` of xdg-desktop-portal, so that the
+  /// Open and Save dialogs attach to this window (they open over it, stay above it and give it
+  /// the focus back). Null outside Silica or with an embedder or compositor without it.
+  static Future<String?> exportHandle({int viewId = 0}) async {
+    try {
+      final reply = await channel.invokeMethod<Object?>(
+        'exportHandle',
+        viewId == 0 ? null : _view(viewId),
+      );
+      return reply is String && reply.startsWith('wayland:') ? reply : null;
+    } on MissingPluginException {
+      return null;
+    } on PlatformException {
+      return null;
+    }
+  }
+
   /// Moves the window with the pointer pressed (from the toolbar).
   static Future<void> startMove({int viewId = 0}) async {
     try {

@@ -28,6 +28,27 @@ void main() {
     });
   });
 
+  test('the window is exported for the dialogs of other apps', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SilicaWindow.channel, (call) async {
+          calls.add(call);
+          return 'wayland:h4ndle';
+        });
+    expect(await SilicaWindow.exportHandle(), 'wayland:h4ndle');
+    expect(calls.single.method, 'exportHandle');
+    expect(calls.single.arguments, isNull);
+    expect(await SilicaWindow.exportHandle(viewId: 3), 'wayland:h4ndle');
+    expect(calls.last.arguments, {'viewId': 3});
+  });
+
+  test('without the embedder or the protocol there is no handle', () async {
+    // The mock answers null: an embedder or a compositor without xdg-foreign.
+    expect(await SilicaWindow.exportHandle(), isNull);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SilicaWindow.channel, null);
+    expect(await SilicaWindow.exportHandle(), isNull);
+  });
+
   test('full-size content', () async {
     expect(await SilicaWindow.setFullSizeContent(52), isTrue);
     expect(calls.single.method, 'setFullSizeContent');

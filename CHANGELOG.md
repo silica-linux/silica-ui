@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.36.0 · 2026-10-15
+
+- **Added:** `SilicaWindow.exportHandle({viewId})`: the window's identifier for another app
+  (`"wayland:<handle>"`, an xdg-foreign v2 export), to pass as the portal's `parent_window`.
+  The Open and Save dialogs then open over the window, stay above it and give it the focus
+  back when they close. Null outside Silica or with an embedder without `exportHandle`
+  (silica-desktop `dialog-parent`).
+
 ## 0.35.0 · 2026-10-15
 
 - **Added:** `SilicaWindows.onMainCloseRequested`: asked when the user closes the app's main
