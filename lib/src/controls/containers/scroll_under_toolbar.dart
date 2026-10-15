@@ -1,25 +1,17 @@
-// Content that scrolls under the unified toolbar (silica-ui#2; mustache-spec R1.9, mustache.md
-// MU-99). The body fills the window from the top and its first rows start below the band; what
-// scrolls under the band stays visible, blurred and covered by a uniform veil from the top to the
-// bottom of the band, the same in active and inactive windows:
+// Content that scrolls under the unified toolbar (silica-ui#2; SIDEBAR-GLASS, silica-reference
+// #100, titlebar.md §4). The body fills the window from the top and its first rows start below
+// the band. At rest the band is invisible: it is the content background, without a tint or a
+// line. As soon as content scrolls under it, it becomes a bar with a hard bottom edge:
 //
-//   out = offset + scale · (L + s · (in − L)),  L = Rec. 709 luminance of the content
+//   dark   the content shows through at 23 % (out = 0.23 · blurred content + 40) with a
+//          σ 4.5 pt blur, and a faint 1 pt line at the edge (+7 % white);
+//   light  opaque white (the content is not visible) with a 1 pt line (×0.9, `#e5e5e5`).
 //
-// light 135.3 / 0.486 / 1.24 (white at ~51 % with saturation ×1.24), dark 31.1 / 0.400 / 1.25
-// (`#333333` at ~60 %). The blur is two Gaussians of about equal weight: light σ 4.2 (0.46) and
-// σ 36.1 (0.54), dark σ 3.2 (0.52) and σ 33.7 (0.48). A 1 pt line under the band appears as soon
-// as the content scrolls (light ×0.9, dark +7 % white); in an inactive window it is always there
-// (windows.md, Conflicts 18: to verify whether the inactive line shows with the content at the
-// top). The capsules of the bar show the content refracted at their edges ([ToolbarCapsule]).
+// The bar appears at once at the first scroll step. The capsules of the bar show the content
+// refracted at their edges ([ToolbarCapsule]).
 //
-// The bar itself has no colour of its own in an active window: it shows the content background
-// unchanged (windows.md › Toolbar: light 254–255, dark 39–41 over a `#272728` content), while
-// the formula above would turn `#272728` into `#2f2f2f` and draw a band (silica-ui#87). So when
-// the app passes the [ScrollUnderToolbar.background] the veil is anchored to it: an extra
-// per-channel offset that maps the background onto itself, the rest of the formula unchanged.
-// In an inactive window the bar is the unanchored veil of the background (measured `#2f2f30`
-// over `#272728`, with the line). PROVISIONAL: the anchoring is a fit of the two measurements,
-// not measured on scrolled content over a non-white background (SIDEBAR-GLASS requested).
+// Not measured: an inactive window (it keeps the line, as windows.md recorded, but has no veil
+// at rest), and the timing of the change.
 
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -48,7 +40,8 @@ class ToolbarVeil {
   final double scale;
   final double saturation;
 
-  /// The two Gaussians (pt) and the weight of the wide one.
+  /// The two Gaussians (pt) and the weight of the wide one; a sigma of 0 and a weight of 0
+  /// skip that pass.
   final double sharpSigma;
   final double wideSigma;
   final double wideWeight;
@@ -81,25 +74,25 @@ class ToolbarVeil {
     );
   }
 
+  /// Opaque white with a 1 pt line (×0.9: white → `#e5e5e5`).
   static const ToolbarVeil light = ToolbarVeil(
-    offset: 135.3,
-    scale: 0.486,
-    saturation: 1.24,
-    sharpSigma: 4.2,
-    wideSigma: 36.1,
-    wideWeight: 0.54,
-    // ×0.9: white → `#e5e5e5`.
+    offset: 255,
+    scale: 0,
+    saturation: 1,
+    sharpSigma: 0,
+    wideSigma: 0,
+    wideWeight: 0,
     line: Color(0x1A000000),
   );
 
+  /// The content at 23 % over a 40 lift, blurred σ 4.5 pt; line +7 % white.
   static const ToolbarVeil dark = ToolbarVeil(
-    offset: 31.1,
-    scale: 0.400,
-    saturation: 1.25,
-    sharpSigma: 3.2,
-    wideSigma: 33.7,
-    wideWeight: 0.48,
-    // +7 % white: black → `#121212`.
+    offset: 40,
+    scale: 0.23,
+    saturation: 1,
+    sharpSigma: 4.5,
+    wideSigma: 4.5,
+    wideWeight: 0,
     line: Color(0x12FFFFFF),
   );
 
@@ -134,7 +127,7 @@ class ToolbarVeil {
 
   /// The wide Gaussian applied after the sharp one: together they make σ [wideSigma].
   double get wideAfterSharp =>
-      math.sqrt(wideSigma * wideSigma - sharpSigma * sharpSigma);
+      math.sqrt(math.max(0, wideSigma * wideSigma - sharpSigma * sharpSigma));
 }
 
 /// The veil itself: blurs and tints what is painted behind it, as large as its parent.
@@ -160,29 +153,31 @@ class ToolbarVeilLayer extends StatelessWidget {
         key: ValueKey(name),
         children: [
           // The sharp Gaussian replaces the content…
-          pass(
-            ui.ImageFilter.blur(
-              sigmaX: veil.sharpSigma,
-              sigmaY: veil.sharpSigma,
-              tileMode: TileMode.clamp,
-            ),
-          ),
-          // …the wide one goes over it with its weight (alpha scaled by the filter)…
-          pass(
-            ui.ImageFilter.compose(
-              outer: ui.ColorFilter.matrix(<double>[
-                1, 0, 0, 0, 0, //
-                0, 1, 0, 0, 0, //
-                0, 0, 1, 0, 0, //
-                0, 0, 0, veil.wideWeight, 0, //
-              ]),
-              inner: ui.ImageFilter.blur(
-                sigmaX: veil.wideAfterSharp,
-                sigmaY: veil.wideAfterSharp,
+          if (veil.sharpSigma > 0)
+            pass(
+              ui.ImageFilter.blur(
+                sigmaX: veil.sharpSigma,
+                sigmaY: veil.sharpSigma,
                 tileMode: TileMode.clamp,
               ),
             ),
-          ),
+          // …the wide one, if any, goes over it with its weight (alpha scaled by the filter)…
+          if (veil.wideWeight > 0)
+            pass(
+              ui.ImageFilter.compose(
+                outer: ui.ColorFilter.matrix(<double>[
+                  1, 0, 0, 0, 0, //
+                  0, 1, 0, 0, 0, //
+                  0, 0, 1, 0, 0, //
+                  0, 0, 0, veil.wideWeight, 0, //
+                ]),
+                inner: ui.ImageFilter.blur(
+                  sigmaX: veil.wideAfterSharp,
+                  sigmaY: veil.wideAfterSharp,
+                  tileMode: TileMode.clamp,
+                ),
+              ),
+            ),
           // …then the tint (affine: it commutes with the blur).
           pass(ui.ColorFilter.matrix(veil.matrix)),
         ],
@@ -249,7 +244,7 @@ class ScrollUnderToolbar extends StatefulWidget {
   /// The content: it gets the padding of the band.
   final Widget Function(BuildContext context, EdgeInsets padding) body;
 
-  /// Active window (null: [WindowActiveScope.of]). The veil does not change; an inactive window
+  /// Active window (null: [WindowActiveScope.of]). The bar does not change; an inactive window
   /// keeps the line under the band.
   final bool? active;
 
@@ -264,13 +259,11 @@ class ScrollUnderToolbar extends StatefulWidget {
   /// [anyVerticalScrollUnderPredicate].
   final bool Function(ScrollMetrics metrics, int depth) scrollPredicate;
 
-  /// The colour of the content background under the band. Given, in an active window the bar
-  /// shows it unchanged (no band, silica-ui#87; [ToolbarVeil.anchoredTo]); null keeps the plain
-  /// veil, as under a column header (the measured `#2f2f2f` header band in dark).
+  /// No effect since 0.30.0, kept so that apps compile: the band is invisible at rest and a
+  /// bar once content scrolls under it, whatever the background (SIDEBAR-GLASS).
   final Color? background;
 
-  /// Columns with different backgrounds side by side (a list and a reader): each anchors its
-  /// part of the band. Takes precedence over [background].
+  /// No effect since 0.30.0 (see [background]).
   final List<ToolbarVeilColumn>? columns;
 
   @override
@@ -295,14 +288,6 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
     final veil = widget.veil ?? ToolbarVeil.of(context);
     final active = containerActive(context, widget.active);
     final line = widget.showLine && (_scrolled || !active);
-    // Inactive: the plain veil of the background (windows.md: `#2f2f30` over `#272728`).
-    final columns = !active
-        ? null
-        : widget.columns ??
-              [
-                if (widget.background case final background?)
-                  ToolbarVeilColumn(background),
-              ];
     return Stack(
       children: [
         Positioned.fill(
@@ -314,33 +299,15 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
             ),
           ),
         ),
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          height: band,
-          child: columns == null || columns.isEmpty
-              ? ToolbarVeilLayer(veil: veil)
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (final column in columns)
-                      if (column.width case final width?)
-                        SizedBox(
-                          width: width,
-                          child: ToolbarVeilLayer(
-                            veil: veil.anchoredTo(column.background),
-                          ),
-                        )
-                      else
-                        Expanded(
-                          child: ToolbarVeilLayer(
-                            veil: veil.anchoredTo(column.background),
-                          ),
-                        ),
-                  ],
-                ),
-        ),
+        // Invisible at rest; a bar as soon as content is under it.
+        if (_scrolled)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            height: band,
+            child: ToolbarVeilLayer(veil: veil),
+          ),
         if (line)
           Positioned(
             left: 0,

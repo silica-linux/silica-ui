@@ -70,7 +70,9 @@ void main() {
         tester.getRect(find.byKey(const ValueKey('sidebar bar'))),
         const Rect.fromLTWH(0, 0, 200, toolbarHeight),
       );
-      expect(find.byKey(const ValueKey('sidebar bar veil')), findsOneWidget);
+      // No glass in the sidebar: a fade mask, no veil.
+      expect(find.byKey(const ValueKey('sidebar fade')), findsOneWidget);
+      expect(find.byKey(const ValueKey('sidebar bar veil')), findsNothing);
       expect(find.byKey(const ValueKey('toolbar veil')), findsNothing);
       // The bar moves the window.
       expect(
@@ -83,8 +85,30 @@ void main() {
     },
   );
 
+  test('the fade mask has the measured values', () {
+    const samples = {
+      62: 1.0, 60: 0.97, 56: 0.86, 52: 0.74, 48: 0.63, 44: 0.48, //
+      40: 0.36, 36: 0.25, 32: 0.17, 30: 0.14, 0: 0.14, 100: 1.0,
+    };
+    samples.forEach((y, v) {
+      expect(
+        SidebarFade.visibilityAt(y.toDouble()),
+        closeTo(v, 0.015),
+        reason: '+$y',
+      );
+    });
+    // Linear between the samples, constant above 62 and below 30.
+    expect(SidebarFade.visibilityAt(46), closeTo(0.555, 0.01));
+    expect(SidebarFade.visibilityAt(10), 0.14);
+    expect(SidebarFade.blurAt(0), 2);
+    expect(SidebarFade.blurAt(32), 2);
+    expect(SidebarFade.blurAt(44), 1);
+    expect(SidebarFade.blurAt(52), 0);
+    expect(SidebarFade.blurAt(62), 0);
+  });
+
   testWidgets(
-    'at rest the bar has the sidebar colour, scrolled it veils the rows',
+    'at rest nothing is faded; scrolled, rows fade to 14 % under the bar, no tint',
     (tester) async {
       tester.view.physicalSize = const Size(200, 600);
       tester.view.devicePixelRatio = 1;
@@ -97,18 +121,40 @@ void main() {
           child: sidebar(controller: controller),
         ),
       );
-      // No band: the bar shows the sidebar fill unchanged.
+      // The bar shows the sidebar fill unchanged.
       final rest = await pixel(tester, key, const Offset(150, 26));
       expect(rest.r * 255, closeTo(0x2A, 1));
       expect(rest.b * 255, closeTo(0x2C, 1));
-      // The rows scroll under the bar: veiled, not hidden and not opaque.
+      // Scrolled: the red slab is under the whole bar.
       controller.jumpTo(800);
       await tester.pump();
-      final veiled = await pixel(tester, key, const Offset(150, 26));
-      final row = await pixel(tester, key, const Offset(150, 300));
-      expect(row, isSameColorAs(const Color(0xFFF13710)));
-      expect(veiled.r * 255, greaterThan(0x2A + 20));
-      expect(veiled.r * 255, lessThan(0xF1 - 20));
+      const red = Color(0xFFF13710);
+      double lift(Color c) => (c.r * 255 - 0x2A) / (0xF1 - 0x2A);
+      // Above +62 the rows are untouched.
+      expect(
+        await pixel(tester, key, const Offset(150, 300)),
+        isSameColorAs(red),
+      );
+      expect(
+        lift(await pixel(tester, key, const Offset(150, 70))),
+        closeTo(1, 0.02),
+      );
+      // Band: 14 % of the row over the sidebar colour (blur does not change a flat slab).
+      expect(
+        lift(await pixel(tester, key, const Offset(150, 20))),
+        closeTo(0.14, 0.02),
+      );
+      expect(
+        lift(await pixel(tester, key, const Offset(150, 52))),
+        closeTo(0.74, 0.03),
+      );
+      expect(
+        lift(await pixel(tester, key, const Offset(150, 44))),
+        closeTo(0.48, 0.03),
+      );
+      // No tint: the fade only mixes the row with the sidebar colour.
+      final band = await pixel(tester, key, const Offset(150, 10));
+      expect(band.g * 255, closeTo(0x2A + 0.14 * (0x37 - 0x2A), 2));
     },
   );
 

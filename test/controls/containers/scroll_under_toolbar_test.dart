@@ -24,96 +24,74 @@ Future<Color> pixel(WidgetTester tester, GlobalKey key, Offset at) async {
 }
 
 void main() {
-  test('the veil formula gives the measured colors', () {
+  test('the veil presets are the measured bars', () {
     const light = ToolbarVeil.light, dark = ToolbarVeil.dark;
-    // Measured: black → `#888888`, white → `#858585` (fit error ≤ 0.7 levels).
-    expect(light.apply(const Color(0xFF000000)).r * 255, closeTo(0x88, 1));
-    expect(dark.apply(const Color(0xFFFFFFFF)).r * 255, closeTo(0x85, 1));
-  });
-
-  test('anchored to a background, the veil leaves it unchanged', () {
-    const content = Color(0xFF272728);
-    // Plain: `#272728` → `#2f2f2f`, the band of silica-ui#87 (and the inactive bar).
-    expect(ToolbarVeil.dark.apply(content).r * 255, closeTo(0x2F, 1));
-    final anchored = ToolbarVeil.dark.anchoredTo(content);
-    expect(anchored.apply(content), isSameColorAs(content));
-    // White in light is already saturated: nothing to correct.
+    // Light: opaque white, whatever is under it.
     expect(
-      ToolbarVeil.light.anchoredTo(const Color(0xFFFFFFFF)).anchor,
-      everyElement(closeTo(0, 1e-9)),
+      light.apply(const Color(0xFFF13710)),
+      isSameColorAs(const Color(0xFFFFFFFF)),
     );
+    expect(
+      light.apply(const Color(0xFF000000)),
+      isSameColorAs(const Color(0xFFFFFFFF)),
+    );
+    // Dark: 23 % of the content over a 40 lift: 39 → ~49, white → ~99.
+    expect(dark.scale, 0.23);
+    expect(dark.apply(const Color(0xFF272728)).r * 255, closeTo(49, 1.5));
+    expect(dark.apply(const Color(0xFFFFFFFF)).r * 255, closeTo(99, 1.5));
+    expect(dark.sharpSigma, inInclusiveRange(4, 5));
   });
 
-  testWidgets('with a background the bar has the content colour at rest', (
-    tester,
-  ) async {
-    const content = Color(0xFF272728);
-    Future<Color> bar({required bool active}) async {
-      final key = GlobalKey();
-      await tester.pumpWidget(
-        RepaintBoundary(
-          key: key,
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: ColoredBox(
-              color: content,
-              child: ScrollUnderToolbar(
-                veil: ToolbarVeil.dark,
-                active: active,
-                background: content,
-                toolbar: const SizedBox(),
-                body: (context, padding) => ListView(
-                  padding: padding,
-                  children: const [SizedBox(height: 2000)],
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      return pixel(tester, key, const Offset(400, 26));
-    }
-
-    expect((await bar(active: true)).r * 255, closeTo(0x27, 1));
-    // Inactive: the plain veil, `#2f2f30` measured (windows.md).
-    expect((await bar(active: false)).r * 255, closeTo(0x2F, 1));
-  });
-
-  testWidgets('columns anchor their own part of the band', (tester) async {
-    const list = Color(0xFF272728), reader = Color(0xFF1B1B1B);
-    final key = GlobalKey();
-    await tester.pumpWidget(
-      RepaintBoundary(
-        key: key,
-        child: Directionality(
-          textDirection: TextDirection.ltr,
+  Widget darkWindow(ScrollController controller, {bool active = true}) =>
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: ColoredBox(
+          color: const Color(0xFF272728),
           child: ScrollUnderToolbar(
             veil: ToolbarVeil.dark,
-            active: true,
-            columns: const [
-              ToolbarVeilColumn(list, width: 300),
-              ToolbarVeilColumn(reader),
-            ],
+            active: active,
             toolbar: const SizedBox(),
-            body: (context, padding) => const Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            body: (context, padding) => ListView(
+              controller: controller,
+              padding: padding,
               children: [
-                SizedBox(width: 300, child: ColoredBox(color: list)),
-                Expanded(child: ColoredBox(color: reader)),
+                Container(height: 2000, color: const Color(0xFFFFFFFF)),
               ],
             ),
           ),
         ),
-      ),
+      );
+
+  testWidgets('dark: invisible at rest, then the content shows at 23 %', (
+    tester,
+  ) async {
+    final key = GlobalKey();
+    final controller = ScrollController();
+    await tester.pumpWidget(
+      RepaintBoundary(key: key, child: darkWindow(controller)),
     );
+    // At rest: no veil, the band is the body (the white slab starts below it).
+    expect(find.byKey(const ValueKey('toolbar veil')), findsNothing);
     expect(
-      (await pixel(tester, key, const Offset(150, 26))).r * 255,
+      (await pixel(tester, key, const Offset(400, 26))).r * 255,
       closeTo(0x27, 1),
     );
+    controller.jumpTo(300);
+    await tester.pump();
+    expect(find.byKey(const ValueKey('toolbar veil')), findsOneWidget);
+    // White slab under the bar: 0.23 · 255 + 40 ≈ 99.
     expect(
-      (await pixel(tester, key, const Offset(600, 26))).r * 255,
-      closeTo(0x1B, 1),
+      (await pixel(tester, key, const Offset(400, 26))).r * 255,
+      closeTo(99, 3),
     );
+    // Hard edge: just below the band the slab is untouched.
+    expect(
+      await pixel(tester, key, const Offset(400, 60)),
+      isSameColorAs(const Color(0xFFFFFFFF)),
+    );
+    controller.jumpTo(0);
+    await tester.pump();
+    expect(find.byKey(const ValueKey('toolbar veil')), findsNothing);
   });
 
   Widget window({
@@ -138,7 +116,7 @@ void main() {
     ),
   );
 
-  testWidgets('content scrolled under the band takes the measured veil', (
+  testWidgets('light: invisible at rest, then opaque white with a line', (
     tester,
   ) async {
     final key = GlobalKey();
@@ -149,15 +127,29 @@ void main() {
         child: window(controller: controller),
       ),
     );
+    expect(find.byKey(const ValueKey('toolbar veil')), findsNothing);
     controller.jumpTo(300);
     await tester.pump();
-    // Red `#f13710` → `#ff9e86` (MU-99).
-    final veiled = await pixel(tester, key, const Offset(400, 26));
-    expect(veiled.r * 255, closeTo(0xff, 2));
-    expect(veiled.g * 255, closeTo(0x9e, 2));
-    expect(veiled.b * 255, closeTo(0x86, 2));
-    final content = await pixel(tester, key, const Offset(400, 300));
-    expect(content, isSameColorAs(const Color(0xFFF13710)));
+    expect(find.byKey(const ValueKey('toolbar veil')), findsOneWidget);
+    // The red content is not visible at all under the bar.
+    expect(
+      await pixel(tester, key, const Offset(400, 26)),
+      isSameColorAs(const Color(0xFFFFFFFF)),
+    );
+    expect(
+      await pixel(tester, key, const Offset(400, 300)),
+      isSameColorAs(const Color(0xFFF13710)),
+    );
+    // The 1 pt line at the edge (y 52): black at 10 %, white → 229.
+    final line = tester.widget<ColoredBox>(
+      find.byKey(const ValueKey('toolbar line')),
+    );
+    expect(line.color, ToolbarVeil.light.line);
+    expect(255 * (1 - line.color.a), closeTo(229, 1));
+    expect(
+      tester.getRect(find.byKey(const ValueKey('toolbar line'))).top,
+      toolbarHeight,
+    );
   });
 
   testWidgets('the line under the band appears once the content scrolls', (
