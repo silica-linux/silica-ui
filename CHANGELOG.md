@@ -2,6 +2,16 @@
 
 ## 0.32.0 · 2026-10-15
 
+App menus in Silica's global menu bar (silica-menu-v1, silica-desktop#25).
+
+- **Added:** `SilicaMenuBar` publishes the app's menus to the bar and binds their shortcuts
+  inside the app; `SilicaMenuDelegate` (a `PlatformMenuDelegate` on the embedder's
+  `silica/menu` channel, so Flutter's `PlatformMenuBar` works too); `SilicaMenu` (top-level
+  `role`, disabled submenus), `SilicaMenuItem` (`checked`, `enabled`, standard `role`,
+  `SilicaMenuItem.system` for the items the bar runs); `SilicaMenus.app`, `edit`, `textEdit`,
+  `window`, `help`; `silicaMenuShortcuts`, `silicaMenuShortcut`, `silicaMenuKeyName`.
+- **Docs:** `docs/app-menus.md`, the adoption guide for apps.
+
 Appearance override, as `NSApp.appearance` / `NSWindow.appearance` on macOS (an always-dark app
 such as Clock).
 

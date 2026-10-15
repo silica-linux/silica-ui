@@ -28,6 +28,7 @@ export 'src/icons/mime.dart';
 export 'src/icons/silica_icons.dart';
 export 'src/liquid_glass.dart';
 export 'src/menu.dart';
+export 'src/menu_bar.dart';
 export 'src/tip_outline.dart';
 export 'src/toolbar.dart';
 export 'src/window.dart';
