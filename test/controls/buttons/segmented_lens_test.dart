@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
@@ -18,7 +19,8 @@ const lensKey = ValueKey('glass lens');
 const pillKey = ValueKey('chosen pill');
 const trackKey = ValueKey('segmented track');
 
-/// Clock's section switch: large, four 94 pt segments, with the app's selection.
+/// Clock's section switch: large, four segments of 94 pt content on a 384 pt track (96 pt each,
+/// tiling the track), with the app's selection.
 Widget clock({
   required int selected,
   required ValueChanged<int> onChanged,
@@ -67,39 +69,159 @@ Future<void> pumpClock(
   );
 }
 
+/// The large control's segments share the track: (2 x 4 + 4 x 94) / 4.
+const double slot = 96;
+
+/// The centre of segment `i` along the track.
+double centre(num i) => slot / 2 + slot * i;
+
 Offset segmentCenter(WidgetTester tester, int i) {
   final track = tester.getTopLeft(find.byKey(trackKey));
-  return track + Offset(4 + 94 * i + 47, 18);
+  return track + Offset(centre(i), 18);
 }
 
-double pillLeft(WidgetTester tester) =>
-    tester.getTopLeft(find.byKey(pillKey)).dx -
+/// The pill's centre along the track.
+double pillCentre(WidgetTester tester) =>
+    tester.getCenter(find.byKey(pillKey)).dx -
     tester.getTopLeft(find.byKey(trackKey)).dx;
 
 void main() {
-  group('margins (#89): the chosen pill is inset equally on every side', () {
-    for (final (size, inset) in [
-      (ControlSize.large, 4.0),
-      (ControlSize.regular, 2.0),
-    ]) {
-      testWidgets('${size.name}: first, middle and last', (tester) async {
-        for (var i = 0; i < 4; i++) {
-          await tester.pumpWidget(
-            clock(selected: i, size: size, onChanged: (_) {}),
-          );
-          await tester.pumpAndSettle();
-          final track = tester.getRect(find.byKey(trackKey));
-          final pill = tester.getRect(find.byKey(pillKey));
-          expect(pill.top - track.top, inset, reason: 'top of $i');
-          expect(track.bottom - pill.bottom, inset, reason: 'bottom of $i');
-          if (i == 0) expect(pill.left - track.left, inset);
-          if (i == 3) expect(track.right - pill.right, inset);
-          // Middle segments: the pill fills the segment, flush with its neighbours.
-          expect(pill.left - track.left, inset + 94 * i);
-          expect(pill.width, 94);
-        }
-      });
-    }
+  group('geometry: the pill is centred on its segment', () {
+    testWidgets('large: segments tile the track, the pill is centred on each, '
+        'the first and last too', (tester) async {
+      for (var i = 0; i < 4; i++) {
+        await tester.pumpWidget(clock(selected: i, onChanged: (_) {}));
+        await tester.pumpAndSettle();
+        final track = tester.getRect(find.byKey(trackKey));
+        final pill = tester.getRect(find.byKey(pillKey));
+        expect(track.width, 4 * slot);
+        expect(pill.center.dx - track.left, closeTo(centre(i), 1e-9));
+        // ~79 pt on a ~95 pt segment (measured), 4 pt from the top and bottom.
+        expect(pill.width, slot - 16);
+        expect(pill.top - track.top, 4, reason: 'top of $i');
+        expect(track.bottom - pill.bottom, 4, reason: 'bottom of $i');
+        // The label is centred on the same point.
+        final label = tester.getCenter(find.text(sections[i].label!));
+        expect(label.dx - track.left, closeTo(centre(i), 0.5));
+        // At the ends the pill sits 8 pt from the round end, not 4.
+        if (i == 0) expect(pill.left - track.left, 8);
+        if (i == 3) expect(track.right - pill.right, 8);
+      }
+    });
+
+    testWidgets('regular (the window control): the pill fills its segment, '
+        'inset 2 pt on every side', (tester) async {
+      for (var i = 0; i < 4; i++) {
+        await tester.pumpWidget(
+          clock(selected: i, size: ControlSize.regular, onChanged: (_) {}),
+        );
+        await tester.pumpAndSettle();
+        final track = tester.getRect(find.byKey(trackKey));
+        final pill = tester.getRect(find.byKey(pillKey));
+        expect(pill.top - track.top, 2);
+        expect(track.bottom - pill.bottom, 2);
+        expect(pill.left - track.left, 2 + 94 * i);
+        expect(pill.width, 94);
+        final label = tester.getCenter(find.text(sections[i].label!));
+        expect(label.dx, closeTo(pill.center.dx, 0.5));
+      }
+    });
+
+    testWidgets('the lens is centred on each segment, the first and last too', (
+      tester,
+    ) async {
+      for (var i = 0; i < 4; i++) {
+        await tester.pumpWidget(clock(selected: i, onChanged: (_) {}));
+        await tester.pumpAndSettle();
+        final press = await tester.startGesture(segmentCenter(tester, i));
+        await tester.pumpAndSettle();
+        final track = tester.getRect(find.byKey(trackKey));
+        final lens = tester.getRect(find.byKey(lensKey));
+        expect(lens.center.dx - track.left, closeTo(centre(i), 1e-9));
+        expect(lens.center.dy, closeTo(track.center.dy, 1e-9));
+        expect(lens.size, const Size(91, 48));
+        await press.up();
+        await tester.pumpAndSettle();
+      }
+    });
+
+    testWidgets('the lens passes the control: 6 pt above and below, past the '
+        'ends on narrow segments, painted in the overlay', (tester) async {
+      await tester.pumpWidget(
+        harness(
+          // A clip as tight as the control (a toolbar): the lens is not cut by it.
+          ClipRect(
+            key: const ValueKey('toolbar'),
+            child: SegmentedControl(
+              segments: sections,
+              selected: const {0},
+              size: ControlSize.large,
+              segmentWidth: 60,
+              onChanged: (_) {},
+            ),
+          ),
+          dark: true,
+        ),
+      );
+      final track = tester.getRect(find.byKey(trackKey));
+      final press = await tester.startGesture(
+        track.centerLeft + const Offset(10, 0),
+      );
+      await tester.pumpAndSettle();
+      var lens = tester.getRect(find.byKey(lensKey));
+      // 62 pt segments: the 91 pt lens on the first one passes the left end.
+      expect(lens.center.dx - track.left, closeTo(31, 1e-9));
+      expect(lens.left, lessThan(track.left));
+      expect(track.top - lens.top, closeTo(6, 1e-9));
+      expect(lens.bottom - track.bottom, closeTo(6, 1e-9));
+      // It is not painted under the control's clip: it lives in the overlay.
+      final clip = tester.renderObject(find.byKey(const ValueKey('toolbar')));
+      final theater = tester.renderObject(find.byType(Overlay));
+      final ancestors = <RenderObject>[];
+      for (
+        RenderObject? o = tester.renderObject(find.byKey(lensKey));
+        o != null;
+        o = o.parent
+      ) {
+        ancestors.add(o);
+      }
+      expect(ancestors, isNot(contains(clip)));
+      expect(ancestors, contains(theater));
+      await press.moveTo(track.centerRight + const Offset(40, 0));
+      await tester.pump();
+      lens = tester.getRect(find.byKey(lensKey));
+      expect(lens.center.dx - track.left, closeTo(62 * 3.5, 1e-9));
+      expect(lens.right, greaterThan(track.right));
+      await press.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('without an overlay the lens paints in place, unclipped', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: SegmentedControl(
+              segments: sections,
+              selected: const {1},
+              size: ControlSize.large,
+              segmentWidth: 94,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      final press = await tester.startGesture(segmentCenter(tester, 1));
+      await tester.pumpAndSettle();
+      final track = tester.getRect(find.byKey(trackKey));
+      final lens = tester.getRect(find.byKey(lensKey));
+      expect(lens.center.dx - track.left, closeTo(centre(1), 1e-9));
+      expect(lens.height, 48);
+      await press.up();
+      await tester.pumpAndSettle();
+    });
   });
 
   group('lens (LENS, silica-reference #92)', () {
@@ -138,7 +260,7 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('look: clear body, dark rim, light lines, fringes, control', (
+    testWidgets('look: clear body, dark rim, light lines, fringes, no region', (
       tester,
     ) async {
       for (final dark in [false, true]) {
@@ -163,9 +285,8 @@ void main() {
         expect(painter.style.highlight.a, greaterThan(0));
         expect(painter.style.fringeWarm.a, greaterThan(0));
         expect(painter.style.fringeCool.a, greaterThan(0));
-        final glass = tester.widget<Glass>(find.byType(Glass));
-        expect(glass.material, GlassMaterial.regular);
-        expect(glass.profile, GlassProfile.control);
+        // No glass region: the lens refracts the window's own content.
+        expect(find.byType(Glass), findsNothing);
         await press.up();
         await tester.pumpAndSettle();
         expect(find.byType(Glass), findsNothing);
@@ -202,7 +323,7 @@ void main() {
         findsOneWidget,
       );
       // Neighbouring labels outside the lens are still painted.
-      expect(path.contains(const Offset(47, 18)), isTrue);
+      expect(path.contains(Offset(centre(0), 18)), isTrue);
       await press.up();
       await tester.pumpAndSettle();
       expect(tester.widget<ClipPath>(find.byKey(labelsKey)).clipper, isNull);
@@ -281,7 +402,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 240));
       expect(lensRect(tester).height, closeTo(48, 0.01));
       // No slide: the lens stays on its segment.
-      expect(pillLeft(tester), 4 + 94);
+      expect(pillCentre(tester), centre(1));
       await press.up();
       await tester.pumpAndSettle();
     });
@@ -293,21 +414,25 @@ void main() {
       final press = await tester.startGesture(segmentCenter(tester, 2));
       await tester.pump();
       await ms(tester, 24);
-      expect(pillLeft(tester), 4, reason: 'no movement before +28 ms');
+      expect(
+        pillCentre(tester),
+        centre(0),
+        reason: 'no movement before +28 ms',
+      );
       await ms(tester, 30); // +54
-      final early = pillLeft(tester);
-      expect(early, greaterThan(4));
+      final early = pillCentre(tester);
+      expect(early, greaterThan(centre(0)));
       await ms(tester, 66); // +120: already a lens, still travelling
       expect(lensRect(tester).height, greaterThan(36));
-      expect(pillLeft(tester), greaterThan(early));
-      expect(pillLeft(tester), lessThan(4 + 2 * 94 - 20));
+      expect(pillCentre(tester), greaterThan(early));
+      expect(pillCentre(tester), lessThan(centre(2) - 20));
       await ms(tester, 130); // +250: full size, still not there
       expect(lensRect(tester).height, closeTo(48, 0.01));
-      expect(pillLeft(tester), lessThan(4 + 2 * 94 - 3));
+      expect(pillCentre(tester), lessThan(centre(2) - 3));
       await ms(tester, 150); // +400
-      expect(pillLeft(tester), closeTo(4 + 2 * 94, 5));
+      expect(pillCentre(tester), closeTo(centre(2), 5));
       await ms(tester, 110); // +510
-      expect(pillLeft(tester), closeTo(4 + 2 * 94, 0.05));
+      expect(pillCentre(tester), closeTo(centre(2), 0.05));
       // The content changes only after the release.
       expect(log, isEmpty);
       await press.up();
@@ -327,12 +452,16 @@ void main() {
       for (final dx in [7.0, 31.0, 50.0, 93.0, 140.0]) {
         await press.moveTo(start + Offset(dx, 0));
         await tester.pump();
-        expect(pillLeft(tester), closeTo(4 + dx, 0.01), reason: 'at $dx');
+        expect(
+          pillCentre(tester),
+          closeTo(centre(0) + dx, 0.01),
+          reason: 'at $dx',
+        );
         expect(find.byKey(lensKey), findsOneWidget);
       }
       expect(log, isEmpty);
       // The lens centre is the pointer: it sits between segments.
-      expect(pillLeft(tester) % 94, isNot(closeTo(4, 1)));
+      expect((pillCentre(tester) - centre(0)) % slot, isNot(closeTo(0, 1)));
       await press.up();
       await tester.pumpAndSettle();
       expect(log, [1]);
@@ -347,11 +476,12 @@ void main() {
       await ms(tester, 600);
       await press.moveTo(segmentCenter(tester, 3) + const Offset(60, 0));
       await tester.pump();
-      expect(pillLeft(tester), closeTo(4 + 3 * 94, 0.01));
-      expect(lensRect(tester).right, lessThan(trackRect(tester).right));
+      expect(pillCentre(tester), closeTo(centre(3), 0.01));
+      // The lens ends line up with the track ends (measured).
+      expect(lensRect(tester).right, closeTo(trackRect(tester).right, 3));
       await press.moveTo(segmentCenter(tester, 0) - const Offset(80, 0));
       await tester.pump();
-      expect(pillLeft(tester), closeTo(4, 0.01));
+      expect(pillCentre(tester), closeTo(centre(0), 0.01));
       // 60 pt below the control the lens stays big, at its last x.
       await press.moveTo(segmentCenter(tester, 2) + const Offset(0, 60));
       await tester.pump();
@@ -390,7 +520,7 @@ void main() {
       await tester.pump();
       await press.moveTo(segmentCenter(tester, 3));
       await ms(tester, 600);
-      expect(pillLeft(tester), closeTo(4 + 3 * 94, 0.5));
+      expect(pillCentre(tester), closeTo(centre(3), 0.5));
       await press.moveTo(segmentCenter(tester, 3) + const Offset(0, 80));
       await tester.pump();
       await press.up();
@@ -399,9 +529,12 @@ void main() {
       expect(find.byKey(lensKey), findsOneWidget);
       await ms(tester, 55); // +105
       expect(find.byKey(lensKey), findsNothing);
-      expect(pillLeft(tester), inExclusiveRange(4.5, 4 + 3 * 94 - 5));
+      expect(
+        pillCentre(tester),
+        inExclusiveRange(centre(0) + 0.5, centre(3) - 5),
+      );
       await ms(tester, 100); // +205
-      expect(pillLeft(tester), closeTo(4, 0.05));
+      expect(pillCentre(tester), closeTo(centre(0), 0.05));
       await tester.pumpAndSettle();
       expect(log, isEmpty);
     });
@@ -416,7 +549,7 @@ void main() {
       await press.up();
       await tester.pumpAndSettle();
       expect(log, [2]);
-      expect(pillLeft(tester), closeTo(4, 0.05));
+      expect(pillCentre(tester), closeTo(centre(0), 0.05));
     });
 
     testWidgets('hover is instant: no fade in or out', (tester) async {
@@ -457,7 +590,8 @@ void main() {
             ],
             selected: const {0},
             size: ControlSize.large,
-            segmentWidth: 94,
+            // 96 pt slots, as in the four-segment control.
+            segmentWidth: 280 / 3,
             onChanged: log.add,
           ),
           dark: true,
@@ -468,7 +602,7 @@ void main() {
       await ms(tester, 600);
       await press.moveTo(segmentCenter(tester, 1));
       await tester.pump();
-      expect(pillLeft(tester), closeTo(4 + 94, 0.01));
+      expect(pillCentre(tester), closeTo(centre(1), 0.01));
       await press.up();
       await tester.pumpAndSettle();
       expect(log, [0]);
@@ -492,8 +626,10 @@ void main() {
       expect(lensRect(tester).height, closeTo(48, 0.01));
       await press.moveTo(segmentCenter(tester, 3));
       await tester.pump();
-      expect(pillLeft(tester), closeTo(4 + 3 * 94, 0.01));
-      expect(tester.hasRunningAnimations, isFalse);
+      expect(pillCentre(tester), closeTo(centre(3), 0.01));
+      // Nothing moves on its own (the overlay re-checks the lens's place each frame, without
+      // asking for frames).
+      expect(tester.binding.hasScheduledFrame, isFalse);
       await press.up();
       await tester.pump();
       await tester.pump();
@@ -588,13 +724,12 @@ void main() {
         final program = await ui.FragmentProgram.fromAsset(
           'shaders/glass_lens.frag',
         );
-        final shader = program.fragmentShader()
-          ..setFloat(0, 60)
-          ..setFloat(1, 28)
-          ..setFloat(2, GlassLensMetrics.refractionRim)
-          ..setFloat(3, GlassLensMetrics.refractionStrength)
-          ..setFloat(4, GlassLensMetrics.chromaticOffset);
-        expect(() => shader.setFloat(5, 0), throwsA(anything));
+        final shader = program.fragmentShader();
+        // The backdrop size, then 11 floats and two colours.
+        for (var i = 0; i < 2 + 11 + 8; i++) {
+          shader.setFloat(i, 1);
+        }
+        expect(() => shader.setFloat(21, 0), throwsA(anything));
         shader.dispose();
       });
     });
@@ -617,6 +752,119 @@ void main() {
       expect(GlassLensMetrics.travelDelay.inMilliseconds, 28);
       expect(GlassLensMetrics.retractDuration.inMilliseconds, 130);
       expect(GlassLensMetrics.cancelReturnDuration.inMilliseconds, 200);
+    });
+  });
+
+  group('backdrop refraction (Impeller)', () {
+    tearDown(() {
+      GlassLens.debugRefractionSupportedOverride = null;
+      GlassLens.debugShaderFilter = null;
+      GlassLens.debugReset();
+    });
+
+    /// Pretends the engine supports shader filters; the filter itself is a stand-in, since
+    /// `ImageFilter.shader` throws without Impeller.
+    Future<void> impeller(WidgetTester tester) async {
+      GlassLens.debugRefractionSupportedOverride = true;
+      GlassLens.debugShaderFilter = (_) =>
+          ui.ImageFilter.blur(sigmaX: 1, sigmaY: 1);
+      final program = await tester.runAsync(GlassLens.loadProgram);
+      expect(program, isNotNull);
+      expect(GlassLens.usesBackdrop, isTrue);
+    }
+
+    testWidgets('the lens refracts the backdrop: no copy of the labels, the '
+        'labels are not cut out', (tester) async {
+      await impeller(tester);
+      await pumpClock(tester, [], initial: 1);
+      final press = await tester.startGesture(segmentCenter(tester, 1));
+      await tester.pumpAndSettle();
+      const refraction = ValueKey('glass lens refraction');
+      expect(find.byKey(refraction), findsOneWidget);
+      expect(
+        find.descendant(of: find.byKey(lensKey), matching: find.byType(Text)),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(lensKey),
+          matching: find.byType(Transform),
+        ),
+        findsNothing,
+      );
+      final labels = tester.widget<ClipPath>(
+        find.byKey(const ValueKey('segmented labels')),
+      );
+      expect(labels.clipper, isNull);
+      // A backdrop filter clipped to the capsule.
+      final box = tester.renderObject<RenderGlassLensBackdrop>(
+        find.byKey(refraction),
+      );
+      expect(box.debugFilter, isNotNull);
+      expect(box.debugLayer, isA<ClipRRectLayer>());
+      final clip = box.debugLayer! as ClipRRectLayer;
+      expect(clip.clipRRect!.tlRadiusX, 24);
+      expect(clip.firstChild, isA<BackdropFilterLayer>());
+      // The lens geometry in the backdrop's physical pixels.
+      final dpr = tester.view.devicePixelRatio;
+      final lens = tester.getRect(find.byKey(lensKey));
+      final u = box.debugUniforms;
+      expect(u[0], closeTo(lens.center.dx * dpr, 1e-6));
+      expect(u[1], closeTo(lens.center.dy * dpr, 1e-6));
+      expect(u[2], closeTo(91 / 2 * dpr, 1e-6));
+      expect(u[3], closeTo(48 / 2 * dpr, 1e-6));
+      expect(u[4], closeTo(dpr, 1e-9));
+      expect(u[5], closeTo(1.11, 1e-9));
+      expect(u[6], GlassLensMetrics.refractionDepth);
+      expect(u[7], GlassLensMetrics.rimBlur);
+      expect(u[8], GlassLensMetrics.chromaticOffset);
+      expect(u[9], 1);
+      expect(u.length, 11 + 8);
+      // No glass region declared to the compositor.
+      expect(find.byType(Glass), findsNothing);
+      await press.up();
+      await tester.pumpAndSettle();
+      expect(find.byKey(refraction), findsNothing);
+    });
+
+    testWidgets('the refraction grows with the presence', (tester) async {
+      await impeller(tester);
+      await pumpClock(tester, [], initial: 1);
+      final press = await tester.startGesture(segmentCenter(tester, 1));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 110));
+      final box = tester.renderObject<RenderGlassLensBackdrop>(
+        find.byKey(const ValueKey('glass lens refraction')),
+      );
+      final u = box.debugUniforms;
+      expect(u[9], inExclusiveRange(0, 1));
+      expect(u[5], inExclusiveRange(1, 1.11));
+      expect(u[6], lessThan(GlassLensMetrics.refractionDepth));
+      await press.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('without shader filters: the magnified copy, labels cut out', (
+      tester,
+    ) async {
+      GlassLens.debugRefractionSupportedOverride = false;
+      expect(GlassLens.usesBackdrop, isFalse);
+      await pumpClock(tester, [], initial: 1);
+      final press = await tester.startGesture(segmentCenter(tester, 1));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('glass lens refraction')), findsNothing);
+      expect(
+        find.descendant(of: find.byKey(lensKey), matching: find.text('Alarms')),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<ClipPath>(find.byKey(const ValueKey('segmented labels')))
+            .clipper,
+        isNotNull,
+      );
+      await press.up();
+      await tester.pumpAndSettle();
     });
   });
 }

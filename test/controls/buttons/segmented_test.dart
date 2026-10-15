@@ -29,7 +29,7 @@ Color pillColor(WidgetTester tester, Key key) =>
 void main() {
   tearDown(resetHighlight);
 
-  testWidgets('large (Clock): 36 high, pill 28 inset 4, measured dark', (
+  testWidgets('large (Clock): 36 high, pill 80 x 28 centred, measured dark', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -47,10 +47,11 @@ void main() {
     final track = find.byKey(const ValueKey('segmented track'));
     expect(tester.getSize(track), const Size(4 + 4 * 94 + 4, 36));
     final pill = find.byKey(const ValueKey('chosen pill'));
-    expect(tester.getSize(pill), const Size(94, 28));
+    // The segments share the track (96 pt each); the pill is 16 pt narrower, centred.
+    expect(tester.getSize(pill), const Size(96 - 16, 28));
     expect(
       tester.getTopLeft(pill) - tester.getTopLeft(track),
-      const Offset(4 + 2 * 94, 4),
+      const Offset(2 * 96 + 8, 4),
     );
     expect(
       pillColor(tester, const ValueKey('chosen pill')),

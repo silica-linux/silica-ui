@@ -30,7 +30,7 @@ Measured on a dark-only app with four sections:
 | Track | 378 × 36, full capsule, fill `#3d3d3d` |
 | Segments | 95, 94, 95, 94 pt wide |
 | Rim | top `#727274`, bottom `#626262`, outer line `#0b0b0b` |
-| Selected pill | ~28 pt tall, 4 pt inset, `#525252`–`#555555` |
+| Selected pill | ~79 × 28 pt, centred on its segment (4 pt from the top and bottom), `#525252`–`#555555` |
 | Labels | white, semibold, ~13 pt |
 
 - The pill starts moving 25–52 ms after the press and settles in about 300–350 ms, with a
@@ -40,20 +40,30 @@ Measured on a dark-only app with four sections:
 - The control is centred on the window, or on the area beside a sidebar when there is one.
 - At the minimum window width it **collapses into a pop-up button** showing the current section.
 
-### The lens (provisional)
+- The segments share the whole track (95 + 94 + 95 + 94 = 378); the pill and the lens are centred
+  on their segment, the first and last too (the pill sits 8 pt from the round end there, the lens
+  lines up with it).
 
-While the section switch is pressed, the selection swells into a lens of glass that magnifies the
-labels under it; dragging across the control moves it, segment by segment, to the enabled segment
-under the pointer, and releasing inside the control chooses that segment. The lens then shrinks
-back into the pill. Not measured yet (LENS request): silica_ui uses a lens 1.12 × the pill's width
-and 1.4 × its height (it rises past the track), a 1.3× magnification, a swell spring with a small
-overshoot, a travel spring with a ~3 % overshoot and a shrink without visible bounce; with reduced
-motion it appears, jumps and disappears at once. The edge refraction is drawn by a fragment shader
-where the engine supports shader image filters (Impeller), otherwise the content is only
-magnified.
+### The lens
 
-The chosen pill is inset by the same amount on every side of the track (4 pt for the section
-switch, 2 pt for the window control) whatever its position.
+While the section switch is pressed, the selection swells into a clear capsule lens, 91 × 48 pt,
+centred on its segment and 6 pt past the track at the top and bottom (on narrow segments it also
+passes the control's ends); dragging moves it with the pointer, clamped between the first and last
+segment centres, and releasing inside the control chooses the segment under it. Timings and the
+look are measured (LENS, silica-reference #92): see `GlassLensMetrics`.
+
+silica_ui draws the lens from the window's own pixels. With Impeller it is a backdrop filter
+clipped to the capsule running `shaders/glass_lens.frag`: the track, the rim, the pill and the
+labels under it (and the toolbar where it overhangs) are magnified 1.11 ×, bent outward near the
+rim (the track's edge lines show ~3 pt inside the lens), slightly blurred at the rim, split into
+red and blue on the curved ends, with a dark outer edge and a 1 pt light line at the top and
+bottom. The lens paints in the nearest overlay so neighbouring widgets and clips do not cut it.
+Without shader filters (Skia, tests) it shows a magnified copy of the labels instead. It declares
+no glass region to Ossido: the compositor's glass shows what is behind the window, which the lens
+does not show.
+
+The window control's pill fills its segment and is inset by 2 pt on every side whatever its
+position.
 
 ## Small segmented controls in content (CT-SEG-03, partial)
 

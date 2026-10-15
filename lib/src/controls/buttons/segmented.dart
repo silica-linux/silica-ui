@@ -5,12 +5,16 @@
 // no hover look; a pressed segment `#c5c5c5` / `#585859`; in an inactive window the accent turns
 // gray; the keyboard ring surrounds only the focused segment (CT-SEG-02/05, CT-TF-09, INV-B).
 // The large one is Clock's section switch, a 36 pt capsule (`#3d3d3d` in dark, rim `#727274`
-// above and `#626262` below, outer line `#0b0b0b`) with a 28 pt pill inset by 4 pt (`#525252`–
-// `#555555`, `#464646` in an inactive window), semibold 13 pt labels; the pill moves in ~300 ms,
+// above and `#626262` below, outer line `#0b0b0b`) whose segments tile the whole track (95, 94,
+// 95, 94 on 378 pt), with a ~79 x 28 pt pill centred on its segment, 4 pt from the top and
+// bottom (`#525252`–`#555555`, `#464646` in an inactive window), semibold 13 pt labels; the
+// pill and the lens are centred on their segment at the ends too; the pill moves in ~300 ms,
 // decelerating; hovering shows a highlight (clock.md › Section switch); light uses the toolbar
 // capsule colors (MU-07). The lens while pressed is measured (clock.md, LENS): see
 // GlassLensMetrics. Provisional: the window track's exact gray (the push button fill), the
 // mini size, Clock's dark pressed colors.
+
+import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
@@ -184,6 +188,12 @@ double segmentedHeight(ControlSize size) => switch (size) {
 
 double segmentedInset(ControlSize size) => size == ControlSize.large ? 4 : 2;
 
+/// The gap between the chosen pill and the sides of its segment: the large control's segments
+/// tile the whole track and its pill is narrower than the segment (~79 pt on a 95 pt segment,
+/// measured), centred on it; the window control's pill fills its segment.
+double segmentedPillSideInset(ControlSize size) =>
+    size == ControlSize.large ? 8 : 0;
+
 double _segmentPadding(ControlSize size) => switch (size) {
   ControlSize.mini => 6,
   ControlSize.small => 8,
@@ -199,10 +209,18 @@ const Duration segmentedPillDuration = Duration(milliseconds: 300);
 /// chooses it, in [SegmentedMode.selectAny] it toggles it, in [SegmentedMode.momentary] it acts.
 /// Segments are as wide as the widest one unless `segmentWidth` is given.
 ///
+/// The control is `2 * segmentedInset + segments * segmentWidth` wide. The window sizes put the
+/// segments `segmentedInset` from the ends, with the pill filling its segment; the large size
+/// (Clock's section switch) shares the whole width between its segments, as measured, with a
+/// narrower pill centred on its segment ([segmentedPillSideInset]).
+///
 /// With the [lens] (by default the large control in [SegmentedMode.selectOne], Clock's section
-/// switch), pressing swells the selection into a [GlassLens] that magnifies the labels under it
+/// switch), pressing swells the selection into a [GlassLens] that refracts the control under it
 /// and slides to the pressed segment (measured timings in [GlassLensMetrics]); dragged, it
-/// follows the pointer continuously, clamped between the first and last segment centres.
+/// follows the pointer continuously, clamped between the first and last segment centres. The
+/// lens is centred on its segment and is larger than the pill: it rises 6 pt above and below
+/// the track and may pass its ends, so it is painted in the nearest [Overlay], over the
+/// neighbouring widgets and unclipped by them (in place, over the control, without one).
 /// Releasing inside the control chooses the segment under the lens (after the release, never
 /// during the drag) and the lens shrinks back into the pill in ~130 ms; releasing outside
 /// cancels. With reduced motion the lens appears, jumps and disappears without animation.
@@ -248,7 +266,7 @@ class _SegmentedControlState extends State<SegmentedControl>
   int _focusIndex = 0;
   double _segment = 0;
 
-  /// The chosen pill's left edge.
+  /// The chosen pill's centre.
   late final AnimationController _pill = AnimationController.unbounded(
     vsync: this,
   )..addListener(_changed);
@@ -275,11 +293,24 @@ class _SegmentedControlState extends State<SegmentedControl>
   /// and then follows the pointer 1:1.
   double _grab = 0;
 
+  /// Shows the lens in the nearest overlay while it is pressed or shrinking.
+  final OverlayPortalController _portal = OverlayPortalController();
+
   bool get _enabled => widget.onChanged != null;
   bool get _reduced => MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
   void _changed() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    _syncPortal();
+    setState(() {});
+  }
+
+  /// The overlay holds the lens only while there is one: a shown portal re-checks its place
+  /// at every frame.
+  void _syncPortal() {
+    final want = _lensPointer != null || _lens.value > 0.001;
+    if (want == _portal.isShowing) return;
+    want ? _portal.show() : _portal.hide();
   }
 
   @override
@@ -287,8 +318,9 @@ class _SegmentedControlState extends State<SegmentedControl>
     super.initState();
     _segment = _measure();
     final rest = _restIndex;
-    _pillTarget = _leftOf(rest ?? 0);
+    _pillTarget = _centreOf(rest ?? 0);
     _pill.value = _pillTarget!;
+    if (widget.hasLens) unawaited(GlassLens.loadProgram());
   }
 
   @override
@@ -301,11 +333,12 @@ class _SegmentedControlState extends State<SegmentedControl>
       _pillTarget = null;
       final i = _lensPointer != null ? _lensAt : _restIndex;
       if (i != null) {
-        _pillTarget = _leftOf(i);
+        _pillTarget = _centreOf(i);
         _pill.value = _pillTarget!;
       }
       return;
     }
+    if (widget.hasLens && !old.hasLens) unawaited(GlassLens.loadProgram());
     if (_lensPointer == null) _settle();
   }
 
@@ -325,12 +358,30 @@ class _SegmentedControlState extends State<SegmentedControl>
     return n == 0 ? null : widget.selected.first.clamp(0, n - 1);
   }
 
-  double _leftOf(int i) => segmentedInset(widget.size) + i * _segment;
+  /// Whether the segments share the whole width (the large control) instead of leaving
+  /// `segmentedInset` at the ends.
+  bool get _tiled => widget.size == ControlSize.large;
+
+  double get _width =>
+      2 * segmentedInset(widget.size) + widget.segments.length * _segment;
+
+  /// The width of a segment's slot: the label is centred in it and so are the pill and the lens.
+  double get _slot {
+    final n = widget.segments.length;
+    return _tiled && n > 0 ? _width / n : _segment;
+  }
+
+  /// The left edge of segment `i`'s slot.
+  double _slotLeft(int i) =>
+      (_tiled ? 0 : segmentedInset(widget.size)) + i * _slot;
+
+  /// The width of the pill (chosen, hovered or pressed).
+  double get _pillWidth => _slot - 2 * segmentedPillSideInset(widget.size);
 
   /// Moves the pill to segment `i` in `duration` (by default the measured ~300 ms); at once with
   /// reduced motion.
   void _movePill(int i, {Duration duration = segmentedPillDuration}) {
-    final target = _leftOf(i);
+    final target = _centreOf(i);
     if (_pillTarget == target) return;
     _pillTarget = target;
     if (_reduced) {
@@ -340,7 +391,7 @@ class _SegmentedControlState extends State<SegmentedControl>
     }
   }
 
-  double _centreOf(int i) => _leftOf(i) + _segment / 2;
+  double _centreOf(int i) => _slotLeft(i) + _slot / 2;
 
   /// While the lens is held: where its centre wants to be, the pointer's x clamped between the
   /// first and last segment centres.
@@ -349,10 +400,10 @@ class _SegmentedControlState extends State<SegmentedControl>
     return (_pointerX + _grab).clamp(_centreOf(0), _centreOf(n - 1));
   }
 
-  /// While the lens is held: the pill's left edge. It slides to the wanted place (after the
-  /// start delay, on the measured curve) and then follows it exactly.
-  double get _heldLeft {
-    final to = _lensCentreWanted - _segment / 2;
+  /// While the lens is held: the pill's centre. It slides to the wanted place (after the start
+  /// delay, on the measured curve) and then follows it exactly.
+  double get _heldCentre {
+    final to = _lensCentreWanted;
     final total = GlassLensMetrics.travelDuration.inMicroseconds;
     final delay = GlassLensMetrics.travelDelay.inMicroseconds;
     final local = ((_slide.value * total - delay) / (total - delay)).clamp(
@@ -424,29 +475,24 @@ class _SegmentedControlState extends State<SegmentedControl>
   }
 
   int? _indexAt(Offset local) {
-    final inset = segmentedInset(widget.size);
-    final x = local.dx - inset;
+    final x = local.dx - _slotLeft(0);
     if (x < 0 || local.dy < 0 || local.dy > segmentedHeight(widget.size)) {
       return null;
     }
-    final i = (x / _segment).floor();
+    final i = (x / _slot).floor();
     return i >= 0 && i < widget.segments.length ? i : null;
   }
 
   /// The segment under the x position `x` along the row (clamped to the ends).
   int _indexUnder(double x) {
     final n = widget.segments.length;
-    return ((x - segmentedInset(widget.size)) / _segment).floor().clamp(
-      0,
-      n - 1,
-    );
+    return ((x - _slotLeft(0)) / _slot).floor().clamp(0, n - 1);
   }
 
   bool _within(Offset local) =>
       local.dx >= 0 &&
       local.dy >= 0 &&
-      local.dx <=
-          2 * segmentedInset(widget.size) + widget.segments.length * _segment &&
+      local.dx <= _width &&
       local.dy <= segmentedHeight(widget.size);
 
   void _activate(int index) {
@@ -469,15 +515,16 @@ class _SegmentedControlState extends State<SegmentedControl>
       // segment.
       _pill.stop();
       _pillTarget = null;
-      if (_restIndex == null) _pill.value = _leftOf(i);
+      if (_restIndex == null) _pill.value = _centreOf(i);
       _slideFrom = _pill.value;
-      final travel = (_slideFrom - _leftOf(i)).abs() > 0.5;
+      final travel = (_slideFrom - _centreOf(i)).abs() > 0.5;
       if (travel && !_reduced) {
         _slide.forward(from: 0);
       } else {
         _slide.value = 1;
       }
       _showLens(true, travel: travel);
+      _syncPortal();
       setState(() {});
       return;
     }
@@ -535,7 +582,7 @@ class _SegmentedControlState extends State<SegmentedControl>
   /// Releases the lens: `choose` is the segment it settles on (the lens retracts in ~130 ms),
   /// or null to cancel (it retracts in ~100 ms and the pill slides back in ~200 ms).
   void _releaseLens({required int? choose}) {
-    _pill.value = _heldLeft;
+    _pill.value = _heldCentre;
     _pillTarget = null;
     _slide.value = 1;
     _lensPointer = null;
@@ -622,21 +669,22 @@ class _SegmentedControlState extends State<SegmentedControl>
     final height = segmentedHeight(size);
     final inset = segmentedInset(size);
     final n = widget.segments.length;
-    final lefts = [for (var i = 0; i < n; i++) _leftOf(i)];
+    final slot = _slot;
+    final lefts = [for (var i = 0; i < n; i++) _slotLeft(i)];
     if (widget.mode == SegmentedMode.selectOne && widget.selected.isNotEmpty) {
       if (!_focused) _focusIndex = widget.selected.first;
     }
-    final width = 2 * inset + n * _segment;
+    final width = _width;
     final pillHeight = height - 2 * inset;
+    final pillWidth = _pillWidth;
+    Rect pillAt(double centre) =>
+        Rect.fromLTWH(centre - pillWidth / 2, inset, pillWidth, pillHeight);
     final pillRadius = BorderRadius.circular(pillHeight / 2);
     final pressed = _inside ? _pressed : null;
 
-    Widget pill(int i, Color color, {Key? key}) => Positioned(
+    Widget pill(int i, Color color, {Key? key}) => Positioned.fromRect(
       key: key,
-      left: lefts[i],
-      top: inset,
-      width: _segment,
-      height: pillHeight,
+      rect: pillAt(_centreOf(i)),
       child: DecoratedBox(
         decoration: BoxDecoration(color: color, borderRadius: pillRadius),
       ),
@@ -675,12 +723,7 @@ class _SegmentedControlState extends State<SegmentedControl>
         final color = base.withValues(
           alpha: base.a * (1 - _lens.value.clamp(0.0, 1.0)),
         );
-        pillRect = Rect.fromLTWH(
-          lensHeld ? _heldLeft : _pill.value,
-          inset,
-          _segment,
-          pillHeight,
-        );
+        pillRect = pillAt(lensHeld ? _heldCentre : _pill.value);
         layers.add(
           Positioned.fromRect(
             key: const ValueKey('chosen pill'),
@@ -741,7 +784,7 @@ class _SegmentedControlState extends State<SegmentedControl>
         Positioned(
           left: lefts[i],
           top: 0,
-          width: _segment,
+          width: slot,
           height: height,
           child: Semantics(
             button: true,
@@ -756,49 +799,52 @@ class _SegmentedControlState extends State<SegmentedControl>
       );
     }
 
-    // The labels are cut out where the lens covers them: the lens draws its own magnified copy,
-    // and the original under a clear lens would show doubled.
+    // With the backdrop lens the labels stay: the lens refracts them. Otherwise the lens draws
+    // its own magnified copy, and the labels are cut out under it (under a clear lens they would
+    // show doubled).
+    final backdrop = GlassLens.usesBackdrop;
+    final cut = lensRect != null && !backdrop;
     layers.add(
       Positioned.fill(
         child: ClipPath(
           key: const ValueKey('segmented labels'),
-          clipper: lensRect == null ? null : _OutsideLensClipper(lensRect),
-          clipBehavior: lensRect == null ? Clip.none : Clip.antiAlias,
+          clipper: cut ? _OutsideLensClipper(lensRect) : null,
+          clipBehavior: cut ? Clip.antiAlias : Clip.none,
           child: Stack(clipBehavior: Clip.none, children: labels),
         ),
       ),
     );
-    if (lensRect != null) {
-      layers.add(
-        Positioned.fill(
-          child: GlassLens(
+    final Widget? lens = lensRect == null
+        ? null
+        : GlassLens(
             rect: lensRect,
             presence: presence,
-            material: GlassLensMetrics.material,
             style: GlassLensStyle.of(
               context,
             ).copyWith(fill: GlassLensMetrics.clearFill),
-            content: Stack(
-              children: [
-                for (var i = 0; i < n; i++)
-                  Positioned(
-                    left: lefts[i],
-                    top: 0,
-                    width: _segment,
-                    height: height,
-                    child: _content(
-                      widget.segments[i],
-                      _enabled && widget.segments[i].enabled
-                          ? onLensText
-                          : colors.textDisabled,
-                    ),
+            content: backdrop
+                ? null
+                : Stack(
+                    children: [
+                      for (var i = 0; i < n; i++)
+                        Positioned(
+                          left: lefts[i],
+                          top: 0,
+                          width: slot,
+                          height: height,
+                          child: _content(
+                            widget.segments[i],
+                            _enabled && widget.segments[i].enabled
+                                ? onLensText
+                                : colors.textDisabled,
+                          ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
+          );
+    // Without an overlay the lens paints in place, over the control and unclipped by it.
+    final inOverlay = Overlay.maybeOf(context) != null;
+    if (lens != null && !inOverlay) layers.add(Positioned.fill(child: lens));
 
     final track = Container(
       key: const ValueKey('segmented track'),
@@ -828,7 +874,7 @@ class _SegmentedControlState extends State<SegmentedControl>
       ),
     );
 
-    return Focus(
+    final control = Focus(
       canRequestFocus: false,
       skipTraversal: true,
       onKeyEvent: _key,
@@ -862,11 +908,8 @@ class _SegmentedControlState extends State<SegmentedControl>
                   ...layers,
                   // The keyboard ring surrounds only the focused segment (CT-TF-09).
                   if (_focused && n > 0)
-                    Positioned(
-                      left: lefts[_focusIndex.clamp(0, n - 1)],
-                      top: inset,
-                      width: _segment,
-                      height: pillHeight,
+                    Positioned.fromRect(
+                      rect: pillAt(_centreOf(_focusIndex.clamp(0, n - 1))),
                       child: IgnorePointer(
                         child: FocusRing(
                           visible: true,
@@ -882,6 +925,22 @@ class _SegmentedControlState extends State<SegmentedControl>
           ),
         ),
       ),
+    );
+    if (!inOverlay || !widget.hasLens) return control;
+    // The lens paints in the overlay, over the control's neighbours (the toolbar) and not
+    // clipped by them, at the control's place.
+    return OverlayPortal.overlayChildLayoutBuilder(
+      controller: _portal,
+      overlayChildBuilder: (context, info) => lens == null
+          ? const SizedBox.shrink()
+          : Transform(
+              transform: info.childPaintTransform,
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox.fromSize(size: info.childSize, child: lens),
+              ),
+            ),
+      child: control,
     );
   }
 }

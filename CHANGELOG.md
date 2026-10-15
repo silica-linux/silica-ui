@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.29.2 · 2026-10-15
+
+Fix: the segmented control's lens refracts the control under it, and the pill and lens are
+centred on their segment.
+
+- **Fix (refraction):** with Impeller the lens is now a backdrop filter clipped to the capsule
+  (`ImageFilter.shader` with `shaders/glass_lens.frag`), so it refracts the window's own pixels:
+  the track, its rim, the pill, the neighbouring labels and the toolbar where it overhangs. The
+  shader magnifies 1.11 x, samples further outward towards the rim (none at the centre), blurs
+  the rim slightly, splits red and blue on the curved ends and draws the dark outer edge and the
+  1 pt light lines. Without shader filters (Skia, tests) the lens keeps the magnified copy of the
+  labels. The shader's uniforms changed (`refractionDepth`, `rimBlur`, `lift` replace
+  `refractionRim` and `refractionStrength` in `GlassLensMetrics`).
+- **Changed:** the segmented lens no longer declares a glass region to Ossido: the compositor's
+  glass shows the desktop behind the window, not the control. `GlassLens.material` stays for
+  lenses over transparent content.
+- **Fix (geometry):** the large control's segments share the whole track, as measured (95, 94,
+  95, 94 on 378 pt), and the pill (~80 x 28 pt, `segmentedPillSideInset`) and the lens are
+  centred on their segment, the first and last too (they were pushed 4 pt inward by an end
+  inset). The window sizes are unchanged. The toolbar capsule pills of #89 are unchanged.
+- **Fix:** the lens paints in the nearest `Overlay` (`OverlayPortal`), so it passes the control's
+  edges (6 pt above and below, past the ends on narrow segments) without being clipped by the
+  toolbar or covered by neighbours; without an overlay it paints in place, unclipped.
+- **New:** `GlassLens.usesBackdrop`, `RenderGlassLensBackdrop`, `segmentedPillSideInset`;
+  `GlassLens.content` is optional. For tests: `GlassLens.debugRefractionSupportedOverride`,
+  `debugShaderFilter`, `debugReset`.
+
 ## 0.29.1 · 2026-10-15
 
 Fix: the segmented control's lens showed the covered label twice.
