@@ -96,16 +96,16 @@ void main() {
         final pill = tester.getRect(find.byKey(pillKey));
         expect(track.width, 4 * slot);
         expect(pill.center.dx - track.left, closeTo(centre(i), 1e-9));
-        // ~79 pt on a ~95 pt segment (measured), 4 pt from the top and bottom.
-        expect(pill.width, slot - 16);
+        // ~89 pt on a ~95 pt segment (measured on the mid row), 4 pt from the top and bottom.
+        expect(pill.width, slot - 6);
         expect(pill.top - track.top, 4, reason: 'top of $i');
         expect(track.bottom - pill.bottom, 4, reason: 'bottom of $i');
         // The label is centred on the same point.
         final label = tester.getCenter(find.text(sections[i].label!));
         expect(label.dx - track.left, closeTo(centre(i), 0.5));
-        // At the ends the pill sits 8 pt from the round end, not 4.
-        if (i == 0) expect(pill.left - track.left, 8);
-        if (i == 3) expect(track.right - pill.right, 8);
+        // At the ends the pill sits 3 pt from the round end, not 4.
+        if (i == 0) expect(pill.left - track.left, 3);
+        if (i == 3) expect(track.right - pill.right, 3);
       }
     });
 

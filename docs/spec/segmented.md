@@ -30,7 +30,7 @@ Measured on a dark-only app with four sections:
 | Track | 378 × 36, full capsule, fill `#3d3d3d` |
 | Segments | 95, 94, 95, 94 pt wide |
 | Rim | top `#727274`, bottom `#626262`, outer line `#0b0b0b` |
-| Selected pill | ~79 × 28 pt, centred on its segment (4 pt from the top and bottom), `#525252`–`#555555` |
+| Selected pill | ~89 × 28 pt, centred on its segment (4 pt from the top and bottom), `#525252`–`#555555` |
 | Labels | white, semibold, ~13 pt |
 
 - The pill starts moving 25–52 ms after the press and settles in about 300–350 ms, with a
@@ -41,7 +41,7 @@ Measured on a dark-only app with four sections:
 - At the minimum window width it **collapses into a pop-up button** showing the current section.
 
 - The segments share the whole track (95 + 94 + 95 + 94 = 378); the pill and the lens are centred
-  on their segment, the first and last too (the pill sits 8 pt from the round end there, the lens
+  on their segment, the first and last too (the pill sits 3 pt from the round end there, the lens
   lines up with it).
 
 ### The lens

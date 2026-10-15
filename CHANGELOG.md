@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.30.1 · 2026-10-15
+
+- **Fixed:** the large `SegmentedControl` (Clock's section switch) pill is ~89 × 28 pt (3 pt
+  from the sides of its segment), as in the capture; it was 78.5 pt wide, which is the chord of
+  the capsule 2 pt below its top, not its width. The lens is unchanged.
+
 ## 0.30.0 · 2026-10-15
 
 Sidebar and content scroll edges as measured (SIDEBAR-GLASS, silica-reference #100); the

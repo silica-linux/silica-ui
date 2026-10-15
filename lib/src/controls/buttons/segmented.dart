@@ -6,7 +6,7 @@
 // gray; the keyboard ring surrounds only the focused segment (CT-SEG-02/05, CT-TF-09, INV-B).
 // The large one is Clock's section switch, a 36 pt capsule (`#3d3d3d` in dark, rim `#727274`
 // above and `#626262` below, outer line `#0b0b0b`) whose segments tile the whole track (95, 94,
-// 95, 94 on 378 pt), with a ~79 x 28 pt pill centred on its segment, 4 pt from the top and
+// 95, 94 on 378 pt), with a ~89 x 28 pt pill centred on its segment, 4 pt from the top and
 // bottom (`#525252`–`#555555`, `#464646` in an inactive window), semibold 13 pt labels; the
 // pill and the lens are centred on their segment at the ends too; the pill moves in ~300 ms,
 // decelerating; hovering shows a highlight (clock.md › Section switch); light uses the toolbar
@@ -189,10 +189,11 @@ double segmentedHeight(ControlSize size) => switch (size) {
 double segmentedInset(ControlSize size) => size == ControlSize.large ? 4 : 2;
 
 /// The gap between the chosen pill and the sides of its segment: the large control's segments
-/// tile the whole track and its pill is narrower than the segment (~79 pt on a 95 pt segment,
-/// measured), centred on it; the window control's pill fills its segment.
+/// tile the whole track and its pill is narrower than the segment (~89 pt on a 95 pt segment,
+/// measured on the mid row of the capture; the ~79 pt of the lens notes is a row 2 pt below
+/// the top of the capsule), centred on it; the window control's pill fills its segment.
 double segmentedPillSideInset(ControlSize size) =>
-    size == ControlSize.large ? 8 : 0;
+    size == ControlSize.large ? 3 : 0;
 
 double _segmentPadding(ControlSize size) => switch (size) {
   ControlSize.mini => 6,
