@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.28.1 · 2026-10-15
+
+- **Fix:** a press on a control in the toolbar (segmented controls, buttons, search fields) no
+  longer moves the window. `WindowDragArea` starts a move only when the press hits no interactive
+  widget, decided by hit-testing at the press.
+
 ## 0.28.0 · 2026-10-15
 
 The full-height sidebar scrolls under a glass bar of its own, and the toolbar glass no longer

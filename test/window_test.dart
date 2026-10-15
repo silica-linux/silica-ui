@@ -99,6 +99,57 @@ void main() {
     },
   );
 
+  testWidgets('a drag on a SegmentedControl in the toolbar does not move the '
+      'window; a drag on the empty toolbar does', (tester) async {
+    var selected = 0;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: 600,
+            height: toolbarHeight,
+            child: WindowDragArea(
+              child: Center(
+                child: SegmentedControl(
+                  segments: const [
+                    Segment(label: 'World'),
+                    Segment(label: 'Alarms'),
+                    Segment(label: 'Stopwatch'),
+                    Segment(label: 'Timers'),
+                  ],
+                  selected: {selected},
+                  onChanged: (i) => selected = i,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final center = tester.getCenter(find.byType(SegmentedControl));
+    for (final delta in const [Offset(40, 0), Offset(0, 30), Offset(30, 20)]) {
+      final g = await tester.startGesture(
+        center,
+        kind: PointerDeviceKind.mouse,
+      );
+      await g.moveBy(delta);
+      await g.moveBy(delta);
+      await g.up();
+      await tester.pump();
+    }
+    expect(calls.map((c) => c.method), isNot(contains('startMove')));
+    final empty = await tester.startGesture(
+      const Offset(10, 26),
+      kind: PointerDeviceKind.mouse,
+    );
+    await empty.moveBy(const Offset(30, 0));
+    await empty.up();
+    await tester.pump();
+    expect(calls.map((c) => c.method), contains('startMove'));
+  });
+
   testWidgets('capsules follow the system appearance', (tester) async {
     Color? drawn;
     Future<void> pump(Brightness b) => tester.pumpWidget(

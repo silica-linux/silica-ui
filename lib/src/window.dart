@@ -11,6 +11,7 @@
 // hover highlight, the press growth and the glow are in `toolbar.dart`.
 
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -86,24 +87,73 @@ abstract final class SilicaWindow {
   }
 }
 
-/// The empty part of the toolbar: dragging it moves the window. Controls inside
-/// `child` receive their clicks as usual.
-class WindowDragArea extends StatelessWidget {
+/// The empty part of the toolbar: dragging it moves the window. A press that lands on an
+/// interactive widget inside `child` (a button, a segmented control, a search field: anything
+/// that listens to pointers) never starts a move: it belongs to that control, as on macOS.
+///
+/// The decision is made at the press by hit-testing, so controls need no opt-out. The move
+/// itself is the client request (`xdg_toplevel.move` with the press serial), as xdg-shell
+/// intends; Ossido does not start moves on its own in the toolbar.
+class WindowDragArea extends StatefulWidget {
   const WindowDragArea({super.key, required this.child});
   final Widget child;
+
+  @override
+  State<WindowDragArea> createState() => _WindowDragAreaState();
+}
+
+class _WindowDragAreaState extends State<WindowDragArea> {
+  final GlobalKey _content = GlobalKey();
+
+  /// Whether the press lands on a widget inside the content that handles pointers.
+  bool _onControl(PointerDownEvent event) {
+    final root = _content.currentContext?.findRenderObject();
+    if (root == null) return false;
+    final result = HitTestResult();
+    WidgetsBinding.instance.hitTestInView(result, event.position, event.viewId);
+    for (final entry in result.path) {
+      final target = entry.target;
+      if (target is! RenderObject || !_within(target, root)) continue;
+      if (target is RenderPointerListener && target.onPointerDown != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static bool _within(RenderObject node, RenderObject root) {
+    for (RenderObject? n = node; n != null; n = n.parent) {
+      if (identical(n, root)) return true;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) => RawGestureDetector(
     behavior: HitTestBehavior.translucent,
     gestures: {
-      PanGestureRecognizer:
-          GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-            PanGestureRecognizer.new,
-            (r) => r.onStart = (_) => SilicaWindow.startMove(),
-          ),
+      _EmptyAreaPan: GestureRecognizerFactoryWithHandlers<_EmptyAreaPan>(
+        () => _EmptyAreaPan(_onControl),
+        (r) {
+          r.isControl = _onControl;
+          r.onStart = (_) => SilicaWindow.startMove();
+        },
+      ),
     },
-    child: child,
+    child: KeyedSubtree(key: _content, child: widget.child),
   );
+}
+
+/// A pan that ignores the presses that fall on a control.
+class _EmptyAreaPan extends PanGestureRecognizer {
+  _EmptyAreaPan(this.isControl);
+  bool Function(PointerDownEvent event) isControl;
+
+  @override
+  void addAllowedPointer(PointerDownEvent event) {
+    if (isControl(event)) return;
+    super.addAllowedPointer(event);
+  }
 }
 
 /// The toolbar colors (mustache-spec 1.2; states from mustache.md M6 › MU-07, measured at
