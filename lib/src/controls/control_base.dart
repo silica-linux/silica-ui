@@ -13,6 +13,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../window.dart' show ToolbarScope;
+import '../appearance.dart';
 
 /// The system colors the control groups share, light and dark.
 abstract final class ControlPalette {
@@ -310,8 +311,7 @@ class ControlAccent extends InheritedWidget {
   /// The colors of the accent in effect, in the current appearance.
   static AccentColors colorsOf(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<ControlAccent>();
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     if (scope?.color case final color?) {
       return AccentColors.custom(color, dark: dark);
     }

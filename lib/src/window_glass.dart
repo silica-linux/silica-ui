@@ -10,6 +10,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 
 import 'glass.dart';
+import 'appearance.dart';
 
 /// A material for Flutter: blur σ in pt, 3 × 3 matrix and offset (0–255) applied to the sRGB
 /// color of the blurred background.
@@ -94,8 +95,7 @@ class WindowGlass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     final shape = BorderRadius.circular(radius);
     return ClipRRect(
       borderRadius: shape,

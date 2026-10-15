@@ -13,6 +13,7 @@ import 'package:flutter/widgets.dart';
 import '../silica_ui.dart' show uiFontFamily, uiText;
 import 'glass.dart';
 import 'liquid_glass.dart';
+import 'appearance.dart';
 
 const double alertWidth = 292;
 const double alertRadius = 26;
@@ -88,8 +89,7 @@ class SilicaAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     final text = dark ? AlertColors.textDark : AlertColors.textLight;
     return Focus(
       autofocus: true,

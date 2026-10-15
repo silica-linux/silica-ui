@@ -36,6 +36,7 @@ dependencies:
 | `Glass`, `LiquidGlass`, `GlassMaterial` | glass areas composed by the Ossido compositor; Liquid Glass reacts to press and pointer |
 | `WindowGlass` | glass drawn by Flutter inside a window (menus over the app's own content) |
 | `SilicaWindow`, `WindowDragArea`, `ToolbarCapsule`, `ToolbarSegment`, `ToolbarScope`, `ToolbarGlassMetrics` | the unified toolbar and its glass controls: hover, press growth, glow |
+| `SilicaAppearance`, `SilicaAppearanceScope`, `SilicaApp.appearance` | the appearance override (always dark / always light), for the app or the window; also sent to Ossido |
 | `MenuHost`, `MenuPanel`, `MenuColors` | menus with submenus, sections, custom rows, light and dark |
 | `SilicaIcon`, `resolveFileIcon`, `resolveFolderIcon` | layered icons from silica-icons, with badges and ground shadows |
 | `SilicaDrag` | drag and drop of files between apps (`text/uri-list`) |

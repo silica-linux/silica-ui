@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 
 import 'input_style.dart';
 import 'slider.dart' show keyboardValue;
+import '../../appearance.dart';
 
 /// The look of a level indicator.
 enum LevelIndicatorStyle {
@@ -123,8 +124,7 @@ class _SilicaLevelIndicatorState extends State<SilicaLevelIndicator> {
   @override
   Widget build(BuildContext context) {
     final colors = InputColors.of(context);
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     final rating = widget.style == LevelIndicatorStyle.rating;
     final size = rating
         ? Size(

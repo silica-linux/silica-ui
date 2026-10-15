@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import '../../../silica_ui.dart' show uiFontFamily;
 import '../../menu.dart';
 import '../control_base.dart';
+import '../../appearance.dart';
 
 export '../control_base.dart';
 
@@ -178,11 +179,9 @@ class InputColors {
     levelEmpty: Color(0xFF434343),
   );
 
-  /// Following the system appearance (`MediaQuery.platformBrightness`).
+  /// Following the appearance in effect (the override, otherwise the system's).
   static InputColors of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? dark
-      : light;
+      SilicaAppearance.isDark(context) ? dark : light;
 
   /// The fill of an accent-colored part, gray in an inactive window.
   Color accentFor({required bool active}) => active ? accent : accentInactive;

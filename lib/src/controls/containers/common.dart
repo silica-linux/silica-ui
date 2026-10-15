@@ -3,12 +3,12 @@
 import 'package:flutter/widgets.dart';
 
 import '../control_base.dart';
+import '../../appearance.dart';
 
 export '../control_base.dart';
 
-/// Dark appearance, following the system (`MediaQuery.platformBrightness`).
-bool containerDark(BuildContext context) =>
-    MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+/// Dark appearance, following the appearance in effect.
+bool containerDark(BuildContext context) => SilicaAppearance.isDark(context);
 
 /// The window state: `active` when given, otherwise [WindowActiveScope.of].
 bool containerActive(BuildContext context, bool? active) =>

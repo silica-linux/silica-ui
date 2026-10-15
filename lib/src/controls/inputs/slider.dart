@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'input_style.dart';
+import '../../appearance.dart';
 
 /// The size of a slider.
 enum SliderSize {
@@ -206,8 +207,7 @@ class _SilicaSliderState extends State<SilicaSlider> {
   Widget build(BuildContext context) {
     final colors = InputColors.of(context);
     final active = WindowActiveScope.of(context);
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     final m = _m;
     final tickRow = widget.ticks && (widget.divisions ?? 0) > 0;
     final tickSpace = tickRow

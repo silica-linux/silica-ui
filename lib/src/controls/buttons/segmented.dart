@@ -22,6 +22,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../glass_lens.dart';
 import 'control_style.dart';
+import '../../appearance.dart';
 
 /// How the segments behave.
 enum SegmentedMode {
@@ -165,16 +166,12 @@ class SegmentedColors {
 
   /// The large (section switch) colors, following the system appearance.
   static SegmentedColors of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? dark
-      : light;
+      SilicaAppearance.isDark(context) ? dark : light;
 
   /// The colors for `size`: the window control below large, the section switch at large.
   static SegmentedColors forSize(BuildContext context, ControlSize size) {
     if (size == ControlSize.large) return of(context);
-    return MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-        ? windowDark
-        : windowLight;
+    return SilicaAppearance.isDark(context) ? windowDark : windowLight;
   }
 }
 
@@ -660,8 +657,7 @@ class _SegmentedControlState extends State<SegmentedControl>
   Widget build(BuildContext context) {
     final colors = SegmentedColors.forSize(context, widget.size);
     final active = WindowActiveScope.of(context);
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     final accent = colors.accentPill ? ControlAccent.fillOf(context) : null;
     final lensHeld = _lensPointer != null;
     // The window control has no hover look (INV-B); the held lens is its own feedback.

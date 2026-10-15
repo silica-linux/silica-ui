@@ -18,6 +18,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'appearance.dart';
+import 'window.dart' show SilicaWindow;
+
 /// The app's lifecycle in Silica.
 abstract final class SilicaApp {
   static const MethodChannel channel = MethodChannel(
@@ -30,6 +33,18 @@ abstract final class SilicaApp {
   static bool _listening = false;
   static VoidCallback? _onLastWindowClosed;
   static Future<void> Function()? _onReopen;
+
+  /// The app-wide appearance override, as `NSApp.appearance` on macOS: [SilicaAppearance.dark]
+  /// for an app that is always dark (Clock). A window's own
+  /// `SilicaAppearanceScope.appearance` wins over it; `system` (the default) follows the
+  /// system. The scopes of the app follow a change, and the embedder is told for the window
+  /// (when the app has no `SilicaAppearanceScope`, it is sent here).
+  static SilicaAppearance get appearance => appAppearance.value;
+  static set appearance(SilicaAppearance value) {
+    if (appAppearance.value == value) return;
+    appAppearance.value = value;
+    if (activeAppearanceScopes == 0) SilicaWindow.setAppearance(value);
+  }
 
   /// Called when the last window has closed and the app keeps running: drop what belonged
   /// to that window (its document, its terminal session).
@@ -131,6 +146,7 @@ abstract final class SilicaApp {
   static void reset() {
     _quitWhenLastWindowCloses = false;
     _quitEnabled = true;
+    appAppearance.value = SilicaAppearance.system;
     _onLastWindowClosed = null;
     _onReopen = null;
   }

@@ -15,6 +15,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'appearance.dart';
 import 'toolbar.dart' show ToolbarGlassMetrics;
 
 /// Height of the unified toolbar.
@@ -46,6 +47,13 @@ abstract final class SilicaWindow {
       return false;
     }
   }
+
+  /// Overrides the system appearance for this window in Ossido (`silica-window-v1` ›
+  /// `set_appearance`): the traffic lights, the plain title bar and its title, the shadow, the
+  /// glass the window declares and the arrangement popover. [SilicaAppearanceScope] and
+  /// `SilicaApp.appearance` call it; true if Ossido offers it.
+  static Future<bool> setAppearance(SilicaAppearance appearance) =>
+      _call('setAppearance', {'appearance': appearance.wireName});
 
   /// Chooses the window size (logical pixels). True if Silica applied it.
   static Future<bool> setSize(Size size) =>
@@ -276,11 +284,9 @@ class ToolbarColors {
     glow: Color(0x1FFFFFFF),
   );
 
-  /// Following the system appearance (`MediaQuery.platformBrightness`).
+  /// Following the appearance in effect (the override, otherwise the system's).
   static ToolbarColors of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? dark
-      : light;
+      SilicaAppearance.isDark(context) ? dark : light;
 }
 
 /// The bar state the controls read: the active window and the pointer in the bar

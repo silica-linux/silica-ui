@@ -16,6 +16,7 @@ import 'package:flutter/widgets.dart';
 import 'input_style.dart';
 import 'stepper.dart';
 import 'text_field.dart' show FieldBox;
+import '../../appearance.dart';
 
 /// What a date field shows.
 enum DateFieldMode { date, time, dateAndTime }
@@ -474,8 +475,7 @@ class _SilicaCalendarState extends State<SilicaCalendar> {
   Widget build(BuildContext context) {
     final colors = InputColors.of(context);
     final active = WindowActiveScope.of(context);
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     final accent = active
         ? ControlAccent.of(context)
         : colors.accentFor(active: false);

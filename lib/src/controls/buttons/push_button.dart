@@ -13,6 +13,7 @@
 import 'package:flutter/widgets.dart';
 
 import 'control_style.dart';
+import '../../appearance.dart';
 
 /// What a button does: decides its color (Return for the default one is up to the app).
 enum ButtonRole { normal, primary, destructive }
@@ -375,9 +376,7 @@ class ImageButtonColors {
 
   /// In a window, following the system appearance ([onGlass] is for glass modules).
   static ImageButtonColors of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? dark
-      : light;
+      SilicaAppearance.isDark(context) ? dark : light;
 }
 
 /// A glyph without a bezel (transport buttons): only the glyph color changes, under the pointer

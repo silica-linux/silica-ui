@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../control_base.dart';
+import '../../appearance.dart';
 
 export '../control_base.dart';
 
@@ -196,11 +197,9 @@ class ControlColors {
     fieldBorder: Color(0xFF4A4A4A), // provisional
   );
 
-  /// Following the system appearance (`MediaQuery.platformBrightness`).
+  /// Following the appearance in effect (the override, otherwise the system's).
   static ControlColors of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? darkColors
-      : light;
+      SilicaAppearance.isDark(context) ? darkColors : light;
 }
 
 /// The interaction state of a control.

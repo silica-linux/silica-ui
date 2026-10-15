@@ -14,6 +14,7 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 
 import 'input_style.dart';
+import '../../appearance.dart';
 
 /// The size of a progress bar.
 enum ProgressSize {
@@ -97,8 +98,7 @@ class _SilicaProgressBarState extends State<SilicaProgressBar>
     final colors = InputColors.of(context);
     final small = widget.size == ProgressSize.small;
     final value = widget.value?.clamp(0.0, 1.0);
-    final dark =
-        MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
+    final dark = SilicaAppearance.isDark(context);
     // The plain accent; gray in an inactive window, as the slider fill (INV-B gallery).
     final fill =
         widget.color ??

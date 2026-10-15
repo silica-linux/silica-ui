@@ -21,6 +21,7 @@ import 'glass.dart';
 import 'liquid_glass.dart';
 import 'tip_outline.dart';
 import 'window_glass.dart';
+import 'appearance.dart';
 
 /// A row of a menu.
 @immutable
@@ -186,11 +187,9 @@ class MenuColors {
     opaqueBorder: Color(0xDB000000),
   );
 
-  /// Following the system appearance (`MediaQuery.platformBrightness`).
+  /// Following the appearance in effect (the override, otherwise the system's).
   static MenuColors of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? dark
-      : light;
+      SilicaAppearance.isDark(context) ? dark : light;
 }
 
 TextStyle _style(double size, Color color, {FontWeight? weight}) => TextStyle(

@@ -20,6 +20,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../window.dart';
 import 'common.dart';
+import '../../appearance.dart';
 
 /// The measured veil of the band under the toolbar, light or dark.
 @immutable
@@ -97,9 +98,7 @@ class ToolbarVeil {
   );
 
   static ToolbarVeil of(BuildContext context) =>
-      MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark
-      ? dark
-      : light;
+      SilicaAppearance.isDark(context) ? dark : light;
 
   static const List<double> _luma = [0.2126, 0.7152, 0.0722];
 

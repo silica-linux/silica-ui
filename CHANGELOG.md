@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.32.0 · 2026-10-15
+
+Appearance override, as `NSApp.appearance` / `NSWindow.appearance` on macOS (an always-dark app
+such as Clock).
+
+- **Added:** `SilicaAppearance` (`system`, `light`, `dark`), `SilicaAppearanceScope(appearance:,
+  child:)` (the window level) and `SilicaApp.appearance` (the app level; the window's wins unless
+  it is `system`). Under an override every component, color set and token of the library
+  (toolbar, segmented, push buttons, inputs, menus, alerts, window glass...) resolves against it
+  instead of `MediaQuery.platformBrightness`, which the scope also overrides for the app's own
+  widgets when a `MediaQuery` is above it. Put the scope above the `WidgetsApp` so the overlays
+  are under it.
+- **Added:** `SilicaAppearance.isDark(context)` / `brightnessOf(context)`, the single place
+  that decides the brightness (the library no longer reads `MediaQuery` for it anywhere else).
+- **Added:** the override is sent to the embedder (`SilicaWindow.setAppearance`,
+  `silica/window` › `setAppearance {appearance}`), which forwards it to Ossido
+  (`silica-window-v1` v3 `set_appearance`): traffic lights, plain title bar, shadow, the glass
+  the window declares and the arrangement popover follow it. An embedder without the call is
+  ignored.
+
 ## 0.31.0 · 2026-10-15
 
 Glass regions carry their rotation.
