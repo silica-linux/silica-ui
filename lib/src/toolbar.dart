@@ -45,6 +45,11 @@ abstract final class ToolbarGlassMetrics {
   /// A selection pill is the segment width minus this (40 → 34).
   static const double selectionInset = 6;
 
+  /// A selection pill in the first or last segment is this far from the capsule's round end,
+  /// as from its top and bottom: (36 − 28) / 2 = 4 pt inside the 1 pt outline, 5 pt from the
+  /// capsule's outer edge on every side (34 × 28 on a 40 pt segment, measured).
+  static const double pillInset = (toolbarCapsuleHeight - 2 - pillHeight) / 2;
+
   /// The hover highlight fades in and out in this time.
   static const Duration hoverFade = Duration(milliseconds: 170);
 
@@ -440,6 +445,8 @@ class _ToolbarCapsuleState extends State<ToolbarCapsule>
                     _CapsuleSlot(
                       capsule: this,
                       index: i,
+                      first: i == 0,
+                      last: i == children.length - 1,
                       shape: shape,
                       highlighted: highlighted == i,
                       pressed: _held && highlighted == i,
@@ -671,6 +678,8 @@ class _CapsuleSlot extends InheritedWidget {
   const _CapsuleSlot({
     required this.capsule,
     required this.index,
+    required this.first,
+    required this.last,
     required this.shape,
     required this.highlighted,
     required this.pressed,
@@ -681,6 +690,11 @@ class _CapsuleSlot extends InheritedWidget {
 
   final _ToolbarCapsuleState capsule;
   final int index;
+
+  /// The first and the last segment of the capsule: their selection pill keeps the same inset
+  /// from the capsule's round end as from its top and bottom.
+  final bool first;
+  final bool last;
 
   /// Null: the only segment, lit as a whole (the capsule inset by 1 pt, Search 36 × 34).
   final ToolbarHighlight? shape;
@@ -704,6 +718,8 @@ class _CapsuleSlot extends InheritedWidget {
   bool updateShouldNotify(_CapsuleSlot old) =>
       old.capsule != capsule ||
       old.index != index ||
+      old.first != first ||
+      old.last != last ||
       old.shape != shape ||
       old.highlighted != highlighted ||
       old.pressed != pressed ||
@@ -813,6 +829,15 @@ class _ToolbarSegmentState extends State<ToolbarSegment>
         ? toolbarCapsuleHeight - 4
         : ToolbarGlassMetrics.pillHeight;
     final highlighted = (slot?.highlighted ?? false) && enabled;
+    // The selection pill sits as far from the capsule's round ends as from its top and bottom
+    // (5 pt from the outline, measured); between other segments it is centred.
+    var align = Alignment.center;
+    final room = widget.width - pillWidth;
+    if (shape == ToolbarHighlight.selection && slot != null && room > 0) {
+      const inset = ToolbarGlassMetrics.pillInset;
+      if (slot.first && !slot.last) align = Alignment(2 * inset / room - 1, 0);
+      if (slot.last && !slot.first) align = Alignment(1 - 2 * inset / room, 0);
+    }
     return AnimatedBuilder(
       animation: _fade,
       builder: (context, _) {
@@ -849,6 +874,7 @@ class _ToolbarSegmentState extends State<ToolbarSegment>
               if (pill != null)
                 OverflowBox(
                   maxWidth: double.infinity,
+                  alignment: align,
                   child: Container(
                     key: const ValueKey('pill'),
                     width: pillWidth,

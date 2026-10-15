@@ -195,6 +195,47 @@ void main() {
       expect(pill(tester, 'view 2'), ToolbarColors.light.hover);
     });
 
+    testWidgets('the selection pill is inset 5 pt on every side (#89)', (
+      tester,
+    ) async {
+      for (var chosen = 0; chosen < 4; chosen++) {
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Center(
+              child: ToolbarCapsule(
+                key: const ValueKey('views'),
+                children: [
+                  for (var i = 0; i < 4; i++)
+                    ToolbarSegment(
+                      key: ValueKey('view $i'),
+                      width: 40,
+                      chosen: i == chosen,
+                      icon: (_) => const SizedBox(width: 10, height: 10),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+        final capsule = tester.getRect(find.byKey(const ValueKey('views')));
+        final pill = tester.getRect(pillOf('view $chosen'));
+        final segment = tester.getRect(find.byKey(ValueKey('view $chosen')));
+        expect(capsule.size, const Size(162, 38));
+        expect(pill.size, const Size(34, 28));
+        expect(pill.top - capsule.top, 5, reason: 'top, segment $chosen');
+        expect(capsule.bottom - pill.bottom, 5, reason: 'bottom');
+        switch (chosen) {
+          case 0:
+            expect(pill.left - capsule.left, 5, reason: 'first: left');
+          case 3:
+            expect(capsule.right - pill.right, 5, reason: 'last: right');
+          default:
+            expect(pill.left - segment.left, segment.right - pill.right);
+        }
+      }
+    });
+
     testWidgets('disabled segments: no highlight, the separator stays', (
       tester,
     ) async {

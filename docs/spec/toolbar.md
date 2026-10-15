@@ -43,7 +43,9 @@ Colours at the centre of the pill, outside the glyph:
 
 - **Hover highlight** (TITLEBAR-GLASS): round, on the segment under the pointer. In a button pair
   (back / forward, button groups) a 28 pt circle centred on the segment; in a segmented group (view
-  switcher) a pill the size of the selection (segment width − 6, 28 tall, 5 pt inside the capsule);
+  switcher) a pill the size of the selection (segment width − 6, 28 tall), 5 pt inside the capsule
+  on every side: in the first and last segment it keeps 5 pt from the round end, in the others it is
+  centred on the segment (the selected pill sits the same way);
   a single round button lights as a whole (the capsule minus 2 pt). Dark +20 levels over the
   capsule, light −10. It fades in and out in ~170 ms. The separators next to it hide. Disabled
   segments get none.
