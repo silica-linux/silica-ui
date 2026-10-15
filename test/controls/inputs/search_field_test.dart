@@ -190,4 +190,89 @@ void main() {
       isTrue,
     );
   });
+
+  group('vertical centering in a taller box', () {
+    for (final style in SearchFieldStyle.values) {
+      for (final withTokens in [false, true]) {
+        testWidgets('${style.name}${withTokens ? ' with token' : ''}', (
+          tester,
+        ) async {
+          final capsuleHeight = style == SearchFieldStyle.toolbar ? 38.0 : 28.0;
+          await pumpControl(
+            tester,
+            Center(
+              child: SizedBox(
+                key: const ValueKey('slot'),
+                width: 260,
+                height: capsuleHeight,
+                child: SilicaSearchField(
+                  labels: labels,
+                  style: style,
+                  width: 260,
+                  tokens: withTokens
+                      ? const [SearchToken(label: 'Name', value: 'a')]
+                      : const [],
+                ),
+              ),
+            ),
+          );
+          final field = tester.getRect(find.byType(SilicaSearchField));
+          expect(field.height, capsuleHeight);
+          final Finder capsule = style == SearchFieldStyle.toolbar
+              ? find.byWidgetPredicate(
+                  (w) => w is CustomPaint && w.painter is ToolbarFieldPainter,
+                )
+              : find
+                    .descendant(
+                      of: find.byType(SilicaSearchField),
+                      matching: find.byType(DecoratedBox),
+                    )
+                    .first;
+          expect(tester.getRect(capsule), field);
+          final magnifier = tester.getRect(
+            find.byWidgetPredicate(
+              (w) => w is CustomPaint && w.painter is MagnifierGlyph,
+            ),
+          );
+          expect(magnifier.center.dy, closeTo(field.center.dy, 0.5));
+          final text = tester.getRect(find.byType(EditableText));
+          expect(text.center.dy, closeTo(field.center.dy, 0.5));
+          if (withTokens) {
+            final token = tester.getRect(find.byType(SearchTokenChip));
+            expect(token.center.dy, closeTo(field.center.dy, 0.5));
+          }
+        });
+      }
+    }
+
+    testWidgets('a field stretched by a taller tight box fills it', (
+      tester,
+    ) async {
+      for (final style in SearchFieldStyle.values) {
+        await pumpControl(
+          tester,
+          Center(
+            child: SizedBox(
+              width: 260,
+              height: 60,
+              child: Align(
+                child: SilicaSearchField(labels: labels, style: style),
+              ),
+            ),
+          ),
+        );
+        final field = tester.getRect(find.byType(SilicaSearchField));
+        final magnifier = tester.getRect(
+          find.byWidgetPredicate(
+            (w) => w is CustomPaint && w.painter is MagnifierGlyph,
+          ),
+        );
+        expect(magnifier.center.dy, closeTo(field.center.dy, 0.5));
+        expect(
+          tester.getRect(find.byType(EditableText)).center.dy,
+          closeTo(field.center.dy, 0.5),
+        );
+      }
+    });
+  });
 }

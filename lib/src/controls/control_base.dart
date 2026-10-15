@@ -432,6 +432,10 @@ class FocusRing extends StatelessWidget {
     return Stack(
       alignment: Alignment.topLeft,
       textDirection: TextDirection.ltr,
+      // Pass the incoming constraints on: a loose Stack would hand the child loose
+      // ones, so a child in a tight box (a field in its 38 pt capsule) shrank to its
+      // content and sat at the top instead of filling the box.
+      fit: StackFit.passthrough,
       clipBehavior: Clip.none,
       children: [
         child,

@@ -140,4 +140,43 @@ void main() {
     expect(fill, const Color(0xFFDB373D));
     expect(ring, const Color(0xFFEC9894));
   });
+
+  testWidgets('FocusRing fills a tight box and keeps a loose child its size', (
+    tester,
+  ) async {
+    const key = ValueKey('child');
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          child: SizedBox(
+            width: 100,
+            height: 60,
+            child: FocusRing(visible: true, child: SizedBox.expand(key: key)),
+          ),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byKey(key)), const Size(100, 60));
+    expect(tester.getSize(find.byType(FocusRing)), const Size(100, 60));
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          child: SizedBox(
+            width: 100,
+            height: 60,
+            child: Align(
+              child: FocusRing(
+                visible: true,
+                child: SizedBox(key: key, width: 40, height: 20),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byKey(key)), const Size(40, 20));
+    expect(tester.getSize(find.byType(FocusRing)), const Size(40, 20));
+  });
 }
