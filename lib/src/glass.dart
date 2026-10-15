@@ -221,10 +221,16 @@ class RenderGlass extends RenderProxyBox {
 
   /// The region in logical pixels of the surface, with the ancestors' transforms
   /// (a swelling glass grows in the compositor too, radius included).
+  ///
+  /// Under a rotation (a label tilted with its object) the region also carries its `frame`
+  /// (silica-glass-v1 version 8): the transform of its own rectangle, from which the embedder
+  /// sends the upright rectangle and the angle. `x` … `height` stay the bounding box, for an
+  /// earlier embedder or compositor.
   Map<String, Object> region() {
     final transform = getTransformTo(null);
     final rect = MatrixUtils.transformRect(transform, Offset.zero & size);
     final factor = size.width > 0 ? rect.width / size.width : 1.0;
+    final frame = glassFrame(transform, Offset.zero & size, radius);
     return {
       'x': rect.left,
       'y': rect.top,
@@ -235,6 +241,7 @@ class RenderGlass extends RenderProxyBox {
       'opacity': opacity,
       if (group != 0) 'group': group,
       ..._profileKeys,
+      'frame': ?frame,
     };
   }
 
@@ -243,36 +250,36 @@ class RenderGlass extends RenderProxyBox {
     final body = region();
     final tip = this.tip;
     if (tip == null) return [body];
-    final rect = MatrixUtils.transformRect(
-      getTransformTo(null),
-      switch (tip.edge) {
-        TipEdge.bottom => Rect.fromLTWH(
-          tip.x - tip.width / 2,
-          size.height,
-          tip.width,
-          tip.height,
-        ),
-        TipEdge.top => Rect.fromLTWH(
-          tip.x - tip.width / 2,
-          -tip.height,
-          tip.width,
-          tip.height,
-        ),
-        // Sideways the rectangle's width is the depth and its height the base.
-        TipEdge.left => Rect.fromLTWH(
-          -tip.height,
-          tip.x - tip.width / 2,
-          tip.height,
-          tip.width,
-        ),
-        TipEdge.right => Rect.fromLTWH(
-          size.width,
-          tip.x - tip.width / 2,
-          tip.height,
-          tip.width,
-        ),
-      },
-    );
+    final transform = getTransformTo(null);
+    final local = switch (tip.edge) {
+      TipEdge.bottom => Rect.fromLTWH(
+        tip.x - tip.width / 2,
+        size.height,
+        tip.width,
+        tip.height,
+      ),
+      TipEdge.top => Rect.fromLTWH(
+        tip.x - tip.width / 2,
+        -tip.height,
+        tip.width,
+        tip.height,
+      ),
+      // Sideways the rectangle's width is the depth and its height the base.
+      TipEdge.left => Rect.fromLTWH(
+        -tip.height,
+        tip.x - tip.width / 2,
+        tip.height,
+        tip.width,
+      ),
+      TipEdge.right => Rect.fromLTWH(
+        size.width,
+        tip.x - tip.width / 2,
+        tip.height,
+        tip.width,
+      ),
+    };
+    final rect = MatrixUtils.transformRect(transform, local);
+    final frame = glassFrame(transform, local, 0);
     return [
       body,
       {
@@ -290,6 +297,7 @@ class RenderGlass extends RenderProxyBox {
         },
         if (group != 0) 'group': group,
         ..._profileKeys,
+        'frame': ?frame,
       },
     ];
   }
@@ -307,6 +315,31 @@ class RenderGlass extends RenderProxyBox {
     }
     return value.clamp(0.0, 1.0);
   }
+}
+
+/// The `frame` of a glass region whose transform to the surface turns it (silica-glass-v1
+/// version 8): `transform` [a, b, c, d, tx, ty] takes the region's own rectangle
+/// (0, 0)–(width, height) to the surface (x' = a·x + c·y + tx, y' = b·x + d·y + ty), with
+/// `local`'s size and `radius` before the transform. Null for an upright transform
+/// (translated or scaled): the bounding box is already the shape.
+@visibleForTesting
+Map<String, Object>? glassFrame(Matrix4 transform, Rect local, double radius) {
+  final m = transform.storage;
+  final (a, b, c, d) = (m[0], m[1], m[4], m[5]);
+  if (b.abs() < 1e-9 && c.abs() < 1e-9) return null;
+  return {
+    'transform': [
+      a,
+      b,
+      c,
+      d,
+      m[12] + a * local.left + c * local.top,
+      m[13] + b * local.left + d * local.top,
+    ],
+    'width': local.width,
+    'height': local.height,
+    'radius': radius,
+  };
 }
 
 /// Collects the glass areas after every frame and sends them to the embedder when they change.

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -284,5 +286,55 @@ void main() {
       expect(region['profile'], 'tooltip');
       expect(region['shadow'], true);
     }
+  });
+  testWidgets('a turned glass sends its frame, an upright one does not', (
+    tester,
+  ) async {
+    final calls = <MethodCall>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      GlassRegistry.channel,
+      (call) async {
+        calls.add(call);
+        return true;
+      },
+    );
+    Widget glass(double angle) => Directionality(
+      textDirection: TextDirection.ltr,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 10,
+            top: 20,
+            width: 100,
+            height: 28,
+            child: Transform.rotate(
+              angle: angle,
+              child: const Glass(radius: 14, child: SizedBox.expand()),
+            ),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(glass(0));
+    await tester.pump();
+    var region =
+        (calls.last.arguments as List<Object?>).first! as Map<Object?, Object?>;
+    expect(region.containsKey('frame'), isFalse);
+
+    await tester.pumpWidget(glass(12 * math.pi / 180));
+    await tester.pump();
+    region =
+        (calls.last.arguments as List<Object?>).first! as Map<Object?, Object?>;
+    final frame = region['frame']! as Map<Object?, Object?>;
+    final t = (frame['transform']! as List<Object?>).cast<double>();
+    expect(math.atan2(t[1], t[0]) * 180 / math.pi, closeTo(12, 1e-9));
+    expect(frame['width'], 100);
+    expect(frame['height'], 28);
+    expect(frame['radius'], 14);
+    // The local centre lands on the centre of the turn (the box's centre).
+    expect(t[0] * 50 + t[2] * 14 + t[4], closeTo(60, 1e-9));
+    expect(t[1] * 50 + t[3] * 14 + t[5], closeTo(34, 1e-9));
+    // The bounding box stays in x … height, for an earlier embedder.
+    expect(region['width'] as double, greaterThan(100));
   });
 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.31.0 · 2026-10-15
+
+Glass regions carry their rotation.
+
+- **Added:** `glassFrame(Matrix4, Rect, double)` and a `frame` key (`transform`, `width`, `height`,
+  `radius`) in the region maps of `RenderGlass.region()` and `regions()` (body and tip), sent
+  only when the region is rotated, so the compositor can draw rotated glass (silica-glass-v1 v8
+  `set_rotation`). The bounding-box keys stay, for older embedders.
+
 ## 0.30.1 · 2026-10-15
 
 - **Fixed:** the large `SegmentedControl` (Clock's section switch) pill is ~89 × 28 pt (3 pt
