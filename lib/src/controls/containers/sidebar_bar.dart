@@ -2,27 +2,71 @@
 // titlebar.md, windows.md › Sidebar, mail.md › Viewer window). The sidebar runs from the top to
 // the bottom of the window; its top [toolbarHeight] is a bar of its own, beside the content's
 // toolbar and as tall: Ossido puts the window buttons on it, dragging it moves the window, and an
-// app may put items in it (Mail's sidebar button). The list starts below the bar (Finder: the
-// first row centred at y 68; Mail: "starts under the toolbar row") and scrolls under it, behind
-// the same veil as the content under its toolbar, so the bar shows the rows blurred and tinted.
+// app may put items in it (Mail's sidebar button). The first row is at +52 pt, so at rest nothing
+// lies under the bar.
 //
-// At rest the bar has the sidebar colour, without a band: the veil is anchored to the sidebar
-// background ([ToolbarVeil.anchoredTo]), active and inactive (windows.md: the inactive sidebar is
-// uniform from top to bottom).
+// SIDEBAR-GLASS (silica-reference #100, titlebar.md §4): when the list scrolls, the bar has NO
+// glass, no tint and no line. The rows are hidden by a progressive fade, with a light blur:
 //
-// PROVISIONAL (SIDEBAR-GLASS requested): the veil of the sidebar bar is the content's (MU-99),
-// not measured over the sidebar; no line under the bar when the list scrolls.
+//   y from the sidebar top   +62 and below  +60   +56   +52   +48   +44   +40   +36   +32  +0…+30
+//   visibility of the rows    1.00          0.97  0.86  0.74  0.63  0.48  0.36  0.25  0.17  0.14
+//   blur σ (pt)               0             0     0     0     1     1     1     1     2     2
+//
+// The window buttons and the bar's items sit over the faded rows.
+
+import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
 import '../../toolbar.dart' show ToolbarCapsule;
 import '../../window.dart';
-import 'scroll_under_toolbar.dart';
+import 'scroll_under_toolbar.dart' show ToolbarVeil;
+
+/// The measured fade of the rows that scroll under the top of a sidebar.
+abstract final class SidebarFade {
+  /// Distances from the sidebar top (pt) and the visibility of the rows there (0–1), light and
+  /// dark alike (light within ±0.02).
+  static const List<double> offsets = [
+    0,
+    30,
+    32,
+    36,
+    40,
+    44,
+    48,
+    52,
+    56,
+    60,
+    62,
+  ];
+  static const List<double> visibility = [
+    0.14, 0.14, 0.17, 0.25, 0.36, 0.48, 0.63, 0.74, 0.86, 0.97, 1.0, //
+  ];
+
+  /// Above this distance the rows are fully visible.
+  static const double clearAt = 62;
+
+  /// The visibility of a row at [y] pt from the sidebar top (linear between the samples).
+  static double visibilityAt(double y) {
+    if (y <= offsets.first) return visibility.first;
+    if (y >= offsets.last) return 1;
+    for (var i = 1; i < offsets.length; i++) {
+      if (y <= offsets[i]) {
+        final t = (y - offsets[i - 1]) / (offsets[i] - offsets[i - 1]);
+        return visibility[i - 1] + t * (visibility[i] - visibility[i - 1]);
+      }
+    }
+    return 1;
+  }
+
+  /// The blur σ (pt) at [y]: 2 up to +33, 1 up to +50, none from there.
+  static double blurAt(double y) => y <= 33 ? 2 : (y < 50 ? 1 : 0);
+}
 
 /// A full-height sidebar with its own top bar: [bar] (optional items; keep the first
 /// [windowButtonsRight] pt free for the window buttons) in the top [barHeight], and the list
 /// returned by [body] filling the whole sidebar, with the padding that puts its first row below
-/// the bar.
+/// the bar. The rows that scroll under the bar fade out ([SidebarFade]).
 ///
 /// ```dart
 /// SidebarScrollUnderBar(
@@ -40,7 +84,7 @@ class SidebarScrollUnderBar extends StatelessWidget {
     this.veil,
   });
 
-  /// The sidebar colour: painted under the list and kept by the bar at rest.
+  /// The sidebar colour: painted under the list; the bar has no colour of its own.
   final Color background;
 
   /// The list: it gets the padding of the bar.
@@ -51,25 +95,67 @@ class SidebarScrollUnderBar extends StatelessWidget {
   final Widget? bar;
   final double barHeight;
 
-  /// Null: following the system appearance.
+  /// No effect since 0.30.0, kept so that apps compile: the sidebar has no veil.
   final ToolbarVeil? veil;
+
+  static ui.Shader _fade(Rect bounds) {
+    final stops = [
+      for (final y in SidebarFade.offsets) y / SidebarFade.clearAt,
+    ];
+    return ui.Gradient.linear(
+      bounds.topLeft,
+      bounds.topLeft + const Offset(0, SidebarFade.clearAt),
+      [
+        for (final v in SidebarFade.visibility)
+          Color.fromARGB((v * 255).round(), 0, 0, 0),
+      ],
+      stops,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final veil = (this.veil ?? ToolbarVeil.of(context)).anchoredTo(background);
     return ColoredBox(
       color: background,
       child: Stack(
         children: [
           Positioned.fill(
-            child: body(context, EdgeInsets.only(top: barHeight)),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: barHeight,
-            child: ToolbarVeilLayer(veil: veil, name: 'sidebar bar veil'),
+            child: ShaderMask(
+              key: const ValueKey('sidebar fade'),
+              blendMode: BlendMode.dstIn,
+              shaderCallback: _fade,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: body(context, EdgeInsets.only(top: barHeight)),
+                  ),
+                  // Light blur of what lies in the top band: σ 2 up to +33, σ 1 up to +50.
+                  for (final (top, height, sigma) in const [
+                    (0.0, 33.0, 2.0),
+                    (33.0, 17.0, 1.0),
+                  ])
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: top,
+                      height: height,
+                      child: IgnorePointer(
+                        child: ClipRect(
+                          child: BackdropFilter(
+                            key: ValueKey('sidebar blur $sigma'),
+                            filter: ui.ImageFilter.blur(
+                              sigmaX: sigma,
+                              sigmaY: sigma,
+                              tileMode: TileMode.clamp,
+                            ),
+                            child: const SizedBox.expand(),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
           Positioned(
             key: const ValueKey('sidebar bar'),

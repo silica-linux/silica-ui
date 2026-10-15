@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.30.0 · 2026-10-15
+
+Sidebar and content scroll edges as measured (SIDEBAR-GLASS, silica-reference #100); the
+provisional behaviour of 0.28.0 is gone.
+
+- **Changed:** `SidebarScrollUnderBar` has no glass: rows scrolled under the top fade out
+  (fully visible from +62 pt, 14 % from +32 pt to the window top, as sampled at every 4 pt) with
+  a 1 to 2 pt blur, and no tint or line. The first row stays at +52 pt. The window buttons and
+  `bar` items sit over the faded rows. The `veil` parameter is kept but has no effect.
+- **New:** `SidebarFade` (`visibilityAt`, `blurAt`) exposes the measured fade.
+- **Changed:** `ScrollUnderToolbar` is invisible at rest (the content background, no tint or
+  line) and becomes a bar as soon as content scrolls under it: dark shows the content at 23 %
+  over a 40 lift with a 4.5 pt blur, light is opaque white; both with the 1 pt line. The
+  `background` and `columns` parameters are kept but have no effect. `ToolbarVeil.light` and
+  `.dark` hold the new values. An inactive window keeps the line but has no veil at rest.
+- **No app change needed:** the API is unchanged; Mustache and Mail get the new look as is.
+
 ## 0.29.2 · 2026-10-15
 
 Fix: the segmented control's lens refracts the control under it, and the pill and lens are
