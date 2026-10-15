@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.29.0 · 2026-10-15
+
+Glass profiles (silica-desktop#168, silica-glass-v1 version 7) and the measured segmented-control
+lens (LENS, silica-reference #92).
+
+- **New:** `GlassProfile` (`menu`, `panel`, `module`, `control`, `dock`, `tooltip`, `sheet`,
+  `banner`), `Glass.profile`, `LiquidGlass.profile`: the kind of surface, so Ossido picks that
+  kind's blur, refraction, edge light, tint and shadow. Null (the default) leaves the choice to
+  the material, as before. Sent on the `silica/glass` channel as the region's `profile` key.
+- **New:** `Glass.profileShadow`, `LiquidGlass.profileShadow` (the `shadow` key): Ossido draws the
+  profile's shadow under the glass. Off by default.
+- **Changed:** `MenuPanel` declares `GlassProfile.menu`, `Alert` `GlassProfile.sheet`, and the
+  segmented lens `GlassProfile.control`. (The toolbar capsules are not glass regions in this
+  library, so they declare nothing.)
+- **Changed (lens):** the pressed lens is the measured one. A capsule 91 x 48 pt, 6 pt past the
+  track at the top and bottom (`GlassLensMetrics.width`, `overhang`), magnifying 1.11 x. It is
+  nearly transparent: a dark outer edge, a 1 pt light line inside the top and bottom, faint
+  colour fringes on the curved ends (`GlassLensStyle.fringeWarm` / `fringeCool`) and, with the
+  shader, a small chromatic offset there (`GlassLensMetrics.chromaticOffset`, a new `uChroma`
+  uniform). Light and dark are the same (`GlassLensStyle.clear`).
+- **Changed (lens timing):** press on the selected segment, the lens shows at ~+120 ms and is full
+  at ~+240 ms with a small overshoot. Press on another segment, the pill starts to slide at
+  +28 ms, turns into the lens on the way and arrives at ~+400 ms (settled by ~+500 ms). The
+  springs are replaced by the measured curves (`appearCurve`, `appearTravelCurve`,
+  `travelCurve`, `KeyframeCurve`).
+- **Changed (lens drag):** the lens follows the pointer continuously (not segment to segment),
+  clamped between the first and last segment centres; releasing inside chooses the segment under
+  it (the content changes after the release only) and the lens retracts in 130 ms; releasing
+  outside cancels (lens 100 ms, pill back in 200 ms). Hover stays instant.
+- **Removed:** `GlassLensMetrics.widthScale`, `heightScale`, `travelSpring`, `appearSpring`,
+  `disappearSpring`; `glassLensRect` takes the lens size instead. The *provisional* marks on the
+  lens are gone (not the stretch of the pill while it accelerates, which is not drawn).
+
 ## 0.28.2 · 2026-10-15
 
 - **Fix:** the segmented control's pressed lens is clear Liquid Glass, not a solid body: it

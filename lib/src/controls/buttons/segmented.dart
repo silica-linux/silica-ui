@@ -8,11 +8,11 @@
 // above and `#626262` below, outer line `#0b0b0b`) with a 28 pt pill inset by 4 pt (`#525252`–
 // `#555555`, `#464646` in an inactive window), semibold 13 pt labels; the pill moves in ~300 ms,
 // decelerating; hovering shows a highlight (clock.md › Section switch); light uses the toolbar
-// capsule colors (MU-07). Provisional: the window track's exact gray (the push button fill), the
+// capsule colors (MU-07). The lens while pressed is measured (clock.md, LENS): see
+// GlassLensMetrics. Provisional: the window track's exact gray (the push button fill), the
 // mini size, Clock's dark pressed colors.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -201,10 +201,11 @@ const Duration segmentedPillDuration = Duration(milliseconds: 300);
 ///
 /// With the [lens] (by default the large control in [SegmentedMode.selectOne], Clock's section
 /// switch), pressing swells the selection into a [GlassLens] that magnifies the labels under it
-/// and travels with a spring to the enabled segment under the pointer as it is dragged across
-/// the control; releasing inside the control chooses the segment under the lens, and the lens
-/// shrinks back into the pill. With reduced motion the lens appears, jumps and disappears
-/// without animation.
+/// and slides to the pressed segment (measured timings in [GlassLensMetrics]); dragged, it
+/// follows the pointer continuously, clamped between the first and last segment centres.
+/// Releasing inside the control chooses the segment under the lens (after the release, never
+/// during the drag) and the lens shrinks back into the pill in ~130 ms; releasing outside
+/// cancels. With reduced motion the lens appears, jumps and disappears without animation.
 class SegmentedControl extends StatefulWidget {
   const SegmentedControl({
     super.key,
@@ -258,9 +259,21 @@ class _SegmentedControlState extends State<SegmentedControl>
     vsync: this,
   )..addListener(_changed);
 
-  /// While the lens is held: the segment it travels to.
+  /// While the lens is held: the last enabled segment under it.
   int? _lensAt;
   int? _lensPointer;
+
+  /// The slide of the pill to the pressed segment (0..1 over the travel time).
+  late final AnimationController _slide = AnimationController(
+    vsync: this,
+    duration: GlassLensMetrics.travelDuration,
+  )..addListener(_changed);
+  double _slideFrom = 0;
+  double _pointerX = 0;
+
+  /// The lens centre minus the pointer x at the press, so the lens starts on the segment centre
+  /// and then follows the pointer 1:1.
+  double _grab = 0;
 
   bool get _enabled => widget.onChanged != null;
   bool get _reduced => MediaQuery.maybeDisableAnimationsOf(context) ?? false;
@@ -300,6 +313,7 @@ class _SegmentedControlState extends State<SegmentedControl>
   void dispose() {
     _pill.dispose();
     _lens.dispose();
+    _slide.dispose();
     super.dispose();
   }
 
@@ -313,31 +327,40 @@ class _SegmentedControlState extends State<SegmentedControl>
 
   double _leftOf(int i) => segmentedInset(widget.size) + i * _segment;
 
-  /// Moves the pill to segment `i`: on the lens spring while the lens shows, otherwise in the
-  /// measured ~300 ms; at once with reduced motion.
-  void _movePill(int i) {
+  /// Moves the pill to segment `i` in `duration` (by default the measured ~300 ms); at once with
+  /// reduced motion.
+  void _movePill(int i, {Duration duration = segmentedPillDuration}) {
     final target = _leftOf(i);
     if (_pillTarget == target) return;
     _pillTarget = target;
     if (_reduced) {
       _pill.value = target;
-    } else if (_lensPointer != null || _lens.value > 0) {
-      _pill.animateWith(
-        SpringSimulation(
-          GlassLensMetrics.travelSpring,
-          _pill.value,
-          target,
-          _pill.velocity,
-          tolerance: const Tolerance(distance: 0.01, velocity: 0.1),
-        ),
-      );
     } else {
-      _pill.animateTo(
-        target,
-        duration: segmentedPillDuration,
-        curve: Curves.easeOutCubic,
-      );
+      _pill.animateTo(target, duration: duration, curve: Curves.easeOutCubic);
     }
+  }
+
+  double _centreOf(int i) => _leftOf(i) + _segment / 2;
+
+  /// While the lens is held: where its centre wants to be, the pointer's x clamped between the
+  /// first and last segment centres.
+  double get _lensCentreWanted {
+    final n = widget.segments.length;
+    return (_pointerX + _grab).clamp(_centreOf(0), _centreOf(n - 1));
+  }
+
+  /// While the lens is held: the pill's left edge. It slides to the wanted place (after the
+  /// start delay, on the measured curve) and then follows it exactly.
+  double get _heldLeft {
+    final to = _lensCentreWanted - _segment / 2;
+    final total = GlassLensMetrics.travelDuration.inMicroseconds;
+    final delay = GlassLensMetrics.travelDelay.inMicroseconds;
+    final local = ((_slide.value * total - delay) / (total - delay)).clamp(
+      0.0,
+      1.0,
+    );
+    final e = GlassLensMetrics.travelCurve.transform(local);
+    return _slideFrom + (to - _slideFrom) * e;
   }
 
   /// At rest: the pill goes to the chosen segment.
@@ -346,33 +369,31 @@ class _SegmentedControlState extends State<SegmentedControl>
     if (rest != null) _movePill(rest);
   }
 
-  void _showLens(bool on) {
+  /// The lens appears (`travel`: the pill first slides to another segment) or retracts in
+  /// `retract`.
+  void _showLens(bool on, {bool travel = false, Duration? retract}) {
     final target = on ? 1.0 : 0.0;
     if (_reduced) {
       _lens.value = target;
       return;
     }
-    _lens.animateWith(
-      SpringSimulation(
-        on ? GlassLensMetrics.appearSpring : GlassLensMetrics.disappearSpring,
-        _lens.value,
-        target,
-        _lens.velocity,
-        tolerance: const Tolerance(distance: 0.002, velocity: 0.05),
-      ),
-    );
-    if (!on) {
-      // Rest exactly at 0 once the spring settles (it may dip below).
-      _lens
-        ..removeStatusListener(_hidden)
-        ..addStatusListener(_hidden);
+    if (on) {
+      _lens.animateTo(
+        1,
+        duration: travel
+            ? GlassLensMetrics.appearTravelDuration
+            : GlassLensMetrics.appearDuration,
+        curve: travel
+            ? GlassLensMetrics.appearTravelCurve
+            : GlassLensMetrics.appearCurve,
+      );
+    } else {
+      _lens.animateTo(
+        0,
+        duration: retract ?? GlassLensMetrics.retractDuration,
+        curve: Curves.easeInOut,
+      );
     }
-  }
-
-  void _hidden(AnimationStatus status) {
-    if (status != AnimationStatus.completed) return;
-    _lens.removeStatusListener(_hidden);
-    if (_lensPointer == null) _lens.value = 0;
   }
 
   TextStyle _style(Color color) => controlTextStyle(
@@ -412,14 +433,13 @@ class _SegmentedControlState extends State<SegmentedControl>
     return i >= 0 && i < widget.segments.length ? i : null;
   }
 
-  /// While the lens is held: the segment under the pointer along the row (clamped to the
-  /// ends), or null over a disabled one.
-  int? _lensIndexAt(Offset local) {
+  /// The segment under the x position `x` along the row (clamped to the ends).
+  int _indexUnder(double x) {
     final n = widget.segments.length;
-    if (n == 0 || _segment <= 0) return null;
-    final x = local.dx - segmentedInset(widget.size);
-    final i = (x / _segment).floor().clamp(0, n - 1);
-    return widget.segments[i].enabled ? i : null;
+    return ((x - segmentedInset(widget.size)) / _segment).floor().clamp(
+      0,
+      n - 1,
+    );
   }
 
   bool _within(Offset local) =>
@@ -443,14 +463,21 @@ class _SegmentedControlState extends State<SegmentedControl>
       _lensPointer = e.pointer;
       _lensAt = i;
       _inside = true;
-      // The lens grows out of the chosen pill and travels to the pressed segment; without a
-      // choice it appears on the pressed one.
-      if (_restIndex == null) {
-        _pillTarget = _leftOf(i);
-        _pill.value = _pillTarget!;
+      _pointerX = e.localPosition.dx;
+      _grab = _centreOf(i) - _pointerX;
+      // The lens grows out of the chosen pill; without a choice it appears on the pressed
+      // segment.
+      _pill.stop();
+      _pillTarget = null;
+      if (_restIndex == null) _pill.value = _leftOf(i);
+      _slideFrom = _pill.value;
+      final travel = (_slideFrom - _leftOf(i)).abs() > 0.5;
+      if (travel && !_reduced) {
+        _slide.forward(from: 0);
+      } else {
+        _slide.value = 1;
       }
-      _showLens(true);
-      _movePill(i);
+      _showLens(true, travel: travel);
       setState(() {});
       return;
     }
@@ -464,11 +491,9 @@ class _SegmentedControlState extends State<SegmentedControl>
     if (_lensPointer != null) {
       if (e.pointer != _lensPointer) return;
       _inside = _within(e.localPosition);
-      final i = _lensIndexAt(e.localPosition);
-      if (i != null && i != _lensAt) {
-        _lensAt = i;
-        _movePill(i);
-      }
+      _pointerX = e.localPosition.dx;
+      final i = _indexUnder(_lensCentreWanted);
+      if (widget.segments[i].enabled) _lensAt = i;
       setState(() {});
       return;
     }
@@ -482,7 +507,7 @@ class _SegmentedControlState extends State<SegmentedControl>
     if (_lensPointer != null) {
       if (e.pointer != _lensPointer) return;
       final target = _within(e.localPosition) ? _lensAt : null;
-      _releaseLens();
+      _releaseLens(choose: target);
       if (target != null) {
         _focusIndex = target;
         _activate(target);
@@ -501,17 +526,31 @@ class _SegmentedControlState extends State<SegmentedControl>
 
   void _cancel(PointerCancelEvent e) {
     if (_lensPointer != null) {
-      if (e.pointer == _lensPointer) _releaseLens();
+      if (e.pointer == _lensPointer) _releaseLens(choose: null);
       return;
     }
     setState(() => _pressed = null);
   }
 
-  void _releaseLens() {
+  /// Releases the lens: `choose` is the segment it settles on (the lens retracts in ~130 ms),
+  /// or null to cancel (it retracts in ~100 ms and the pill slides back in ~200 ms).
+  void _releaseLens({required int? choose}) {
+    _pill.value = _heldLeft;
+    _pillTarget = null;
+    _slide.value = 1;
     _lensPointer = null;
     _lensAt = null;
     _inside = false;
-    _showLens(false);
+    final back = choose ?? _restIndex;
+    if (choose != null) {
+      _showLens(false);
+      _movePill(choose, duration: GlassLensMetrics.retractDuration);
+    } else {
+      _showLens(false, retract: GlassLensMetrics.cancelRetractDuration);
+      if (back != null) {
+        _movePill(back, duration: GlassLensMetrics.cancelReturnDuration);
+      }
+    }
     setState(() {});
     // After the app has answered (it may choose the segment, or not), the pill rests on the
     // chosen segment.
@@ -636,7 +675,12 @@ class _SegmentedControlState extends State<SegmentedControl>
         final color = base.withValues(
           alpha: base.a * (1 - _lens.value.clamp(0.0, 1.0)),
         );
-        pillRect = Rect.fromLTWH(_pill.value, inset, _segment, pillHeight);
+        pillRect = Rect.fromLTWH(
+          lensHeld ? _heldLeft : _pill.value,
+          inset,
+          _segment,
+          pillHeight,
+        );
         layers.add(
           Positioned.fromRect(
             key: const ValueKey('chosen pill'),
@@ -705,7 +749,14 @@ class _SegmentedControlState extends State<SegmentedControl>
       layers.add(
         Positioned.fill(
           child: GlassLens(
-            rect: glassLensRect(pillRect, presence),
+            rect: glassLensRect(
+              pillRect,
+              presence,
+              lens: Size(
+                GlassLensMetrics.width,
+                height + 2 * GlassLensMetrics.overhang,
+              ),
+            ),
             presence: presence,
             material: GlassLensMetrics.material,
             style: GlassLensStyle.of(

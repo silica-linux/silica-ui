@@ -13,6 +13,8 @@ uniform vec2 uSize;
 uniform float uRim;
 // How far the band pulls the content inward, as a fraction of the band.
 uniform float uStrength;
+// The chromatic offset at the curved ends, in pt.
+uniform float uChroma;
 // Set by the engine: the content under the filter.
 uniform sampler2D uTexture;
 
@@ -37,5 +39,11 @@ void main() {
 #ifdef IMPELLER_TARGET_OPENGLES
   uv.y = 1.0 - uv.y;
 #endif
-  fragColor = texture(uTexture, uv);
+  // At the curved ends red and blue are sampled slightly apart along the outward direction.
+  float endAmount = clamp((abs(p.x) - spine.x) / max(r, 1.0), 0.0, 1.0) * t;
+  vec2 shift = dir * uChroma * endAmount / uSize;
+  vec4 mid = texture(uTexture, uv);
+  vec4 red = texture(uTexture, uv - shift);
+  vec4 blue = texture(uTexture, uv + shift);
+  fragColor = vec4(red.r, mid.g, blue.b, mid.a);
 }
