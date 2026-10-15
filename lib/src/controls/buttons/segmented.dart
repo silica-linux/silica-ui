@@ -12,9 +12,11 @@
 // mini size, Clock's dark pressed colors.
 
 import 'package:flutter/gestures.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../glass_lens.dart';
 import 'control_style.dart';
 
 /// How the segments behave.
@@ -196,6 +198,13 @@ const Duration segmentedPillDuration = Duration(milliseconds: 300);
 /// pressed (released inside it) or activated with Space: in [SegmentedMode.selectOne] the app
 /// chooses it, in [SegmentedMode.selectAny] it toggles it, in [SegmentedMode.momentary] it acts.
 /// Segments are as wide as the widest one unless `segmentWidth` is given.
+///
+/// With the [lens] (by default the large control in [SegmentedMode.selectOne], Clock's section
+/// switch), pressing swells the selection into a [GlassLens] that magnifies the labels under it
+/// and travels with a spring to the enabled segment under the pointer as it is dragged across
+/// the control; releasing inside the control chooses the segment under the lens, and the lens
+/// shrinks back into the pill. With reduced motion the lens appears, jumps and disappears
+/// without animation.
 class SegmentedControl extends StatefulWidget {
   const SegmentedControl({
     super.key,
@@ -206,6 +215,7 @@ class SegmentedControl extends StatefulWidget {
     this.size = ControlSize.regular,
     this.segmentWidth,
     this.focusNode,
+    this.lens,
   });
 
   final List<Segment> segments;
@@ -216,20 +226,154 @@ class SegmentedControl extends StatefulWidget {
   final double? segmentWidth;
   final FocusNode? focusNode;
 
+  /// The glass lens while pressed, in [SegmentedMode.selectOne] only. Null: on for
+  /// [ControlSize.large], off for the smaller sizes.
+  final bool? lens;
+
+  /// Whether the control shows the lens.
+  bool get hasLens =>
+      mode == SegmentedMode.selectOne && (lens ?? size == ControlSize.large);
+
   @override
   State<SegmentedControl> createState() => _SegmentedControlState();
 }
 
-class _SegmentedControlState extends State<SegmentedControl> {
+class _SegmentedControlState extends State<SegmentedControl>
+    with TickerProviderStateMixin {
   int? _hovered;
   int? _pressed;
   bool _inside = false;
   bool _focused = false;
   int _focusIndex = 0;
-  List<double> _lefts = const [];
   double _segment = 0;
 
+  /// The chosen pill's left edge.
+  late final AnimationController _pill = AnimationController.unbounded(
+    vsync: this,
+  )..addListener(_changed);
+  double? _pillTarget;
+
+  /// The lens's presence: 0 hidden, 1 swollen.
+  late final AnimationController _lens = AnimationController.unbounded(
+    vsync: this,
+  )..addListener(_changed);
+
+  /// While the lens is held: the segment it travels to.
+  int? _lensAt;
+  int? _lensPointer;
+
   bool get _enabled => widget.onChanged != null;
+  bool get _reduced => MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+  void _changed() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _segment = _measure();
+    final rest = _restIndex;
+    _pillTarget = _leftOf(rest ?? 0);
+    _pill.value = _pillTarget!;
+  }
+
+  @override
+  void didUpdateWidget(SegmentedControl old) {
+    super.didUpdateWidget(old);
+    final before = _segment;
+    _segment = _measure();
+    if (before != _segment || old.size != widget.size) {
+      // The geometry changed: the pill goes straight to its place.
+      _pillTarget = null;
+      final i = _lensPointer != null ? _lensAt : _restIndex;
+      if (i != null) {
+        _pillTarget = _leftOf(i);
+        _pill.value = _pillTarget!;
+      }
+      return;
+    }
+    if (_lensPointer == null) _settle();
+  }
+
+  @override
+  void dispose() {
+    _pill.dispose();
+    _lens.dispose();
+    super.dispose();
+  }
+
+  int? get _restIndex {
+    if (widget.mode != SegmentedMode.selectOne || widget.selected.isEmpty) {
+      return null;
+    }
+    final n = widget.segments.length;
+    return n == 0 ? null : widget.selected.first.clamp(0, n - 1);
+  }
+
+  double _leftOf(int i) => segmentedInset(widget.size) + i * _segment;
+
+  /// Moves the pill to segment `i`: on the lens spring while the lens shows, otherwise in the
+  /// measured ~300 ms; at once with reduced motion.
+  void _movePill(int i) {
+    final target = _leftOf(i);
+    if (_pillTarget == target) return;
+    _pillTarget = target;
+    if (_reduced) {
+      _pill.value = target;
+    } else if (_lensPointer != null || _lens.value > 0) {
+      _pill.animateWith(
+        SpringSimulation(
+          GlassLensMetrics.travelSpring,
+          _pill.value,
+          target,
+          _pill.velocity,
+          tolerance: const Tolerance(distance: 0.01, velocity: 0.1),
+        ),
+      );
+    } else {
+      _pill.animateTo(
+        target,
+        duration: segmentedPillDuration,
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  /// At rest: the pill goes to the chosen segment.
+  void _settle() {
+    final rest = _restIndex;
+    if (rest != null) _movePill(rest);
+  }
+
+  void _showLens(bool on) {
+    final target = on ? 1.0 : 0.0;
+    if (_reduced) {
+      _lens.value = target;
+      return;
+    }
+    _lens.animateWith(
+      SpringSimulation(
+        on ? GlassLensMetrics.appearSpring : GlassLensMetrics.disappearSpring,
+        _lens.value,
+        target,
+        _lens.velocity,
+        tolerance: const Tolerance(distance: 0.002, velocity: 0.05),
+      ),
+    );
+    if (!on) {
+      // Rest exactly at 0 once the spring settles (it may dip below).
+      _lens
+        ..removeStatusListener(_hidden)
+        ..addStatusListener(_hidden);
+    }
+  }
+
+  void _hidden(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    _lens.removeStatusListener(_hidden);
+    if (_lensPointer == null) _lens.value = 0;
+  }
 
   TextStyle _style(Color color) => controlTextStyle(
     widget.size,
@@ -268,6 +412,23 @@ class _SegmentedControlState extends State<SegmentedControl> {
     return i >= 0 && i < widget.segments.length ? i : null;
   }
 
+  /// While the lens is held: the segment under the pointer along the row (clamped to the
+  /// ends), or null over a disabled one.
+  int? _lensIndexAt(Offset local) {
+    final n = widget.segments.length;
+    if (n == 0 || _segment <= 0) return null;
+    final x = local.dx - segmentedInset(widget.size);
+    final i = (x / _segment).floor().clamp(0, n - 1);
+    return widget.segments[i].enabled ? i : null;
+  }
+
+  bool _within(Offset local) =>
+      local.dx >= 0 &&
+      local.dy >= 0 &&
+      local.dx <=
+          2 * segmentedInset(widget.size) + widget.segments.length * _segment &&
+      local.dy <= segmentedHeight(widget.size);
+
   void _activate(int index) {
     if (!_enabled || !widget.segments[index].enabled) return;
     widget.onChanged?.call(index);
@@ -277,6 +438,22 @@ class _SegmentedControlState extends State<SegmentedControl> {
     if (!_enabled || e.buttons & kPrimaryButton == 0) return;
     final i = _indexAt(e.localPosition);
     if (i == null || !widget.segments[i].enabled) return;
+    if (widget.hasLens) {
+      if (_lensPointer != null) return;
+      _lensPointer = e.pointer;
+      _lensAt = i;
+      _inside = true;
+      // The lens grows out of the chosen pill and travels to the pressed segment; without a
+      // choice it appears on the pressed one.
+      if (_restIndex == null) {
+        _pillTarget = _leftOf(i);
+        _pill.value = _pillTarget!;
+      }
+      _showLens(true);
+      _movePill(i);
+      setState(() {});
+      return;
+    }
     setState(() {
       _pressed = i;
       _inside = true;
@@ -284,6 +461,17 @@ class _SegmentedControlState extends State<SegmentedControl> {
   }
 
   void _move(PointerMoveEvent e) {
+    if (_lensPointer != null) {
+      if (e.pointer != _lensPointer) return;
+      _inside = _within(e.localPosition);
+      final i = _lensIndexAt(e.localPosition);
+      if (i != null && i != _lensAt) {
+        _lensAt = i;
+        _movePill(i);
+      }
+      setState(() {});
+      return;
+    }
     final pressed = _pressed;
     if (pressed == null) return;
     final inside = _indexAt(e.localPosition) == pressed;
@@ -291,6 +479,16 @@ class _SegmentedControlState extends State<SegmentedControl> {
   }
 
   void _up(PointerUpEvent e) {
+    if (_lensPointer != null) {
+      if (e.pointer != _lensPointer) return;
+      final target = _within(e.localPosition) ? _lensAt : null;
+      _releaseLens();
+      if (target != null) {
+        _focusIndex = target;
+        _activate(target);
+      }
+      return;
+    }
     final pressed = _pressed;
     if (pressed == null) return;
     final fire = _indexAt(e.localPosition) == pressed;
@@ -299,6 +497,28 @@ class _SegmentedControlState extends State<SegmentedControl> {
       _focusIndex = pressed;
       _activate(pressed);
     }
+  }
+
+  void _cancel(PointerCancelEvent e) {
+    if (_lensPointer != null) {
+      if (e.pointer == _lensPointer) _releaseLens();
+      return;
+    }
+    setState(() => _pressed = null);
+  }
+
+  void _releaseLens() {
+    _lensPointer = null;
+    _lensAt = null;
+    _inside = false;
+    _showLens(false);
+    setState(() {});
+    // After the app has answered (it may choose the segment, or not), the pill rests on the
+    // chosen segment.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _lensPointer == null) _settle();
+    });
+    WidgetsBinding.instance.scheduleFrame();
   }
 
   KeyEventResult _key(FocusNode node, KeyEvent event) {
@@ -326,6 +546,29 @@ class _SegmentedControlState extends State<SegmentedControl> {
     return KeyEventResult.handled;
   }
 
+  /// The label (and icon) of segment `s` in `color`, centred in its segment.
+  Widget _content(Segment s, Color color) {
+    final icon = s.icon, label = s.label;
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) icon(color),
+          if (icon != null && label != null) const SizedBox(width: 4),
+          if (label != null)
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: _style(color),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = SegmentedColors.forSize(context, widget.size);
@@ -333,14 +576,14 @@ class _SegmentedControlState extends State<SegmentedControl> {
     final dark =
         MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
     final accent = colors.accentPill ? ControlAccent.fillOf(context) : null;
-    // The window control has no hover look (INV-B).
-    final hovered = accent == null ? _hovered : null;
+    final lensHeld = _lensPointer != null;
+    // The window control has no hover look (INV-B); the held lens is its own feedback.
+    final hovered = accent == null && !lensHeld ? _hovered : null;
     final size = widget.size;
     final height = segmentedHeight(size);
     final inset = segmentedInset(size);
     final n = widget.segments.length;
-    _segment = _measure();
-    _lefts = [for (var i = 0; i < n; i++) inset + i * _segment];
+    final lefts = [for (var i = 0; i < n; i++) _leftOf(i)];
     if (widget.mode == SegmentedMode.selectOne && widget.selected.isNotEmpty) {
       if (!_focused) _focusIndex = widget.selected.first;
     }
@@ -351,7 +594,7 @@ class _SegmentedControlState extends State<SegmentedControl> {
 
     Widget pill(int i, Color color, {Key? key}) => Positioned(
       key: key,
-      left: _lefts[i],
+      left: lefts[i],
       top: inset,
       width: _segment,
       height: pillHeight,
@@ -377,23 +620,23 @@ class _SegmentedControlState extends State<SegmentedControl> {
         layers.add(pill(i, colors.hover, key: ValueKey('hover $i')));
       }
     }
+    Rect? pillRect;
     switch (widget.mode) {
-      case SegmentedMode.selectOne when widget.selected.isNotEmpty:
-        final i = widget.selected.first.clamp(0, n - 1);
-        final color = pressed == i
+      case SegmentedMode.selectOne
+          when widget.selected.isNotEmpty || _lens.value > 0:
+        final i = _restIndex;
+        final color = lensHeld
+            ? chosenColor
+            : pressed == i
             ? pressedChosen
             : hovered == i
             ? hoverChosen
             : chosenColor;
+        pillRect = Rect.fromLTWH(_pill.value, inset, _segment, pillHeight);
         layers.add(
-          AnimatedPositioned(
+          Positioned.fromRect(
             key: const ValueKey('chosen pill'),
-            duration: segmentedPillDuration,
-            curve: Curves.easeOutCubic,
-            left: _lefts[i],
-            top: inset,
-            width: _segment,
-            height: pillHeight,
+            rect: pillRect,
             child: DecoratedBox(
               decoration: BoxDecoration(color: color, borderRadius: pillRadius),
             ),
@@ -418,6 +661,9 @@ class _SegmentedControlState extends State<SegmentedControl> {
         break;
     }
 
+    final onLensText = active && colors.chosenText != null
+        ? colors.chosenText!
+        : colors.text;
     for (var i = 0; i < n; i++) {
       final s = widget.segments[i];
       final enabled = _enabled && s.enabled;
@@ -431,10 +677,9 @@ class _SegmentedControlState extends State<SegmentedControl> {
           : !active && hovered != i
           ? colors.textInactive
           : colors.text;
-      final icon = s.icon, label = s.label;
       layers.add(
         Positioned(
-          left: _lefts[i],
+          left: lefts[i],
           top: 0,
           width: _segment,
           height: height,
@@ -443,27 +688,38 @@ class _SegmentedControlState extends State<SegmentedControl> {
             selected: chosen,
             enabled: enabled,
             inMutuallyExclusiveGroup: widget.mode == SegmentedMode.selectOne,
-            label: s.semanticLabel ?? label,
+            label: s.semanticLabel ?? s.label,
             onTap: enabled ? () => _activate(i) : null,
-            child: ExcludeSemantics(
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon != null) icon(color),
-                    if (icon != null && label != null) const SizedBox(width: 4),
-                    if (label != null)
-                      Flexible(
-                        child: Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: _style(color),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+            child: ExcludeSemantics(child: _content(s, color)),
+          ),
+        ),
+      );
+    }
+
+    final presence = _lens.value;
+    if (pillRect != null && presence > 0) {
+      layers.add(
+        Positioned.fill(
+          child: GlassLens(
+            rect: glassLensRect(pillRect, presence),
+            presence: presence,
+            style: GlassLensStyle.of(context).copyWith(fill: chosenColor),
+            content: Stack(
+              children: [
+                for (var i = 0; i < n; i++)
+                  Positioned(
+                    left: lefts[i],
+                    top: 0,
+                    width: _segment,
+                    height: height,
+                    child: _content(
+                      widget.segments[i],
+                      _enabled && widget.segments[i].enabled
+                          ? onLensText
+                          : colors.textDisabled,
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -521,7 +777,7 @@ class _SegmentedControlState extends State<SegmentedControl> {
             onPointerDown: _down,
             onPointerMove: _move,
             onPointerUp: _up,
-            onPointerCancel: (_) => setState(() => _pressed = null),
+            onPointerCancel: _cancel,
             child: SizedBox(
               width: width,
               height: height,
@@ -533,7 +789,7 @@ class _SegmentedControlState extends State<SegmentedControl> {
                   // The keyboard ring surrounds only the focused segment (CT-TF-09).
                   if (_focused && n > 0)
                     Positioned(
-                      left: _lefts[_focusIndex.clamp(0, n - 1)],
+                      left: lefts[_focusIndex.clamp(0, n - 1)],
                       top: inset,
                       width: _segment,
                       height: pillHeight,

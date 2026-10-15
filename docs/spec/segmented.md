@@ -40,6 +40,21 @@ Measured on a dark-only app with four sections:
 - The control is centred on the window, or on the area beside a sidebar when there is one.
 - At the minimum window width it **collapses into a pop-up button** showing the current section.
 
+### The lens (provisional)
+
+While the section switch is pressed, the selection swells into a lens of glass that magnifies the
+labels under it; dragging across the control moves it, segment by segment, to the enabled segment
+under the pointer, and releasing inside the control chooses that segment. The lens then shrinks
+back into the pill. Not measured yet (LENS request): silica_ui uses a lens 1.12 × the pill's width
+and 1.4 × its height (it rises past the track), a 1.3× magnification, a swell spring with a small
+overshoot, a travel spring with a ~3 % overshoot and a shrink without visible bounce; with reduced
+motion it appears, jumps and disappears at once. The edge refraction is drawn by a fragment shader
+where the engine supports shader image filters (Impeller), otherwise the content is only
+magnified.
+
+The chosen pill is inset by the same amount on every side of the track (4 pt for the section
+switch, 2 pt for the window control) whatever its position.
+
 ## Small segmented controls in content (CT-SEG-03, partial)
 
 - A base selector in a calculator (dark): selected segment in the app tint (sRGB `#ff960e`),

@@ -15,8 +15,18 @@ void main() {
     await tester.pumpWidget(
       Directionality(textDirection: TextDirection.ltr, child: buttonsCatalog()),
     );
-    expect(find.byType(SegmentedControl), findsNWidgets(12));
+    expect(find.byType(SegmentedControl), findsNWidgets(16));
     expect(find.byType(PopUpButton<String>), findsNWidgets(4));
+    // Pressing the section switch swells its lens; releasing chooses the segment under it.
+    final press = await tester.startGesture(
+      tester.getCenter(find.text('Alarms').first),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byKey(const ValueKey('glass lens')), findsOneWidget);
+    await press.up();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('glass lens')), findsNothing);
     await tester.tap(find.byType(PopUpButton<String>).first);
     await tester.pump();
     expect(find.byType(MenuHost), findsOneWidget);

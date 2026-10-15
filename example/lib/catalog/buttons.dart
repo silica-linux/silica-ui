@@ -80,6 +80,7 @@ class _PanelState extends State<_Panel> {
   bool _triangle = false;
   bool _disclosure = false;
   int _section = 0;
+  int _period = 1;
   Set<int> _styles = {0};
   String _sound = 'radial';
   final TextEditingController _city = TextEditingController(text: 'Rome');
@@ -270,6 +271,21 @@ class _PanelState extends State<_Panel> {
             mode: SegmentedMode.momentary,
             size: ControlSize.small,
             onChanged: (_) {},
+          ),
+        ]),
+        _row('Segmented lens', [
+          // The large control has the lens by default; the regular one when asked. Press and
+          // drag across the segments.
+          SegmentedControl(
+            segments: const [
+              Segment(label: 'Day'),
+              Segment(label: 'Week'),
+              Segment(label: 'Month'),
+              Segment(label: 'Year'),
+            ],
+            lens: true,
+            selected: {_period},
+            onChanged: (i) => setState(() => _period = i),
           ),
         ]),
         _row('Menus', [

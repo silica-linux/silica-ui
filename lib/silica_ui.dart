@@ -11,6 +11,7 @@ export 'src/controls/control_base.dart';
 export 'src/controls/inputs/inputs.dart';
 export 'src/drag.dart';
 export 'src/glass.dart';
+export 'src/glass_lens.dart';
 export 'src/icons/silica_icon.dart'
     show
         SilicaIcon,
