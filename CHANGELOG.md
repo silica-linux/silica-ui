@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.28.0 · 2026-10-15
+
+The full-height sidebar scrolls under a glass bar of its own, and the toolbar glass no longer
+draws a colour band over the content (mustache#13, mail#7, #87). Behavior changes (minor version
+in 0.x).
+
+- **Toolbar band (#87):** `ScrollUnderToolbar.background` (the content colour under the band) and
+  `ScrollUnderToolbar.columns` (`ToolbarVeilColumn`: columns with different backgrounds, such as
+  a list and a reader). Given, in an active window the bar shows that colour unchanged: the veil
+  is anchored to it (`ToolbarVeil.anchoredTo`, `ToolbarVeil.anchor`), the content scrolled under
+  it is still blurred and tinted. In an inactive window the plain veil stays (the measured
+  `#2f2f30` over `#272728`). Without a background nothing changes, as under a column header.
+  *Provisional:* the anchoring fits the measured active bar (same colour as the content); it is
+  not measured on scrolled content over a non-white background (SIDEBAR-GLASS requested).
+- **New:** `SidebarScrollUnderBar`: a full-height sidebar whose top `toolbarHeight` is a bar of
+  its own (the window buttons sit on it, it moves the window, optional items), with the list
+  starting below the bar and scrolling under it behind the veil, anchored to the sidebar colour.
+  *Provisional:* the sidebar's veil is the content's, no line under the bar.
+- **New:** `SidebarLayout`: the sidebar and the content side by side, with the sidebar sliding out
+  while hidden (`shown`), and `SidebarLayout.contentLeadingInset` for the toolbar items to clear
+  the window buttons.
+- **New:** `ToolbarVeilLayer.name`: the key of its filters ('toolbar veil' by default).
+- **New:** `windowButtonsRight` (79): the right edge of the third window button on a 52 pt bar.
+
 ## 0.27.0 · 2026-10-15
 
 The segmented control's glass lens (#88) and evenly inset selection pills (#89). Behavior changes

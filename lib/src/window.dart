@@ -20,6 +20,10 @@ import 'toolbar.dart' show ToolbarGlassMetrics;
 const double toolbarHeight = 52;
 const double toolbarCapsuleHeight = 38;
 
+/// The right edge of the third window button on a 52 pt bar (titlebar.md: discs of 14 pt centred
+/// at x 26, 49, 72): the bar items that share the bar with the buttons start after it.
+const double windowButtonsRight = 79;
+
 /// The app window, towards Ossido.
 abstract final class SilicaWindow {
   static const MethodChannel channel = MethodChannel(
