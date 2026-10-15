@@ -124,6 +124,31 @@ void main() {
     );
   });
 
+  test('the main window asks the app before it closes', () async {
+    // No handler: the embedder closes the window.
+    expect(
+      await SilicaWindows.handle('closeRequested', {'viewId': 0}),
+      isFalse,
+    );
+    // Kept (a confirmation said no): the app answers, the embedder keeps the window.
+    SilicaWindows.onMainCloseRequested = () async => false;
+    expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
+    // Agreed: the embedder closes it.
+    SilicaWindows.onMainCloseRequested = () async => true;
+    expect(
+      await SilicaWindows.handle('closeRequested', {'viewId': 0}),
+      isFalse,
+    );
+    // Another window is not the main one.
+    SilicaWindows.onMainCloseRequested = () async => false;
+    expect(
+      await SilicaWindows.handle('closeRequested', {'viewId': 9}),
+      isFalse,
+    );
+    SilicaWindows.onMainCloseRequested = null;
+    expect(SilicaWindows.onMainCloseRequested, isNull);
+  });
+
   test('window calls name their view, the main one as before', () async {
     await SilicaWindow.setSize(const Size(300, 200), viewId: 4);
     expect(calls.last.arguments, {

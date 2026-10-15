@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.35.0 · 2026-10-15
+
+- **Added:** `SilicaWindows.onMainCloseRequested`: asked when the user closes the app's main
+  window (Logo+W, the close button), with the same contract as
+  `SilicaWindowController.onCloseRequested` (false keeps the window open, true lets it close;
+  without it the window closes at once). Needs an embedder that sends `closeRequested` for
+  the main window (silica-desktop `main-window-close`); an older one closes it directly.
+
 ## 0.34.1 · 2026-10-15
 
 - **Fixed:** `FocusRing` lays its child out with the incoming constraints (`StackFit.passthrough`)

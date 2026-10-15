@@ -93,6 +93,20 @@ abstract final class SilicaWindows {
       ValueNotifier(const []);
   static bool _listening = false;
 
+  static Future<bool> Function()? _onMainCloseRequested;
+
+  /// Asked when the user closes the app's main window (its close button, Logo+W): complete
+  /// with false to keep the window open (to ask "close anyway?" first), true to let it close.
+  /// The same contract as [SilicaWindowController.onCloseRequested]. Without it, or outside
+  /// Silica, the window closes at once. Closing it still follows the app lifecycle (the
+  /// app keeps running when it is not the last window).
+  static Future<bool> Function()? get onMainCloseRequested =>
+      _onMainCloseRequested;
+  static set onMainCloseRequested(Future<bool> Function()? ask) {
+    _onMainCloseRequested = ask;
+    if (ask != null) _listen();
+  }
+
   /// The windows open now (not the main one), in opening order.
   static ValueListenable<List<SilicaWindowController>> get open => _open;
 
@@ -158,7 +172,12 @@ abstract final class SilicaWindows {
     switch (method) {
       case 'closeRequested':
         final window = _withId(id);
-        if (window == null) return false;
+        if (window == null) {
+          // The main window: true tells the embedder the app dealt with it (kept it open);
+          // false lets the embedder close it.
+          final ask = id == 0 ? _onMainCloseRequested : null;
+          return ask != null && !await ask();
+        }
         final ask = window.onCloseRequested;
         if (ask != null && !await ask()) return true;
         await window.close();
@@ -201,6 +220,7 @@ abstract final class SilicaWindows {
       window._gone();
     }
     _open.value = const [];
+    _onMainCloseRequested = null;
     _listening = false;
   }
 }
