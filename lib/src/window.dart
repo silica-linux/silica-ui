@@ -26,7 +26,9 @@ const double toolbarCapsuleHeight = 38;
 /// at x 26, 49, 72): the bar items that share the bar with the buttons start after it.
 const double windowButtonsRight = 79;
 
-/// The app window, towards Ossido.
+/// The app window, towards Ossido. Every call takes the window's `viewId` (0, the main
+/// window, by default; `View.of(context).viewId` inside a window opened with
+/// `SilicaWindows.openWindow`).
 abstract final class SilicaWindow {
   static const MethodChannel channel = MethodChannel(
     'silica/window',
@@ -35,10 +37,14 @@ abstract final class SilicaWindow {
 
   /// Full-size content with a toolbar `toolbar` high (0: back to Ossido's
   /// title bar). True if Ossido offers it.
-  static Future<bool> setFullSizeContent(double toolbar) async {
+  static Future<bool> setFullSizeContent(
+    double toolbar, {
+    int viewId = 0,
+  }) async {
     try {
       final reply = await channel.invokeMethod<Object?>('setFullSizeContent', {
         'toolbarHeight': toolbar,
+        ..._view(viewId),
       });
       return reply == true;
     } on MissingPluginException {
@@ -52,26 +58,40 @@ abstract final class SilicaWindow {
   /// `set_appearance`): the traffic lights, the plain title bar and its title, the shadow, the
   /// glass the window declares and the arrangement popover. [SilicaAppearanceScope] and
   /// `SilicaApp.appearance` call it; true if Ossido offers it.
-  static Future<bool> setAppearance(SilicaAppearance appearance) =>
-      _call('setAppearance', {'appearance': appearance.wireName});
+  static Future<bool> setAppearance(
+    SilicaAppearance appearance, {
+    int viewId = 0,
+  }) => _call('setAppearance', {
+    'appearance': appearance.wireName,
+    ..._view(viewId),
+  });
 
   /// Chooses the window size (logical pixels). True if Silica applied it.
-  static Future<bool> setSize(Size size) =>
-      _call('setSize', {'width': size.width, 'height': size.height});
+  static Future<bool> setSize(Size size, {int viewId = 0}) => _call('setSize', {
+    'width': size.width,
+    'height': size.height,
+    ..._view(viewId),
+  });
 
   /// Limits for resizing the window; `null` for no limit. `min` = `max` makes the window
   /// fixed-size: Ossido disables the zoom button. True if Silica applied them.
-  static Future<bool> setSizeLimits({Size? min, Size? max}) =>
+  static Future<bool> setSizeLimits({Size? min, Size? max, int viewId = 0}) =>
       _call('setSizeLimits', {
         if (min != null) 'minWidth': min.width,
         if (min != null) 'minHeight': min.height,
         if (max != null) 'maxWidth': max.width,
         if (max != null) 'maxHeight': max.height,
+        ..._view(viewId),
       });
 
   /// A fixed-size window of `size` (limits and size together).
-  static Future<bool> setFixedSize(Size size) async =>
-      await setSizeLimits(min: size, max: size) && await setSize(size);
+  static Future<bool> setFixedSize(Size size, {int viewId = 0}) async =>
+      await setSizeLimits(min: size, max: size, viewId: viewId) &&
+      await setSize(size, viewId: viewId);
+
+  /// The `viewId` argument: left out for the main window, as an earlier embedder expects.
+  static Map<String, Object> _view(int viewId) =>
+      viewId == 0 ? const {} : {'viewId': viewId};
 
   static Future<bool> _call(String method, Map<String, Object?> args) async {
     try {
@@ -84,9 +104,12 @@ abstract final class SilicaWindow {
   }
 
   /// Moves the window with the pointer pressed (from the toolbar).
-  static Future<void> startMove() async {
+  static Future<void> startMove({int viewId = 0}) async {
     try {
-      await channel.invokeMethod<Object?>('startMove');
+      await channel.invokeMethod<Object?>(
+        'startMove',
+        viewId == 0 ? null : _view(viewId),
+      );
     } on MissingPluginException {
       // Outside Silica the window does not move from here.
     } on PlatformException {
@@ -144,7 +167,10 @@ class _WindowDragAreaState extends State<WindowDragArea> {
         () => _EmptyAreaPan(_onControl),
         (r) {
           r.isControl = _onControl;
-          r.onStart = (_) => SilicaWindow.startMove();
+          // The window the bar belongs to (several windows, silica-desktop#146).
+          r.onStart = (_) => SilicaWindow.startMove(
+            viewId: View.maybeOf(context)?.viewId ?? 0,
+          );
         },
       ),
     },

@@ -108,6 +108,9 @@ class SilicaAppearanceScope extends StatefulWidget {
 class _SilicaAppearanceScopeState extends State<SilicaAppearanceScope> {
   SilicaAppearance? _sent;
 
+  /// The window (view) the scope is in: its own override in Ossido (silica-desktop#146).
+  int _viewId = 0;
+
   SilicaAppearance get _effective =>
       widget.appearance != SilicaAppearance.system
       ? widget.appearance
@@ -118,6 +121,14 @@ class _SilicaAppearanceScopeState extends State<SilicaAppearanceScope> {
     super.initState();
     activeAppearanceScopes++;
     appAppearance.addListener(_appChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final viewId = View.maybeOf(context)?.viewId ?? 0;
+    if (viewId != _viewId) _sent = null;
+    _viewId = viewId;
     _send();
   }
 
@@ -144,7 +155,7 @@ class _SilicaAppearanceScopeState extends State<SilicaAppearanceScope> {
     final effective = _effective;
     if (_sent == effective) return;
     _sent = effective;
-    SilicaWindow.setAppearance(effective);
+    SilicaWindow.setAppearance(effective, viewId: _viewId);
   }
 
   @override

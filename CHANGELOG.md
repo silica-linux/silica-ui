@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.34.0 · 2026-10-15
+
+Several windows in one app (silica-desktop#146).
+
+- **Added:** `SilicaWindows.openWindow({title, size, builder, minSize, maxSize, kind, parent,
+  toolbarHeight})` opens a window of the app's own engine (a child of `parent` when given: Get
+  Info, a compose window) and returns a `SilicaWindowController` (`viewId`, `view`, `close`,
+  `setTitle`, `setFullSizeContent`, `setSize`, `setSizeLimits`, `onCloseRequested`, `closed`),
+  or null where Silica cannot open windows (an app without `--multi-window`, an older embedder,
+  tests). `SilicaWindows.open` lists the open windows; `SilicaWindowKind` is `regular` or
+  `utility`.
+- **Added:** `SilicaWindowHost` builds those windows, each in its own `View`, next to the app's
+  content: they share its state and what is above the host (localizations, theme).
+- **Added:** `SilicaWindow.setFullSizeContent`, `setSize`, `setSizeLimits`, `setFixedSize` and
+  `startMove` take a `viewId` (0, the main window, by default; the argument is left out for it,
+  as earlier embedders expect). `WindowDragArea` moves the window it is in.
+- **Changed:** `GlassRegistry` sends each window's regions to its own surface: the main window's
+  as before (`setRegions`), another window's as `setViewRegions {viewId, regions}`.
+  `GlassRegistry.regionsByView` and `GlassRegistry.viewIdOf` are new.
+- **Note:** `SilicaWindows` owns the handler of the `silica/window` channel (`closeRequested`,
+  `windowClosed`).
+- **Changed:** the appearance override is per window: `SilicaWindow.setAppearance` takes a
+  `viewId`, a `SilicaAppearanceScope` sends it for the window it is in, and
+  `SilicaApp.appearance` (with no scope) goes to every open window, new ones included.
+
 ## 0.32.0 · 2026-10-15
 
 App menus in Silica's global menu bar (silica-menu-v1, silica-desktop#25).

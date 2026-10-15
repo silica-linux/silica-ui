@@ -20,6 +20,7 @@ import 'package:flutter/widgets.dart';
 
 import 'appearance.dart';
 import 'window.dart' show SilicaWindow;
+import 'windows.dart' show SilicaWindows;
 
 /// The app's lifecycle in Silica.
 abstract final class SilicaApp {
@@ -43,7 +44,13 @@ abstract final class SilicaApp {
   static set appearance(SilicaAppearance value) {
     if (appAppearance.value == value) return;
     appAppearance.value = value;
-    if (activeAppearanceScopes == 0) SilicaWindow.setAppearance(value);
+    if (activeAppearanceScopes == 0) {
+      // Every window of the app (several windows, silica-desktop#146).
+      SilicaWindow.setAppearance(value);
+      for (final window in SilicaWindows.open.value) {
+        SilicaWindow.setAppearance(value, viewId: window.viewId);
+      }
+    }
   }
 
   /// Called when the last window has closed and the app keeps running: drop what belonged

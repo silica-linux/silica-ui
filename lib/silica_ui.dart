@@ -33,6 +33,7 @@ export 'src/tip_outline.dart';
 export 'src/toolbar.dart';
 export 'src/window.dart';
 export 'src/window_glass.dart';
+export 'src/windows.dart';
 
 /// The interface font: Inter (OFL), served by the package.
 const String uiFontFamily = 'Inter';

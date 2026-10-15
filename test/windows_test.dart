@@ -1,0 +1,159 @@
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:silica_ui/silica_ui.dart';
+
+void main() {
+  late List<MethodCall> calls;
+  Object? Function(MethodCall call) answer = (_) => null;
+
+  setUp(() {
+    calls = [];
+    answer = (_) => null;
+    SilicaWindows.reset();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SilicaWindow.channel, (call) async {
+          calls.add(call);
+          return answer(call);
+        });
+  });
+
+  tearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SilicaWindow.channel, null);
+    SilicaWindows.reset();
+  });
+
+  Widget content(BuildContext context) => const SizedBox();
+
+  testWidgets('openWindow asks the embedder for a window and tracks it', (
+    tester,
+  ) async {
+    // The test view stands for the new window's view (id 0 here).
+    answer = (call) => call.method == 'openWindow' ? 0 : true;
+    final window = await SilicaWindows.openWindow(
+      title: 'Notes Info',
+      size: const Size(265, 520),
+      minSize: const Size(265, 300),
+      kind: SilicaWindowKind.utility,
+      parent: 0,
+      toolbarHeight: 52,
+      builder: content,
+    );
+    expect(window, isNotNull);
+    expect(window!.viewId, 0);
+    expect(window.isOpen, isTrue);
+    expect(SilicaWindows.open.value, [window]);
+    expect(calls.single.method, 'openWindow');
+    expect(calls.single.arguments, {
+      'title': 'Notes Info',
+      'width': 265.0,
+      'height': 520.0,
+      'minWidth': 265.0,
+      'minHeight': 300.0,
+      'kind': 'utility',
+      'parent': 0,
+      'toolbarHeight': 52.0,
+    });
+
+    // Its calls name its view.
+    expect(await window.setTitle('Other Info'), isTrue);
+    expect(calls.last.arguments, {'viewId': 0, 'title': 'Other Info'});
+  });
+
+  testWidgets('without the embedder there is no window', (tester) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          SilicaWindow.channel,
+          (call) async => throw MissingPluginException(),
+        );
+    final window = await SilicaWindows.openWindow(
+      title: 'x',
+      size: const Size(100, 100),
+      builder: content,
+    );
+    expect(window, isNull);
+    expect(SilicaWindows.open.value, isEmpty);
+  });
+
+  testWidgets('a window the embedder could not open is null', (tester) async {
+    answer = (_) => null;
+    final window = await SilicaWindows.openWindow(
+      title: 'x',
+      size: const Size(100, 100),
+      builder: content,
+    );
+    expect(window, isNull);
+  });
+
+  testWidgets('the close button asks the window, which may keep itself open', (
+    tester,
+  ) async {
+    answer = (call) => call.method == 'openWindow' ? 0 : null;
+    final window = (await SilicaWindows.openWindow(
+      title: 'Compose',
+      size: const Size(600, 500),
+      builder: content,
+    ))!;
+    calls.clear();
+
+    // Kept: the app answers, nothing is closed.
+    window.onCloseRequested = () async => false;
+    expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
+    expect(calls, isEmpty);
+
+    // Agreed: the window closes itself.
+    window.onCloseRequested = () async => true;
+    expect(await SilicaWindows.handle('closeRequested', {'viewId': 0}), isTrue);
+    expect(calls.single.method, 'closeWindow');
+    expect(calls.single.arguments, {'viewId': 0});
+
+    // Gone: the controller completes and leaves the list.
+    var closed = false;
+    window.closed.then((_) => closed = true);
+    await SilicaWindows.handle('windowClosed', {'viewId': 0});
+    await tester.pump();
+    expect(closed, isTrue);
+    expect(window.isOpen, isFalse);
+    expect(SilicaWindows.open.value, isEmpty);
+
+    // An unknown window: the embedder closes it by itself.
+    expect(
+      await SilicaWindows.handle('closeRequested', {'viewId': 9}),
+      isFalse,
+    );
+  });
+
+  test('window calls name their view, the main one as before', () async {
+    await SilicaWindow.setSize(const Size(300, 200), viewId: 4);
+    expect(calls.last.arguments, {
+      'width': 300.0,
+      'height': 200.0,
+      'viewId': 4,
+    });
+    await SilicaWindow.setSize(const Size(300, 200));
+    expect(calls.last.arguments, {'width': 300.0, 'height': 200.0});
+    await SilicaWindow.startMove(viewId: 4);
+    expect(calls.last.arguments, {'viewId': 4});
+    await SilicaWindow.startMove();
+    expect(calls.last.arguments, isNull);
+    await SilicaWindow.setAppearance(SilicaAppearance.dark, viewId: 4);
+    expect(calls.last.arguments, {'appearance': 'dark', 'viewId': 4});
+    await SilicaWindow.setAppearance(SilicaAppearance.dark);
+    expect(calls.last.arguments, {'appearance': 'dark'});
+  });
+
+  testWidgets('the host builds nothing more without other windows', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const SilicaWindowHost(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Text('main'),
+        ),
+      ),
+    );
+    expect(find.text('main'), findsOneWidget);
+  });
+}

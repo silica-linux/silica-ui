@@ -347,6 +347,10 @@ Map<String, Object>? glassFrame(Matrix4 transform, Rect local, double radius) {
 /// It is checked at every frame, not only when a [RenderGlass] repaints: an ancestor that
 /// changes transform or opacity (a panel opening) can move the glass without repainting
 /// it, and the compositor would keep the old geometry.
+///
+/// Every window has its own regions (silica-desktop#146): the main window's go as
+/// `setRegions [regions]`, those of a window opened with `SilicaWindows.openWindow` as
+/// `setViewRegions {viewId, regions}`, in the coordinates of that window.
 class GlassRegistry {
   GlassRegistry._();
 
@@ -358,7 +362,9 @@ class GlassRegistry {
   );
 
   final Set<RenderGlass> _glasses = {};
-  List<Map<String, Object>> _sent = const [];
+
+  /// The regions last sent, by view.
+  Map<int, List<Map<String, Object>>> _sent = const {};
   bool _scheduled = false;
   bool _everyFrame = false;
 
@@ -369,7 +375,9 @@ class GlassRegistry {
       // After the paint of every frame (persistent callbacks run in registration order,
       // after the rendering one).
       SchedulerBinding.instance.addPersistentFrameCallback((_) {
-        if (_glasses.isNotEmpty || _sent.isNotEmpty) _send();
+        if (_glasses.isNotEmpty || _sent.values.any((r) => r.isNotEmpty)) {
+          _send();
+        }
       });
     }
     schedule();
@@ -380,12 +388,28 @@ class GlassRegistry {
     schedule();
   }
 
-  /// The current regions, in registration order.
+  /// The current regions of the main window, in registration order.
   @visibleForTesting
-  List<Map<String, Object>> get regions => [
-    for (final glass in _glasses)
-      if (glass.attached && glass.hasSize) ...glass.regions(),
-  ];
+  List<Map<String, Object>> get regions => regionsByView[0] ?? const [];
+
+  /// The current regions of every window with glass, by view id, in registration order.
+  @visibleForTesting
+  Map<int, List<Map<String, Object>>> get regionsByView {
+    final byView = <int, List<Map<String, Object>>>{};
+    for (final glass in _glasses) {
+      if (!glass.attached || !glass.hasSize) continue;
+      byView.putIfAbsent(viewIdOf(glass), () => []).addAll(glass.regions());
+    }
+    return byView;
+  }
+
+  /// The view (window) a render object is drawn in: its [RenderView]'s.
+  static int viewIdOf(RenderObject node) {
+    for (RenderObject? n = node; n != null; n = n.parent) {
+      if (n is RenderView) return n.flutterView.viewId;
+    }
+    return 0;
+  }
 
   void schedule() {
     if (_scheduled) return;
@@ -398,14 +422,27 @@ class GlassRegistry {
   }
 
   Future<void> _send() async {
-    final regions = this.regions;
-    if (listEquals(regions.map(_key).toList(), _sent.map(_key).toList()))
-      return;
-    _sent = regions;
-    try {
-      await channel.invokeMethod<Object?>('setRegions', regions);
-    } on MissingPluginException {
-      // Outside Silica (tests, other embedders) there is no glass.
+    final current = regionsByView;
+    final previous = _sent;
+    _sent = current;
+    for (final view in {...previous.keys, ...current.keys}) {
+      final regions = current[view] ?? const <Map<String, Object>>[];
+      final sent = previous[view] ?? const <Map<String, Object>>[];
+      if (listEquals(regions.map(_key).toList(), sent.map(_key).toList())) {
+        continue;
+      }
+      try {
+        if (view == 0) {
+          await channel.invokeMethod<Object?>('setRegions', regions);
+        } else {
+          await channel.invokeMethod<Object?>('setViewRegions', {
+            'viewId': view,
+            'regions': regions,
+          });
+        }
+      } on MissingPluginException {
+        // Outside Silica (tests, other embedders) there is no glass.
+      }
     }
   }
 
