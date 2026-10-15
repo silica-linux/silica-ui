@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.27.0 · 2026-10-15
+
+The segmented control's glass lens (#88) and evenly inset selection pills (#89). Behavior changes
+(minor version in 0.x).
+
+- **Lens (#88, provisional):** while a `SegmentedControl` in `selectOne` is pressed, the selection
+  swells into a glass lens that magnifies the labels under it (1.3×), travels on a spring with a
+  slight overshoot to the enabled segment under the pointer while dragging, and shrinks back into
+  the pill on release. On by default for `ControlSize.large` (Clock's section switch), off below.
+  - **Release chooses the segment under the lens** (inside the control); released outside, nothing
+    is chosen and the pill returns. Without the lens, a press still acts only on the segment it
+    started on.
+  - The pill moves on mouse-down with the lens (measured: it starts 25–52 ms after the press).
+  - **Reduced motion:** the lens appears, jumps and disappears at once; the pill's move between
+    segments (keyboard, app changes) is also immediate now.
+- **New API:**
+  - `SegmentedControl.lens` (`bool?`, null: by size) and `SegmentedControl.hasLens`.
+  - `GlassLens`: a reusable lens widget that shows any content magnified inside a capsule, with
+    edge refraction by a fragment shader (`shaders/glass_lens.frag`) where shader image filters
+    are supported (Impeller), magnification only elsewhere. `GlassLens.refractionSupported`,
+    `GlassLens.loadProgram`, `GlassLens.shaderAsset`.
+  - `GlassLensStyle` (light / dark), `GlassLensPainter`, `GlassLensMetrics` (size,
+    magnification, springs, refraction; provisional), `glassLensRect`.
+  - `ToolbarGlassMetrics.pillInset`.
+- **Toolbar selection pill (#89):** in the first and last segment of a segmented group the
+  selection (and hover) pill keeps 5 pt from the capsule's round end, as from its top and bottom
+  (it was centred on the segment, 4 pt from the end); middle segments unchanged.
+
 ## 0.26.0 · 2026-10-15
 
 The toolbar glass controls as measured (TITLEBAR-GLASS, #86): back/forward, segmented groups and
