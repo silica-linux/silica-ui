@@ -881,6 +881,7 @@ class MenuPanel extends StatelessWidget {
           : LiquidGlass(
               radius: MenuMetrics.radius,
               material: GlassMaterial.thick,
+              profile: GlassProfile.menu,
               interactive: false,
               group: group,
               // The tip is part of the glass (a single shape with the body, the edge continuous).

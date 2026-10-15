@@ -11,6 +11,19 @@ void main() {
         .setMockMethodCallHandler(GlassRegistry.channel, (call) async => true);
   });
 
+  testWidgets('the menu glass declares the menu profile', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: MenuPanel(entries: [MenuAction('New')]),
+        ),
+      ),
+    );
+    expect(tester.widget<Glass>(find.byType(Glass)).profile, GlassProfile.menu);
+  });
+
   test('rows of 24, separators of 11, 5 pt above and below', () {
     const entries = [
       MenuAction('New'),

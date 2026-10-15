@@ -12,6 +12,36 @@ import 'package:flutter/widgets.dart';
 /// controls, with the strong lens on the edge) and notification (banners and Notification Center).
 enum GlassMaterial { clear, thick, regular, notification }
 
+/// The kind of surface a glass belongs to (silica-glass-v1 version 7): Ossido picks the blur,
+/// refraction, edge light, tint and shadow of that kind. Without one, the material decides
+/// (clear: Dock, thick: menu, regular: Control Center module, notification: banner).
+enum GlassProfile {
+  /// Menus and context menus.
+  menu,
+
+  /// Large panels: Notification Center, Faro, the launcher, an expanded module.
+  panel,
+
+  /// Control Center modules and HUDs.
+  module,
+
+  /// Small controls on glass: toolbar buttons, pills, round buttons. The lens is gentler and
+  /// narrower than a module's.
+  control,
+
+  /// The Dock and the app switcher.
+  dock,
+
+  /// Tooltips and labels.
+  tooltip,
+
+  /// Sheets and alerts.
+  sheet,
+
+  /// Notification banners.
+  banner,
+}
+
 /// A glass area as large as its child, with circular-arc corners.
 class Glass extends SingleChildRenderObjectWidget {
   const Glass({
@@ -20,11 +50,19 @@ class Glass extends SingleChildRenderObjectWidget {
     this.material = GlassMaterial.clear,
     this.group = 0,
     this.tip,
+    this.profile,
+    this.profileShadow = false,
     super.child,
   });
 
   final double radius;
   final GlassMaterial material;
+
+  /// The kind of surface (null: from [material]).
+  final GlassProfile? profile;
+
+  /// Ossido draws the [profile]'s shadow under the glass (the widget then draws none).
+  final bool profileShadow;
 
   /// Glass merges only with glass of the same group; a higher group sits on top
   /// (a submenu on its menu: two distinct panels even where they overlap).
@@ -34,8 +72,14 @@ class Glass extends SingleChildRenderObjectWidget {
   final GlassTip? tip;
 
   @override
-  RenderGlass createRenderObject(BuildContext context) =>
-      RenderGlass(radius: radius, material: material, group: group, tip: tip);
+  RenderGlass createRenderObject(BuildContext context) => RenderGlass(
+    radius: radius,
+    material: material,
+    group: group,
+    tip: tip,
+    profile: profile,
+    profileShadow: profileShadow,
+  );
 
   @override
   void updateRenderObject(BuildContext context, RenderGlass renderObject) {
@@ -43,7 +87,9 @@ class Glass extends SingleChildRenderObjectWidget {
       ..radius = radius
       ..material = material
       ..group = group
-      ..tip = tip;
+      ..tip = tip
+      ..profile = profile
+      ..profileShadow = profileShadow;
   }
 }
 
@@ -91,10 +137,36 @@ class RenderGlass extends RenderProxyBox {
     required GlassMaterial material,
     int group = 0,
     GlassTip? tip,
+    GlassProfile? profile,
+    bool profileShadow = false,
   }) : _radius = radius,
        _material = material,
        _group = group,
-       _tip = tip;
+       _tip = tip,
+       _profile = profile,
+       _profileShadow = profileShadow;
+
+  GlassProfile? _profile;
+  GlassProfile? get profile => _profile;
+  set profile(GlassProfile? value) {
+    if (value == _profile) return;
+    _profile = value;
+    GlassRegistry.instance.schedule();
+  }
+
+  bool _profileShadow;
+  bool get profileShadow => _profileShadow;
+  set profileShadow(bool value) {
+    if (value == _profileShadow) return;
+    _profileShadow = value;
+    GlassRegistry.instance.schedule();
+  }
+
+  /// The profile keys of a region (none without a profile: an older Ossido reads the same).
+  Map<String, Object> get _profileKeys => {
+    if (profile case final profile?) 'profile': profile.name,
+    if (profile != null && profileShadow) 'shadow': true,
+  };
 
   int _group;
   int get group => _group;
@@ -162,6 +234,7 @@ class RenderGlass extends RenderProxyBox {
       'material': material.name,
       'opacity': opacity,
       if (group != 0) 'group': group,
+      ..._profileKeys,
     };
   }
 
@@ -216,6 +289,7 @@ class RenderGlass extends RenderProxyBox {
           TipEdge.right => 'tip-right',
         },
         if (group != 0) 'group': group,
+        ..._profileKeys,
       },
     ];
   }

@@ -43,6 +43,9 @@ void main() {
     expect(region['height'], 50);
     expect(region['radius'], 22);
     expect(region['material'], 'clear');
+    // Without a profile the region carries no profile keys.
+    expect(region.containsKey('profile'), isFalse);
+    expect(region.containsKey('shadow'), isFalse);
 
     // Without the widget, the regions empty.
     await tester.pumpWidget(const SizedBox());
@@ -239,5 +242,47 @@ void main() {
     final regions = (calls.last.arguments as List<Object?>)
         .cast<Map<Object?, Object?>>();
     expect(regions.map((r) => r['group'] ?? 0).toSet(), {0, 1});
+  });
+
+  testWidgets('a profile goes with the body and the tip', (tester) async {
+    final calls = <MethodCall>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      GlassRegistry.channel,
+      (call) async {
+        calls.add(call);
+        return true;
+      },
+    );
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 10,
+              top: 20,
+              width: 100,
+              height: 50,
+              child: Glass(
+                radius: 12,
+                material: GlassMaterial.thick,
+                profile: GlassProfile.tooltip,
+                profileShadow: true,
+                tip: GlassTip(x: 50, width: 31, height: 10),
+                child: SizedBox.expand(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+    final regions = (calls.last.arguments as List<Object?>)
+        .cast<Map<Object?, Object?>>();
+    expect(regions, hasLength(2));
+    for (final region in regions) {
+      expect(region['profile'], 'tooltip');
+      expect(region['shadow'], true);
+    }
   });
 }

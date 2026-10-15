@@ -42,6 +42,12 @@ void main() {
     return log;
   }
 
+  testWidgets('the alert glass declares the sheet profile', (tester) async {
+    await pump(tester, sideBySide: false);
+    final glass = tester.widget<Glass>(find.byType(Glass));
+    expect(glass.profile, GlassProfile.sheet);
+  });
+
   testWidgets('292 pt, title at 99, buttons stacked or side by side', (
     tester,
   ) async {

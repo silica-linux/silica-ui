@@ -38,6 +38,8 @@ class LiquidGlass extends StatefulWidget {
     this.interactive = true,
     this.group = 0,
     this.tip,
+    this.profile,
+    this.profileShadow = false,
     this.child,
   });
 
@@ -50,6 +52,10 @@ class LiquidGlass extends StatefulWidget {
   /// See [Glass.group] and [Glass.tip].
   final int group;
   final GlassTip? tip;
+
+  /// See [Glass.profile] and [Glass.profileShadow].
+  final GlassProfile? profile;
+  final bool profileShadow;
   final Widget? child;
 
   @override
@@ -82,6 +88,8 @@ class _LiquidGlassState extends State<LiquidGlass>
       material: widget.material,
       group: widget.group,
       tip: widget.tip,
+      profile: widget.profile,
+      profileShadow: widget.profileShadow,
       child: Stack(
         fit: StackFit.passthrough,
         children: [

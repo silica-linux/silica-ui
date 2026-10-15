@@ -194,6 +194,7 @@ class SilicaAlert extends StatelessWidget {
       : LiquidGlass(
           radius: alertRadius,
           material: GlassMaterial.thick,
+          profile: GlassProfile.sheet,
           interactive: false,
           child: child,
         );
