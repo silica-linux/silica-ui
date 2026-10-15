@@ -9,6 +9,38 @@ import 'dart:ui' show Color, Rect;
 /// `app`: the shell clips the body and adds edge and shadow; `file`: free shape.
 enum IconKind { app, file }
 
+/// The six themes of an app icon (icon-format.md, "Themes"): Default (here `light`), Dark,
+/// Clear Light and Clear Dark, Tinted Light and Tinted Dark. [key] is the theme's key in the
+/// manifest's `rendered` map.
+enum IconAppearance {
+  light('default'),
+  dark('dark'),
+  clear('clear'),
+  clearDark('clear-dark'),
+  tinted('tinted'),
+  tintedDark('tinted-dark');
+
+  const IconAppearance(this.key);
+
+  final String key;
+
+  /// Dark, Clear Dark and Tinted Dark: they take the `-dark` layers.
+  bool get isDark =>
+      this == IconAppearance.dark ||
+      this == IconAppearance.clearDark ||
+      this == IconAppearance.tintedDark;
+
+  bool get isClear =>
+      this == IconAppearance.clear || this == IconAppearance.clearDark;
+
+  bool get isTinted =>
+      this == IconAppearance.tinted || this == IconAppearance.tintedDark;
+}
+
+/// The tint of the Tinted renders in silica-icons (icon-format.md, `rendered`): with this tint
+/// the shell uses the PNGs, with any other one it composes the SVG layers.
+const Color defaultIconTint = Color(0xFF0A84FF);
+
 /// An SVG layer on the 1024 canvas, with the variant for dark themes if there is one.
 class IconLayer {
   const IconLayer(this.path, {this.darkPath, this.shadow = false});
@@ -278,6 +310,7 @@ class LayeredIcon {
     required this.kind,
     required this.layers,
     this.dynamic,
+    this.rendered = const {},
   });
 
   final String id;
@@ -286,6 +319,13 @@ class LayeredIcon {
   /// From bottom to top: for apps the background and the foregrounds, for files the artwork.
   final List<IconLayer> layers;
   final IconDynamic? dynamic;
+
+  /// The whole icon as designed (relief, shadows and glass baked in), a 1024 PNG per theme
+  /// (manifest `rendered`, silica-icons ≥ 0.6). Empty in older packs: the layers are used.
+  final Map<IconAppearance, String> rendered;
+
+  /// The rendered PNG of [appearance], if the pack has one.
+  String? renderedFor(IconAppearance appearance) => rendered[appearance];
 }
 
 final RegExp _idPattern = RegExp(r'^[a-z0-9][a-z0-9-]{0,63}$');
@@ -293,6 +333,7 @@ final RegExp _folderKeyPattern = RegExp(r'^[A-Z][A-Z0-9_]{0,31}$');
 final RegExp _labelPattern = RegExp(r'^[a-z][a-z0-9-]{0,31}$');
 const Set<String> _weights = {'light', 'regular', 'semibold'};
 final RegExp _filePattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.svg$');
+final RegExp _pngPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.png$');
 
 /// Reads `icon.json` of the folder `dir`; null if the manifest is invalid or a file is missing.
 LayeredIcon? parseManifest(String dir, String text) {
@@ -343,7 +384,24 @@ LayeredIcon? parseManifest(String dir, String text) {
     kind: kind,
     layers: layers,
     dynamic: _parseDynamic(json['dynamic'], file, dir),
+    rendered: _parseRendered(json['rendered'], dir),
   );
+}
+
+/// `rendered`: theme key → PNG in the icon's folder. Unknown keys, names outside the folder and
+/// missing files are skipped (that theme falls back to the layers).
+Map<IconAppearance, String> _parseRendered(Object? raw, String dir) {
+  if (raw is! Map) return const {};
+  final rendered = <IconAppearance, String>{};
+  for (final appearance in IconAppearance.values) {
+    final name = raw[appearance.key];
+    if (name is String &&
+        _pngPattern.hasMatch(name) &&
+        File('$dir/$name').existsSync()) {
+      rendered[appearance] = '$dir/$name';
+    }
+  }
+  return rendered;
 }
 
 IconDynamic? _parseDynamic(

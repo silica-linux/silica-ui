@@ -86,6 +86,107 @@ class IconShadow {
 const List<Color> neutralLight = [Color(0xFFFFFFFF), Color(0xFFEDEDF0)];
 const List<Color> neutralDark = [Color(0xFF3A3A3C), Color(0xFF161618)];
 
+/// Blur of the backdrop behind the translucent body of the Clear styles, per side of the body.
+const double clearBlurRatio = 0.08;
+
+/// The background the shell generates for an app in Clear and Tinted (icon-format.md, "Themes"),
+/// top to bottom: light glass white 50 % → 25 %, dark glass graphite 50 % → black 55 %; the tint
+/// lightened towards white by 90 % → 76 %, or darkened by 62 % → 84 %. Default and Dark have
+/// their own background layer; for them the neutral one is returned.
+List<Color> themeBackground(IconAppearance look, Color tint) {
+  Color mix(Color a, Color b, double t) => Color.lerp(a, b, t)!;
+  Color darken(double by) => Color.from(
+    alpha: 1,
+    red: tint.r * (1 - by),
+    green: tint.g * (1 - by),
+    blue: tint.b * (1 - by),
+  );
+  const white = Color(0xFFFFFFFF);
+  return switch (look) {
+    IconAppearance.clear => const [Color(0x80FFFFFF), Color(0x40FFFFFF)],
+    IconAppearance.clearDark => const [Color(0x803A3A3C), Color(0x8C000000)],
+    IconAppearance.tinted => [mix(tint, white, 0.90), mix(tint, white, 0.76)],
+    IconAppearance.tintedDark => [darken(0.62), darken(0.84)],
+    IconAppearance.light => neutralLight,
+    IconAppearance.dark => neutralDark,
+  };
+}
+
+/// How the foreground (and the dynamic content) is recoloured in Clear and Tinted: the luminance
+/// mapped to grey 105–255 (Clear Light) or 150–255 (Clear Dark), or from the dark tint to white
+/// (Tinted Light) or to the light tint (Tinted Dark). Null for Default and Dark.
+ColorFilter? foregroundFilter(IconAppearance look, Color tint) {
+  const white = Color(0xFFFFFFFF);
+  final deep = Color.from(
+    alpha: 1,
+    red: tint.r * 0.3,
+    green: tint.g * 0.3,
+    blue: tint.b * 0.3,
+  );
+  final (Color, Color)? ramp = switch (look) {
+    IconAppearance.clear => (const Color(0xFF696969), white),
+    IconAppearance.clearDark => (const Color(0xFF969696), white),
+    IconAppearance.tinted => (deep, white),
+    IconAppearance.tintedDark => (deep, Color.lerp(tint, white, 0.8)!),
+    IconAppearance.light || IconAppearance.dark => null,
+  };
+  if (ramp == null) return null;
+  final (from, to) = ramp;
+  const lum = [0.2126, 0.7152, 0.0722];
+  final rows = <double>[];
+  for (final (lo, hi) in [(from.r, to.r), (from.g, to.g), (from.b, to.b)]) {
+    final k = hi - lo;
+    rows.addAll([k * lum[0], k * lum[1], k * lum[2], 0, lo * 255]);
+  }
+  return ColorFilter.matrix([...rows, 0, 0, 0, 1, 0]);
+}
+
+/// A `rendered` PNG of an app icon on the 1024 canvas drawn at [canvas] pt. It is decoded at
+/// [decodeSide] pixels, not always at 1024, and drawn with mipmapped filtering.
+class RenderedIconImage extends StatelessWidget {
+  const RenderedIconImage({
+    super.key,
+    required this.path,
+    required this.canvas,
+    this.fallback,
+  });
+
+  final String path;
+  final double canvas;
+
+  /// Shown if the PNG cannot be decoded (the composed layers).
+  final Widget? fallback;
+
+  /// The decoded side for [pixels] device pixels: the smallest power of two from 64 that covers
+  /// them, at most 1024 (the PNG). Dock magnification re-decodes only at these steps.
+  static int decodeSide(double pixels) {
+    var side = 64;
+    while (side < pixels && side < 1024) {
+      side *= 2;
+    }
+    return side;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ratio = MediaQuery.maybeDevicePixelRatioOf(context) ?? 1;
+    final decoded = decodeSide(canvas * ratio);
+    final ImageProvider file = FileImage(File(path));
+    return Image(
+      image: decoded < 1024
+          ? ResizeImage(file, width: decoded, height: decoded)
+          : file,
+      width: canvas,
+      height: canvas,
+      fit: BoxFit.fill,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
+      excludeFromSemantics: true,
+      errorBuilder: (_, _, _) => fallback ?? SizedBox.square(dimension: canvas),
+    );
+  }
+}
+
 /// Months for the calendar icon, by language: English is the source, Italian the first
 /// translation; other languages fall back to English.
 const Map<String, List<String>> monthNamesByLanguage = {
@@ -189,6 +290,8 @@ class SilicaIcon extends StatelessWidget {
     super.key,
     required this.side,
     this.dark,
+    this.appearance,
+    this.tint,
     this.badges = const {},
     this.env,
     this.besideApps = false,
@@ -223,20 +326,35 @@ class SilicaIcon extends StatelessWidget {
   /// The dark variant. It is the icon style (icons.md IC-01: Settings › Appearance ›
   /// Icon style, "Dark"), not the system appearance: in dark appearance with the normal style
   /// the icons stay the same (appswitcher.md; silica-reference MU-20). Null: light.
+  /// [appearance], when given, wins.
   final bool? dark;
+
+  /// The icon style (icon-format.md, "Themes"): Default, Dark, Clear or Tinted, light or dark.
+  /// Null: from [dark]. App icons with `rendered` PNGs draw them; the others compose the layers.
+  final IconAppearance? appearance;
+
+  /// The tint of the Tinted styles; null is [defaultIconTint]. With another tint the app icon is
+  /// composed from its layers (the Tinted PNGs carry the default tint).
+  final Color? tint;
+
+  /// The style actually drawn.
+  IconAppearance get resolvedAppearance =>
+      appearance ?? (dark == true ? IconAppearance.dark : IconAppearance.light);
 
   @override
   Widget build(BuildContext context) {
-    final isDark = dark ?? false;
+    final look = resolvedAppearance;
+    final isDark = look.isDark;
     final canvas = canvasExtent;
     final inset = (canvas - side) / 2;
     final body = Rect.fromLTWH(inset, inset, side, side);
     final Widget content = switch (source) {
       LayeredSource(:final icon) when icon.kind == IconKind.app => _layeredApp(
+        context,
         icon,
         canvas,
         body,
-        isDark,
+        look,
       ),
       LayeredSource(:final icon) => Stack(
         children: [
@@ -346,8 +464,42 @@ class SilicaIcon extends StatelessWidget {
     );
   }
 
-  Widget _layeredApp(LayeredIcon icon, double canvas, Rect body, bool isDark) {
-    final shadow = side * layerShadowRatio;
+  /// An app icon. Default and Dark (and Clear and Tinted with the default tint) draw the
+  /// `rendered` PNG of the style when the pack has one; otherwise the SVG layers are composed,
+  /// with the glass background or the tint of the style. The body mask, the rim and the drop
+  /// shadow are the shell's in both cases; dynamic content (clock hands, calendar text) goes on
+  /// top, recoloured like the foreground in Clear and Tinted.
+  Widget _layeredApp(
+    BuildContext context,
+    LayeredIcon icon,
+    double canvas,
+    Rect body,
+    IconAppearance look,
+  ) {
+    final isDark = look.isDark;
+    final tintColor = tint ?? defaultIconTint;
+    final customTint =
+        look.isTinted && tintColor.toARGB32() != defaultIconTint.toARGB32();
+    final rendered = customTint ? null : icon.renderedFor(look);
+    final filter = foregroundFilter(look, tintColor);
+
+    Widget recolored(Widget child) => filter == null
+        ? child
+        : ColorFiltered(colorFilter: filter, child: child);
+
+    final layers = _appLayers(icon, canvas, look, tintColor, filter);
+    final Widget dynamicContent = switch (icon.dynamic) {
+      ClockHands hands => recolored(
+        _Clock(hands: hands, canvas: canvas, dark: isDark, seconds: side >= 64),
+      ),
+      CalendarText text => recolored(
+        _Calendar(text: text, canvas: canvas, dark: isDark),
+      ),
+      FolderSymbol() ||
+      FileLabelRules() ||
+      TypeLabel() ||
+      null => const SizedBox.shrink(),
+    };
     return Stack(
       children: [
         CustomPaint(
@@ -358,43 +510,25 @@ class SilicaIcon extends StatelessWidget {
           clipper: _BodyClipper(body),
           child: Stack(
             children: [
-              for (final layer in icon.layers) ...[
-                if (layer.shadow)
-                  ImageFiltered(
-                    imageFilter: ImageFilter.blur(
-                      sigmaX: shadow,
-                      sigmaY: shadow,
-                    ),
-                    child: Transform.translate(
-                      offset: Offset(0, shadow),
-                      child: ColorFiltered(
-                        colorFilter: const ColorFilter.mode(
-                          layerShadowColor,
-                          BlendMode.srcIn,
-                        ),
-                        child: _svg(layer.pathFor(dark: isDark), canvas),
-                      ),
-                    ),
+              // Clear: the glass blurs what is behind the translucent body.
+              if (look.isClear)
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: side * clearBlurRatio,
+                    sigmaY: side * clearBlurRatio,
                   ),
-                _svg(layer.pathFor(dark: isDark), canvas),
-              ],
-              switch (icon.dynamic) {
-                ClockHands hands => _Clock(
-                  hands: hands,
-                  canvas: canvas,
-                  dark: isDark,
-                  seconds: side >= 64,
+                  child: SizedBox.square(dimension: canvas),
                 ),
-                CalendarText text => _Calendar(
-                  text: text,
+              if (rendered != null)
+                RenderedIconImage(
+                  path: rendered,
                   canvas: canvas,
-                  dark: isDark,
-                ),
-                FolderSymbol() ||
-                FileLabelRules() ||
-                TypeLabel() ||
-                null => const SizedBox.shrink(),
-              },
+                  // An unreadable PNG falls back to the layers.
+                  fallback: layers,
+                )
+              else
+                layers,
+              dynamicContent,
             ],
           ),
         ),
@@ -403,6 +537,70 @@ class SilicaIcon extends StatelessWidget {
           painter: _RimPainter(body, side, isDark),
         ),
       ],
+    );
+  }
+
+  /// The SVG layers of an app in the style [look]: Default and Dark as drawn (the `-dark`
+  /// layers for Dark), Clear and Tinted with the generated background (icon-format.md, "Themes")
+  /// and the foregrounds through [filter].
+  Widget _appLayers(
+    LayeredIcon icon,
+    double canvas,
+    IconAppearance look,
+    Color tintColor,
+    ColorFilter? filter,
+  ) {
+    final isDark = look.isDark;
+    final shadow = side * layerShadowRatio;
+    final generated = look.isClear || look.isTinted;
+    final children = <Widget>[];
+    for (final (index, layer) in icon.layers.indexed) {
+      final path = layer.pathFor(dark: isDark);
+      if (index == 0 && generated) {
+        // The background is the style's: glass or tint, top to bottom.
+        children.add(
+          SizedBox.square(
+            dimension: canvas,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: themeBackground(look, tintColor),
+                ),
+              ),
+            ),
+          ),
+        );
+        continue;
+      }
+      if (layer.shadow) {
+        children.add(
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: shadow, sigmaY: shadow),
+            child: Transform.translate(
+              offset: Offset(0, shadow),
+              child: ColorFiltered(
+                colorFilter: const ColorFilter.mode(
+                  layerShadowColor,
+                  BlendMode.srcIn,
+                ),
+                child: _svg(path, canvas),
+              ),
+            ),
+          ),
+        );
+      }
+      final art = _svg(path, canvas);
+      children.add(
+        index > 0 && filter != null
+            ? ColorFiltered(colorFilter: filter, child: art)
+            : art,
+      );
+    }
+    return SizedBox.square(
+      dimension: canvas,
+      child: Stack(children: children),
     );
   }
 

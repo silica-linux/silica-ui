@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.37.0 · 2026-10-15
+
+App icons from silica-icons 0.6 (the `rendered` manifest field).
+
+- **Added:** `IconAppearance` (`light`, `dark`, `clear`, `clearDark`, `tinted`,
+  `tintedDark`): the six icon styles of icon-format.md. `SilicaIcon` takes `appearance` and
+  `tint` (null: `defaultIconTint`, #0A84FF); `dark` still works and `appearance` wins over it.
+- **Added:** `LayeredIcon.rendered` / `renderedFor`: the 1024 PNG of each style, with relief,
+  shadows and glass baked in. Unknown keys, names outside the icon's folder and missing files
+  are skipped.
+- **Changed:** an app icon whose pack has the PNG of the style draws it (decoded at a power of
+  two from 64 to 1024 pixels, mipmapped) instead of composing the SVG layers; the body mask,
+  rim and drop shadow stay the shell's. Clear blurs the backdrop behind the translucent body.
+  A custom tint, a pack without `rendered` (silica-icons < 0.6) or a PNG that does not decode
+  compose the layers, now also for Clear and Tinted (generated glass or tint background,
+  foreground recoloured by luminance). Clock hands and calendar text are drawn on top of the
+  PNG, recoloured like the foreground in Clear and Tinted.
+
 ## 0.36.0 · 2026-10-15
 
 - **Added:** `SilicaWindow.exportHandle({viewId})`: the window's identifier for another app

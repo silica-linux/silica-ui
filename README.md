@@ -39,7 +39,7 @@ dependencies:
 | `SilicaAppearance`, `SilicaAppearanceScope`, `SilicaApp.appearance` | the appearance override (always dark / always light), for the app or the window; also sent to Ossido |
 | `MenuHost`, `MenuPanel`, `MenuColors` | menus with submenus, sections, custom rows, light and dark |
 | `SilicaMenuBar`, `SilicaMenus`, `SilicaMenuItem`, `SilicaMenuDelegate` | the app's menus in Silica's global menu bar, with their shortcuts ([docs/app-menus.md](docs/app-menus.md)) |
-| `SilicaIcon`, `resolveFileIcon`, `resolveFolderIcon` | layered icons from silica-icons, with badges and ground shadows |
+| `SilicaIcon`, `resolveFileIcon`, `resolveFolderIcon` | layered icons from silica-icons (the rendered PNG of each style when the pack has one), with badges and ground shadows |
 | `SilicaDrag` | drag and drop of files between apps (`text/uri-list`) |
 
 ## How the glass works
