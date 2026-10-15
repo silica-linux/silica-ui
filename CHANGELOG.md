@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.29.1 · 2026-10-15
+
+Fix: the segmented control's lens showed the covered label twice.
+
+- **Fix:** while the lens is up, the original labels are clipped out where the lens covers them
+  (they were still painted under the clear lens, offset from its magnified copy, so "Alarms"
+  appeared doubled). The lens now shows only the magnified content, as on macOS. The paint order
+  is unchanged and checked by tests: track (with its rim), pill, labels, lens.
+
 ## 0.29.0 · 2026-10-15
 
 Glass profiles (silica-desktop#168, silica-glass-v1 version 7) and the measured segmented-control

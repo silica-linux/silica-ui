@@ -172,6 +172,66 @@ void main() {
       }
     });
 
+    testWidgets('while pressed, the original labels are cut out under the lens', (
+      tester,
+    ) async {
+      await pumpClock(tester, [], initial: 1);
+      const labelsKey = ValueKey('segmented labels');
+      // At rest nothing is clipped.
+      expect(tester.widget<ClipPath>(find.byKey(labelsKey)).clipper, isNull);
+      final press = await tester.startGesture(segmentCenter(tester, 1));
+      await tester.pump();
+      await ms(tester, 400);
+      final lens = lensRect(tester);
+      final track = trackRect(tester);
+      final clip = tester.widget<ClipPath>(find.byKey(labelsKey));
+      final size = tester.getSize(find.byKey(labelsKey));
+      final path = clip.clipper!.getClip(size);
+      // Local to the control: the lens centre and its ends are cut out, the rest is kept.
+      final local = lens.shift(-track.topLeft);
+      expect(path.contains(local.center), isFalse);
+      expect(path.contains(local.center + const Offset(0, 10)), isFalse);
+      expect(path.contains(local.centerLeft + const Offset(8, 0)), isFalse);
+      expect(path.contains(local.centerLeft - const Offset(2, 0)), isTrue);
+      expect(path.contains(local.centerRight + const Offset(2, 0)), isTrue);
+      // The "Alarms" label sits under the lens centre: it is clipped there, so only the
+      // magnified copy is seen.
+      expect(clip.clipBehavior, Clip.antiAlias);
+      expect(
+        find.descendant(of: find.byKey(lensKey), matching: find.text('Alarms')),
+        findsOneWidget,
+      );
+      // Neighbouring labels outside the lens are still painted.
+      expect(path.contains(const Offset(47, 18)), isTrue);
+      await press.up();
+      await tester.pumpAndSettle();
+      expect(tester.widget<ClipPath>(find.byKey(labelsKey)).clipper, isNull);
+    });
+
+    testWidgets('paint order: track, pill, labels, lens', (tester) async {
+      await pumpClock(tester, [], initial: 1);
+      final press = await tester.startGesture(segmentCenter(tester, 1));
+      await tester.pump();
+      await ms(tester, 100);
+      final all = tester.allWidgets.toList();
+      int at(Key key) =>
+          all.indexOf(tester.widget(find.byKey(key as ValueKey<String>)));
+      final track = at(trackKey);
+      final pill = at(pillKey);
+      final labels = at(const ValueKey('segmented labels'));
+      final lens = at(lensKey);
+      expect(track, lessThan(pill));
+      expect(pill, lessThan(labels));
+      expect(labels, lessThan(lens));
+      // The rim is part of the track, under the pill; the pill sits inside the rim.
+      final trackRect = tester.getRect(find.byKey(trackKey));
+      final pillRect = tester.getRect(find.byKey(pillKey));
+      expect(trackRect.contains(pillRect.topLeft), isTrue);
+      expect(pillRect.top - trackRect.top, greaterThanOrEqualTo(2));
+      await press.up();
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('the pill is not drawn under the full lens', (tester) async {
       await pumpClock(tester, []);
       final press = await tester.startGesture(segmentCenter(tester, 0));

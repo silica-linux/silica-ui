@@ -712,6 +712,18 @@ class _SegmentedControlState extends State<SegmentedControl>
     final onLensText = active && colors.chosenText != null
         ? colors.chosenText!
         : colors.text;
+    final presence = _lens.value;
+    final lensRect = pillRect != null && presence > 0
+        ? glassLensRect(
+            pillRect,
+            presence,
+            lens: Size(
+              GlassLensMetrics.width,
+              height + 2 * GlassLensMetrics.overhang,
+            ),
+          )
+        : null;
+    final labels = <Widget>[];
     for (var i = 0; i < n; i++) {
       final s = widget.segments[i];
       final enabled = _enabled && s.enabled;
@@ -725,7 +737,7 @@ class _SegmentedControlState extends State<SegmentedControl>
           : !active && hovered != i
           ? colors.textInactive
           : colors.text;
-      layers.add(
+      labels.add(
         Positioned(
           left: lefts[i],
           top: 0,
@@ -744,19 +756,23 @@ class _SegmentedControlState extends State<SegmentedControl>
       );
     }
 
-    final presence = _lens.value;
-    if (pillRect != null && presence > 0) {
+    // The labels are cut out where the lens covers them: the lens draws its own magnified copy,
+    // and the original under a clear lens would show doubled.
+    layers.add(
+      Positioned.fill(
+        child: ClipPath(
+          key: const ValueKey('segmented labels'),
+          clipper: lensRect == null ? null : _OutsideLensClipper(lensRect),
+          clipBehavior: lensRect == null ? Clip.none : Clip.antiAlias,
+          child: Stack(clipBehavior: Clip.none, children: labels),
+        ),
+      ),
+    );
+    if (lensRect != null) {
       layers.add(
         Positioned.fill(
           child: GlassLens(
-            rect: glassLensRect(
-              pillRect,
-              presence,
-              lens: Size(
-                GlassLensMetrics.width,
-                height + 2 * GlassLensMetrics.overhang,
-              ),
-            ),
+            rect: lensRect,
             presence: presence,
             material: GlassLensMetrics.material,
             style: GlassLensStyle.of(
@@ -868,4 +884,23 @@ class _SegmentedControlState extends State<SegmentedControl>
       ),
     );
   }
+}
+
+/// Everything except the lens capsule at `lens`: the labels are clipped to this while the lens
+/// shows their magnified copy.
+class _OutsideLensClipper extends CustomClipper<Path> {
+  const _OutsideLensClipper(this.lens);
+
+  final Rect lens;
+
+  @override
+  Path getClip(Size size) => Path()
+    ..fillType = PathFillType.evenOdd
+    ..addRect((Offset.zero & size).expandToInclude(lens).inflate(8))
+    ..addRRect(
+      RRect.fromRectAndRadius(lens, Radius.circular(lens.shortestSide / 2)),
+    );
+
+  @override
+  bool shouldReclip(_OutsideLensClipper old) => old.lens != lens;
 }
