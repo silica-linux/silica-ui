@@ -336,7 +336,7 @@ final RegExp _filePattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.svg$');
 final RegExp _pngPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.png$');
 
 /// Reads `icon.json` of the folder `dir`; null if the manifest is invalid or a file is missing.
-LayeredIcon? parseManifest(String dir, String text) {
+LayeredIcon? parseManifest(String dir, String text, {int depth = 0}) {
   Object? json;
   try {
     json = jsonDecode(text);
@@ -369,8 +369,18 @@ LayeredIcon? parseManifest(String dir, String text) {
   for (final raw in rawLayers) {
     if (raw is! Map) return null;
     final role = raw['role'];
+    if (role is! String) return null;
+    // A layer borrowed from another icon of the pack (`"icon": "file-generic"`): the sheet
+    // of the type icons. Its layers take this place; one level deep, no cycles.
+    final ref = raw['icon'];
+    if (ref is String && raw['file'] == null) {
+      final borrowed = depth == 0 ? _borrowedLayers(dir, ref) : null;
+      if (borrowed == null) return null;
+      layers.addAll(borrowed);
+      continue;
+    }
     final path = file(raw['file']);
-    if (role is! String || path == null) return null;
+    if (path == null) return null;
     layers.add(
       IconLayer(
         path,
@@ -386,6 +396,24 @@ LayeredIcon? parseManifest(String dir, String text) {
     dynamic: _parseDynamic(json['dynamic'], file, dir),
     rendered: _parseRendered(json['rendered'], dir),
   );
+}
+
+/// The layers of the sibling icon `ref` (same group folder as [dir]), or null.
+List<IconLayer>? _borrowedLayers(String dir, String ref) {
+  if (!_idPattern.hasMatch(ref)) return null;
+  final slash = dir.lastIndexOf('/');
+  if (slash < 0) return null;
+  final manifest = File('${dir.substring(0, slash)}/$ref/icon.json');
+  try {
+    if (!manifest.existsSync()) return null;
+    return parseManifest(
+      manifest.parent.path,
+      manifest.readAsStringSync(),
+      depth: 1,
+    )?.layers;
+  } on FileSystemException {
+    return null;
+  }
 }
 
 /// `rendered`: theme key → PNG in the icon's folder. Unknown keys, names outside the folder and

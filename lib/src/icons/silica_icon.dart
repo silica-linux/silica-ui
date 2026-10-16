@@ -436,8 +436,24 @@ class SilicaIcon extends StatelessWidget {
     final scale = canvas / canvasSide;
     return Stack(
       children: [
-        for (final layer in file.icon.layers)
-          _svg(layer.pathFor(dark: isDark), canvas),
+        // Type icons of silica-icons ≥ 1.0 ship the sheet and the figure as a rendered PNG
+        // (label still dynamic); older packs compose the SVG layers.
+        if ((isDark ? file.icon.renderedFor(IconAppearance.dark) : null) ??
+                file.icon.renderedFor(IconAppearance.light)
+            case final png?)
+          RenderedIconImage(
+            path: png,
+            canvas: canvas,
+            fallback: Stack(
+              children: [
+                for (final layer in file.icon.layers)
+                  _svg(layer.pathFor(dark: isDark), canvas),
+              ],
+            ),
+          )
+        else
+          for (final layer in file.icon.layers)
+            _svg(layer.pathFor(dark: isDark), canvas),
         if (box != null && label != null && canvas >= file.labelMinSide)
           Positioned(
             left: box.left * scale,

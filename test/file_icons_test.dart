@@ -170,6 +170,30 @@ void main() {
       type: mime.typeForName(name) ?? octetStream,
     );
 
+    test('new type layout: borrowed sheet, mark and rendered PNG', () {
+      final dir = '${root.path}/files/file-pdf';
+      File('$dir/mark.svg').writeAsStringSync(svg);
+      File('$dir/icon.png').writeAsBytesSync([0]);
+      File('$dir/icon.json').writeAsStringSync(
+        jsonEncode({
+          'format': 1,
+          'id': 'file-pdf',
+          'kind': 'file',
+          'layers': [
+            {'role': 'page', 'icon': 'file-generic'},
+            {'role': 'mark', 'file': 'mark.svg'},
+          ],
+          'variants': null,
+          'rendered': {'default': 'icon.png'},
+        }),
+      );
+      final icon = resolve('a.pdf')?.icon;
+      expect(icon?.id, 'file-pdf');
+      expect(icon?.layers.length, 2);
+      expect(icon?.layers.last.path, endsWith('file-pdf/mark.svg'));
+      expect(icon?.renderedFor(IconAppearance.light), '$dir/icon.png');
+    });
+
     test('order: type, type with *, parents, extension, label', () {
       expect(resolve('a.pdf')?.icon.id, 'file-pdf');
       expect(resolve('photo.png')?.icon.id, 'file-image');
@@ -419,7 +443,7 @@ void main() {
     );
     // The real extension on the type icons, in the color of the type.
     expect(icon('photo.jpg')?.label, 'JPG');
-    expect(icon('photo.jpg')?.labelColor?.$1, const Color(0xFF30B0C7));
+    expect(icon('photo.jpg')?.labelColor?.$1, const Color(0xFF2F7CF6));
     expect(icon('font.ttf')?.label, 'TTF');
     // JSON: explicit entry to the generic file, given category (not the code of the parent).
     expect(icon('dati.json')?.icon.id, 'file-generic');
