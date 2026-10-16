@@ -80,6 +80,7 @@ class AmalfiSegmentLens extends StatelessWidget {
         material: AmalfiMaterials.clear,
         radius: AmalfiLens.radiusOf(constraints.biggest),
         opaque: opaque,
+        kind: AmalfiGlassKind.control,
         child: const SizedBox.expand(),
       ),
     );

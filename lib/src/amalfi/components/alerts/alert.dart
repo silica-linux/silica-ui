@@ -176,6 +176,7 @@ class AmalfiAlert extends StatelessWidget {
         material: AmalfiMaterials.thick,
         radius: AmalfiAlertMetrics.radius,
         opaque: opaque,
+        kind: AmalfiGlassKind.sheet,
         child: content,
       ),
     };

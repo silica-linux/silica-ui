@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- **Added:** `AmalfiGlassBackend` (`flutter`, the default, and `compositor`), set for a subtree
+  with `AmalfiGlassBackendScope`, and `AmalfiGlassKind` (menu, popover, panel, module, control,
+  dock, tooltip, sheet, banner: the profile of the region). With `compositor`, `AmalfiGlass`
+  declares an Ossido glass region (`Glass`, material thick/regular/clear, the kind as profile,
+  the profile's shadow) and paints only its child: no backdrop, tint, rims or shadow. A popover's
+  arrow becomes the region's tip (20 x 8). `AmalfiGlass.kind` / `.group` and every Amalfi widget
+  with glass pass their kind (menu, popover, tooltip, alert: sheet, color panel: panel,
+  buttons, segmented tracks, lenses, field surfaces: control).
+- **Added:** `GlassProfile.popover` (silica-glass-v1 `profile` enum).
+- **Added:** `AmalfiMenu.onSubmenusChanged` / `AmalfiMenuList.onSubmenusChanged`: the global
+  rectangles of the open submenu panels (nested ones included) whenever they change, so a host
+  can update input regions without polling. Submenus use glass `group + 1` (`AmalfiMenu.group`).
+
 Silica 1.0 "Amalfi", step 1: the design tokens in code. Existing widgets are unchanged.
 
 - **Added:** `tool/gen_amalfi_tokens.dart`, which generates `lib/src/amalfi/tokens.g.dart` from

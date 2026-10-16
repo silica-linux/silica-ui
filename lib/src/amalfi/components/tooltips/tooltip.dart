@@ -69,6 +69,7 @@ class AmalfiTooltip extends StatelessWidget {
           child: AmalfiGlass(
             material: AmalfiMaterials.thick,
             radius: AmalfiTooltipMetrics.radius,
+            kind: AmalfiGlassKind.tooltip,
             opaque: opaque,
             child: Padding(
               padding: AmalfiTooltipMetrics.padding,

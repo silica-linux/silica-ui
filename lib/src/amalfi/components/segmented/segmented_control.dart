@@ -438,6 +438,7 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
           material: AmalfiMaterials.regular,
           radius: h / 2,
           opaque: widget.opaque,
+          kind: AmalfiGlassKind.control,
           child: const SizedBox.expand(),
         ),
       ),

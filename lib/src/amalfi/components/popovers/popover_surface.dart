@@ -313,6 +313,7 @@ class AmalfiPopoverSurface extends StatelessWidget {
     material: AmalfiMaterials.thick,
     shape: AmalfiPopoverBorder(shape),
     opaque: opaque,
+    kind: AmalfiGlassKind.popover,
     child: child,
   );
 }

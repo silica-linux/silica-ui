@@ -89,6 +89,7 @@ class AmalfiColorPanel extends StatelessWidget {
       material: AmalfiMaterials.thick,
       radius: AmalfiColorPanelMetrics.radius,
       opaque: opaque,
+      kind: AmalfiGlassKind.panel,
       child: Padding(
         padding: AmalfiColorPanelMetrics.padding,
         child: Column(

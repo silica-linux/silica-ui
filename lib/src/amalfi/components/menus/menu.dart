@@ -10,6 +10,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -99,7 +100,16 @@ class AmalfiMenu extends StatelessWidget {
     this.focusNode,
     this.opaque = false,
     this.minHeight = 0,
+    this.group = 0,
+    this.onSubmenusChanged,
   });
+
+  /// The compositor glass group of the menu; its submenus use the next ones (see
+  /// [AmalfiGlass.group]).
+  final int group;
+
+  /// See [AmalfiMenuList.onSubmenusChanged].
+  final ValueChanged<List<Rect>>? onSubmenusChanged;
 
   /// The rows, top to bottom.
   final List<AmalfiMenuEntry> entries;
@@ -141,6 +151,8 @@ class AmalfiMenu extends StatelessWidget {
       material: AmalfiMaterials.thick,
       radius: AmalfiMenuMetrics.radius,
       opaque: opaque,
+      kind: AmalfiGlassKind.menu,
+      group: group,
       child: ConstrainedBox(
         constraints: BoxConstraints(minHeight: minHeight),
         child: Padding(
@@ -154,6 +166,8 @@ class AmalfiMenu extends StatelessWidget {
             initialHighlight: initialHighlight,
             focusNode: focusNode,
             opaque: opaque,
+            group: group,
+            onSubmenusChanged: onSubmenusChanged,
           ),
         ),
       ),
@@ -188,9 +202,21 @@ class AmalfiMenuList extends StatefulWidget {
     this.initialHighlight,
     this.focusNode,
     this.opaque = false,
+    this.group = 0,
+    this.onSubmenusChanged,
   });
 
   final List<AmalfiMenuEntry> entries;
+
+  /// The compositor glass group of this list's menu; its submenu is drawn in `group + 1`.
+  final int group;
+
+  /// Called with the rectangles, in global coordinates, of the open submenu panels (the
+  /// submenu of this list and, nested, those of the submenus' own), whenever they change:
+  /// a submenu opens, closes or moves. An empty list: none open. A host that keeps input
+  /// regions for the menu (the compositor glass of a layer) updates them from this, without
+  /// polling.
+  final ValueChanged<List<Rect>>? onSubmenusChanged;
 
   /// Called after an item is chosen (at +114 ms) and on Esc, at every level.
   final VoidCallback? onDismiss;
@@ -236,6 +262,26 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
 
   Timer? _submenuTimer, _deferTimer, _blinkTimer, _closeTimer;
   Offset? _lastPointer;
+
+  /// The rectangles of the submenu panels last reported, and those of the nested ones.
+  List<Rect> _reported = const [];
+  List<Rect> _nested = const [];
+  bool _reportScheduled = false;
+
+  void _scheduleReport() {
+    if (widget.onSubmenusChanged == null && _reported.isEmpty) return;
+    if (_reportScheduled) return;
+    _reportScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reportScheduled = false;
+      if (!mounted) return;
+      final own = _submenu == null ? null : _globalRect(_submenuKey);
+      final rects = [?own, if (own != null) ..._nested];
+      if (listEquals(rects, _reported)) return;
+      _reported = rects;
+      widget.onSubmenusChanged?.call(rects);
+    });
+  }
 
   @override
   void initState() {
@@ -504,6 +550,7 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
 
   @override
   Widget build(BuildContext context) {
+    _scheduleReport();
     final rows = <Widget>[
       for (var i = 0; i < widget.entries.length; i++)
         KeyedSubtree(key: _keys[i], child: _row(i, widget.entries[i])),
@@ -600,6 +647,11 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
             autofocus: _submenuByKeyboard,
             highlightFirst: _submenuByKeyboard,
             opaque: widget.opaque,
+            group: widget.group + 1,
+            onSubmenusChanged: (rects) {
+              _nested = rects;
+              _scheduleReport();
+            },
           ),
         ),
       ),

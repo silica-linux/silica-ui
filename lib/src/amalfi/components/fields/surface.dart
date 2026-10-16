@@ -54,6 +54,7 @@ class AmalfiFieldSurface extends StatelessWidget {
               ? AmalfiGlass(
                   material: glass,
                   radius: radius,
+                  kind: AmalfiGlassKind.control,
                   child: const SizedBox.expand(),
                 )
               : DecoratedBox(

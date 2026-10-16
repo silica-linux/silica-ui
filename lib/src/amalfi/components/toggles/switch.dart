@@ -255,6 +255,7 @@ class _Lens extends StatelessWidget {
     return AmalfiGlass(
       material: AmalfiMaterials.clear,
       radius: radius,
+      kind: AmalfiGlassKind.control,
       child: ClipPath(
         clipper: ShapeBorderClipper(shape: AmalfiSmoothBorder(radius: radius)),
         child: Transform.scale(

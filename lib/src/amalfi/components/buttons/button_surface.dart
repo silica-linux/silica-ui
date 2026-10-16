@@ -173,6 +173,7 @@ class AmalfiButtonSurface extends StatelessWidget {
             ? active
             : glass,
         radius: shape.radius,
+        kind: AmalfiGlassKind.control,
         child: const SizedBox.expand(),
       );
     } else if (background) {

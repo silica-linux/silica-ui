@@ -45,6 +45,16 @@ dependencies:
 | `AmalfiTheme`, `AmalfiThemeData` | the Amalfi appearance and app palette in effect (`AmalfiTheme.of(context)`) |
 | `AmalfiSmoothBorder`, `smoothRectPath` | rectangles with smooth (continuous) corners, smoothing 0.6 by default |
 
+## Amalfi glass backends
+
+`AmalfiGlass` (and the menus, popovers, alerts, tooltips, segmented tracks and buttons built on
+it) draws in Flutter by default (`AmalfiGlassBackend.flutter`: backdrop blur, tint, rims and
+shadow; used by tests and the gallery). In a shell layer there is nothing behind the glass in
+Flutter, so wrap the tree in `AmalfiGlassBackendScope(backend: AmalfiGlassBackend.compositor)`:
+each glass then declares an Ossido region (material, `AmalfiGlassKind` as profile, the profile's
+shadow) and paints only its content. Pass `kind:` to `AmalfiGlass` for your own surfaces.
+`AmalfiMenu.onSubmenusChanged` reports the global rectangles of open submenus.
+
 ## How the glass works
 
 The package does not draw the compositor glass: it declares the areas on the `silica/glass`

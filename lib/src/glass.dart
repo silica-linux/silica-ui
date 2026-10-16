@@ -19,6 +19,9 @@ enum GlassProfile {
   /// Menus and context menus.
   menu,
 
+  /// Popovers (Ossido: Thick, like a menu, with its own tip outline).
+  popover,
+
   /// Large panels: Notification Center, Faro, the launcher, an expanded module.
   panel,
 

@@ -73,7 +73,11 @@ class AmalfiSliderLens extends StatelessWidget {
               ),
             ),
           Positioned.fill(
-            child: AmalfiGlass(material: material, radius: radius),
+            child: AmalfiGlass(
+              material: material,
+              radius: radius,
+              kind: AmalfiGlassKind.control,
+            ),
           ),
           const Center(child: AmalfiSliderThumb(states: {WidgetState.dragged})),
         ],
