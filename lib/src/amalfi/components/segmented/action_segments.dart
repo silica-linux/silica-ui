@@ -20,7 +20,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../controls/control_base.dart' show WindowActiveScope;
 import '../../glass.dart';
-import '../../smooth_border.dart';
+import 'capsule.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../tooltips/tooltip_region.dart';
@@ -280,7 +280,7 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
                 color: look == _Look.pressed
                     ? colors.lineBorder
                     : colors.lineSeparator,
-                shape: AmalfiSmoothBorder(radius: rect.height / 2),
+                shape: AmalfiCapsuleBorder(radius: rect.height / 2),
               ),
             ),
           ),
@@ -337,7 +337,7 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
           ),
         );
       } else {
-        final lineHeight = m.labelToken.lineHeight;
+        final lineHeight = m.labelToken.lineHeight ?? m.labelToken.size;
         content = Positioned(
           left: lefts[i],
           top: (h - lineHeight) / 2,
@@ -406,6 +406,8 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
       shortcuts: const {
         SingleActivator(LogicalKeyboardKey.arrowLeft): _MoveIntent(-1),
         SingleActivator(LogicalKeyboardKey.arrowRight): _MoveIntent(1),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
       },
       actions: {
         _MoveIntent: CallbackAction<_MoveIntent>(

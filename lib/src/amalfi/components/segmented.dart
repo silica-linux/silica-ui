@@ -4,6 +4,7 @@
 // The widgets live under `segmented/` and are exported from here.
 
 export 'segmented/action_segments.dart' show AmalfiActionSegments;
+export 'segmented/capsule.dart';
 export 'segmented/lens.dart';
 export 'segmented/metrics.dart';
 export 'segmented/segment.dart';

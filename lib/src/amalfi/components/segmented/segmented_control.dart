@@ -512,6 +512,8 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
       shortcuts: const {
         SingleActivator(LogicalKeyboardKey.arrowLeft): _StepIntent(-1),
         SingleActivator(LogicalKeyboardKey.arrowRight): _StepIntent(1),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
       },
       actions: {
         _StepIntent: CallbackAction<_StepIntent>(

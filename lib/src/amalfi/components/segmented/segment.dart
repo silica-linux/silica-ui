@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-import '../../smooth_border.dart';
+import 'capsule.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
 
@@ -124,7 +124,7 @@ class _HaloPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
-    AmalfiSmoothBorder(
+    AmalfiCapsuleBorder(
       radius: math.max(radius, 0),
       side: BorderSide(
         color: color,
