@@ -6,482 +6,482 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Segments/Action
 
-- [ ] Segments/Action/Icon 2/Large/Disabled/Dark
-- [ ] Segments/Action/Icon 2/Large/Disabled/Light
-- [ ] Segments/Action/Icon 2/Large/Hover/Dark
-- [ ] Segments/Action/Icon 2/Large/Hover/Light
-- [ ] Segments/Action/Icon 2/Large/Inactive/Dark
-- [ ] Segments/Action/Icon 2/Large/Inactive/Light
-- [ ] Segments/Action/Icon 2/Large/Pressed/Dark
-- [ ] Segments/Action/Icon 2/Large/Pressed/Light
-- [ ] Segments/Action/Icon 2/Large/Rest/Dark
-- [ ] Segments/Action/Icon 2/Large/Rest/Light
-- [ ] Segments/Action/Icon 2/Mini/Disabled/Dark
-- [ ] Segments/Action/Icon 2/Mini/Disabled/Light
-- [ ] Segments/Action/Icon 2/Mini/Hover/Dark
-- [ ] Segments/Action/Icon 2/Mini/Hover/Light
-- [ ] Segments/Action/Icon 2/Mini/Inactive/Dark
-- [ ] Segments/Action/Icon 2/Mini/Inactive/Light
-- [ ] Segments/Action/Icon 2/Mini/Pressed/Dark
-- [ ] Segments/Action/Icon 2/Mini/Pressed/Light
-- [ ] Segments/Action/Icon 2/Mini/Rest/Dark
-- [ ] Segments/Action/Icon 2/Mini/Rest/Light
-- [ ] Segments/Action/Icon 2/Regular/Disabled/Dark
-- [ ] Segments/Action/Icon 2/Regular/Disabled/Light
-- [ ] Segments/Action/Icon 2/Regular/Hover/Dark
-- [ ] Segments/Action/Icon 2/Regular/Hover/Light
-- [ ] Segments/Action/Icon 2/Regular/Inactive/Dark
-- [ ] Segments/Action/Icon 2/Regular/Inactive/Light
-- [ ] Segments/Action/Icon 2/Regular/Pressed/Dark
-- [ ] Segments/Action/Icon 2/Regular/Pressed/Light
-- [ ] Segments/Action/Icon 2/Regular/Rest/Dark
-- [ ] Segments/Action/Icon 2/Regular/Rest/Light
-- [ ] Segments/Action/Icon 2/Small/Disabled/Dark
-- [ ] Segments/Action/Icon 2/Small/Disabled/Light
-- [ ] Segments/Action/Icon 2/Small/Hover/Dark
-- [ ] Segments/Action/Icon 2/Small/Hover/Light
-- [ ] Segments/Action/Icon 2/Small/Inactive/Dark
-- [ ] Segments/Action/Icon 2/Small/Inactive/Light
-- [ ] Segments/Action/Icon 2/Small/Pressed/Dark
-- [ ] Segments/Action/Icon 2/Small/Pressed/Light
-- [ ] Segments/Action/Icon 2/Small/Rest/Dark
-- [ ] Segments/Action/Icon 2/Small/Rest/Light
-- [ ] Segments/Action/Icon 3/Large/Disabled/Dark
-- [ ] Segments/Action/Icon 3/Large/Disabled/Light
-- [ ] Segments/Action/Icon 3/Large/Hover/Dark
-- [ ] Segments/Action/Icon 3/Large/Hover/Light
-- [ ] Segments/Action/Icon 3/Large/Inactive/Dark
-- [ ] Segments/Action/Icon 3/Large/Inactive/Light
-- [ ] Segments/Action/Icon 3/Large/Pressed/Dark
-- [ ] Segments/Action/Icon 3/Large/Pressed/Light
-- [ ] Segments/Action/Icon 3/Large/Rest/Dark
-- [ ] Segments/Action/Icon 3/Large/Rest/Light
-- [ ] Segments/Action/Icon 3/Mini/Disabled/Dark
-- [ ] Segments/Action/Icon 3/Mini/Disabled/Light
-- [ ] Segments/Action/Icon 3/Mini/Hover/Dark
-- [ ] Segments/Action/Icon 3/Mini/Hover/Light
-- [ ] Segments/Action/Icon 3/Mini/Inactive/Dark
-- [ ] Segments/Action/Icon 3/Mini/Inactive/Light
-- [ ] Segments/Action/Icon 3/Mini/Pressed/Dark
-- [ ] Segments/Action/Icon 3/Mini/Pressed/Light
-- [ ] Segments/Action/Icon 3/Mini/Rest/Dark
-- [ ] Segments/Action/Icon 3/Mini/Rest/Light
-- [ ] Segments/Action/Icon 3/Regular/Disabled/Dark
-- [ ] Segments/Action/Icon 3/Regular/Disabled/Light
-- [ ] Segments/Action/Icon 3/Regular/Hover/Dark
-- [ ] Segments/Action/Icon 3/Regular/Hover/Light
-- [ ] Segments/Action/Icon 3/Regular/Inactive/Dark
-- [ ] Segments/Action/Icon 3/Regular/Inactive/Light
-- [ ] Segments/Action/Icon 3/Regular/Pressed/Dark
-- [ ] Segments/Action/Icon 3/Regular/Pressed/Light
-- [ ] Segments/Action/Icon 3/Regular/Rest/Dark
-- [ ] Segments/Action/Icon 3/Regular/Rest/Light
-- [ ] Segments/Action/Icon 3/Small/Disabled/Dark
-- [ ] Segments/Action/Icon 3/Small/Disabled/Light
-- [ ] Segments/Action/Icon 3/Small/Hover/Dark
-- [ ] Segments/Action/Icon 3/Small/Hover/Light
-- [ ] Segments/Action/Icon 3/Small/Inactive/Dark
-- [ ] Segments/Action/Icon 3/Small/Inactive/Light
-- [ ] Segments/Action/Icon 3/Small/Pressed/Dark
-- [ ] Segments/Action/Icon 3/Small/Pressed/Light
-- [ ] Segments/Action/Icon 3/Small/Rest/Dark
-- [ ] Segments/Action/Icon 3/Small/Rest/Light
-- [ ] Segments/Action/Icon 4/Large/Disabled/Dark
-- [ ] Segments/Action/Icon 4/Large/Disabled/Light
-- [ ] Segments/Action/Icon 4/Large/Hover/Dark
-- [ ] Segments/Action/Icon 4/Large/Hover/Light
-- [ ] Segments/Action/Icon 4/Large/Inactive/Dark
-- [ ] Segments/Action/Icon 4/Large/Inactive/Light
-- [ ] Segments/Action/Icon 4/Large/Pressed/Dark
-- [ ] Segments/Action/Icon 4/Large/Pressed/Light
-- [ ] Segments/Action/Icon 4/Large/Rest/Dark
-- [ ] Segments/Action/Icon 4/Large/Rest/Light
-- [ ] Segments/Action/Icon 4/Mini/Disabled/Dark
-- [ ] Segments/Action/Icon 4/Mini/Disabled/Light
-- [ ] Segments/Action/Icon 4/Mini/Hover/Dark
-- [ ] Segments/Action/Icon 4/Mini/Hover/Light
-- [ ] Segments/Action/Icon 4/Mini/Inactive/Dark
-- [ ] Segments/Action/Icon 4/Mini/Inactive/Light
-- [ ] Segments/Action/Icon 4/Mini/Pressed/Dark
-- [ ] Segments/Action/Icon 4/Mini/Pressed/Light
-- [ ] Segments/Action/Icon 4/Mini/Rest/Dark
-- [ ] Segments/Action/Icon 4/Mini/Rest/Light
-- [ ] Segments/Action/Icon 4/Regular/Disabled/Dark
-- [ ] Segments/Action/Icon 4/Regular/Disabled/Light
-- [ ] Segments/Action/Icon 4/Regular/Hover/Dark
-- [ ] Segments/Action/Icon 4/Regular/Hover/Light
-- [ ] Segments/Action/Icon 4/Regular/Inactive/Dark
-- [ ] Segments/Action/Icon 4/Regular/Inactive/Light
-- [ ] Segments/Action/Icon 4/Regular/Pressed/Dark
-- [ ] Segments/Action/Icon 4/Regular/Pressed/Light
-- [ ] Segments/Action/Icon 4/Regular/Rest/Dark
-- [ ] Segments/Action/Icon 4/Regular/Rest/Light
-- [ ] Segments/Action/Icon 4/Small/Disabled/Dark
-- [ ] Segments/Action/Icon 4/Small/Disabled/Light
-- [ ] Segments/Action/Icon 4/Small/Hover/Dark
-- [ ] Segments/Action/Icon 4/Small/Hover/Light
-- [ ] Segments/Action/Icon 4/Small/Inactive/Dark
-- [ ] Segments/Action/Icon 4/Small/Inactive/Light
-- [ ] Segments/Action/Icon 4/Small/Pressed/Dark
-- [ ] Segments/Action/Icon 4/Small/Pressed/Light
-- [ ] Segments/Action/Icon 4/Small/Rest/Dark
-- [ ] Segments/Action/Icon 4/Small/Rest/Light
-- [ ] Segments/Action/Icon 5/Large/Disabled/Dark
-- [ ] Segments/Action/Icon 5/Large/Disabled/Light
-- [ ] Segments/Action/Icon 5/Large/Hover/Dark
-- [ ] Segments/Action/Icon 5/Large/Hover/Light
-- [ ] Segments/Action/Icon 5/Large/Inactive/Dark
-- [ ] Segments/Action/Icon 5/Large/Inactive/Light
-- [ ] Segments/Action/Icon 5/Large/Pressed/Dark
-- [ ] Segments/Action/Icon 5/Large/Pressed/Light
-- [ ] Segments/Action/Icon 5/Large/Rest/Dark
-- [ ] Segments/Action/Icon 5/Large/Rest/Light
-- [ ] Segments/Action/Icon 5/Mini/Disabled/Dark
-- [ ] Segments/Action/Icon 5/Mini/Disabled/Light
-- [ ] Segments/Action/Icon 5/Mini/Hover/Dark
-- [ ] Segments/Action/Icon 5/Mini/Hover/Light
-- [ ] Segments/Action/Icon 5/Mini/Inactive/Dark
-- [ ] Segments/Action/Icon 5/Mini/Inactive/Light
-- [ ] Segments/Action/Icon 5/Mini/Pressed/Dark
-- [ ] Segments/Action/Icon 5/Mini/Pressed/Light
-- [ ] Segments/Action/Icon 5/Mini/Rest/Dark
-- [ ] Segments/Action/Icon 5/Mini/Rest/Light
-- [ ] Segments/Action/Icon 5/Regular/Disabled/Dark
-- [ ] Segments/Action/Icon 5/Regular/Disabled/Light
-- [ ] Segments/Action/Icon 5/Regular/Hover/Dark
-- [ ] Segments/Action/Icon 5/Regular/Hover/Light
-- [ ] Segments/Action/Icon 5/Regular/Inactive/Dark
-- [ ] Segments/Action/Icon 5/Regular/Inactive/Light
-- [ ] Segments/Action/Icon 5/Regular/Pressed/Dark
-- [ ] Segments/Action/Icon 5/Regular/Pressed/Light
-- [ ] Segments/Action/Icon 5/Regular/Rest/Dark
-- [ ] Segments/Action/Icon 5/Regular/Rest/Light
-- [ ] Segments/Action/Icon 5/Small/Disabled/Dark
-- [ ] Segments/Action/Icon 5/Small/Disabled/Light
-- [ ] Segments/Action/Icon 5/Small/Hover/Dark
-- [ ] Segments/Action/Icon 5/Small/Hover/Light
-- [ ] Segments/Action/Icon 5/Small/Inactive/Dark
-- [ ] Segments/Action/Icon 5/Small/Inactive/Light
-- [ ] Segments/Action/Icon 5/Small/Pressed/Dark
-- [ ] Segments/Action/Icon 5/Small/Pressed/Light
-- [ ] Segments/Action/Icon 5/Small/Rest/Dark
-- [ ] Segments/Action/Icon 5/Small/Rest/Light
-- [ ] Segments/Action/Text 2/Large/Disabled/Dark
-- [ ] Segments/Action/Text 2/Large/Disabled/Light
-- [ ] Segments/Action/Text 2/Large/Hover/Dark
-- [ ] Segments/Action/Text 2/Large/Hover/Light
-- [ ] Segments/Action/Text 2/Large/Inactive/Dark
-- [ ] Segments/Action/Text 2/Large/Inactive/Light
-- [ ] Segments/Action/Text 2/Large/Pressed/Dark
-- [ ] Segments/Action/Text 2/Large/Pressed/Light
-- [ ] Segments/Action/Text 2/Large/Rest/Dark
-- [ ] Segments/Action/Text 2/Large/Rest/Light
-- [ ] Segments/Action/Text 2/Mini/Disabled/Dark
-- [ ] Segments/Action/Text 2/Mini/Disabled/Light
-- [ ] Segments/Action/Text 2/Mini/Hover/Dark
-- [ ] Segments/Action/Text 2/Mini/Hover/Light
-- [ ] Segments/Action/Text 2/Mini/Inactive/Dark
-- [ ] Segments/Action/Text 2/Mini/Inactive/Light
-- [ ] Segments/Action/Text 2/Mini/Pressed/Dark
-- [ ] Segments/Action/Text 2/Mini/Pressed/Light
-- [ ] Segments/Action/Text 2/Mini/Rest/Dark
-- [ ] Segments/Action/Text 2/Mini/Rest/Light
-- [ ] Segments/Action/Text 2/Regular/Disabled/Dark
-- [ ] Segments/Action/Text 2/Regular/Disabled/Light
-- [ ] Segments/Action/Text 2/Regular/Hover/Dark
-- [ ] Segments/Action/Text 2/Regular/Hover/Light
-- [ ] Segments/Action/Text 2/Regular/Inactive/Dark
-- [ ] Segments/Action/Text 2/Regular/Inactive/Light
-- [ ] Segments/Action/Text 2/Regular/Pressed/Dark
-- [ ] Segments/Action/Text 2/Regular/Pressed/Light
-- [ ] Segments/Action/Text 2/Regular/Rest/Dark
-- [ ] Segments/Action/Text 2/Regular/Rest/Light
-- [ ] Segments/Action/Text 2/Small/Disabled/Dark
-- [ ] Segments/Action/Text 2/Small/Disabled/Light
-- [ ] Segments/Action/Text 2/Small/Hover/Dark
-- [ ] Segments/Action/Text 2/Small/Hover/Light
-- [ ] Segments/Action/Text 2/Small/Inactive/Dark
-- [ ] Segments/Action/Text 2/Small/Inactive/Light
-- [ ] Segments/Action/Text 2/Small/Pressed/Dark
-- [ ] Segments/Action/Text 2/Small/Pressed/Light
-- [ ] Segments/Action/Text 2/Small/Rest/Dark
-- [ ] Segments/Action/Text 2/Small/Rest/Light
-- [ ] Segments/Action/Text 3/Large/Disabled/Dark
-- [ ] Segments/Action/Text 3/Large/Disabled/Light
-- [ ] Segments/Action/Text 3/Large/Hover/Dark
-- [ ] Segments/Action/Text 3/Large/Hover/Light
-- [ ] Segments/Action/Text 3/Large/Inactive/Dark
-- [ ] Segments/Action/Text 3/Large/Inactive/Light
-- [ ] Segments/Action/Text 3/Large/Pressed/Dark
-- [ ] Segments/Action/Text 3/Large/Pressed/Light
-- [ ] Segments/Action/Text 3/Large/Rest/Dark
-- [ ] Segments/Action/Text 3/Large/Rest/Light
-- [ ] Segments/Action/Text 3/Mini/Disabled/Dark
-- [ ] Segments/Action/Text 3/Mini/Disabled/Light
-- [ ] Segments/Action/Text 3/Mini/Hover/Dark
-- [ ] Segments/Action/Text 3/Mini/Hover/Light
-- [ ] Segments/Action/Text 3/Mini/Inactive/Dark
-- [ ] Segments/Action/Text 3/Mini/Inactive/Light
-- [ ] Segments/Action/Text 3/Mini/Pressed/Dark
-- [ ] Segments/Action/Text 3/Mini/Pressed/Light
-- [ ] Segments/Action/Text 3/Mini/Rest/Dark
-- [ ] Segments/Action/Text 3/Mini/Rest/Light
-- [ ] Segments/Action/Text 3/Regular/Disabled/Dark
-- [ ] Segments/Action/Text 3/Regular/Disabled/Light
-- [ ] Segments/Action/Text 3/Regular/Hover/Dark
-- [ ] Segments/Action/Text 3/Regular/Hover/Light
-- [ ] Segments/Action/Text 3/Regular/Inactive/Dark
-- [ ] Segments/Action/Text 3/Regular/Inactive/Light
-- [ ] Segments/Action/Text 3/Regular/Pressed/Dark
-- [ ] Segments/Action/Text 3/Regular/Pressed/Light
-- [ ] Segments/Action/Text 3/Regular/Rest/Dark
-- [ ] Segments/Action/Text 3/Regular/Rest/Light
-- [ ] Segments/Action/Text 3/Small/Disabled/Dark
-- [ ] Segments/Action/Text 3/Small/Disabled/Light
-- [ ] Segments/Action/Text 3/Small/Hover/Dark
-- [ ] Segments/Action/Text 3/Small/Hover/Light
-- [ ] Segments/Action/Text 3/Small/Inactive/Dark
-- [ ] Segments/Action/Text 3/Small/Inactive/Light
-- [ ] Segments/Action/Text 3/Small/Pressed/Dark
-- [ ] Segments/Action/Text 3/Small/Pressed/Light
-- [ ] Segments/Action/Text 3/Small/Rest/Dark
-- [ ] Segments/Action/Text 3/Small/Rest/Light
+- [x] Segments/Action/Icon 2/Large/Disabled/Dark
+- [x] Segments/Action/Icon 2/Large/Disabled/Light
+- [x] Segments/Action/Icon 2/Large/Hover/Dark
+- [x] Segments/Action/Icon 2/Large/Hover/Light
+- [x] Segments/Action/Icon 2/Large/Inactive/Dark
+- [x] Segments/Action/Icon 2/Large/Inactive/Light
+- [x] Segments/Action/Icon 2/Large/Pressed/Dark
+- [x] Segments/Action/Icon 2/Large/Pressed/Light
+- [x] Segments/Action/Icon 2/Large/Rest/Dark
+- [x] Segments/Action/Icon 2/Large/Rest/Light
+- [x] Segments/Action/Icon 2/Mini/Disabled/Dark
+- [x] Segments/Action/Icon 2/Mini/Disabled/Light
+- [x] Segments/Action/Icon 2/Mini/Hover/Dark
+- [x] Segments/Action/Icon 2/Mini/Hover/Light
+- [x] Segments/Action/Icon 2/Mini/Inactive/Dark
+- [x] Segments/Action/Icon 2/Mini/Inactive/Light
+- [x] Segments/Action/Icon 2/Mini/Pressed/Dark
+- [x] Segments/Action/Icon 2/Mini/Pressed/Light
+- [x] Segments/Action/Icon 2/Mini/Rest/Dark
+- [x] Segments/Action/Icon 2/Mini/Rest/Light
+- [x] Segments/Action/Icon 2/Regular/Disabled/Dark
+- [x] Segments/Action/Icon 2/Regular/Disabled/Light
+- [x] Segments/Action/Icon 2/Regular/Hover/Dark
+- [x] Segments/Action/Icon 2/Regular/Hover/Light
+- [x] Segments/Action/Icon 2/Regular/Inactive/Dark
+- [x] Segments/Action/Icon 2/Regular/Inactive/Light
+- [x] Segments/Action/Icon 2/Regular/Pressed/Dark
+- [x] Segments/Action/Icon 2/Regular/Pressed/Light
+- [x] Segments/Action/Icon 2/Regular/Rest/Dark
+- [x] Segments/Action/Icon 2/Regular/Rest/Light
+- [x] Segments/Action/Icon 2/Small/Disabled/Dark
+- [x] Segments/Action/Icon 2/Small/Disabled/Light
+- [x] Segments/Action/Icon 2/Small/Hover/Dark
+- [x] Segments/Action/Icon 2/Small/Hover/Light
+- [x] Segments/Action/Icon 2/Small/Inactive/Dark
+- [x] Segments/Action/Icon 2/Small/Inactive/Light
+- [x] Segments/Action/Icon 2/Small/Pressed/Dark
+- [x] Segments/Action/Icon 2/Small/Pressed/Light
+- [x] Segments/Action/Icon 2/Small/Rest/Dark
+- [x] Segments/Action/Icon 2/Small/Rest/Light
+- [x] Segments/Action/Icon 3/Large/Disabled/Dark
+- [x] Segments/Action/Icon 3/Large/Disabled/Light
+- [x] Segments/Action/Icon 3/Large/Hover/Dark
+- [x] Segments/Action/Icon 3/Large/Hover/Light
+- [x] Segments/Action/Icon 3/Large/Inactive/Dark
+- [x] Segments/Action/Icon 3/Large/Inactive/Light
+- [x] Segments/Action/Icon 3/Large/Pressed/Dark
+- [x] Segments/Action/Icon 3/Large/Pressed/Light
+- [x] Segments/Action/Icon 3/Large/Rest/Dark
+- [x] Segments/Action/Icon 3/Large/Rest/Light
+- [x] Segments/Action/Icon 3/Mini/Disabled/Dark
+- [x] Segments/Action/Icon 3/Mini/Disabled/Light
+- [x] Segments/Action/Icon 3/Mini/Hover/Dark
+- [x] Segments/Action/Icon 3/Mini/Hover/Light
+- [x] Segments/Action/Icon 3/Mini/Inactive/Dark
+- [x] Segments/Action/Icon 3/Mini/Inactive/Light
+- [x] Segments/Action/Icon 3/Mini/Pressed/Dark
+- [x] Segments/Action/Icon 3/Mini/Pressed/Light
+- [x] Segments/Action/Icon 3/Mini/Rest/Dark
+- [x] Segments/Action/Icon 3/Mini/Rest/Light
+- [x] Segments/Action/Icon 3/Regular/Disabled/Dark
+- [x] Segments/Action/Icon 3/Regular/Disabled/Light
+- [x] Segments/Action/Icon 3/Regular/Hover/Dark
+- [x] Segments/Action/Icon 3/Regular/Hover/Light
+- [x] Segments/Action/Icon 3/Regular/Inactive/Dark
+- [x] Segments/Action/Icon 3/Regular/Inactive/Light
+- [x] Segments/Action/Icon 3/Regular/Pressed/Dark
+- [x] Segments/Action/Icon 3/Regular/Pressed/Light
+- [x] Segments/Action/Icon 3/Regular/Rest/Dark
+- [x] Segments/Action/Icon 3/Regular/Rest/Light
+- [x] Segments/Action/Icon 3/Small/Disabled/Dark
+- [x] Segments/Action/Icon 3/Small/Disabled/Light
+- [x] Segments/Action/Icon 3/Small/Hover/Dark
+- [x] Segments/Action/Icon 3/Small/Hover/Light
+- [x] Segments/Action/Icon 3/Small/Inactive/Dark
+- [x] Segments/Action/Icon 3/Small/Inactive/Light
+- [x] Segments/Action/Icon 3/Small/Pressed/Dark
+- [x] Segments/Action/Icon 3/Small/Pressed/Light
+- [x] Segments/Action/Icon 3/Small/Rest/Dark
+- [x] Segments/Action/Icon 3/Small/Rest/Light
+- [x] Segments/Action/Icon 4/Large/Disabled/Dark
+- [x] Segments/Action/Icon 4/Large/Disabled/Light
+- [x] Segments/Action/Icon 4/Large/Hover/Dark
+- [x] Segments/Action/Icon 4/Large/Hover/Light
+- [x] Segments/Action/Icon 4/Large/Inactive/Dark
+- [x] Segments/Action/Icon 4/Large/Inactive/Light
+- [x] Segments/Action/Icon 4/Large/Pressed/Dark
+- [x] Segments/Action/Icon 4/Large/Pressed/Light
+- [x] Segments/Action/Icon 4/Large/Rest/Dark
+- [x] Segments/Action/Icon 4/Large/Rest/Light
+- [x] Segments/Action/Icon 4/Mini/Disabled/Dark
+- [x] Segments/Action/Icon 4/Mini/Disabled/Light
+- [x] Segments/Action/Icon 4/Mini/Hover/Dark
+- [x] Segments/Action/Icon 4/Mini/Hover/Light
+- [x] Segments/Action/Icon 4/Mini/Inactive/Dark
+- [x] Segments/Action/Icon 4/Mini/Inactive/Light
+- [x] Segments/Action/Icon 4/Mini/Pressed/Dark
+- [x] Segments/Action/Icon 4/Mini/Pressed/Light
+- [x] Segments/Action/Icon 4/Mini/Rest/Dark
+- [x] Segments/Action/Icon 4/Mini/Rest/Light
+- [x] Segments/Action/Icon 4/Regular/Disabled/Dark
+- [x] Segments/Action/Icon 4/Regular/Disabled/Light
+- [x] Segments/Action/Icon 4/Regular/Hover/Dark
+- [x] Segments/Action/Icon 4/Regular/Hover/Light
+- [x] Segments/Action/Icon 4/Regular/Inactive/Dark
+- [x] Segments/Action/Icon 4/Regular/Inactive/Light
+- [x] Segments/Action/Icon 4/Regular/Pressed/Dark
+- [x] Segments/Action/Icon 4/Regular/Pressed/Light
+- [x] Segments/Action/Icon 4/Regular/Rest/Dark
+- [x] Segments/Action/Icon 4/Regular/Rest/Light
+- [x] Segments/Action/Icon 4/Small/Disabled/Dark
+- [x] Segments/Action/Icon 4/Small/Disabled/Light
+- [x] Segments/Action/Icon 4/Small/Hover/Dark
+- [x] Segments/Action/Icon 4/Small/Hover/Light
+- [x] Segments/Action/Icon 4/Small/Inactive/Dark
+- [x] Segments/Action/Icon 4/Small/Inactive/Light
+- [x] Segments/Action/Icon 4/Small/Pressed/Dark
+- [x] Segments/Action/Icon 4/Small/Pressed/Light
+- [x] Segments/Action/Icon 4/Small/Rest/Dark
+- [x] Segments/Action/Icon 4/Small/Rest/Light
+- [x] Segments/Action/Icon 5/Large/Disabled/Dark
+- [x] Segments/Action/Icon 5/Large/Disabled/Light
+- [x] Segments/Action/Icon 5/Large/Hover/Dark
+- [x] Segments/Action/Icon 5/Large/Hover/Light
+- [x] Segments/Action/Icon 5/Large/Inactive/Dark
+- [x] Segments/Action/Icon 5/Large/Inactive/Light
+- [x] Segments/Action/Icon 5/Large/Pressed/Dark
+- [x] Segments/Action/Icon 5/Large/Pressed/Light
+- [x] Segments/Action/Icon 5/Large/Rest/Dark
+- [x] Segments/Action/Icon 5/Large/Rest/Light
+- [x] Segments/Action/Icon 5/Mini/Disabled/Dark
+- [x] Segments/Action/Icon 5/Mini/Disabled/Light
+- [x] Segments/Action/Icon 5/Mini/Hover/Dark
+- [x] Segments/Action/Icon 5/Mini/Hover/Light
+- [x] Segments/Action/Icon 5/Mini/Inactive/Dark
+- [x] Segments/Action/Icon 5/Mini/Inactive/Light
+- [x] Segments/Action/Icon 5/Mini/Pressed/Dark
+- [x] Segments/Action/Icon 5/Mini/Pressed/Light
+- [x] Segments/Action/Icon 5/Mini/Rest/Dark
+- [x] Segments/Action/Icon 5/Mini/Rest/Light
+- [x] Segments/Action/Icon 5/Regular/Disabled/Dark
+- [x] Segments/Action/Icon 5/Regular/Disabled/Light
+- [x] Segments/Action/Icon 5/Regular/Hover/Dark
+- [x] Segments/Action/Icon 5/Regular/Hover/Light
+- [x] Segments/Action/Icon 5/Regular/Inactive/Dark
+- [x] Segments/Action/Icon 5/Regular/Inactive/Light
+- [x] Segments/Action/Icon 5/Regular/Pressed/Dark
+- [x] Segments/Action/Icon 5/Regular/Pressed/Light
+- [x] Segments/Action/Icon 5/Regular/Rest/Dark
+- [x] Segments/Action/Icon 5/Regular/Rest/Light
+- [x] Segments/Action/Icon 5/Small/Disabled/Dark
+- [x] Segments/Action/Icon 5/Small/Disabled/Light
+- [x] Segments/Action/Icon 5/Small/Hover/Dark
+- [x] Segments/Action/Icon 5/Small/Hover/Light
+- [x] Segments/Action/Icon 5/Small/Inactive/Dark
+- [x] Segments/Action/Icon 5/Small/Inactive/Light
+- [x] Segments/Action/Icon 5/Small/Pressed/Dark
+- [x] Segments/Action/Icon 5/Small/Pressed/Light
+- [x] Segments/Action/Icon 5/Small/Rest/Dark
+- [x] Segments/Action/Icon 5/Small/Rest/Light
+- [x] Segments/Action/Text 2/Large/Disabled/Dark
+- [x] Segments/Action/Text 2/Large/Disabled/Light
+- [x] Segments/Action/Text 2/Large/Hover/Dark
+- [x] Segments/Action/Text 2/Large/Hover/Light
+- [x] Segments/Action/Text 2/Large/Inactive/Dark
+- [x] Segments/Action/Text 2/Large/Inactive/Light
+- [x] Segments/Action/Text 2/Large/Pressed/Dark
+- [x] Segments/Action/Text 2/Large/Pressed/Light
+- [x] Segments/Action/Text 2/Large/Rest/Dark
+- [x] Segments/Action/Text 2/Large/Rest/Light
+- [x] Segments/Action/Text 2/Mini/Disabled/Dark
+- [x] Segments/Action/Text 2/Mini/Disabled/Light
+- [x] Segments/Action/Text 2/Mini/Hover/Dark
+- [x] Segments/Action/Text 2/Mini/Hover/Light
+- [x] Segments/Action/Text 2/Mini/Inactive/Dark
+- [x] Segments/Action/Text 2/Mini/Inactive/Light
+- [x] Segments/Action/Text 2/Mini/Pressed/Dark
+- [x] Segments/Action/Text 2/Mini/Pressed/Light
+- [x] Segments/Action/Text 2/Mini/Rest/Dark
+- [x] Segments/Action/Text 2/Mini/Rest/Light
+- [x] Segments/Action/Text 2/Regular/Disabled/Dark
+- [x] Segments/Action/Text 2/Regular/Disabled/Light
+- [x] Segments/Action/Text 2/Regular/Hover/Dark
+- [x] Segments/Action/Text 2/Regular/Hover/Light
+- [x] Segments/Action/Text 2/Regular/Inactive/Dark
+- [x] Segments/Action/Text 2/Regular/Inactive/Light
+- [x] Segments/Action/Text 2/Regular/Pressed/Dark
+- [x] Segments/Action/Text 2/Regular/Pressed/Light
+- [x] Segments/Action/Text 2/Regular/Rest/Dark
+- [x] Segments/Action/Text 2/Regular/Rest/Light
+- [x] Segments/Action/Text 2/Small/Disabled/Dark
+- [x] Segments/Action/Text 2/Small/Disabled/Light
+- [x] Segments/Action/Text 2/Small/Hover/Dark
+- [x] Segments/Action/Text 2/Small/Hover/Light
+- [x] Segments/Action/Text 2/Small/Inactive/Dark
+- [x] Segments/Action/Text 2/Small/Inactive/Light
+- [x] Segments/Action/Text 2/Small/Pressed/Dark
+- [x] Segments/Action/Text 2/Small/Pressed/Light
+- [x] Segments/Action/Text 2/Small/Rest/Dark
+- [x] Segments/Action/Text 2/Small/Rest/Light
+- [x] Segments/Action/Text 3/Large/Disabled/Dark
+- [x] Segments/Action/Text 3/Large/Disabled/Light
+- [x] Segments/Action/Text 3/Large/Hover/Dark
+- [x] Segments/Action/Text 3/Large/Hover/Light
+- [x] Segments/Action/Text 3/Large/Inactive/Dark
+- [x] Segments/Action/Text 3/Large/Inactive/Light
+- [x] Segments/Action/Text 3/Large/Pressed/Dark
+- [x] Segments/Action/Text 3/Large/Pressed/Light
+- [x] Segments/Action/Text 3/Large/Rest/Dark
+- [x] Segments/Action/Text 3/Large/Rest/Light
+- [x] Segments/Action/Text 3/Mini/Disabled/Dark
+- [x] Segments/Action/Text 3/Mini/Disabled/Light
+- [x] Segments/Action/Text 3/Mini/Hover/Dark
+- [x] Segments/Action/Text 3/Mini/Hover/Light
+- [x] Segments/Action/Text 3/Mini/Inactive/Dark
+- [x] Segments/Action/Text 3/Mini/Inactive/Light
+- [x] Segments/Action/Text 3/Mini/Pressed/Dark
+- [x] Segments/Action/Text 3/Mini/Pressed/Light
+- [x] Segments/Action/Text 3/Mini/Rest/Dark
+- [x] Segments/Action/Text 3/Mini/Rest/Light
+- [x] Segments/Action/Text 3/Regular/Disabled/Dark
+- [x] Segments/Action/Text 3/Regular/Disabled/Light
+- [x] Segments/Action/Text 3/Regular/Hover/Dark
+- [x] Segments/Action/Text 3/Regular/Hover/Light
+- [x] Segments/Action/Text 3/Regular/Inactive/Dark
+- [x] Segments/Action/Text 3/Regular/Inactive/Light
+- [x] Segments/Action/Text 3/Regular/Pressed/Dark
+- [x] Segments/Action/Text 3/Regular/Pressed/Light
+- [x] Segments/Action/Text 3/Regular/Rest/Dark
+- [x] Segments/Action/Text 3/Regular/Rest/Light
+- [x] Segments/Action/Text 3/Small/Disabled/Dark
+- [x] Segments/Action/Text 3/Small/Disabled/Light
+- [x] Segments/Action/Text 3/Small/Hover/Dark
+- [x] Segments/Action/Text 3/Small/Hover/Light
+- [x] Segments/Action/Text 3/Small/Inactive/Dark
+- [x] Segments/Action/Text 3/Small/Inactive/Light
+- [x] Segments/Action/Text 3/Small/Pressed/Dark
+- [x] Segments/Action/Text 3/Small/Pressed/Light
+- [x] Segments/Action/Text 3/Small/Rest/Dark
+- [x] Segments/Action/Text 3/Small/Rest/Light
 
 ## Segments/Align
 
-- [ ] Segments/Align/Small/Centre/Dark
-- [ ] Segments/Align/Small/Centre/Light
-- [ ] Segments/Align/Small/Justify/Dark
-- [ ] Segments/Align/Small/Justify/Light
-- [ ] Segments/Align/Small/Left/Dark
-- [ ] Segments/Align/Small/Left/Light
-- [ ] Segments/Align/Small/Right/Dark
-- [ ] Segments/Align/Small/Right/Light
+- [x] Segments/Align/Small/Centre/Dark
+- [x] Segments/Align/Small/Centre/Light
+- [x] Segments/Align/Small/Justify/Dark
+- [x] Segments/Align/Small/Justify/Light
+- [x] Segments/Align/Small/Left/Dark
+- [x] Segments/Align/Small/Left/Light
+- [x] Segments/Align/Small/Right/Dark
+- [x] Segments/Align/Small/Right/Light
 
 ## Segments/Control
 
-- [ ] Segments/Control/Any 2 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/Any 2 Icon/Regular/Rest/Light
-- [ ] Segments/Control/Any 2 Text/Regular/Rest/Dark
-- [ ] Segments/Control/Any 2 Text/Regular/Rest/Light
-- [ ] Segments/Control/Any 3 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/Any 3 Icon/Regular/Rest/Light
-- [ ] Segments/Control/Any 3 Text/Regular/Rest/Dark
-- [ ] Segments/Control/Any 3 Text/Regular/Rest/Light
-- [ ] Segments/Control/Any 4 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/Any 4 Icon/Regular/Rest/Light
-- [ ] Segments/Control/Any 4 Text/Regular/Rest/Dark
-- [ ] Segments/Control/Any 4 Text/Regular/Rest/Light
-- [ ] Segments/Control/Any 5 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/Any 5 Icon/Regular/Rest/Light
-- [ ] Segments/Control/Any 5 Text/Regular/Rest/Dark
-- [ ] Segments/Control/Any 5 Text/Regular/Rest/Light
+- [x] Segments/Control/Any 2 Icon/Regular/Rest/Dark
+- [x] Segments/Control/Any 2 Icon/Regular/Rest/Light
+- [x] Segments/Control/Any 2 Text/Regular/Rest/Dark
+- [x] Segments/Control/Any 2 Text/Regular/Rest/Light
+- [x] Segments/Control/Any 3 Icon/Regular/Rest/Dark
+- [x] Segments/Control/Any 3 Icon/Regular/Rest/Light
+- [x] Segments/Control/Any 3 Text/Regular/Rest/Dark
+- [x] Segments/Control/Any 3 Text/Regular/Rest/Light
+- [x] Segments/Control/Any 4 Icon/Regular/Rest/Dark
+- [x] Segments/Control/Any 4 Icon/Regular/Rest/Light
+- [x] Segments/Control/Any 4 Text/Regular/Rest/Dark
+- [x] Segments/Control/Any 4 Text/Regular/Rest/Light
+- [x] Segments/Control/Any 5 Icon/Regular/Rest/Dark
+- [x] Segments/Control/Any 5 Icon/Regular/Rest/Light
+- [x] Segments/Control/Any 5 Text/Regular/Rest/Dark
+- [x] Segments/Control/Any 5 Text/Regular/Rest/Light
 - [ ] Segments/Control/One 2 Icon/Large/Disabled/Dark
 - [ ] Segments/Control/One 2 Icon/Large/Disabled/Light
-- [ ] Segments/Control/One 2 Icon/Large/Pressed/Dark
-- [ ] Segments/Control/One 2 Icon/Large/Pressed/Light
-- [ ] Segments/Control/One 2 Icon/Large/Rest/Dark
-- [ ] Segments/Control/One 2 Icon/Large/Rest/Light
-- [ ] Segments/Control/One 2 Icon/Mini/Rest/Dark
-- [ ] Segments/Control/One 2 Icon/Mini/Rest/Light
+- [x] Segments/Control/One 2 Icon/Large/Pressed/Dark
+- [x] Segments/Control/One 2 Icon/Large/Pressed/Light
+- [x] Segments/Control/One 2 Icon/Large/Rest/Dark
+- [x] Segments/Control/One 2 Icon/Large/Rest/Light
+- [x] Segments/Control/One 2 Icon/Mini/Rest/Dark
+- [x] Segments/Control/One 2 Icon/Mini/Rest/Light
 - [ ] Segments/Control/One 2 Icon/Regular/Disabled/Dark
 - [ ] Segments/Control/One 2 Icon/Regular/Disabled/Light
-- [ ] Segments/Control/One 2 Icon/Regular/Pressed/Dark
-- [ ] Segments/Control/One 2 Icon/Regular/Pressed/Light
-- [ ] Segments/Control/One 2 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/One 2 Icon/Regular/Rest/Light
+- [x] Segments/Control/One 2 Icon/Regular/Pressed/Dark
+- [x] Segments/Control/One 2 Icon/Regular/Pressed/Light
+- [x] Segments/Control/One 2 Icon/Regular/Rest/Dark
+- [x] Segments/Control/One 2 Icon/Regular/Rest/Light
 - [ ] Segments/Control/One 2 Icon/Small/Disabled/Dark
 - [ ] Segments/Control/One 2 Icon/Small/Disabled/Light
-- [ ] Segments/Control/One 2 Icon/Small/Pressed/Dark
-- [ ] Segments/Control/One 2 Icon/Small/Pressed/Light
-- [ ] Segments/Control/One 2 Icon/Small/Rest/Dark
-- [ ] Segments/Control/One 2 Icon/Small/Rest/Light
+- [x] Segments/Control/One 2 Icon/Small/Pressed/Dark
+- [x] Segments/Control/One 2 Icon/Small/Pressed/Light
+- [x] Segments/Control/One 2 Icon/Small/Rest/Dark
+- [x] Segments/Control/One 2 Icon/Small/Rest/Light
 - [ ] Segments/Control/One 2 Text/Large/Disabled/Dark
 - [ ] Segments/Control/One 2 Text/Large/Disabled/Light
-- [ ] Segments/Control/One 2 Text/Large/Pressed/Dark
-- [ ] Segments/Control/One 2 Text/Large/Pressed/Light
-- [ ] Segments/Control/One 2 Text/Large/Rest/Dark
-- [ ] Segments/Control/One 2 Text/Large/Rest/Light
+- [x] Segments/Control/One 2 Text/Large/Pressed/Dark
+- [x] Segments/Control/One 2 Text/Large/Pressed/Light
+- [x] Segments/Control/One 2 Text/Large/Rest/Dark
+- [x] Segments/Control/One 2 Text/Large/Rest/Light
 - [ ] Segments/Control/One 2 Text/Mini/Rest/Dark
 - [ ] Segments/Control/One 2 Text/Mini/Rest/Light
 - [ ] Segments/Control/One 2 Text/Regular/Disabled/Dark
 - [ ] Segments/Control/One 2 Text/Regular/Disabled/Light
-- [ ] Segments/Control/One 2 Text/Regular/Pressed/Dark
-- [ ] Segments/Control/One 2 Text/Regular/Pressed/Light
-- [ ] Segments/Control/One 2 Text/Regular/Rest/Dark
-- [ ] Segments/Control/One 2 Text/Regular/Rest/Light
+- [x] Segments/Control/One 2 Text/Regular/Pressed/Dark
+- [x] Segments/Control/One 2 Text/Regular/Pressed/Light
+- [x] Segments/Control/One 2 Text/Regular/Rest/Dark
+- [x] Segments/Control/One 2 Text/Regular/Rest/Light
 - [ ] Segments/Control/One 2 Text/Small/Disabled/Dark
 - [ ] Segments/Control/One 2 Text/Small/Disabled/Light
-- [ ] Segments/Control/One 2 Text/Small/Pressed/Dark
-- [ ] Segments/Control/One 2 Text/Small/Pressed/Light
-- [ ] Segments/Control/One 2 Text/Small/Rest/Dark
-- [ ] Segments/Control/One 2 Text/Small/Rest/Light
+- [x] Segments/Control/One 2 Text/Small/Pressed/Dark
+- [x] Segments/Control/One 2 Text/Small/Pressed/Light
+- [x] Segments/Control/One 2 Text/Small/Rest/Dark
+- [x] Segments/Control/One 2 Text/Small/Rest/Light
 - [ ] Segments/Control/One 3 Icon/Large/Disabled/Dark
 - [ ] Segments/Control/One 3 Icon/Large/Disabled/Light
-- [ ] Segments/Control/One 3 Icon/Large/Pressed/Dark
-- [ ] Segments/Control/One 3 Icon/Large/Pressed/Light
-- [ ] Segments/Control/One 3 Icon/Large/Rest/Dark
-- [ ] Segments/Control/One 3 Icon/Large/Rest/Light
-- [ ] Segments/Control/One 3 Icon/Mini/Rest/Dark
-- [ ] Segments/Control/One 3 Icon/Mini/Rest/Light
+- [x] Segments/Control/One 3 Icon/Large/Pressed/Dark
+- [x] Segments/Control/One 3 Icon/Large/Pressed/Light
+- [x] Segments/Control/One 3 Icon/Large/Rest/Dark
+- [x] Segments/Control/One 3 Icon/Large/Rest/Light
+- [x] Segments/Control/One 3 Icon/Mini/Rest/Dark
+- [x] Segments/Control/One 3 Icon/Mini/Rest/Light
 - [ ] Segments/Control/One 3 Icon/Regular/Disabled/Dark
 - [ ] Segments/Control/One 3 Icon/Regular/Disabled/Light
-- [ ] Segments/Control/One 3 Icon/Regular/Pressed/Dark
-- [ ] Segments/Control/One 3 Icon/Regular/Pressed/Light
-- [ ] Segments/Control/One 3 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/One 3 Icon/Regular/Rest/Light
+- [x] Segments/Control/One 3 Icon/Regular/Pressed/Dark
+- [x] Segments/Control/One 3 Icon/Regular/Pressed/Light
+- [x] Segments/Control/One 3 Icon/Regular/Rest/Dark
+- [x] Segments/Control/One 3 Icon/Regular/Rest/Light
 - [ ] Segments/Control/One 3 Icon/Small/Disabled/Dark
 - [ ] Segments/Control/One 3 Icon/Small/Disabled/Light
-- [ ] Segments/Control/One 3 Icon/Small/Pressed/Dark
-- [ ] Segments/Control/One 3 Icon/Small/Pressed/Light
-- [ ] Segments/Control/One 3 Icon/Small/Rest/Dark
-- [ ] Segments/Control/One 3 Icon/Small/Rest/Light
+- [x] Segments/Control/One 3 Icon/Small/Pressed/Dark
+- [x] Segments/Control/One 3 Icon/Small/Pressed/Light
+- [x] Segments/Control/One 3 Icon/Small/Rest/Dark
+- [x] Segments/Control/One 3 Icon/Small/Rest/Light
 - [ ] Segments/Control/One 3 Text/Large/Disabled/Dark
 - [ ] Segments/Control/One 3 Text/Large/Disabled/Light
-- [ ] Segments/Control/One 3 Text/Large/Pressed/Dark
-- [ ] Segments/Control/One 3 Text/Large/Pressed/Light
-- [ ] Segments/Control/One 3 Text/Large/Rest/Dark
-- [ ] Segments/Control/One 3 Text/Large/Rest/Light
+- [x] Segments/Control/One 3 Text/Large/Pressed/Dark
+- [x] Segments/Control/One 3 Text/Large/Pressed/Light
+- [x] Segments/Control/One 3 Text/Large/Rest/Dark
+- [x] Segments/Control/One 3 Text/Large/Rest/Light
 - [ ] Segments/Control/One 3 Text/Mini/Rest/Dark
 - [ ] Segments/Control/One 3 Text/Mini/Rest/Light
 - [ ] Segments/Control/One 3 Text/Regular/Disabled/Dark
 - [ ] Segments/Control/One 3 Text/Regular/Disabled/Light
-- [ ] Segments/Control/One 3 Text/Regular/Pressed/Dark
-- [ ] Segments/Control/One 3 Text/Regular/Pressed/Light
-- [ ] Segments/Control/One 3 Text/Regular/Rest/Dark
-- [ ] Segments/Control/One 3 Text/Regular/Rest/Light
+- [x] Segments/Control/One 3 Text/Regular/Pressed/Dark
+- [x] Segments/Control/One 3 Text/Regular/Pressed/Light
+- [x] Segments/Control/One 3 Text/Regular/Rest/Dark
+- [x] Segments/Control/One 3 Text/Regular/Rest/Light
 - [ ] Segments/Control/One 3 Text/Small/Disabled/Dark
 - [ ] Segments/Control/One 3 Text/Small/Disabled/Light
-- [ ] Segments/Control/One 3 Text/Small/Pressed/Dark
-- [ ] Segments/Control/One 3 Text/Small/Pressed/Light
-- [ ] Segments/Control/One 3 Text/Small/Rest/Dark
-- [ ] Segments/Control/One 3 Text/Small/Rest/Light
+- [x] Segments/Control/One 3 Text/Small/Pressed/Dark
+- [x] Segments/Control/One 3 Text/Small/Pressed/Light
+- [x] Segments/Control/One 3 Text/Small/Rest/Dark
+- [x] Segments/Control/One 3 Text/Small/Rest/Light
 - [ ] Segments/Control/One 4 Icon/Large/Disabled/Dark
 - [ ] Segments/Control/One 4 Icon/Large/Disabled/Light
-- [ ] Segments/Control/One 4 Icon/Large/Pressed/Dark
-- [ ] Segments/Control/One 4 Icon/Large/Pressed/Light
-- [ ] Segments/Control/One 4 Icon/Large/Rest/Dark
-- [ ] Segments/Control/One 4 Icon/Large/Rest/Light
-- [ ] Segments/Control/One 4 Icon/Mini/Rest/Dark
-- [ ] Segments/Control/One 4 Icon/Mini/Rest/Light
+- [x] Segments/Control/One 4 Icon/Large/Pressed/Dark
+- [x] Segments/Control/One 4 Icon/Large/Pressed/Light
+- [x] Segments/Control/One 4 Icon/Large/Rest/Dark
+- [x] Segments/Control/One 4 Icon/Large/Rest/Light
+- [x] Segments/Control/One 4 Icon/Mini/Rest/Dark
+- [x] Segments/Control/One 4 Icon/Mini/Rest/Light
 - [ ] Segments/Control/One 4 Icon/Regular/Disabled/Dark
 - [ ] Segments/Control/One 4 Icon/Regular/Disabled/Light
-- [ ] Segments/Control/One 4 Icon/Regular/Pressed/Dark
-- [ ] Segments/Control/One 4 Icon/Regular/Pressed/Light
-- [ ] Segments/Control/One 4 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/One 4 Icon/Regular/Rest/Light
+- [x] Segments/Control/One 4 Icon/Regular/Pressed/Dark
+- [x] Segments/Control/One 4 Icon/Regular/Pressed/Light
+- [x] Segments/Control/One 4 Icon/Regular/Rest/Dark
+- [x] Segments/Control/One 4 Icon/Regular/Rest/Light
 - [ ] Segments/Control/One 4 Icon/Small/Disabled/Dark
 - [ ] Segments/Control/One 4 Icon/Small/Disabled/Light
-- [ ] Segments/Control/One 4 Icon/Small/Pressed/Dark
-- [ ] Segments/Control/One 4 Icon/Small/Pressed/Light
-- [ ] Segments/Control/One 4 Icon/Small/Rest/Dark
-- [ ] Segments/Control/One 4 Icon/Small/Rest/Light
+- [x] Segments/Control/One 4 Icon/Small/Pressed/Dark
+- [x] Segments/Control/One 4 Icon/Small/Pressed/Light
+- [x] Segments/Control/One 4 Icon/Small/Rest/Dark
+- [x] Segments/Control/One 4 Icon/Small/Rest/Light
 - [ ] Segments/Control/One 4 Text/Large/Disabled/Dark
 - [ ] Segments/Control/One 4 Text/Large/Disabled/Light
-- [ ] Segments/Control/One 4 Text/Large/Pressed/Dark
-- [ ] Segments/Control/One 4 Text/Large/Pressed/Light
-- [ ] Segments/Control/One 4 Text/Large/Rest/Dark
-- [ ] Segments/Control/One 4 Text/Large/Rest/Light
+- [x] Segments/Control/One 4 Text/Large/Pressed/Dark
+- [x] Segments/Control/One 4 Text/Large/Pressed/Light
+- [x] Segments/Control/One 4 Text/Large/Rest/Dark
+- [x] Segments/Control/One 4 Text/Large/Rest/Light
 - [ ] Segments/Control/One 4 Text/Mini/Rest/Dark
 - [ ] Segments/Control/One 4 Text/Mini/Rest/Light
 - [ ] Segments/Control/One 4 Text/Regular/Disabled/Dark
 - [ ] Segments/Control/One 4 Text/Regular/Disabled/Light
-- [ ] Segments/Control/One 4 Text/Regular/Pressed/Dark
-- [ ] Segments/Control/One 4 Text/Regular/Pressed/Light
-- [ ] Segments/Control/One 4 Text/Regular/Rest/Dark
-- [ ] Segments/Control/One 4 Text/Regular/Rest/Light
+- [x] Segments/Control/One 4 Text/Regular/Pressed/Dark
+- [x] Segments/Control/One 4 Text/Regular/Pressed/Light
+- [x] Segments/Control/One 4 Text/Regular/Rest/Dark
+- [x] Segments/Control/One 4 Text/Regular/Rest/Light
 - [ ] Segments/Control/One 4 Text/Small/Disabled/Dark
 - [ ] Segments/Control/One 4 Text/Small/Disabled/Light
-- [ ] Segments/Control/One 4 Text/Small/Pressed/Dark
-- [ ] Segments/Control/One 4 Text/Small/Pressed/Light
-- [ ] Segments/Control/One 4 Text/Small/Rest/Dark
-- [ ] Segments/Control/One 4 Text/Small/Rest/Light
+- [x] Segments/Control/One 4 Text/Small/Pressed/Dark
+- [x] Segments/Control/One 4 Text/Small/Pressed/Light
+- [x] Segments/Control/One 4 Text/Small/Rest/Dark
+- [x] Segments/Control/One 4 Text/Small/Rest/Light
 - [ ] Segments/Control/One 5 Icon/Large/Disabled/Dark
 - [ ] Segments/Control/One 5 Icon/Large/Disabled/Light
-- [ ] Segments/Control/One 5 Icon/Large/Pressed/Dark
-- [ ] Segments/Control/One 5 Icon/Large/Pressed/Light
-- [ ] Segments/Control/One 5 Icon/Large/Rest/Dark
-- [ ] Segments/Control/One 5 Icon/Large/Rest/Light
-- [ ] Segments/Control/One 5 Icon/Mini/Rest/Dark
-- [ ] Segments/Control/One 5 Icon/Mini/Rest/Light
+- [x] Segments/Control/One 5 Icon/Large/Pressed/Dark
+- [x] Segments/Control/One 5 Icon/Large/Pressed/Light
+- [x] Segments/Control/One 5 Icon/Large/Rest/Dark
+- [x] Segments/Control/One 5 Icon/Large/Rest/Light
+- [x] Segments/Control/One 5 Icon/Mini/Rest/Dark
+- [x] Segments/Control/One 5 Icon/Mini/Rest/Light
 - [ ] Segments/Control/One 5 Icon/Regular/Disabled/Dark
 - [ ] Segments/Control/One 5 Icon/Regular/Disabled/Light
-- [ ] Segments/Control/One 5 Icon/Regular/Pressed/Dark
-- [ ] Segments/Control/One 5 Icon/Regular/Pressed/Light
-- [ ] Segments/Control/One 5 Icon/Regular/Rest/Dark
-- [ ] Segments/Control/One 5 Icon/Regular/Rest/Light
+- [x] Segments/Control/One 5 Icon/Regular/Pressed/Dark
+- [x] Segments/Control/One 5 Icon/Regular/Pressed/Light
+- [x] Segments/Control/One 5 Icon/Regular/Rest/Dark
+- [x] Segments/Control/One 5 Icon/Regular/Rest/Light
 - [ ] Segments/Control/One 5 Icon/Small/Disabled/Dark
 - [ ] Segments/Control/One 5 Icon/Small/Disabled/Light
-- [ ] Segments/Control/One 5 Icon/Small/Pressed/Dark
-- [ ] Segments/Control/One 5 Icon/Small/Pressed/Light
-- [ ] Segments/Control/One 5 Icon/Small/Rest/Dark
-- [ ] Segments/Control/One 5 Icon/Small/Rest/Light
+- [x] Segments/Control/One 5 Icon/Small/Pressed/Dark
+- [x] Segments/Control/One 5 Icon/Small/Pressed/Light
+- [x] Segments/Control/One 5 Icon/Small/Rest/Dark
+- [x] Segments/Control/One 5 Icon/Small/Rest/Light
 - [ ] Segments/Control/One 5 Text/Large/Disabled/Dark
 - [ ] Segments/Control/One 5 Text/Large/Disabled/Light
-- [ ] Segments/Control/One 5 Text/Large/Pressed/Dark
-- [ ] Segments/Control/One 5 Text/Large/Pressed/Light
-- [ ] Segments/Control/One 5 Text/Large/Rest/Dark
-- [ ] Segments/Control/One 5 Text/Large/Rest/Light
+- [x] Segments/Control/One 5 Text/Large/Pressed/Dark
+- [x] Segments/Control/One 5 Text/Large/Pressed/Light
+- [x] Segments/Control/One 5 Text/Large/Rest/Dark
+- [x] Segments/Control/One 5 Text/Large/Rest/Light
 - [ ] Segments/Control/One 5 Text/Mini/Rest/Dark
 - [ ] Segments/Control/One 5 Text/Mini/Rest/Light
 - [ ] Segments/Control/One 5 Text/Regular/Disabled/Dark
 - [ ] Segments/Control/One 5 Text/Regular/Disabled/Light
-- [ ] Segments/Control/One 5 Text/Regular/Pressed/Dark
-- [ ] Segments/Control/One 5 Text/Regular/Pressed/Light
-- [ ] Segments/Control/One 5 Text/Regular/Rest/Dark
-- [ ] Segments/Control/One 5 Text/Regular/Rest/Light
+- [x] Segments/Control/One 5 Text/Regular/Pressed/Dark
+- [x] Segments/Control/One 5 Text/Regular/Pressed/Light
+- [x] Segments/Control/One 5 Text/Regular/Rest/Dark
+- [x] Segments/Control/One 5 Text/Regular/Rest/Light
 - [ ] Segments/Control/One 5 Text/Small/Disabled/Dark
 - [ ] Segments/Control/One 5 Text/Small/Disabled/Light
-- [ ] Segments/Control/One 5 Text/Small/Pressed/Dark
-- [ ] Segments/Control/One 5 Text/Small/Pressed/Light
-- [ ] Segments/Control/One 5 Text/Small/Rest/Dark
-- [ ] Segments/Control/One 5 Text/Small/Rest/Light
+- [x] Segments/Control/One 5 Text/Small/Pressed/Dark
+- [x] Segments/Control/One 5 Text/Small/Pressed/Light
+- [x] Segments/Control/One 5 Text/Small/Rest/Dark
+- [x] Segments/Control/One 5 Text/Small/Rest/Light
 
 ## Segments/Icon Item
 
-- [ ] Segments/Icon Item/Large/Disabled/Dark
-- [ ] Segments/Icon Item/Large/Disabled/Light
-- [ ] Segments/Icon Item/Large/Hover/Dark
-- [ ] Segments/Icon Item/Large/Hover/Light
-- [ ] Segments/Icon Item/Large/Rest/Dark
-- [ ] Segments/Icon Item/Large/Rest/Light
-- [ ] Segments/Icon Item/Large/Selected/Dark
-- [ ] Segments/Icon Item/Large/Selected/Light
-- [ ] Segments/Icon Item/Mini/Disabled/Dark
-- [ ] Segments/Icon Item/Mini/Disabled/Light
-- [ ] Segments/Icon Item/Mini/Hover/Dark
-- [ ] Segments/Icon Item/Mini/Hover/Light
-- [ ] Segments/Icon Item/Mini/Rest/Dark
-- [ ] Segments/Icon Item/Mini/Rest/Light
-- [ ] Segments/Icon Item/Mini/Selected/Dark
-- [ ] Segments/Icon Item/Mini/Selected/Light
-- [ ] Segments/Icon Item/Regular/Disabled/Dark
-- [ ] Segments/Icon Item/Regular/Disabled/Light
-- [ ] Segments/Icon Item/Regular/Hover/Dark
-- [ ] Segments/Icon Item/Regular/Hover/Light
-- [ ] Segments/Icon Item/Regular/Rest/Dark
-- [ ] Segments/Icon Item/Regular/Rest/Light
-- [ ] Segments/Icon Item/Regular/Selected/Dark
-- [ ] Segments/Icon Item/Regular/Selected/Light
-- [ ] Segments/Icon Item/Small/Disabled/Dark
-- [ ] Segments/Icon Item/Small/Disabled/Light
-- [ ] Segments/Icon Item/Small/Hover/Dark
-- [ ] Segments/Icon Item/Small/Hover/Light
-- [ ] Segments/Icon Item/Small/Rest/Dark
-- [ ] Segments/Icon Item/Small/Rest/Light
-- [ ] Segments/Icon Item/Small/Selected/Dark
-- [ ] Segments/Icon Item/Small/Selected/Light
+- [x] Segments/Icon Item/Large/Disabled/Dark
+- [x] Segments/Icon Item/Large/Disabled/Light
+- [x] Segments/Icon Item/Large/Hover/Dark
+- [x] Segments/Icon Item/Large/Hover/Light
+- [x] Segments/Icon Item/Large/Rest/Dark
+- [x] Segments/Icon Item/Large/Rest/Light
+- [x] Segments/Icon Item/Large/Selected/Dark
+- [x] Segments/Icon Item/Large/Selected/Light
+- [x] Segments/Icon Item/Mini/Disabled/Dark
+- [x] Segments/Icon Item/Mini/Disabled/Light
+- [x] Segments/Icon Item/Mini/Hover/Dark
+- [x] Segments/Icon Item/Mini/Hover/Light
+- [x] Segments/Icon Item/Mini/Rest/Dark
+- [x] Segments/Icon Item/Mini/Rest/Light
+- [x] Segments/Icon Item/Mini/Selected/Dark
+- [x] Segments/Icon Item/Mini/Selected/Light
+- [x] Segments/Icon Item/Regular/Disabled/Dark
+- [x] Segments/Icon Item/Regular/Disabled/Light
+- [x] Segments/Icon Item/Regular/Hover/Dark
+- [x] Segments/Icon Item/Regular/Hover/Light
+- [x] Segments/Icon Item/Regular/Rest/Dark
+- [x] Segments/Icon Item/Regular/Rest/Light
+- [x] Segments/Icon Item/Regular/Selected/Dark
+- [x] Segments/Icon Item/Regular/Selected/Light
+- [x] Segments/Icon Item/Small/Disabled/Dark
+- [x] Segments/Icon Item/Small/Disabled/Light
+- [x] Segments/Icon Item/Small/Hover/Dark
+- [x] Segments/Icon Item/Small/Hover/Light
+- [x] Segments/Icon Item/Small/Rest/Dark
+- [x] Segments/Icon Item/Small/Rest/Light
+- [x] Segments/Icon Item/Small/Selected/Dark
+- [x] Segments/Icon Item/Small/Selected/Light
 
 ## Segments/Text Item
 
-- [ ] Segments/Text Item/Large/Disabled/Dark
-- [ ] Segments/Text Item/Large/Disabled/Light
-- [ ] Segments/Text Item/Large/Hover/Dark
-- [ ] Segments/Text Item/Large/Hover/Light
-- [ ] Segments/Text Item/Large/Rest/Dark
-- [ ] Segments/Text Item/Large/Rest/Light
-- [ ] Segments/Text Item/Large/Selected/Dark
-- [ ] Segments/Text Item/Large/Selected/Light
+- [x] Segments/Text Item/Large/Disabled/Dark
+- [x] Segments/Text Item/Large/Disabled/Light
+- [x] Segments/Text Item/Large/Hover/Dark
+- [x] Segments/Text Item/Large/Hover/Light
+- [x] Segments/Text Item/Large/Rest/Dark
+- [x] Segments/Text Item/Large/Rest/Light
+- [x] Segments/Text Item/Large/Selected/Dark
+- [x] Segments/Text Item/Large/Selected/Light
 - [ ] Segments/Text Item/Mini/Disabled/Dark
 - [ ] Segments/Text Item/Mini/Disabled/Light
 - [ ] Segments/Text Item/Mini/Hover/Dark
@@ -490,19 +490,19 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 - [ ] Segments/Text Item/Mini/Rest/Light
 - [ ] Segments/Text Item/Mini/Selected/Dark
 - [ ] Segments/Text Item/Mini/Selected/Light
-- [ ] Segments/Text Item/Regular/Disabled/Dark
-- [ ] Segments/Text Item/Regular/Disabled/Light
-- [ ] Segments/Text Item/Regular/Hover/Dark
-- [ ] Segments/Text Item/Regular/Hover/Light
-- [ ] Segments/Text Item/Regular/Rest/Dark
-- [ ] Segments/Text Item/Regular/Rest/Light
-- [ ] Segments/Text Item/Regular/Selected/Dark
-- [ ] Segments/Text Item/Regular/Selected/Light
-- [ ] Segments/Text Item/Small/Disabled/Dark
-- [ ] Segments/Text Item/Small/Disabled/Light
-- [ ] Segments/Text Item/Small/Hover/Dark
-- [ ] Segments/Text Item/Small/Hover/Light
-- [ ] Segments/Text Item/Small/Rest/Dark
-- [ ] Segments/Text Item/Small/Rest/Light
-- [ ] Segments/Text Item/Small/Selected/Dark
-- [ ] Segments/Text Item/Small/Selected/Light
+- [x] Segments/Text Item/Regular/Disabled/Dark
+- [x] Segments/Text Item/Regular/Disabled/Light
+- [x] Segments/Text Item/Regular/Hover/Dark
+- [x] Segments/Text Item/Regular/Hover/Light
+- [x] Segments/Text Item/Regular/Rest/Dark
+- [x] Segments/Text Item/Regular/Rest/Light
+- [x] Segments/Text Item/Regular/Selected/Dark
+- [x] Segments/Text Item/Regular/Selected/Light
+- [x] Segments/Text Item/Small/Disabled/Dark
+- [x] Segments/Text Item/Small/Disabled/Light
+- [x] Segments/Text Item/Small/Hover/Dark
+- [x] Segments/Text Item/Small/Hover/Light
+- [x] Segments/Text Item/Small/Rest/Dark
+- [x] Segments/Text Item/Small/Rest/Light
+- [x] Segments/Text Item/Small/Selected/Dark
+- [x] Segments/Text Item/Small/Selected/Light
