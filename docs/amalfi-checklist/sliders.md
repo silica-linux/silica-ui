@@ -6,76 +6,76 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Sliders/Circular
 
-- [ ] Sliders/Circular/Dial/Disabled/Dark
-- [ ] Sliders/Circular/Dial/Disabled/Light
-- [ ] Sliders/Circular/Dial/Focused/Dark
-- [ ] Sliders/Circular/Dial/Focused/Light
-- [ ] Sliders/Circular/Dial/Hover/Dark
-- [ ] Sliders/Circular/Dial/Hover/Light
-- [ ] Sliders/Circular/Dial/Pressed/Dark
-- [ ] Sliders/Circular/Dial/Pressed/Light
-- [ ] Sliders/Circular/Dial/Rest/Dark
-- [ ] Sliders/Circular/Dial/Rest/Light
+- [x] Sliders/Circular/Dial/Disabled/Dark
+- [x] Sliders/Circular/Dial/Disabled/Light
+- [x] Sliders/Circular/Dial/Focused/Dark
+- [x] Sliders/Circular/Dial/Focused/Light
+- [x] Sliders/Circular/Dial/Hover/Dark
+- [x] Sliders/Circular/Dial/Hover/Light
+- [x] Sliders/Circular/Dial/Pressed/Dark
+- [x] Sliders/Circular/Dial/Pressed/Light
+- [x] Sliders/Circular/Dial/Rest/Dark
+- [x] Sliders/Circular/Dial/Rest/Light
 
 ## Sliders/Horizontal
 
-- [ ] Sliders/Horizontal/Dragging/Pressed/Dark
-- [ ] Sliders/Horizontal/Dragging/Pressed/Light
-- [ ] Sliders/Horizontal/Glyphs/Disabled/Dark
-- [ ] Sliders/Horizontal/Glyphs/Disabled/Light
-- [ ] Sliders/Horizontal/Glyphs/Focused/Dark
-- [ ] Sliders/Horizontal/Glyphs/Focused/Light
-- [ ] Sliders/Horizontal/Glyphs/Hover/Dark
-- [ ] Sliders/Horizontal/Glyphs/Hover/Light
-- [ ] Sliders/Horizontal/Glyphs/Pressed/Dark
-- [ ] Sliders/Horizontal/Glyphs/Pressed/Light
-- [ ] Sliders/Horizontal/Glyphs/Rest/Dark
-- [ ] Sliders/Horizontal/Glyphs/Rest/Light
-- [ ] Sliders/Horizontal/Plain/Disabled/Dark
-- [ ] Sliders/Horizontal/Plain/Disabled/Light
-- [ ] Sliders/Horizontal/Plain/Focused/Dark
-- [ ] Sliders/Horizontal/Plain/Focused/Light
-- [ ] Sliders/Horizontal/Plain/Hover/Dark
-- [ ] Sliders/Horizontal/Plain/Hover/Light
-- [ ] Sliders/Horizontal/Plain/Pressed/Dark
-- [ ] Sliders/Horizontal/Plain/Pressed/Light
-- [ ] Sliders/Horizontal/Plain/Rest/Dark
-- [ ] Sliders/Horizontal/Plain/Rest/Light
-- [ ] Sliders/Horizontal/Ticks/Disabled/Dark
-- [ ] Sliders/Horizontal/Ticks/Disabled/Light
-- [ ] Sliders/Horizontal/Ticks/Focused/Dark
-- [ ] Sliders/Horizontal/Ticks/Focused/Light
-- [ ] Sliders/Horizontal/Ticks/Hover/Dark
-- [ ] Sliders/Horizontal/Ticks/Hover/Light
-- [ ] Sliders/Horizontal/Ticks/Pressed/Dark
-- [ ] Sliders/Horizontal/Ticks/Pressed/Light
-- [ ] Sliders/Horizontal/Ticks/Rest/Dark
-- [ ] Sliders/Horizontal/Ticks/Rest/Light
+- [x] Sliders/Horizontal/Dragging/Pressed/Dark
+- [x] Sliders/Horizontal/Dragging/Pressed/Light
+- [x] Sliders/Horizontal/Glyphs/Disabled/Dark
+- [x] Sliders/Horizontal/Glyphs/Disabled/Light
+- [x] Sliders/Horizontal/Glyphs/Focused/Dark
+- [x] Sliders/Horizontal/Glyphs/Focused/Light
+- [x] Sliders/Horizontal/Glyphs/Hover/Dark
+- [x] Sliders/Horizontal/Glyphs/Hover/Light
+- [x] Sliders/Horizontal/Glyphs/Pressed/Dark
+- [x] Sliders/Horizontal/Glyphs/Pressed/Light
+- [x] Sliders/Horizontal/Glyphs/Rest/Dark
+- [x] Sliders/Horizontal/Glyphs/Rest/Light
+- [x] Sliders/Horizontal/Plain/Disabled/Dark
+- [x] Sliders/Horizontal/Plain/Disabled/Light
+- [x] Sliders/Horizontal/Plain/Focused/Dark
+- [x] Sliders/Horizontal/Plain/Focused/Light
+- [x] Sliders/Horizontal/Plain/Hover/Dark
+- [x] Sliders/Horizontal/Plain/Hover/Light
+- [x] Sliders/Horizontal/Plain/Pressed/Dark
+- [x] Sliders/Horizontal/Plain/Pressed/Light
+- [x] Sliders/Horizontal/Plain/Rest/Dark
+- [x] Sliders/Horizontal/Plain/Rest/Light
+- [x] Sliders/Horizontal/Ticks/Disabled/Dark
+- [x] Sliders/Horizontal/Ticks/Disabled/Light
+- [x] Sliders/Horizontal/Ticks/Focused/Dark
+- [x] Sliders/Horizontal/Ticks/Focused/Light
+- [x] Sliders/Horizontal/Ticks/Hover/Dark
+- [x] Sliders/Horizontal/Ticks/Hover/Light
+- [x] Sliders/Horizontal/Ticks/Pressed/Dark
+- [x] Sliders/Horizontal/Ticks/Pressed/Light
+- [x] Sliders/Horizontal/Ticks/Rest/Dark
+- [x] Sliders/Horizontal/Ticks/Rest/Light
 
 ## Sliders/Thumb
 
-- [ ] Sliders/Thumb/Lens/Dragging/Dark
-- [ ] Sliders/Thumb/Lens/Dragging/Light
-- [ ] Sliders/Thumb/Round/Disabled/Dark
-- [ ] Sliders/Thumb/Round/Disabled/Light
-- [ ] Sliders/Thumb/Round/Focused/Dark
-- [ ] Sliders/Thumb/Round/Focused/Light
-- [ ] Sliders/Thumb/Round/Hover/Dark
-- [ ] Sliders/Thumb/Round/Hover/Light
-- [ ] Sliders/Thumb/Round/Pressed/Dark
-- [ ] Sliders/Thumb/Round/Pressed/Light
-- [ ] Sliders/Thumb/Round/Rest/Dark
-- [ ] Sliders/Thumb/Round/Rest/Light
+- [x] Sliders/Thumb/Lens/Dragging/Dark
+- [x] Sliders/Thumb/Lens/Dragging/Light
+- [x] Sliders/Thumb/Round/Disabled/Dark
+- [x] Sliders/Thumb/Round/Disabled/Light
+- [x] Sliders/Thumb/Round/Focused/Dark
+- [x] Sliders/Thumb/Round/Focused/Light
+- [x] Sliders/Thumb/Round/Hover/Dark
+- [x] Sliders/Thumb/Round/Hover/Light
+- [x] Sliders/Thumb/Round/Pressed/Dark
+- [x] Sliders/Thumb/Round/Pressed/Light
+- [x] Sliders/Thumb/Round/Rest/Dark
+- [x] Sliders/Thumb/Round/Rest/Light
 
 ## Sliders/Vertical
 
-- [ ] Sliders/Vertical/Plain/Disabled/Dark
-- [ ] Sliders/Vertical/Plain/Disabled/Light
-- [ ] Sliders/Vertical/Plain/Focused/Dark
-- [ ] Sliders/Vertical/Plain/Focused/Light
-- [ ] Sliders/Vertical/Plain/Hover/Dark
-- [ ] Sliders/Vertical/Plain/Hover/Light
-- [ ] Sliders/Vertical/Plain/Pressed/Dark
-- [ ] Sliders/Vertical/Plain/Pressed/Light
-- [ ] Sliders/Vertical/Plain/Rest/Dark
-- [ ] Sliders/Vertical/Plain/Rest/Light
+- [x] Sliders/Vertical/Plain/Disabled/Dark
+- [x] Sliders/Vertical/Plain/Disabled/Light
+- [x] Sliders/Vertical/Plain/Focused/Dark
+- [x] Sliders/Vertical/Plain/Focused/Light
+- [x] Sliders/Vertical/Plain/Hover/Dark
+- [x] Sliders/Vertical/Plain/Hover/Light
+- [x] Sliders/Vertical/Plain/Pressed/Dark
+- [x] Sliders/Vertical/Plain/Pressed/Light
+- [x] Sliders/Vertical/Plain/Rest/Dark
+- [x] Sliders/Vertical/Plain/Rest/Light

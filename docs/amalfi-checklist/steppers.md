@@ -6,77 +6,77 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Steppers/Stepper
 
-- [ ] Steppers/Stepper/Large/Disabled/Dark
-- [ ] Steppers/Stepper/Large/Disabled/Light
-- [ ] Steppers/Stepper/Large/Focused/Dark
-- [ ] Steppers/Stepper/Large/Focused/Light
-- [ ] Steppers/Stepper/Large/Hover Down/Dark
-- [ ] Steppers/Stepper/Large/Hover Down/Light
-- [ ] Steppers/Stepper/Large/Hover Up/Dark
-- [ ] Steppers/Stepper/Large/Hover Up/Light
-- [ ] Steppers/Stepper/Large/Pressed Down/Dark
-- [ ] Steppers/Stepper/Large/Pressed Down/Light
-- [ ] Steppers/Stepper/Large/Pressed Up/Dark
-- [ ] Steppers/Stepper/Large/Pressed Up/Light
-- [ ] Steppers/Stepper/Large/Rest/Dark
-- [ ] Steppers/Stepper/Large/Rest/Light
-- [ ] Steppers/Stepper/Mini/Disabled/Dark
-- [ ] Steppers/Stepper/Mini/Disabled/Light
-- [ ] Steppers/Stepper/Mini/Focused/Dark
-- [ ] Steppers/Stepper/Mini/Focused/Light
-- [ ] Steppers/Stepper/Mini/Hover Down/Dark
-- [ ] Steppers/Stepper/Mini/Hover Down/Light
-- [ ] Steppers/Stepper/Mini/Hover Up/Dark
-- [ ] Steppers/Stepper/Mini/Hover Up/Light
-- [ ] Steppers/Stepper/Mini/Pressed Down/Dark
-- [ ] Steppers/Stepper/Mini/Pressed Down/Light
-- [ ] Steppers/Stepper/Mini/Pressed Up/Dark
-- [ ] Steppers/Stepper/Mini/Pressed Up/Light
-- [ ] Steppers/Stepper/Mini/Rest/Dark
-- [ ] Steppers/Stepper/Mini/Rest/Light
-- [ ] Steppers/Stepper/Regular/Disabled/Dark
-- [ ] Steppers/Stepper/Regular/Disabled/Light
-- [ ] Steppers/Stepper/Regular/Focused/Dark
-- [ ] Steppers/Stepper/Regular/Focused/Light
-- [ ] Steppers/Stepper/Regular/Hover Down/Dark
-- [ ] Steppers/Stepper/Regular/Hover Down/Light
-- [ ] Steppers/Stepper/Regular/Hover Up/Dark
-- [ ] Steppers/Stepper/Regular/Hover Up/Light
-- [ ] Steppers/Stepper/Regular/Pressed Down/Dark
-- [ ] Steppers/Stepper/Regular/Pressed Down/Light
-- [ ] Steppers/Stepper/Regular/Pressed Up/Dark
-- [ ] Steppers/Stepper/Regular/Pressed Up/Light
-- [ ] Steppers/Stepper/Regular/Rest/Dark
-- [ ] Steppers/Stepper/Regular/Rest/Light
-- [ ] Steppers/Stepper/Small/Disabled/Dark
-- [ ] Steppers/Stepper/Small/Disabled/Light
-- [ ] Steppers/Stepper/Small/Focused/Dark
-- [ ] Steppers/Stepper/Small/Focused/Light
-- [ ] Steppers/Stepper/Small/Hover Down/Dark
-- [ ] Steppers/Stepper/Small/Hover Down/Light
-- [ ] Steppers/Stepper/Small/Hover Up/Dark
-- [ ] Steppers/Stepper/Small/Hover Up/Light
-- [ ] Steppers/Stepper/Small/Pressed Down/Dark
-- [ ] Steppers/Stepper/Small/Pressed Down/Light
-- [ ] Steppers/Stepper/Small/Pressed Up/Dark
-- [ ] Steppers/Stepper/Small/Pressed Up/Light
-- [ ] Steppers/Stepper/Small/Rest/Dark
-- [ ] Steppers/Stepper/Small/Rest/Light
+- [x] Steppers/Stepper/Large/Disabled/Dark
+- [x] Steppers/Stepper/Large/Disabled/Light
+- [x] Steppers/Stepper/Large/Focused/Dark
+- [x] Steppers/Stepper/Large/Focused/Light
+- [x] Steppers/Stepper/Large/Hover Down/Dark
+- [x] Steppers/Stepper/Large/Hover Down/Light
+- [x] Steppers/Stepper/Large/Hover Up/Dark
+- [x] Steppers/Stepper/Large/Hover Up/Light
+- [x] Steppers/Stepper/Large/Pressed Down/Dark
+- [x] Steppers/Stepper/Large/Pressed Down/Light
+- [x] Steppers/Stepper/Large/Pressed Up/Dark
+- [x] Steppers/Stepper/Large/Pressed Up/Light
+- [x] Steppers/Stepper/Large/Rest/Dark
+- [x] Steppers/Stepper/Large/Rest/Light
+- [x] Steppers/Stepper/Mini/Disabled/Dark
+- [x] Steppers/Stepper/Mini/Disabled/Light
+- [x] Steppers/Stepper/Mini/Focused/Dark
+- [x] Steppers/Stepper/Mini/Focused/Light
+- [x] Steppers/Stepper/Mini/Hover Down/Dark
+- [x] Steppers/Stepper/Mini/Hover Down/Light
+- [x] Steppers/Stepper/Mini/Hover Up/Dark
+- [x] Steppers/Stepper/Mini/Hover Up/Light
+- [x] Steppers/Stepper/Mini/Pressed Down/Dark
+- [x] Steppers/Stepper/Mini/Pressed Down/Light
+- [x] Steppers/Stepper/Mini/Pressed Up/Dark
+- [x] Steppers/Stepper/Mini/Pressed Up/Light
+- [x] Steppers/Stepper/Mini/Rest/Dark
+- [x] Steppers/Stepper/Mini/Rest/Light
+- [x] Steppers/Stepper/Regular/Disabled/Dark
+- [x] Steppers/Stepper/Regular/Disabled/Light
+- [x] Steppers/Stepper/Regular/Focused/Dark
+- [x] Steppers/Stepper/Regular/Focused/Light
+- [x] Steppers/Stepper/Regular/Hover Down/Dark
+- [x] Steppers/Stepper/Regular/Hover Down/Light
+- [x] Steppers/Stepper/Regular/Hover Up/Dark
+- [x] Steppers/Stepper/Regular/Hover Up/Light
+- [x] Steppers/Stepper/Regular/Pressed Down/Dark
+- [x] Steppers/Stepper/Regular/Pressed Down/Light
+- [x] Steppers/Stepper/Regular/Pressed Up/Dark
+- [x] Steppers/Stepper/Regular/Pressed Up/Light
+- [x] Steppers/Stepper/Regular/Rest/Dark
+- [x] Steppers/Stepper/Regular/Rest/Light
+- [x] Steppers/Stepper/Small/Disabled/Dark
+- [x] Steppers/Stepper/Small/Disabled/Light
+- [x] Steppers/Stepper/Small/Focused/Dark
+- [x] Steppers/Stepper/Small/Focused/Light
+- [x] Steppers/Stepper/Small/Hover Down/Dark
+- [x] Steppers/Stepper/Small/Hover Down/Light
+- [x] Steppers/Stepper/Small/Hover Up/Dark
+- [x] Steppers/Stepper/Small/Hover Up/Light
+- [x] Steppers/Stepper/Small/Pressed Down/Dark
+- [x] Steppers/Stepper/Small/Pressed Down/Light
+- [x] Steppers/Stepper/Small/Pressed Up/Dark
+- [x] Steppers/Stepper/Small/Pressed Up/Light
+- [x] Steppers/Stepper/Small/Rest/Dark
+- [x] Steppers/Stepper/Small/Rest/Light
 
 ## Steppers/Value Field
 
-- [ ] Steppers/Value Field/Regular/Disabled/Dark
-- [ ] Steppers/Value Field/Regular/Disabled/Light
-- [ ] Steppers/Value Field/Regular/Focused/Dark
-- [ ] Steppers/Value Field/Regular/Focused/Light
-- [ ] Steppers/Value Field/Regular/Rest/Dark
-- [ ] Steppers/Value Field/Regular/Rest/Light
+- [x] Steppers/Value Field/Regular/Disabled/Dark
+- [x] Steppers/Value Field/Regular/Disabled/Light
+- [x] Steppers/Value Field/Regular/Focused/Dark
+- [x] Steppers/Value Field/Regular/Focused/Light
+- [x] Steppers/Value Field/Regular/Rest/Dark
+- [x] Steppers/Value Field/Regular/Rest/Light
 
 ## Steppers/With Field
 
-- [ ] Steppers/With Field/Regular/Disabled/Dark
-- [ ] Steppers/With Field/Regular/Disabled/Light
-- [ ] Steppers/With Field/Regular/Focused/Dark
-- [ ] Steppers/With Field/Regular/Focused/Light
-- [ ] Steppers/With Field/Regular/Rest/Dark
-- [ ] Steppers/With Field/Regular/Rest/Light
+- [x] Steppers/With Field/Regular/Disabled/Dark
+- [x] Steppers/With Field/Regular/Disabled/Light
+- [x] Steppers/With Field/Regular/Focused/Dark
+- [x] Steppers/With Field/Regular/Focused/Light
+- [x] Steppers/With Field/Regular/Rest/Dark
+- [x] Steppers/With Field/Regular/Rest/Light

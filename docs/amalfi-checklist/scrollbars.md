@@ -6,46 +6,46 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Scrollbars/Area
 
-- [ ] Scrollbars/Area/Legacy/Hover/Dark
-- [ ] Scrollbars/Area/Legacy/Hover/Light
-- [ ] Scrollbars/Area/Legacy/Rest/Dark
-- [ ] Scrollbars/Area/Legacy/Rest/Light
-- [ ] Scrollbars/Area/Overlay/Expanded/Dark
-- [ ] Scrollbars/Area/Overlay/Expanded/Light
-- [ ] Scrollbars/Area/Overlay/Thin/Dark
-- [ ] Scrollbars/Area/Overlay/Thin/Light
+- [x] Scrollbars/Area/Legacy/Hover/Dark
+- [x] Scrollbars/Area/Legacy/Hover/Light
+- [x] Scrollbars/Area/Legacy/Rest/Dark
+- [x] Scrollbars/Area/Legacy/Rest/Light
+- [x] Scrollbars/Area/Overlay/Expanded/Dark
+- [x] Scrollbars/Area/Overlay/Expanded/Light
+- [x] Scrollbars/Area/Overlay/Thin/Dark
+- [x] Scrollbars/Area/Overlay/Thin/Light
 
 ## Scrollbars/Corner
 
-- [ ] Scrollbars/Corner/Rest/Dark
-- [ ] Scrollbars/Corner/Rest/Light
+- [x] Scrollbars/Corner/Rest/Dark
+- [x] Scrollbars/Corner/Rest/Light
 
 ## Scrollbars/Legacy
 
-- [ ] Scrollbars/Legacy/Horizontal/Disabled/Dark
-- [ ] Scrollbars/Legacy/Horizontal/Disabled/Light
-- [ ] Scrollbars/Legacy/Horizontal/Hover/Dark
-- [ ] Scrollbars/Legacy/Horizontal/Hover/Light
-- [ ] Scrollbars/Legacy/Horizontal/Rest/Dark
-- [ ] Scrollbars/Legacy/Horizontal/Rest/Light
-- [ ] Scrollbars/Legacy/Vertical/Disabled/Dark
-- [ ] Scrollbars/Legacy/Vertical/Disabled/Light
-- [ ] Scrollbars/Legacy/Vertical/Hover/Dark
-- [ ] Scrollbars/Legacy/Vertical/Hover/Light
-- [ ] Scrollbars/Legacy/Vertical/Rest/Dark
-- [ ] Scrollbars/Legacy/Vertical/Rest/Light
+- [x] Scrollbars/Legacy/Horizontal/Disabled/Dark
+- [x] Scrollbars/Legacy/Horizontal/Disabled/Light
+- [x] Scrollbars/Legacy/Horizontal/Hover/Dark
+- [x] Scrollbars/Legacy/Horizontal/Hover/Light
+- [x] Scrollbars/Legacy/Horizontal/Rest/Dark
+- [x] Scrollbars/Legacy/Horizontal/Rest/Light
+- [x] Scrollbars/Legacy/Vertical/Disabled/Dark
+- [x] Scrollbars/Legacy/Vertical/Disabled/Light
+- [x] Scrollbars/Legacy/Vertical/Hover/Dark
+- [x] Scrollbars/Legacy/Vertical/Hover/Light
+- [x] Scrollbars/Legacy/Vertical/Rest/Dark
+- [x] Scrollbars/Legacy/Vertical/Rest/Light
 
 ## Scrollbars/Overlay
 
-- [ ] Scrollbars/Overlay/Horizontal/Dragging/Dark
-- [ ] Scrollbars/Overlay/Horizontal/Dragging/Light
-- [ ] Scrollbars/Overlay/Horizontal/Expanded/Dark
-- [ ] Scrollbars/Overlay/Horizontal/Expanded/Light
-- [ ] Scrollbars/Overlay/Horizontal/Thin/Dark
-- [ ] Scrollbars/Overlay/Horizontal/Thin/Light
-- [ ] Scrollbars/Overlay/Vertical/Dragging/Dark
-- [ ] Scrollbars/Overlay/Vertical/Dragging/Light
-- [ ] Scrollbars/Overlay/Vertical/Expanded/Dark
-- [ ] Scrollbars/Overlay/Vertical/Expanded/Light
-- [ ] Scrollbars/Overlay/Vertical/Thin/Dark
-- [ ] Scrollbars/Overlay/Vertical/Thin/Light
+- [x] Scrollbars/Overlay/Horizontal/Dragging/Dark
+- [x] Scrollbars/Overlay/Horizontal/Dragging/Light
+- [x] Scrollbars/Overlay/Horizontal/Expanded/Dark
+- [x] Scrollbars/Overlay/Horizontal/Expanded/Light
+- [x] Scrollbars/Overlay/Horizontal/Thin/Dark
+- [x] Scrollbars/Overlay/Horizontal/Thin/Light
+- [x] Scrollbars/Overlay/Vertical/Dragging/Dark
+- [x] Scrollbars/Overlay/Vertical/Dragging/Light
+- [x] Scrollbars/Overlay/Vertical/Expanded/Dark
+- [x] Scrollbars/Overlay/Vertical/Expanded/Light
+- [x] Scrollbars/Overlay/Vertical/Thin/Dark
+- [x] Scrollbars/Overlay/Vertical/Thin/Light

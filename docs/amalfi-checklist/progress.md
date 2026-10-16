@@ -6,92 +6,92 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Progress/Bar
 
-- [ ] Progress/Bar/Determinate/Large/100/Dark
-- [ ] Progress/Bar/Determinate/Large/100/Light
-- [ ] Progress/Bar/Determinate/Large/25/Dark
-- [ ] Progress/Bar/Determinate/Large/25/Light
-- [ ] Progress/Bar/Determinate/Large/60/Dark
-- [ ] Progress/Bar/Determinate/Large/60/Light
-- [ ] Progress/Bar/Determinate/Large/Disabled/Dark
-- [ ] Progress/Bar/Determinate/Large/Disabled/Light
-- [ ] Progress/Bar/Determinate/Regular/100/Dark
-- [ ] Progress/Bar/Determinate/Regular/100/Light
-- [ ] Progress/Bar/Determinate/Regular/25/Dark
-- [ ] Progress/Bar/Determinate/Regular/25/Light
-- [ ] Progress/Bar/Determinate/Regular/60/Dark
-- [ ] Progress/Bar/Determinate/Regular/60/Light
-- [ ] Progress/Bar/Determinate/Regular/Disabled/Dark
-- [ ] Progress/Bar/Determinate/Regular/Disabled/Light
-- [ ] Progress/Bar/Determinate/Small/100/Dark
-- [ ] Progress/Bar/Determinate/Small/100/Light
-- [ ] Progress/Bar/Determinate/Small/25/Dark
-- [ ] Progress/Bar/Determinate/Small/25/Light
-- [ ] Progress/Bar/Determinate/Small/60/Dark
-- [ ] Progress/Bar/Determinate/Small/60/Light
-- [ ] Progress/Bar/Determinate/Small/Disabled/Dark
-- [ ] Progress/Bar/Determinate/Small/Disabled/Light
-- [ ] Progress/Bar/Indeterminate/Large/Disabled/Dark
-- [ ] Progress/Bar/Indeterminate/Large/Disabled/Light
-- [ ] Progress/Bar/Indeterminate/Large/Phase 1/Dark
-- [ ] Progress/Bar/Indeterminate/Large/Phase 1/Light
-- [ ] Progress/Bar/Indeterminate/Large/Phase 2/Dark
-- [ ] Progress/Bar/Indeterminate/Large/Phase 2/Light
-- [ ] Progress/Bar/Indeterminate/Large/Phase 3/Dark
-- [ ] Progress/Bar/Indeterminate/Large/Phase 3/Light
-- [ ] Progress/Bar/Indeterminate/Regular/Disabled/Dark
-- [ ] Progress/Bar/Indeterminate/Regular/Disabled/Light
-- [ ] Progress/Bar/Indeterminate/Regular/Phase 1/Dark
-- [ ] Progress/Bar/Indeterminate/Regular/Phase 1/Light
-- [ ] Progress/Bar/Indeterminate/Regular/Phase 2/Dark
-- [ ] Progress/Bar/Indeterminate/Regular/Phase 2/Light
-- [ ] Progress/Bar/Indeterminate/Regular/Phase 3/Dark
-- [ ] Progress/Bar/Indeterminate/Regular/Phase 3/Light
-- [ ] Progress/Bar/Indeterminate/Small/Disabled/Dark
-- [ ] Progress/Bar/Indeterminate/Small/Disabled/Light
-- [ ] Progress/Bar/Indeterminate/Small/Phase 1/Dark
-- [ ] Progress/Bar/Indeterminate/Small/Phase 1/Light
-- [ ] Progress/Bar/Indeterminate/Small/Phase 2/Dark
-- [ ] Progress/Bar/Indeterminate/Small/Phase 2/Light
-- [ ] Progress/Bar/Indeterminate/Small/Phase 3/Dark
-- [ ] Progress/Bar/Indeterminate/Small/Phase 3/Light
+- [x] Progress/Bar/Determinate/Large/100/Dark
+- [x] Progress/Bar/Determinate/Large/100/Light
+- [x] Progress/Bar/Determinate/Large/25/Dark
+- [x] Progress/Bar/Determinate/Large/25/Light
+- [x] Progress/Bar/Determinate/Large/60/Dark
+- [x] Progress/Bar/Determinate/Large/60/Light
+- [x] Progress/Bar/Determinate/Large/Disabled/Dark
+- [x] Progress/Bar/Determinate/Large/Disabled/Light
+- [x] Progress/Bar/Determinate/Regular/100/Dark
+- [x] Progress/Bar/Determinate/Regular/100/Light
+- [x] Progress/Bar/Determinate/Regular/25/Dark
+- [x] Progress/Bar/Determinate/Regular/25/Light
+- [x] Progress/Bar/Determinate/Regular/60/Dark
+- [x] Progress/Bar/Determinate/Regular/60/Light
+- [x] Progress/Bar/Determinate/Regular/Disabled/Dark
+- [x] Progress/Bar/Determinate/Regular/Disabled/Light
+- [x] Progress/Bar/Determinate/Small/100/Dark
+- [x] Progress/Bar/Determinate/Small/100/Light
+- [x] Progress/Bar/Determinate/Small/25/Dark
+- [x] Progress/Bar/Determinate/Small/25/Light
+- [x] Progress/Bar/Determinate/Small/60/Dark
+- [x] Progress/Bar/Determinate/Small/60/Light
+- [x] Progress/Bar/Determinate/Small/Disabled/Dark
+- [x] Progress/Bar/Determinate/Small/Disabled/Light
+- [x] Progress/Bar/Indeterminate/Large/Disabled/Dark
+- [x] Progress/Bar/Indeterminate/Large/Disabled/Light
+- [x] Progress/Bar/Indeterminate/Large/Phase 1/Dark
+- [x] Progress/Bar/Indeterminate/Large/Phase 1/Light
+- [x] Progress/Bar/Indeterminate/Large/Phase 2/Dark
+- [x] Progress/Bar/Indeterminate/Large/Phase 2/Light
+- [x] Progress/Bar/Indeterminate/Large/Phase 3/Dark
+- [x] Progress/Bar/Indeterminate/Large/Phase 3/Light
+- [x] Progress/Bar/Indeterminate/Regular/Disabled/Dark
+- [x] Progress/Bar/Indeterminate/Regular/Disabled/Light
+- [x] Progress/Bar/Indeterminate/Regular/Phase 1/Dark
+- [x] Progress/Bar/Indeterminate/Regular/Phase 1/Light
+- [x] Progress/Bar/Indeterminate/Regular/Phase 2/Dark
+- [x] Progress/Bar/Indeterminate/Regular/Phase 2/Light
+- [x] Progress/Bar/Indeterminate/Regular/Phase 3/Dark
+- [x] Progress/Bar/Indeterminate/Regular/Phase 3/Light
+- [x] Progress/Bar/Indeterminate/Small/Disabled/Dark
+- [x] Progress/Bar/Indeterminate/Small/Disabled/Light
+- [x] Progress/Bar/Indeterminate/Small/Phase 1/Dark
+- [x] Progress/Bar/Indeterminate/Small/Phase 1/Light
+- [x] Progress/Bar/Indeterminate/Small/Phase 2/Dark
+- [x] Progress/Bar/Indeterminate/Small/Phase 2/Light
+- [x] Progress/Bar/Indeterminate/Small/Phase 3/Dark
+- [x] Progress/Bar/Indeterminate/Small/Phase 3/Light
 
 ## Progress/Circular
 
-- [ ] Progress/Circular/Determinate/Large/100/Dark
-- [ ] Progress/Circular/Determinate/Large/100/Light
-- [ ] Progress/Circular/Determinate/Large/25/Dark
-- [ ] Progress/Circular/Determinate/Large/25/Light
-- [ ] Progress/Circular/Determinate/Large/60/Dark
-- [ ] Progress/Circular/Determinate/Large/60/Light
-- [ ] Progress/Circular/Determinate/Large/Disabled/Dark
-- [ ] Progress/Circular/Determinate/Large/Disabled/Light
-- [ ] Progress/Circular/Determinate/Regular/100/Dark
-- [ ] Progress/Circular/Determinate/Regular/100/Light
-- [ ] Progress/Circular/Determinate/Regular/25/Dark
-- [ ] Progress/Circular/Determinate/Regular/25/Light
-- [ ] Progress/Circular/Determinate/Regular/60/Dark
-- [ ] Progress/Circular/Determinate/Regular/60/Light
-- [ ] Progress/Circular/Determinate/Regular/Disabled/Dark
-- [ ] Progress/Circular/Determinate/Regular/Disabled/Light
-- [ ] Progress/Circular/Determinate/Small/100/Dark
-- [ ] Progress/Circular/Determinate/Small/100/Light
-- [ ] Progress/Circular/Determinate/Small/25/Dark
-- [ ] Progress/Circular/Determinate/Small/25/Light
-- [ ] Progress/Circular/Determinate/Small/60/Dark
-- [ ] Progress/Circular/Determinate/Small/60/Light
-- [ ] Progress/Circular/Determinate/Small/Disabled/Dark
-- [ ] Progress/Circular/Determinate/Small/Disabled/Light
+- [x] Progress/Circular/Determinate/Large/100/Dark
+- [x] Progress/Circular/Determinate/Large/100/Light
+- [x] Progress/Circular/Determinate/Large/25/Dark
+- [x] Progress/Circular/Determinate/Large/25/Light
+- [x] Progress/Circular/Determinate/Large/60/Dark
+- [x] Progress/Circular/Determinate/Large/60/Light
+- [x] Progress/Circular/Determinate/Large/Disabled/Dark
+- [x] Progress/Circular/Determinate/Large/Disabled/Light
+- [x] Progress/Circular/Determinate/Regular/100/Dark
+- [x] Progress/Circular/Determinate/Regular/100/Light
+- [x] Progress/Circular/Determinate/Regular/25/Dark
+- [x] Progress/Circular/Determinate/Regular/25/Light
+- [x] Progress/Circular/Determinate/Regular/60/Dark
+- [x] Progress/Circular/Determinate/Regular/60/Light
+- [x] Progress/Circular/Determinate/Regular/Disabled/Dark
+- [x] Progress/Circular/Determinate/Regular/Disabled/Light
+- [x] Progress/Circular/Determinate/Small/100/Dark
+- [x] Progress/Circular/Determinate/Small/100/Light
+- [x] Progress/Circular/Determinate/Small/25/Dark
+- [x] Progress/Circular/Determinate/Small/25/Light
+- [x] Progress/Circular/Determinate/Small/60/Dark
+- [x] Progress/Circular/Determinate/Small/60/Light
+- [x] Progress/Circular/Determinate/Small/Disabled/Dark
+- [x] Progress/Circular/Determinate/Small/Disabled/Light
 
 ## Progress/Spinner
 
-- [ ] Progress/Spinner/Large/Disabled/Dark
-- [ ] Progress/Spinner/Large/Disabled/Light
-- [ ] Progress/Spinner/Large/Rest/Dark
-- [ ] Progress/Spinner/Large/Rest/Light
-- [ ] Progress/Spinner/Regular/Disabled/Dark
-- [ ] Progress/Spinner/Regular/Disabled/Light
-- [ ] Progress/Spinner/Regular/Rest/Dark
-- [ ] Progress/Spinner/Regular/Rest/Light
+- [x] Progress/Spinner/Large/Disabled/Dark
+- [x] Progress/Spinner/Large/Disabled/Light
+- [x] Progress/Spinner/Large/Rest/Dark
+- [x] Progress/Spinner/Large/Rest/Light
+- [x] Progress/Spinner/Regular/Disabled/Dark
+- [x] Progress/Spinner/Regular/Disabled/Light
+- [x] Progress/Spinner/Regular/Rest/Dark
+- [x] Progress/Spinner/Regular/Rest/Light
 - [ ] Progress/Spinner/Small/Disabled/Dark
 - [ ] Progress/Spinner/Small/Disabled/Light
 - [ ] Progress/Spinner/Small/Rest/Dark
