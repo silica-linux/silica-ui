@@ -6,29 +6,29 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Sidebars/Badge
 
-- [ ] Sidebars/Badge/Rest/Dark
-- [ ] Sidebars/Badge/Rest/Light
+- [x] Sidebars/Badge/Rest/Dark
+- [x] Sidebars/Badge/Rest/Light
 
 ## Sidebars/Footer
 
-- [ ] Sidebars/Footer/Rest/Dark
-- [ ] Sidebars/Footer/Rest/Light
+- [x] Sidebars/Footer/Rest/Dark
+- [x] Sidebars/Footer/Rest/Light
 
 ## Sidebars/Group
 
-- [ ] Sidebars/Group/Closed/Rest/Dark
-- [ ] Sidebars/Group/Closed/Rest/Light
+- [x] Sidebars/Group/Closed/Rest/Dark
+- [x] Sidebars/Group/Closed/Rest/Light
 - [ ] Sidebars/Group/Open/Rest/Dark
 - [ ] Sidebars/Group/Open/Rest/Light
 
 ## Sidebars/Header
 
-- [ ] Sidebars/Header/Closed/Rest/Dark
-- [ ] Sidebars/Header/Closed/Rest/Light
-- [ ] Sidebars/Header/Open/Rest/Dark
-- [ ] Sidebars/Header/Open/Rest/Light
-- [ ] Sidebars/Header/Plain/Rest/Dark
-- [ ] Sidebars/Header/Plain/Rest/Light
+- [x] Sidebars/Header/Closed/Rest/Dark
+- [x] Sidebars/Header/Closed/Rest/Light
+- [x] Sidebars/Header/Open/Rest/Dark
+- [x] Sidebars/Header/Open/Rest/Light
+- [x] Sidebars/Header/Plain/Rest/Dark
+- [x] Sidebars/Header/Plain/Rest/Light
 
 ## Sidebars/Panel
 
@@ -37,19 +37,19 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Sidebars/Row
 
-- [ ] Sidebars/Row/Badge/Disabled/Dark
-- [ ] Sidebars/Row/Badge/Disabled/Light
-- [ ] Sidebars/Row/Badge/Hover/Dark
-- [ ] Sidebars/Row/Badge/Hover/Light
-- [ ] Sidebars/Row/Badge/Rest/Dark
-- [ ] Sidebars/Row/Badge/Rest/Light
-- [ ] Sidebars/Row/Badge/Selected/Dark
-- [ ] Sidebars/Row/Badge/Selected/Light
-- [ ] Sidebars/Row/Plain/Disabled/Dark
-- [ ] Sidebars/Row/Plain/Disabled/Light
-- [ ] Sidebars/Row/Plain/Hover/Dark
-- [ ] Sidebars/Row/Plain/Hover/Light
-- [ ] Sidebars/Row/Plain/Rest/Dark
-- [ ] Sidebars/Row/Plain/Rest/Light
-- [ ] Sidebars/Row/Plain/Selected/Dark
-- [ ] Sidebars/Row/Plain/Selected/Light
+- [x] Sidebars/Row/Badge/Disabled/Dark
+- [x] Sidebars/Row/Badge/Disabled/Light
+- [x] Sidebars/Row/Badge/Hover/Dark
+- [x] Sidebars/Row/Badge/Hover/Light
+- [x] Sidebars/Row/Badge/Rest/Dark
+- [x] Sidebars/Row/Badge/Rest/Light
+- [x] Sidebars/Row/Badge/Selected/Dark
+- [x] Sidebars/Row/Badge/Selected/Light
+- [x] Sidebars/Row/Plain/Disabled/Dark
+- [x] Sidebars/Row/Plain/Disabled/Light
+- [x] Sidebars/Row/Plain/Hover/Dark
+- [x] Sidebars/Row/Plain/Hover/Light
+- [x] Sidebars/Row/Plain/Rest/Dark
+- [x] Sidebars/Row/Plain/Rest/Light
+- [x] Sidebars/Row/Plain/Selected/Dark
+- [x] Sidebars/Row/Plain/Selected/Light

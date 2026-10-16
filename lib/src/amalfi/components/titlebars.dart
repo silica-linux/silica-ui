@@ -3,4 +3,10 @@
 // Checklist: `docs/amalfi-checklist/titlebars.md`. Gallery: `example/lib/amalfi/pages/titlebars.dart`.
 // The widgets live under `titlebars/` and are exported from here.
 
-// Nothing yet.
+export 'titlebars/bars.dart';
+export 'titlebars/glyphs.dart';
+export 'titlebars/pieces.dart';
+export 'titlebars/tabs.dart';
+export 'titlebars/text_box.dart';
+export 'titlebars/window_controls.dart';
+export 'titlebars/window_scope.dart';

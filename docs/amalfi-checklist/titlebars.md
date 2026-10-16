@@ -10,208 +10,208 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 - [ ] Titlebars/Bar/Compact/Active/Light
 - [ ] Titlebars/Bar/Compact/Inactive/Dark
 - [ ] Titlebars/Bar/Compact/Inactive/Light
-- [ ] Titlebars/Bar/Title Only/Active/Dark
-- [ ] Titlebars/Bar/Title Only/Active/Light
-- [ ] Titlebars/Bar/Title Only/Inactive/Dark
-- [ ] Titlebars/Bar/Title Only/Inactive/Light
-- [ ] Titlebars/Bar/Unified/Full Inset 16/Active/Dark
-- [ ] Titlebars/Bar/Unified/Full Inset 16/Active/Light
-- [ ] Titlebars/Bar/Unified/Full Inset 16/Inactive/Dark
-- [ ] Titlebars/Bar/Unified/Full Inset 16/Inactive/Light
-- [ ] Titlebars/Bar/Unified/Full Inset 8/Active/Dark
-- [ ] Titlebars/Bar/Unified/Full Inset 8/Active/Light
-- [ ] Titlebars/Bar/Unified/Full Inset 8/Inactive/Dark
-- [ ] Titlebars/Bar/Unified/Full Inset 8/Inactive/Light
+- [x] Titlebars/Bar/Title Only/Active/Dark
+- [x] Titlebars/Bar/Title Only/Active/Light
+- [x] Titlebars/Bar/Title Only/Inactive/Dark
+- [x] Titlebars/Bar/Title Only/Inactive/Light
+- [x] Titlebars/Bar/Unified/Full Inset 16/Active/Dark
+- [x] Titlebars/Bar/Unified/Full Inset 16/Active/Light
+- [x] Titlebars/Bar/Unified/Full Inset 16/Inactive/Dark
+- [x] Titlebars/Bar/Unified/Full Inset 16/Inactive/Light
+- [x] Titlebars/Bar/Unified/Full Inset 8/Active/Dark
+- [x] Titlebars/Bar/Unified/Full Inset 8/Active/Light
+- [x] Titlebars/Bar/Unified/Full Inset 8/Inactive/Dark
+- [x] Titlebars/Bar/Unified/Full Inset 8/Inactive/Light
 
 ## Titlebars/Controls
 
-- [ ] Titlebars/Controls/Hover/Dark
-- [ ] Titlebars/Controls/Hover/Light
-- [ ] Titlebars/Controls/Inactive/Dark
-- [ ] Titlebars/Controls/Inactive/Light
-- [ ] Titlebars/Controls/Rest/Dark
-- [ ] Titlebars/Controls/Rest/Light
+- [x] Titlebars/Controls/Hover/Dark
+- [x] Titlebars/Controls/Hover/Light
+- [x] Titlebars/Controls/Inactive/Dark
+- [x] Titlebars/Controls/Inactive/Light
+- [x] Titlebars/Controls/Rest/Dark
+- [x] Titlebars/Controls/Rest/Light
 
 ## Titlebars/Dot
 
-- [ ] Titlebars/Dot/Close/Hover/Dark
-- [ ] Titlebars/Dot/Close/Hover/Light
-- [ ] Titlebars/Dot/Close/Inactive/Dark
-- [ ] Titlebars/Dot/Close/Inactive/Light
-- [ ] Titlebars/Dot/Close/Rest/Dark
-- [ ] Titlebars/Dot/Close/Rest/Light
-- [ ] Titlebars/Dot/Minimise/Hover/Dark
-- [ ] Titlebars/Dot/Minimise/Hover/Light
-- [ ] Titlebars/Dot/Minimise/Inactive/Dark
-- [ ] Titlebars/Dot/Minimise/Inactive/Light
-- [ ] Titlebars/Dot/Minimise/Rest/Dark
-- [ ] Titlebars/Dot/Minimise/Rest/Light
-- [ ] Titlebars/Dot/Zoom/Hover/Dark
-- [ ] Titlebars/Dot/Zoom/Hover/Light
-- [ ] Titlebars/Dot/Zoom/Inactive/Dark
-- [ ] Titlebars/Dot/Zoom/Inactive/Light
-- [ ] Titlebars/Dot/Zoom/Rest/Dark
-- [ ] Titlebars/Dot/Zoom/Rest/Light
+- [x] Titlebars/Dot/Close/Hover/Dark
+- [x] Titlebars/Dot/Close/Hover/Light
+- [x] Titlebars/Dot/Close/Inactive/Dark
+- [x] Titlebars/Dot/Close/Inactive/Light
+- [x] Titlebars/Dot/Close/Rest/Dark
+- [x] Titlebars/Dot/Close/Rest/Light
+- [x] Titlebars/Dot/Minimise/Hover/Dark
+- [x] Titlebars/Dot/Minimise/Hover/Light
+- [x] Titlebars/Dot/Minimise/Inactive/Dark
+- [x] Titlebars/Dot/Minimise/Inactive/Light
+- [x] Titlebars/Dot/Minimise/Rest/Dark
+- [x] Titlebars/Dot/Minimise/Rest/Light
+- [x] Titlebars/Dot/Zoom/Hover/Dark
+- [x] Titlebars/Dot/Zoom/Hover/Light
+- [x] Titlebars/Dot/Zoom/Inactive/Dark
+- [x] Titlebars/Dot/Zoom/Inactive/Light
+- [x] Titlebars/Dot/Zoom/Rest/Dark
+- [x] Titlebars/Dot/Zoom/Rest/Light
 
 ## Titlebars/Piece
 
-- [ ] Titlebars/Piece/Add/Active/Dark
-- [ ] Titlebars/Piece/Controls/Active/Dark
-- [ ] Titlebars/Piece/Controls/Active/Light
-- [ ] Titlebars/Piece/Controls/Inactive/Dark
-- [ ] Titlebars/Piece/Controls/Inactive/Light
-- [ ] Titlebars/Piece/Doc Info/Active/Dark
-- [ ] Titlebars/Piece/Doc Info/Active/Light
-- [ ] Titlebars/Piece/Doc Share/Active/Dark
-- [ ] Titlebars/Piece/Doc Share/Active/Light
-- [ ] Titlebars/Piece/Item Group 2/Active/Dark
-- [ ] Titlebars/Piece/Item Group 2/Active/Light
-- [ ] Titlebars/Piece/Item Group 2/Inactive/Dark
-- [ ] Titlebars/Piece/Item Group 2/Inactive/Light
-- [ ] Titlebars/Piece/Item Group 3/Active/Dark
-- [ ] Titlebars/Piece/Item Group 3/Active/Light
-- [ ] Titlebars/Piece/Item Group 3/Inactive/Dark
-- [ ] Titlebars/Piece/Item Group 3/Inactive/Light
-- [ ] Titlebars/Piece/Item Group 4/Active/Dark
-- [ ] Titlebars/Piece/Item Group 4/Active/Light
-- [ ] Titlebars/Piece/Item Group 4/Inactive/Dark
-- [ ] Titlebars/Piece/Item Group 4/Inactive/Light
-- [ ] Titlebars/Piece/Mail Compose/Active/Dark
-- [ ] Titlebars/Piece/Mail Compose/Active/Light
-- [ ] Titlebars/Piece/Mail Filter/Active/Dark
-- [ ] Titlebars/Piece/Mail Filter/Active/Light
-- [ ] Titlebars/Piece/Mail Reply/Active/Dark
-- [ ] Titlebars/Piece/Mail Reply/Active/Light
-- [ ] Titlebars/Piece/Mail Send/Active/Dark
-- [ ] Titlebars/Piece/Mail Send/Active/Light
-- [ ] Titlebars/Piece/Mail Triage/Active/Dark
-- [ ] Titlebars/Piece/Mail Triage/Active/Light
-- [ ] Titlebars/Piece/More/Active/Dark
-- [ ] Titlebars/Piece/More/Active/Light
-- [ ] Titlebars/Piece/More/Inactive/Dark
-- [ ] Titlebars/Piece/More/Inactive/Light
-- [ ] Titlebars/Piece/Nav/Active/Dark
-- [ ] Titlebars/Piece/Nav/Active/Light
-- [ ] Titlebars/Piece/Nav/Inactive/Dark
-- [ ] Titlebars/Piece/Nav/Inactive/Light
-- [ ] Titlebars/Piece/Notes Format/Active/Dark
-- [ ] Titlebars/Piece/Notes Format/Active/Light
-- [ ] Titlebars/Piece/Notes Insert/Active/Dark
-- [ ] Titlebars/Piece/Notes Insert/Active/Light
-- [ ] Titlebars/Piece/Notes Lists/Active/Dark
-- [ ] Titlebars/Piece/Notes Lists/Active/Light
-- [ ] Titlebars/Piece/Notes New/Active/Dark
-- [ ] Titlebars/Piece/Notes New/Active/Light
-- [ ] Titlebars/Piece/Notes Share/Active/Dark
-- [ ] Titlebars/Piece/Notes Share/Active/Light
-- [ ] Titlebars/Piece/Notes View/Active/Dark
-- [ ] Titlebars/Piece/Notes View/Active/Light
-- [ ] Titlebars/Piece/Preview Highlight Off/Active/Dark
-- [ ] Titlebars/Piece/Preview Highlight Off/Active/Light
-- [ ] Titlebars/Piece/Preview Highlight/Active/Dark
-- [ ] Titlebars/Piece/Preview Highlight/Active/Light
-- [ ] Titlebars/Piece/Preview Inspector/Active/Dark
-- [ ] Titlebars/Piece/Preview Inspector/Active/Light
-- [ ] Titlebars/Piece/Preview Markup/Active/Dark
-- [ ] Titlebars/Piece/Preview Markup/Active/Light
-- [ ] Titlebars/Piece/Preview Rotate/Active/Dark
-- [ ] Titlebars/Piece/Preview Rotate/Active/Light
-- [ ] Titlebars/Piece/Preview View/Active/Dark
-- [ ] Titlebars/Piece/Preview View/Active/Light
-- [ ] Titlebars/Piece/Preview Zoom/Active/Dark
-- [ ] Titlebars/Piece/Preview Zoom/Active/Light
-- [ ] Titlebars/Piece/Search Token/Active/Dark
-- [ ] Titlebars/Piece/Search Token/Active/Light
-- [ ] Titlebars/Piece/Search/Active/Dark
-- [ ] Titlebars/Piece/Search/Active/Light
-- [ ] Titlebars/Piece/Search/Inactive/Dark
-- [ ] Titlebars/Piece/Search/Inactive/Light
-- [ ] Titlebars/Piece/Segmented 4/Active/Dark
-- [ ] Titlebars/Piece/Segmented 4/Active/Light
-- [ ] Titlebars/Piece/Segmented 4/Inactive/Dark
-- [ ] Titlebars/Piece/Segmented 4/Inactive/Light
-- [ ] Titlebars/Piece/Segmented Text/Active/Dark
-- [ ] Titlebars/Piece/Segmented Text/Active/Light
-- [ ] Titlebars/Piece/Segmented Text/Inactive/Dark
-- [ ] Titlebars/Piece/Segmented Text/Inactive/Light
-- [ ] Titlebars/Piece/Segmented/Active/Dark
-- [ ] Titlebars/Piece/Segmented/Active/Light
-- [ ] Titlebars/Piece/Segmented/Inactive/Dark
-- [ ] Titlebars/Piece/Segmented/Inactive/Light
-- [ ] Titlebars/Piece/Share/Active/Dark
-- [ ] Titlebars/Piece/Share/Active/Light
-- [ ] Titlebars/Piece/Share/Inactive/Dark
-- [ ] Titlebars/Piece/Share/Inactive/Light
-- [ ] Titlebars/Piece/Sidebar Toggle/Active/Dark
-- [ ] Titlebars/Piece/Sidebar Toggle/Active/Light
-- [ ] Titlebars/Piece/Sidebar Toggle/Inactive/Dark
-- [ ] Titlebars/Piece/Sidebar Toggle/Inactive/Light
-- [ ] Titlebars/Piece/Spacer/Active/Dark
-- [ ] Titlebars/Piece/Spacer/Active/Light
-- [ ] Titlebars/Piece/Spacer/Inactive/Dark
-- [ ] Titlebars/Piece/Spacer/Inactive/Light
-- [ ] Titlebars/Piece/Title + Document Icon/Active/Dark
-- [ ] Titlebars/Piece/Title + Document Icon/Active/Light
-- [ ] Titlebars/Piece/Title + Document Icon/Inactive/Dark
-- [ ] Titlebars/Piece/Title + Document Icon/Inactive/Light
-- [ ] Titlebars/Piece/Title + Subtitle/Active/Dark
-- [ ] Titlebars/Piece/Title + Subtitle/Active/Light
-- [ ] Titlebars/Piece/Title + Subtitle/Inactive/Dark
-- [ ] Titlebars/Piece/Title + Subtitle/Inactive/Light
-- [ ] Titlebars/Piece/Title/Active/Dark
-- [ ] Titlebars/Piece/Title/Active/Light
-- [ ] Titlebars/Piece/Title/Inactive/Dark
-- [ ] Titlebars/Piece/Title/Inactive/Light
+- [x] Titlebars/Piece/Add/Active/Dark
+- [x] Titlebars/Piece/Controls/Active/Dark
+- [x] Titlebars/Piece/Controls/Active/Light
+- [x] Titlebars/Piece/Controls/Inactive/Dark
+- [x] Titlebars/Piece/Controls/Inactive/Light
+- [x] Titlebars/Piece/Doc Info/Active/Dark
+- [x] Titlebars/Piece/Doc Info/Active/Light
+- [x] Titlebars/Piece/Doc Share/Active/Dark
+- [x] Titlebars/Piece/Doc Share/Active/Light
+- [x] Titlebars/Piece/Item Group 2/Active/Dark
+- [x] Titlebars/Piece/Item Group 2/Active/Light
+- [x] Titlebars/Piece/Item Group 2/Inactive/Dark
+- [x] Titlebars/Piece/Item Group 2/Inactive/Light
+- [x] Titlebars/Piece/Item Group 3/Active/Dark
+- [x] Titlebars/Piece/Item Group 3/Active/Light
+- [x] Titlebars/Piece/Item Group 3/Inactive/Dark
+- [x] Titlebars/Piece/Item Group 3/Inactive/Light
+- [x] Titlebars/Piece/Item Group 4/Active/Dark
+- [x] Titlebars/Piece/Item Group 4/Active/Light
+- [x] Titlebars/Piece/Item Group 4/Inactive/Dark
+- [x] Titlebars/Piece/Item Group 4/Inactive/Light
+- [x] Titlebars/Piece/Mail Compose/Active/Dark
+- [x] Titlebars/Piece/Mail Compose/Active/Light
+- [x] Titlebars/Piece/Mail Filter/Active/Dark
+- [x] Titlebars/Piece/Mail Filter/Active/Light
+- [x] Titlebars/Piece/Mail Reply/Active/Dark
+- [x] Titlebars/Piece/Mail Reply/Active/Light
+- [x] Titlebars/Piece/Mail Send/Active/Dark
+- [x] Titlebars/Piece/Mail Send/Active/Light
+- [x] Titlebars/Piece/Mail Triage/Active/Dark
+- [x] Titlebars/Piece/Mail Triage/Active/Light
+- [x] Titlebars/Piece/More/Active/Dark
+- [x] Titlebars/Piece/More/Active/Light
+- [x] Titlebars/Piece/More/Inactive/Dark
+- [x] Titlebars/Piece/More/Inactive/Light
+- [x] Titlebars/Piece/Nav/Active/Dark
+- [x] Titlebars/Piece/Nav/Active/Light
+- [x] Titlebars/Piece/Nav/Inactive/Dark
+- [x] Titlebars/Piece/Nav/Inactive/Light
+- [x] Titlebars/Piece/Notes Format/Active/Dark
+- [x] Titlebars/Piece/Notes Format/Active/Light
+- [x] Titlebars/Piece/Notes Insert/Active/Dark
+- [x] Titlebars/Piece/Notes Insert/Active/Light
+- [x] Titlebars/Piece/Notes Lists/Active/Dark
+- [x] Titlebars/Piece/Notes Lists/Active/Light
+- [x] Titlebars/Piece/Notes New/Active/Dark
+- [x] Titlebars/Piece/Notes New/Active/Light
+- [x] Titlebars/Piece/Notes Share/Active/Dark
+- [x] Titlebars/Piece/Notes Share/Active/Light
+- [x] Titlebars/Piece/Notes View/Active/Dark
+- [x] Titlebars/Piece/Notes View/Active/Light
+- [x] Titlebars/Piece/Preview Highlight Off/Active/Dark
+- [x] Titlebars/Piece/Preview Highlight Off/Active/Light
+- [x] Titlebars/Piece/Preview Highlight/Active/Dark
+- [x] Titlebars/Piece/Preview Highlight/Active/Light
+- [x] Titlebars/Piece/Preview Inspector/Active/Dark
+- [x] Titlebars/Piece/Preview Inspector/Active/Light
+- [x] Titlebars/Piece/Preview Markup/Active/Dark
+- [x] Titlebars/Piece/Preview Markup/Active/Light
+- [x] Titlebars/Piece/Preview Rotate/Active/Dark
+- [x] Titlebars/Piece/Preview Rotate/Active/Light
+- [x] Titlebars/Piece/Preview View/Active/Dark
+- [x] Titlebars/Piece/Preview View/Active/Light
+- [x] Titlebars/Piece/Preview Zoom/Active/Dark
+- [x] Titlebars/Piece/Preview Zoom/Active/Light
+- [x] Titlebars/Piece/Search Token/Active/Dark
+- [x] Titlebars/Piece/Search Token/Active/Light
+- [x] Titlebars/Piece/Search/Active/Dark
+- [x] Titlebars/Piece/Search/Active/Light
+- [x] Titlebars/Piece/Search/Inactive/Dark
+- [x] Titlebars/Piece/Search/Inactive/Light
+- [x] Titlebars/Piece/Segmented 4/Active/Dark
+- [x] Titlebars/Piece/Segmented 4/Active/Light
+- [x] Titlebars/Piece/Segmented 4/Inactive/Dark
+- [x] Titlebars/Piece/Segmented 4/Inactive/Light
+- [x] Titlebars/Piece/Segmented Text/Active/Dark
+- [x] Titlebars/Piece/Segmented Text/Active/Light
+- [x] Titlebars/Piece/Segmented Text/Inactive/Dark
+- [x] Titlebars/Piece/Segmented Text/Inactive/Light
+- [x] Titlebars/Piece/Segmented/Active/Dark
+- [x] Titlebars/Piece/Segmented/Active/Light
+- [x] Titlebars/Piece/Segmented/Inactive/Dark
+- [x] Titlebars/Piece/Segmented/Inactive/Light
+- [x] Titlebars/Piece/Share/Active/Dark
+- [x] Titlebars/Piece/Share/Active/Light
+- [x] Titlebars/Piece/Share/Inactive/Dark
+- [x] Titlebars/Piece/Share/Inactive/Light
+- [x] Titlebars/Piece/Sidebar Toggle/Active/Dark
+- [x] Titlebars/Piece/Sidebar Toggle/Active/Light
+- [x] Titlebars/Piece/Sidebar Toggle/Inactive/Dark
+- [x] Titlebars/Piece/Sidebar Toggle/Inactive/Light
+- [x] Titlebars/Piece/Spacer/Active/Dark
+- [x] Titlebars/Piece/Spacer/Active/Light
+- [x] Titlebars/Piece/Spacer/Inactive/Dark
+- [x] Titlebars/Piece/Spacer/Inactive/Light
+- [x] Titlebars/Piece/Title + Document Icon/Active/Dark
+- [x] Titlebars/Piece/Title + Document Icon/Active/Light
+- [x] Titlebars/Piece/Title + Document Icon/Inactive/Dark
+- [x] Titlebars/Piece/Title + Document Icon/Inactive/Light
+- [x] Titlebars/Piece/Title + Subtitle/Active/Dark
+- [x] Titlebars/Piece/Title + Subtitle/Active/Light
+- [x] Titlebars/Piece/Title + Subtitle/Inactive/Dark
+- [x] Titlebars/Piece/Title + Subtitle/Inactive/Light
+- [x] Titlebars/Piece/Title/Active/Dark
+- [x] Titlebars/Piece/Title/Active/Light
+- [x] Titlebars/Piece/Title/Inactive/Dark
+- [x] Titlebars/Piece/Title/Inactive/Light
 
 ## Titlebars/Section
 
-- [ ] Titlebars/Section/Content/Active/Dark
-- [ ] Titlebars/Section/Content/Active/Light
-- [ ] Titlebars/Section/Content/Inactive/Dark
-- [ ] Titlebars/Section/Content/Inactive/Light
-- [ ] Titlebars/Section/Inspector/Active/Dark
-- [ ] Titlebars/Section/Inspector/Active/Light
-- [ ] Titlebars/Section/Inspector/Inactive/Dark
-- [ ] Titlebars/Section/Inspector/Inactive/Light
-- [ ] Titlebars/Section/List/Active/Dark
-- [ ] Titlebars/Section/List/Active/Light
-- [ ] Titlebars/Section/List/Inactive/Dark
-- [ ] Titlebars/Section/List/Inactive/Light
-- [ ] Titlebars/Section/Sidebar/Active/Dark
-- [ ] Titlebars/Section/Sidebar/Active/Light
-- [ ] Titlebars/Section/Sidebar/Inactive/Dark
-- [ ] Titlebars/Section/Sidebar/Inactive/Light
+- [x] Titlebars/Section/Content/Active/Dark
+- [x] Titlebars/Section/Content/Active/Light
+- [x] Titlebars/Section/Content/Inactive/Dark
+- [x] Titlebars/Section/Content/Inactive/Light
+- [x] Titlebars/Section/Inspector/Active/Dark
+- [x] Titlebars/Section/Inspector/Active/Light
+- [x] Titlebars/Section/Inspector/Inactive/Dark
+- [x] Titlebars/Section/Inspector/Inactive/Light
+- [x] Titlebars/Section/List/Active/Dark
+- [x] Titlebars/Section/List/Active/Light
+- [x] Titlebars/Section/List/Inactive/Dark
+- [x] Titlebars/Section/List/Inactive/Light
+- [x] Titlebars/Section/Sidebar/Active/Dark
+- [x] Titlebars/Section/Sidebar/Active/Light
+- [x] Titlebars/Section/Sidebar/Inactive/Dark
+- [x] Titlebars/Section/Sidebar/Inactive/Light
 
 ## Titlebars/Tab Bar
 
-- [ ] Titlebars/Tab Bar/Hover/Rest/Dark
-- [ ] Titlebars/Tab Bar/Hover/Rest/Light
-- [ ] Titlebars/Tab Bar/Three Tabs/Rest/Dark
-- [ ] Titlebars/Tab Bar/Three Tabs/Rest/Light
+- [x] Titlebars/Tab Bar/Hover/Rest/Dark
+- [x] Titlebars/Tab Bar/Hover/Rest/Light
+- [x] Titlebars/Tab Bar/Three Tabs/Rest/Dark
+- [x] Titlebars/Tab Bar/Three Tabs/Rest/Light
 
 ## Titlebars/Tab
 
-- [ ] Titlebars/Tab/Hover/Dark
-- [ ] Titlebars/Tab/Hover/Light
-- [ ] Titlebars/Tab/Rest/Dark
-- [ ] Titlebars/Tab/Rest/Light
-- [ ] Titlebars/Tab/Selected/Dark
-- [ ] Titlebars/Tab/Selected/Light
+- [x] Titlebars/Tab/Hover/Dark
+- [x] Titlebars/Tab/Hover/Light
+- [x] Titlebars/Tab/Rest/Dark
+- [x] Titlebars/Tab/Rest/Light
+- [x] Titlebars/Tab/Selected/Dark
+- [x] Titlebars/Tab/Selected/Light
 
 ## Titlebars/Title Bar
 
-- [ ] Titlebars/Title Bar/Document/Active/Dark
-- [ ] Titlebars/Title Bar/Document/Active/Light
-- [ ] Titlebars/Title Bar/Document/Inactive/Dark
-- [ ] Titlebars/Title Bar/Document/Inactive/Light
-- [ ] Titlebars/Title Bar/Plain/Active/Dark
-- [ ] Titlebars/Title Bar/Plain/Active/Light
-- [ ] Titlebars/Title Bar/Plain/Inactive/Dark
-- [ ] Titlebars/Title Bar/Plain/Inactive/Light
-- [ ] Titlebars/Title Bar/Subtitle/Active/Dark
-- [ ] Titlebars/Title Bar/Subtitle/Active/Light
-- [ ] Titlebars/Title Bar/Subtitle/Inactive/Dark
-- [ ] Titlebars/Title Bar/Subtitle/Inactive/Light
+- [x] Titlebars/Title Bar/Document/Active/Dark
+- [x] Titlebars/Title Bar/Document/Active/Light
+- [x] Titlebars/Title Bar/Document/Inactive/Dark
+- [x] Titlebars/Title Bar/Document/Inactive/Light
+- [x] Titlebars/Title Bar/Plain/Active/Dark
+- [x] Titlebars/Title Bar/Plain/Active/Light
+- [x] Titlebars/Title Bar/Plain/Inactive/Dark
+- [x] Titlebars/Title Bar/Plain/Inactive/Light
+- [x] Titlebars/Title Bar/Subtitle/Active/Dark
+- [x] Titlebars/Title Bar/Subtitle/Active/Light
+- [x] Titlebars/Title Bar/Subtitle/Inactive/Dark
+- [x] Titlebars/Title Bar/Subtitle/Inactive/Light
 
 ## Titlebars/Toolbar
 

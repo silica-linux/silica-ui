@@ -8,68 +8,68 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Windows/Compact Toolbar
 
-- [ ] Windows/Compact Toolbar/Active/Dark
-- [ ] Windows/Compact Toolbar/Active/Light
+- [x] Windows/Compact Toolbar/Active/Dark
+- [x] Windows/Compact Toolbar/Active/Light
 
 ## Windows/Sidebar Body
 
-- [ ] Windows/Sidebar Body/Below Bar/Dark
-- [ ] Windows/Sidebar Body/Below Bar/Light
-- [ ] Windows/Sidebar Body/Full/Dark
-- [ ] Windows/Sidebar Body/Full/Light
+- [x] Windows/Sidebar Body/Below Bar/Dark
+- [x] Windows/Sidebar Body/Below Bar/Light
+- [x] Windows/Sidebar Body/Full/Dark
+- [x] Windows/Sidebar Body/Full/Light
 
 ## Windows/Sidebar Collapsed
 
-- [ ] Windows/Sidebar Collapsed/Active/Dark
-- [ ] Windows/Sidebar Collapsed/Active/Light
+- [x] Windows/Sidebar Collapsed/Active/Dark
+- [x] Windows/Sidebar Collapsed/Active/Light
 
 ## Windows/Split Toolbar Inspector
 
-- [ ] Windows/Split Toolbar Inspector/Active/Dark
-- [ ] Windows/Split Toolbar Inspector/Active/Light
+- [x] Windows/Split Toolbar Inspector/Active/Dark
+- [x] Windows/Split Toolbar Inspector/Active/Light
 
 ## Windows/Split Toolbar Three Columns
 
-- [ ] Windows/Split Toolbar Three Columns/Active/Dark
-- [ ] Windows/Split Toolbar Three Columns/Active/Light
-- [ ] Windows/Split Toolbar Three Columns/Inactive/Dark
-- [ ] Windows/Split Toolbar Three Columns/Inactive/Light
+- [x] Windows/Split Toolbar Three Columns/Active/Dark
+- [x] Windows/Split Toolbar Three Columns/Active/Light
+- [x] Windows/Split Toolbar Three Columns/Inactive/Dark
+- [x] Windows/Split Toolbar Three Columns/Inactive/Light
 
 ## Windows/Split Toolbar
 
-- [ ] Windows/Split Toolbar/Active/Dark
-- [ ] Windows/Split Toolbar/Active/Light
-- [ ] Windows/Split Toolbar/Inactive/Dark
-- [ ] Windows/Split Toolbar/Inactive/Light
+- [x] Windows/Split Toolbar/Active/Dark
+- [x] Windows/Split Toolbar/Active/Light
+- [x] Windows/Split Toolbar/Inactive/Dark
+- [x] Windows/Split Toolbar/Inactive/Light
 
 ## Windows/Title Only
 
-- [ ] Windows/Title Only/Active/Dark
-- [ ] Windows/Title Only/Active/Light
+- [x] Windows/Title Only/Active/Dark
+- [x] Windows/Title Only/Active/Light
 
 ## Windows/Unified Toolbar Sidebar
 
-- [ ] Windows/Unified Toolbar Sidebar/Active/Dark
-- [ ] Windows/Unified Toolbar Sidebar/Active/Light
-- [ ] Windows/Unified Toolbar Sidebar/Inactive/Dark
-- [ ] Windows/Unified Toolbar Sidebar/Inactive/Light
+- [x] Windows/Unified Toolbar Sidebar/Active/Dark
+- [x] Windows/Unified Toolbar Sidebar/Active/Light
+- [x] Windows/Unified Toolbar Sidebar/Inactive/Dark
+- [x] Windows/Unified Toolbar Sidebar/Inactive/Light
 
 ## Windows/Unified Toolbar
 
-- [ ] Windows/Unified Toolbar/Active/Dark
-- [ ] Windows/Unified Toolbar/Active/Light
+- [x] Windows/Unified Toolbar/Active/Dark
+- [x] Windows/Unified Toolbar/Active/Light
 
 ## Windows/Window
 
-- [ ] Windows/Window/Document/Active/Dark
-- [ ] Windows/Window/Document/Active/Light
-- [ ] Windows/Window/Full Screen Strip/Active/Dark
-- [ ] Windows/Window/Full Screen Strip/Active/Light
-- [ ] Windows/Window/Inactive/Inactive/Dark
-- [ ] Windows/Window/Inactive/Inactive/Light
-- [ ] Windows/Window/Panel/Active/Dark
-- [ ] Windows/Window/Panel/Active/Light
-- [ ] Windows/Window/Sidebar Inspector/Active/Dark
-- [ ] Windows/Window/Sidebar Inspector/Active/Light
-- [ ] Windows/Window/Utility/Active/Dark
-- [ ] Windows/Window/Utility/Active/Light
+- [x] Windows/Window/Document/Active/Dark
+- [x] Windows/Window/Document/Active/Light
+- [x] Windows/Window/Full Screen Strip/Active/Dark
+- [x] Windows/Window/Full Screen Strip/Active/Light
+- [x] Windows/Window/Inactive/Inactive/Dark
+- [x] Windows/Window/Inactive/Inactive/Light
+- [x] Windows/Window/Panel/Active/Dark
+- [x] Windows/Window/Panel/Active/Light
+- [x] Windows/Window/Sidebar Inspector/Active/Dark
+- [x] Windows/Window/Sidebar Inspector/Active/Light
+- [x] Windows/Window/Utility/Active/Dark
+- [x] Windows/Window/Utility/Active/Light
