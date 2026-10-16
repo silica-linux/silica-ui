@@ -100,24 +100,34 @@ class AmalfiSmoothBorder extends OutlinedBorder {
     smoothing: smoothing,
   );
 
-  /// A copy with the given fields replaced: [radius] sets all four corners, then each corner
-  /// argument overrides its own.
+  /// A copy with the given fields replaced: [radius] sets all four corners.
   @override
   AmalfiSmoothBorder copyWith({
     BorderSide? side,
     double? radius,
+    double? smoothing,
+  }) => AmalfiSmoothBorder.only(
+    side: side ?? this.side,
+    topLeft: radius ?? topLeft,
+    topRight: radius ?? topRight,
+    bottomRight: radius ?? bottomRight,
+    bottomLeft: radius ?? bottomLeft,
+    smoothing: smoothing ?? this.smoothing,
+  );
+
+  /// A copy with the given corners' radii replaced.
+  AmalfiSmoothBorder copyWithCorners({
     double? topLeft,
     double? topRight,
     double? bottomRight,
     double? bottomLeft,
-    double? smoothing,
   }) => AmalfiSmoothBorder.only(
-    side: side ?? this.side,
-    topLeft: topLeft ?? radius ?? this.topLeft,
-    topRight: topRight ?? radius ?? this.topRight,
-    bottomRight: bottomRight ?? radius ?? this.bottomRight,
-    bottomLeft: bottomLeft ?? radius ?? this.bottomLeft,
-    smoothing: smoothing ?? this.smoothing,
+    side: side,
+    topLeft: topLeft ?? this.topLeft,
+    topRight: topRight ?? this.topRight,
+    bottomRight: bottomRight ?? this.bottomRight,
+    bottomLeft: bottomLeft ?? this.bottomLeft,
+    smoothing: smoothing,
   );
 
   /// This border with every rounded corner's radius grown by [delta] (negative shrinks it,

@@ -204,9 +204,14 @@ void main() {
         side: BorderSide(width: 2, color: Color(0xFF000000)),
       );
       expect(border.scale(2).radii, [12, 0, 0, 12]);
-      expect(border.copyWith(topRight: 3).radii, [6, 3, 0, 6]);
+      expect(border.copyWithCorners(topRight: 3).radii, [6, 3, 0, 6]);
       expect(border.copyWith(radius: 4).radii, [4, 4, 4, 4]);
-      expect(border.copyWith(radius: 4, topLeft: 1).radii, [1, 4, 4, 4]);
+      expect(border.copyWith(radius: 4).copyWithCorners(topLeft: 1).radii, [
+        1,
+        4,
+        4,
+        4,
+      ]);
       expect(border.inflateRadii(2).radii, [8, 0, 0, 8]);
       expect(border.inflateRadii(-10).radii, [0, 0, 0, 0]);
       final mid = ShapeBorder.lerp(
