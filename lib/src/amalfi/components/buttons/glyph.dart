@@ -4,8 +4,8 @@
 
 import 'package:flutter/widgets.dart';
 
-/// A stroke glyph of [AmalfiGlyph].
-enum AmalfiGlyphShape {
+/// A stroke glyph of [AmalfiButtonGlyph].
+enum AmalfiButtonGlyphShape {
   /// `plus`.
   plus([
     [Offset(12, 4), Offset(12, 20)],
@@ -33,7 +33,7 @@ enum AmalfiGlyphShape {
     [Offset(4.6, 12.6), Offset(9.4, 17.6), Offset(19.4, 6.4)],
   ]);
 
-  const AmalfiGlyphShape(this.strokes);
+  const AmalfiButtonGlyphShape(this.strokes);
 
   /// The polylines on the 24 pt canvas.
   final List<List<Offset>> strokes;
@@ -43,10 +43,10 @@ enum AmalfiGlyphShape {
 /// with the size, as the Icon Kit's: 1.5 at 24, 1 at 16, 0.75 at 12.
 ///
 /// [size] and [color] default to the ambient [IconTheme] (buttons set it for their glyphs).
-class AmalfiGlyph extends StatelessWidget {
-  const AmalfiGlyph(this.shape, {super.key, this.size, this.color});
+class AmalfiButtonGlyph extends StatelessWidget {
+  const AmalfiButtonGlyph(this.shape, {super.key, this.size, this.color});
 
-  final AmalfiGlyphShape shape;
+  final AmalfiButtonGlyphShape shape;
   final double? size;
   final Color? color;
 
@@ -73,17 +73,17 @@ class AmalfiGlyph extends StatelessWidget {
 class _GlyphPainter extends CustomPainter {
   const _GlyphPainter(this.shape, this.color);
 
-  final AmalfiGlyphShape shape;
+  final AmalfiButtonGlyphShape shape;
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
-    final scale = size.shortestSide / AmalfiGlyph.canvas;
+    final scale = size.shortestSide / AmalfiButtonGlyph.canvas;
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = AmalfiGlyph.stroke * scale
+      ..strokeWidth = AmalfiButtonGlyph.stroke * scale
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..isAntiAlias = true;

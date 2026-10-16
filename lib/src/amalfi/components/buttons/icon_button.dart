@@ -37,7 +37,7 @@ abstract final class AmalfiIconButtonMetrics {
       };
 }
 
-/// A square button of [size] showing [icon] (an `AmalfiGlyph`, an `Icon` or any widget that
+/// A square button of [size] showing [icon] (an `AmalfiButtonGlyph`, an `Icon` or any widget that
 /// reads [IconTheme]) centred, in the `Text/Primary` colour (`Text/Tertiary` disabled).
 ///
 /// Give it a [semanticLabel]: the glyph alone says nothing to a screen reader.

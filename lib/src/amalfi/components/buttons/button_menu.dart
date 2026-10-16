@@ -209,8 +209,8 @@ class _Item extends StatelessWidget {
           SizedBox.square(
             dimension: AmalfiButtonMenuMetrics.check,
             child: entry.checked
-                ? AmalfiGlyph(
-                    AmalfiGlyphShape.checkmark,
+                ? AmalfiButtonGlyph(
+                    AmalfiButtonGlyphShape.checkmark,
                     size: AmalfiButtonMenuMetrics.check,
                     color: color,
                   )

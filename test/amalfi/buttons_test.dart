@@ -116,7 +116,7 @@ Map<String, Finder> layersOf(KitMaster master, String state, Finder within) {
       'Label' || 'Help' => labelOf(layer.text ?? '', within),
       _ when layer.type == KitLayerType.symbolInstance => find.descendant(
         of: within,
-        matching: find.byType(AmalfiGlyph),
+        matching: find.byType(AmalfiButtonGlyph),
       ),
       _ => null,
     };
@@ -267,7 +267,7 @@ void main() {
                 state,
                 keyed(
                   AmalfiIconButton(
-                    icon: const AmalfiGlyph(AmalfiGlyphShape.plus),
+                    icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
                     semanticLabel: 'Add',
                     shape: shape,
                     size: size,
@@ -337,7 +337,7 @@ void main() {
               keyed(
                 AmalfiToolbarButton(
                   // A stand-in for the kit's gear glyph (pixels: masked).
-                  icon: const AmalfiGlyph(AmalfiGlyphShape.plus),
+                  icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
                   label: label,
                   semanticLabel: 'Settings',
                   onPressed: state == 'Disabled' ? null : _noop,
@@ -389,11 +389,11 @@ void main() {
               'Divider': find.byKey(AmalfiGradientButtons.dividerKey),
               'Glyph Plus': find.descendant(
                 of: add,
-                matching: find.byType(AmalfiGlyph),
+                matching: find.byType(AmalfiButtonGlyph),
               ),
               'Glyph Minus': find.descendant(
                 of: remove,
-                matching: find.byType(AmalfiGlyph),
+                matching: find.byType(AmalfiButtonGlyph),
               ),
               if (state == 'Hover')
                 'State': byKey(AmalfiButtonLayers.hover, add),
@@ -618,7 +618,7 @@ void main() {
       await pumpKitScene(
         tester,
         AmalfiIconButton(
-          icon: const AmalfiGlyph(AmalfiGlyphShape.plus),
+          icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
           semanticLabel: 'Add',
           focusNode: node,
           onPressed: _noop,
@@ -682,7 +682,7 @@ void main() {
             AmalfiPushButton(label: 'Save', onPressed: _noop),
             AmalfiLinkButton(label: 'Learn more', onPressed: null),
             AmalfiIconButton(
-              icon: AmalfiGlyph(AmalfiGlyphShape.plus),
+              icon: AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
               semanticLabel: 'Add',
               onPressed: _noop,
             ),
@@ -763,7 +763,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AmalfiButtonMenu), findsOneWidget);
       // The current value is checked.
-      expect(find.byType(AmalfiGlyph), findsNWidgets(2));
+      expect(find.byType(AmalfiButtonGlyph), findsNWidgets(2));
       await tester.tap(find.text('Three'));
       await tester.pumpAndSettle();
       expect(chosen, isNull);
@@ -912,7 +912,7 @@ void main() {
           onChanged: (_) {},
         ),
         const AmalfiToolbarButton(
-          icon: AmalfiGlyph(AmalfiGlyphShape.plus),
+          icon: AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
           label: 'A long label',
           onPressed: _noop,
         ),

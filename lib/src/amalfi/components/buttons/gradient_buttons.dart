@@ -84,7 +84,7 @@ class AmalfiGradientButtons extends StatelessWidget {
             child: _Half(
               key: addKey,
               look: look,
-              glyph: AmalfiGlyphShape.plus,
+              glyph: AmalfiButtonGlyphShape.plus,
               onPressed: onAdd,
               semanticLabel: addLabel,
               shape: const AmalfiSmoothBorder.only(topLeft: r, bottomLeft: r),
@@ -98,7 +98,7 @@ class AmalfiGradientButtons extends StatelessWidget {
             child: _Half(
               key: removeKey,
               look: look,
-              glyph: AmalfiGlyphShape.minus,
+              glyph: AmalfiButtonGlyphShape.minus,
               onPressed: onRemove,
               semanticLabel: removeLabel,
               shape: const AmalfiSmoothBorder.only(topRight: r, bottomRight: r),
@@ -130,7 +130,7 @@ class _Half extends StatelessWidget {
   });
 
   final AmalfiButtonLook look;
-  final AmalfiGlyphShape glyph;
+  final AmalfiButtonGlyphShape glyph;
   final VoidCallback? onPressed;
   final String semanticLabel;
   final AmalfiSmoothBorder shape;
@@ -167,7 +167,7 @@ class _Half extends StatelessWidget {
                 child: AmalfiButtonIconTheme(
                   color: look.contentFor(visual),
                   size: AmalfiGradientButtonsMetrics.glyph,
-                  child: AmalfiGlyph(glyph),
+                  child: AmalfiButtonGlyph(glyph),
                 ),
               ),
             ),

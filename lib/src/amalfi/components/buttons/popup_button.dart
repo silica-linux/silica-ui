@@ -119,7 +119,7 @@ class AmalfiPopUpButton<T> extends StatelessWidget {
     final onChanged = this.onChanged;
     return _MenuButton(
       label: selected < 0 ? placeholder : items[selected].label,
-      chevron: AmalfiGlyphShape.chevronUpDown,
+      chevron: AmalfiButtonGlyphShape.chevronUpDown,
       size: size,
       width: width,
       semanticLabel: semanticLabel,
@@ -165,7 +165,7 @@ class AmalfiPullDownButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _MenuButton(
     label: label,
-    chevron: AmalfiGlyphShape.chevronDown,
+    chevron: AmalfiButtonGlyphShape.chevronDown,
     size: size,
     width: width,
     semanticLabel: semanticLabel,
@@ -200,7 +200,7 @@ class _MenuButton extends StatefulWidget {
   });
 
   final String label;
-  final AmalfiGlyphShape chevron;
+  final AmalfiButtonGlyphShape chevron;
   final AmalfiControlSize size;
   final double? width;
   final String? semanticLabel;
@@ -349,7 +349,7 @@ class _MenuButtonState extends State<_MenuButton>
                         ),
                       ),
                       const SizedBox(width: AmalfiPopUpButtonMetrics.gap),
-                      AmalfiGlyph(
+                      AmalfiButtonGlyph(
                         widget.chevron,
                         size: AmalfiPopUpButtonMetrics.chevron(size),
                         color: chevronColor,
