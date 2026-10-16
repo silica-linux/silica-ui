@@ -771,7 +771,8 @@ KitStyle? _parseStyle(Map<String, Object?>? s, String where) {
     ],
     corners: corners is Map<String, Object?>
         ? KitCorners(
-            radii: [
+            // The export writes one radius for four equal corners (a circle: `[8]`).
+            radii: switch ([
               for (final r in (corners['radii'] as List?) ?? const [])
                 if (r is num)
                   r.toDouble()
@@ -779,7 +780,10 @@ KitStyle? _parseStyle(Map<String, Object?>? s, String where) {
                   throw KitFormatException(
                     '$where: a corner radius is not a number',
                   ),
-            ],
+            ]) {
+              [final r] => [r, r, r, r],
+              final radii => radii,
+            },
             smoothing: n(corners, 'smoothing', 0),
             style: (corners['style'] as num?)?.toInt(),
           )

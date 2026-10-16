@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 import 'package:silica_ui/src/amalfi/components/buttons/button_base.dart';
-import 'package:silica_ui/src/amalfi/components/buttons/button_surface.dart';
 
 import 'support/harness.dart';
 

@@ -23,21 +23,6 @@ AmalfiControlSize sizeOf(String name) => switch (name) {
   _ => AmalfiControlSize.large,
 };
 
-/// The corner deviations of [layers] (kit path → the radius the code draws) whose kit
-/// corners are a single radius: the kit export writes one value for a circle (`[8]`) where
-/// the harness compares four, so the test checks that value itself and lists the corners.
-Map<String, String> singleRadius(KitMaster master, Map<String, double> layers) {
-  final deviations = <String, String>{};
-  for (final MapEntry(key: path, value: radius) in layers.entries) {
-    if (master.layer(path).style?.corners?.radii case [final kit]) {
-      expect(kit, radius, reason: '$path: the kit radius');
-      deviations['$path#corners'] =
-          'kit export: one radius for four corners (harness request)';
-    }
-  }
-  return deviations;
-}
-
 void main() {
   setUpAll(loadAmalfiFonts);
 
@@ -165,7 +150,6 @@ void main() {
             final name = 'Toggles/Radio/$variant/$size/$state/$appearance';
             testWidgets(name, (tester) async {
               final kitState = KitState.parse(state);
-              final metrics = AmalfiToggleBoxMetrics.radio(sizeOf(size));
               // Kit defect: the Small radio is a circle now, but its hover overlay and
               // focus halo keep the old radius 7 (masked in the pixels).
               final staleOverlay = size != 'Small'
@@ -197,10 +181,6 @@ void main() {
                     ),
                 },
                 deviations: {
-                  ...singleRadius(KitMaster.load(name), {
-                    'Box': metrics.radius,
-                    if (selected) 'Dot': metrics.markSize / 2,
-                  }),
                   if (staleOverlay != null)
                     '$staleOverlay#corners': smallRadioRadius,
                 },
