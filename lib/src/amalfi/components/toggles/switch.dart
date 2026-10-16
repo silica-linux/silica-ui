@@ -106,7 +106,7 @@ class AmalfiSwitchFace extends StatelessWidget {
     this.thumbX,
     this.dragging = false,
     this.lens = 1,
-    this.lensOpacity = 1,
+    this.lensOpacity = 0,
   });
 
   /// Whether the switch is on.
@@ -126,7 +126,7 @@ class AmalfiSwitchFace extends StatelessWidget {
   /// How far the lens has grown, 0–1.
   final double lens;
 
-  /// The lens's opacity (it fades out after a drag), 0–1.
+  /// The opacity of the lens fading out after a drag (when not [dragging]), 0–1; 0: none.
   final double lensOpacity;
 
   @override
