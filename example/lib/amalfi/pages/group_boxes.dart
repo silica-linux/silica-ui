@@ -33,11 +33,10 @@ class _GroupBoxesPage extends StatelessWidget {
 
 /// A checkbox row that keeps its own value.
 class _Check extends StatefulWidget {
-  const _Check(this.label, {this.initial = true, this.enabled = true});
+  const _Check(this.label, {this.initial = true});
 
   final String label;
   final bool initial;
-  final bool enabled;
 
   @override
   State<_Check> createState() => _CheckState();
@@ -50,7 +49,7 @@ class _CheckState extends State<_Check> {
   Widget build(BuildContext context) => AmalfiCheckbox(
     value: _value,
     label: widget.label,
-    onChanged: widget.enabled ? (v) => setState(() => _value = v) : null,
+    onChanged: (v) => setState(() => _value = v),
   );
 }
 
@@ -61,52 +60,43 @@ class _Titled extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: 200,
+    width: 192,
+    // Disabled, the box dims and blocks its (enabled) controls as a whole.
     child: AmalfiGroupBox(
       title: 'Notifications',
       enabled: enabled,
-      children: [
-        _Check('Show banners', enabled: enabled),
-        _Check('Play sound', enabled: enabled),
-        _Check('Show on lock screen', initial: false, enabled: enabled),
+      children: const [
+        _Check('Show banners'),
+        _Check('Play sound'),
+        _Check('Show on lock screen', initial: false),
       ],
     ),
   );
 }
 
-class _Untitled extends StatelessWidget {
+class _Untitled extends StatefulWidget {
   const _Untitled();
 
   @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    return AmalfiGroupBox(
-      children: [
-        // A stand-in for the text field of the fields family.
-        SizedBox(
-          width: 200,
-          height: 28,
-          child: DecoratedBox(
-            decoration: AmalfiShapeDecoration(
-              color: colors.surfaceRaised,
-              shape: AmalfiSmoothBorder(
-                radius: AmalfiRadii.field,
-                side: BorderSide(color: colors.lineBorder),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-              child: Text(
-                'Amalfi coast',
-                style: AmalfiType.body(color: colors.textPrimary),
-              ),
-            ),
-          ),
-        ),
-        const _Check('Remember this name'),
-      ],
-    );
+  State<_Untitled> createState() => _UntitledState();
+}
+
+class _UntitledState extends State<_Untitled> {
+  final _name = TextEditingController(text: 'Amalfi coast');
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) => AmalfiGroupBox(
+    children: [
+      AmalfiTextField(controller: _name, placeholder: 'Name'),
+      const _Check('Remember this name'),
+    ],
+  );
 }
 
 class _Nested extends StatefulWidget {
@@ -130,7 +120,7 @@ class _NestedState extends State<_Nested> {
           label: 'Enable sync',
           onChanged: (v) => setState(() => _sync = v),
         ),
-        const SizedBox(width: 224, child: _Untitled()),
+        const _Untitled(),
       ],
     ),
   );

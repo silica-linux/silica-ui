@@ -18,7 +18,8 @@ abstract final class AmalfiToggleGroupMetrics {
 }
 
 /// Labelled toggles ([children]: `AmalfiCheckbox` or `AmalfiRadio` with labels) in a column,
-/// under an optional [heading] in Headline `Text/Primary`.
+/// under an optional [heading] in Headline `Text/Primary`. The rows are as wide as the
+/// widest of them (so a click beside a short label still reaches its row).
 ///
 /// For radio buttons that choose one value, [AmalfiRadioGroup] builds this with the keyboard
 /// handling of a group.
@@ -36,18 +37,21 @@ class AmalfiToggleGroup extends StatelessWidget {
       if (heading != null)
         Semantics(
           header: true,
-          child: SizedBox(
-            height:
-                AmalfiType.headlineToken.lineHeight ??
-                AmalfiType.headlineToken.size,
-            child: AmalfiWholePoints(
-              key: AmalfiLayerKeys.label,
-              step: AmalfiGrid.base,
-              child: Text(
-                heading,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AmalfiType.headline(color: colors.textPrimary),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SizedBox(
+              height:
+                  AmalfiType.headlineToken.lineHeight ??
+                  AmalfiType.headlineToken.size,
+              child: AmalfiWholePoints(
+                key: AmalfiLayerKeys.label,
+                step: AmalfiGrid.base,
+                child: Text(
+                  heading,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AmalfiType.headline(color: colors.textPrimary),
+                ),
               ),
             ),
           ),
@@ -59,15 +63,17 @@ class AmalfiToggleGroup extends StatelessWidget {
       explicitChildNodes: true,
       child: Padding(
         padding: AmalfiToggleGroupMetrics.padding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final (i, item) in items.indexed) ...[
-              if (i > 0) const SizedBox(height: AmalfiToggleGroupMetrics.gap),
-              item,
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (i, item) in items.indexed) ...[
+                if (i > 0) const SizedBox(height: AmalfiToggleGroupMetrics.gap),
+                item,
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

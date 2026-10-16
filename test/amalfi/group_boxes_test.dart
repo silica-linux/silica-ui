@@ -10,23 +10,24 @@ import 'toggles_support.dart';
 
 const appearances = ['Light', 'Dark'];
 
-/// Stands in for `Fields/Text Field/Regular/Filled` (the fields family), masked in the
-/// pixels.
-const Widget field = SizedBox(key: ValueKey('field'), width: 200, height: 28);
+/// `Fields/Text Field/Regular/Filled`.
+Widget field() => AmalfiTextField(
+  key: const ValueKey('field'),
+  placeholder: 'Name',
+  controller: TextEditingController(text: 'Amalfi coast'),
+);
 
-Widget checkbox(String label, {bool value = true, bool enabled = true}) =>
-    AmalfiCheckbox(
-      key: ValueKey(label),
-      value: value,
-      label: label,
-      onChanged: enabled ? (_) {} : null,
-    );
+Widget checkbox(String label, {bool value = true}) => AmalfiCheckbox(
+  key: ValueKey(label),
+  value: value,
+  label: label,
+  onChanged: (_) {},
+);
 
-/// The untitled box of `Group Boxes/Box/Untitled` (224 wide, as its instance in Nested).
-Widget untitled() => SizedBox(
+/// The untitled box of `Group Boxes/Box/Untitled`.
+Widget untitled() => AmalfiGroupBox(
   key: const ValueKey('untitled'),
-  width: 224,
-  child: AmalfiGroupBox(children: [field, checkbox('Remember this name')]),
+  children: [field(), checkbox('Remember this name')],
 );
 
 /// The labels of the kit's checkbox rows in [name] ([rows]), to the box's right edge: the
@@ -52,24 +53,22 @@ void main() {
     for (final state in ['Rest', 'Disabled']) {
       final name = 'Group Boxes/Box/Titled/$state/$appearance';
       testWidgets(name, (tester) async {
-        final enabled = state == 'Rest';
-        // Kit defect: the rows keep the width of an earlier label (168), wider than the
-        // box's content (160): "Show on lock screen" (168, as the code) overflows the box
-        // and "Show banners" and "Play sound" are wider than their labels. The code sizes
-        // rows to their labels and fits them in the box (the long label is cut).
-        const rows = 'kit rows keep stale widths and overflow the box';
+        // Kit defect: "Show banners" and "Play sound" keep the width of the longest label
+        // (168, "Show on lock screen"); the code sizes each row to its label.
+        const rows = 'kit rows keep a stale width (168)';
+        // Disabled, the whole group dims (its rows are Rest instances in the kit).
         await checkKit(
           tester,
           name,
           SizedBox(
-            width: 184,
+            width: 192,
             child: AmalfiGroupBox(
               title: 'Notifications',
-              enabled: enabled,
+              enabled: state == 'Rest',
               children: [
-                checkbox('Show banners', enabled: enabled),
-                checkbox('Play sound', enabled: enabled),
-                checkbox('Show on lock screen', value: false, enabled: enabled),
+                checkbox('Show banners'),
+                checkbox('Play sound'),
+                checkbox('Show on lock screen', value: false),
               ],
             ),
           ),
@@ -88,7 +87,6 @@ void main() {
                 'kit fixed-width title frame 88 for "Notifications" (84 on the grid)',
             'Box/Show banners': rows,
             'Box/Play sound': rows,
-            'Box/Lock screen': rows,
           },
           mask: labels(name, [
             'Box/Show banners',
@@ -103,7 +101,7 @@ void main() {
       await checkKit(
         tester,
         'Group Boxes/Box/Untitled/Rest/$appearance',
-        untitled(),
+        SizedBox(width: 224, child: untitled()),
         layers: (root) => {
           'Box': box(root),
           'Box/Surface': box(root),
@@ -114,7 +112,6 @@ void main() {
           'Box/Remember':
               'kit row keeps a stale width (168), the code fits the label',
         },
-        maskLayers: ['Box/Name'],
         mask: labels('Group Boxes/Box/Untitled/Rest/$appearance', [
           'Box/Remember',
         ]),
@@ -147,16 +144,39 @@ void main() {
           'Box/Enable': find.byKey(const ValueKey('sync')),
           'Box/Inner box': find.byKey(const ValueKey('untitled')),
         },
-        // The nested switch's thumb (kit defect, see toggles_test.dart) and the field.
-        mask: const [
-          Rect.fromLTWH(12 + 204, 24 + 12 + 4, 40, 24),
-          Rect.fromLTWH(24, 24 + 52 + 12, 200, 28),
-          // The inner box's checkbox label (see Untitled).
-          Rect.fromLTWH(24 + 28, 24 + 52 + 48, 236 - 52, 20),
-        ],
+        // The inner box's checkbox label (see Untitled).
+        mask: const [Rect.fromLTWH(24 + 28, 24 + 52 + 48, 268 - 52, 20)],
       );
     });
   }
+
+  testWidgets('a disabled box blocks its controls', (tester) async {
+    final changes = <bool>[];
+    await pumpKitScene(
+      tester,
+      SizedBox(
+        width: 192,
+        child: AmalfiGroupBox(
+          title: 'Notifications',
+          enabled: false,
+          children: [
+            AmalfiCheckbox(
+              value: false,
+              label: 'Play sound',
+              onChanged: changes.add,
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.tap(find.text('Play sound'), warnIfMissed: false);
+    await tester.pump();
+    expect(changes, isEmpty);
+    expect(
+      tester.widget<Opacity>(find.byType(Opacity).first).opacity,
+      AmalfiStates.disabledOpacity,
+    );
+  });
 
   testWidgets('an unbounded box hugs its widest child', (tester) async {
     await pumpKitScene(

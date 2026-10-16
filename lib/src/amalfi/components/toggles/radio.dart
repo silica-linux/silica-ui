@@ -20,6 +20,7 @@ class AmalfiRadioFace extends StatelessWidget {
     required this.selected,
     this.size = AmalfiControlSize.regular,
     this.state = const AmalfiInteractionState(),
+    this.dimDisabled = true,
   });
 
   /// Whether the dot shows.
@@ -30,6 +31,10 @@ class AmalfiRadioFace extends StatelessWidget {
 
   final AmalfiInteractionState state;
 
+  /// Whether a disabled face draws itself at [AmalfiStates.disabledOpacity] (a labelled row
+  /// dims as a whole instead).
+  final bool dimDisabled;
+
   @override
   Widget build(BuildContext context) {
     final metrics = AmalfiToggleBoxMetrics.radio(size);
@@ -37,6 +42,7 @@ class AmalfiRadioFace extends StatelessWidget {
       metrics: metrics,
       on: selected,
       state: state,
+      dimDisabled: dimDisabled,
       mark: (color) => DecoratedBox(
         decoration: AmalfiShapeDecoration(
           color: color,
@@ -105,6 +111,7 @@ class AmalfiRadio extends StatelessWidget {
               selected: selected,
               size: size,
               state: state,
+              dimDisabled: label == null,
             );
             return label == null
                 ? box

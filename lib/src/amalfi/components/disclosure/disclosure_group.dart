@@ -25,8 +25,8 @@ abstract final class AmalfiDisclosureGroupMetrics {
   /// The corner radius of the header's hover background.
   static const double headerRadius = 9;
 
-  /// How far the content is indented (`Disclosure/Group/Open`: x 28).
-  static const double contentIndent = 28;
+  /// How far the content is indented, to the title (`Disclosure/Group/Open`: x 32).
+  static const double contentIndent = 32;
 
   /// The space above and below the content.
   static const double contentGap = 4;
@@ -34,7 +34,8 @@ abstract final class AmalfiDisclosureGroupMetrics {
 
 /// The look of a disclosure group header in a given state, without any interaction: the
 /// triangle (at rest) and [title] in Headline `Text/Primary`, on an `Accent/Amalfi Soft`
-/// background while hovered or pressed. It fills the width it is given.
+/// background while hovered or pressed; disabled, the whole header is at
+/// [AmalfiStates.disabledOpacity]. It fills the width it is given.
 class AmalfiDisclosureHeaderFace extends StatelessWidget {
   const AmalfiDisclosureHeaderFace({
     super.key,
@@ -56,7 +57,7 @@ class AmalfiDisclosureHeaderFace extends StatelessWidget {
     final colors = AmalfiTheme.of(context).colors;
     final enabled = state.enabled;
     const radius = AmalfiDisclosureGroupMetrics.headerRadius;
-    return SizedBox(
+    final header = SizedBox(
       height: AmalfiDisclosureGroupMetrics.headerHeight,
       child: Stack(
         clipBehavior: Clip.none,
@@ -84,6 +85,7 @@ class AmalfiDisclosureHeaderFace extends StatelessWidget {
                       expanded: expanded,
                       turn: turn,
                       state: AmalfiInteractionState(enabled: enabled),
+                      dimDisabled: false,
                     ),
                   ),
                   const SizedBox(width: AmalfiDisclosureGroupMetrics.titleGap),
@@ -93,11 +95,7 @@ class AmalfiDisclosureHeaderFace extends StatelessWidget {
                       key: AmalfiLayerKeys.label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AmalfiType.headline(
-                        color: enabled
-                            ? colors.textPrimary
-                            : colors.textTertiary,
-                      ),
+                      style: AmalfiType.headline(color: colors.textPrimary),
                     ),
                   ),
                 ],
@@ -107,6 +105,9 @@ class AmalfiDisclosureHeaderFace extends StatelessWidget {
         ],
       ),
     );
+    return enabled
+        ? header
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: header);
   }
 }
 

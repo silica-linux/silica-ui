@@ -18,6 +18,7 @@ class AmalfiCheckboxFace extends StatelessWidget {
     required this.value,
     this.size = AmalfiControlSize.regular,
     this.state = const AmalfiInteractionState(),
+    this.dimDisabled = true,
   });
 
   /// `true` on, `false` off, null mixed.
@@ -28,6 +29,10 @@ class AmalfiCheckboxFace extends StatelessWidget {
 
   final AmalfiInteractionState state;
 
+  /// Whether a disabled face draws itself at [AmalfiStates.disabledOpacity] (a labelled row
+  /// dims as a whole instead).
+  final bool dimDisabled;
+
   @override
   Widget build(BuildContext context) {
     final metrics = AmalfiToggleBoxMetrics.checkbox(size);
@@ -35,6 +40,7 @@ class AmalfiCheckboxFace extends StatelessWidget {
       metrics: metrics,
       on: value != false,
       state: state,
+      dimDisabled: dimDisabled,
       mark: (color) => AmalfiGlyph(
         value == null ? AmalfiGlyphs.minus : AmalfiGlyphs.checkmark,
         size: metrics.markSize,
@@ -101,6 +107,7 @@ class AmalfiCheckbox extends StatelessWidget {
               value: value,
               size: size,
               state: state,
+              dimDisabled: label == null,
             );
             return label == null
                 ? box

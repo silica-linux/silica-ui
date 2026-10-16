@@ -26,11 +26,12 @@ abstract final class AmalfiGroupBoxMetrics {
 
 /// A box of related controls: [children] in a column (8 apart, aligned to the leading edge)
 /// on `Surface/Raised` with a `Line/Border` rim, radius 12, padding 12; [title] above it in
-/// Headline `Text/Secondary` (`Text/Tertiary` when not [enabled]).
+/// Headline `Text/Secondary`.
 ///
 /// The box is as wide as the width it is given (as wide as its widest child when the width
-/// is unbounded). [enabled] only dims the title: disable the controls inside it themselves.
-/// Boxes nest (`Group Boxes/Box/Nested`).
+/// is unbounded). When not [enabled] the whole group (title, box and controls) is at
+/// [AmalfiStates.disabledOpacity] and its controls ignore input: give it enabled controls,
+/// so they are not dimmed twice. Boxes nest (`Group Boxes/Box/Nested`).
 class AmalfiGroupBox extends StatelessWidget {
   const AmalfiGroupBox({
     super.key,
@@ -44,7 +45,7 @@ class AmalfiGroupBox extends StatelessWidget {
 
   final List<Widget> children;
 
-  /// Whether the group is enabled (the title's colour).
+  /// Whether the group and its controls are enabled.
   final bool enabled;
 
   @override
@@ -80,38 +81,47 @@ class AmalfiGroupBox extends StatelessWidget {
           ? SizedBox(width: constraints.maxWidth, child: box)
           : box,
     );
-    if (title == null) return Semantics(container: true, child: body);
-    return Semantics(
-      container: true,
-      explicitChildNodes: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Semantics(
-            header: true,
-            child: SizedBox(
-              height:
-                  AmalfiType.headlineToken.lineHeight ??
-                  AmalfiType.headlineToken.size,
-              child: AmalfiWholePoints(
-                key: AmalfiLayerKeys.label,
-                step: AmalfiGrid.base,
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AmalfiType.headline(
-                    color: enabled ? colors.textSecondary : colors.textTertiary,
+    if (title == null) return _dimmed(Semantics(container: true, child: body));
+    return _dimmed(
+      Semantics(
+        container: true,
+        explicitChildNodes: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Semantics(
+              header: true,
+              child: SizedBox(
+                height:
+                    AmalfiType.headlineToken.lineHeight ??
+                    AmalfiType.headlineToken.size,
+                child: AmalfiWholePoints(
+                  key: AmalfiLayerKeys.label,
+                  step: AmalfiGrid.base,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AmalfiType.headline(color: colors.textSecondary),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: AmalfiGroupBoxMetrics.titleGap),
-          body,
-        ],
+            const SizedBox(height: AmalfiGroupBoxMetrics.titleGap),
+            body,
+          ],
+        ),
       ),
     );
   }
+
+  /// [group] as a whole at [AmalfiStates.disabledOpacity], out of reach of the pointer, the
+  /// keyboard focus and screen reader actions, when not [enabled].
+  Widget _dimmed(Widget group) => enabled
+      ? group
+      : Opacity(
+          opacity: AmalfiStates.disabledOpacity,
+          child: IgnorePointer(child: ExcludeFocus(child: group)),
+        );
 }

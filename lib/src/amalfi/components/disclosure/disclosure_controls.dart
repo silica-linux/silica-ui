@@ -47,6 +47,7 @@ class AmalfiDisclosureFace extends StatelessWidget {
     this.style = AmalfiDisclosureStyle.triangle,
     this.state = const AmalfiInteractionState(),
     this.turn,
+    this.dimDisabled = true,
   });
 
   final bool expanded;
@@ -56,9 +57,14 @@ class AmalfiDisclosureFace extends StatelessWidget {
   /// How far the chevron has turned towards expanded, 0–1; null: at rest.
   final double? turn;
 
+  /// Whether a disabled control draws itself at [AmalfiStates.disabledOpacity] (keeping
+  /// its look); a group header dims as a whole instead.
+  final bool dimDisabled;
+
   @override
   Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
+    final theme = AmalfiTheme.of(context);
+    final colors = theme.colors;
     final enabled = state.enabled;
     final pressed = enabled && state.pressed;
     final hovered = enabled && state.hovered && !pressed;
@@ -72,13 +78,9 @@ class AmalfiDisclosureFace extends StatelessWidget {
     var side = BorderSide.none;
     var shadows = const <BoxShadow>[];
     if (button) {
-      if (!enabled) {
-        fill = colors.surfaceSunken;
-      } else {
-        fill = pressed ? colors.surfaceControlPressed : colors.surfaceControl;
-        side = BorderSide(color: colors.lineBorder);
-        shadows = amalfiControlShadows(colors);
-      }
+      fill = pressed ? colors.surfaceControlPressed : colors.surfaceControl;
+      side = BorderSide(color: colors.lineBorder);
+      shadows = amalfiControlShadows(colors);
     } else {
       fill = pressed
           ? colors.surfaceControlPressed
@@ -86,15 +88,13 @@ class AmalfiDisclosureFace extends StatelessWidget {
           ? colors.accentAmalfiSoft
           : null;
     }
-    final glyphColor = !enabled
-        ? colors.textTertiary
-        : button || pressed || hovered
+    final glyphColor = button || pressed || hovered
         ? colors.textPrimary
         : colors.textSecondary;
     final inset =
         (AmalfiDisclosureMetrics.side - AmalfiDisclosureMetrics.glyph) / 2;
 
-    return SizedBox.square(
+    final face = SizedBox.square(
       dimension: AmalfiDisclosureMetrics.side,
       child: Stack(
         clipBehavior: Clip.none,
@@ -136,6 +136,9 @@ class AmalfiDisclosureFace extends StatelessWidget {
         ],
       ),
     );
+    return enabled || !dimDisabled
+        ? face
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: face);
   }
 }
 

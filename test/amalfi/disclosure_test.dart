@@ -38,8 +38,9 @@ void main() {
               (_, false) => 'Glyph Chevron Down',
               _ => 'Glyph Chevron Up',
             };
-            // Kit defect: the expanded button's chevron-up keeps the 24 pt stroke (1.5) at
-            // 12 pt; the Icon Kit rule scales it to 0.75 (README).
+            // Kit defect (still in 747ea80): the expanded button's chevron-up has no
+            // per-size layer style and keeps the 24 pt stroke (1.5) at 12 pt; the Icon Kit
+            // rule scales it to 0.75 (README).
             final thickGlyph = kind == 'Button' && expanded;
             await checkKit(
               tester,
@@ -210,7 +211,7 @@ void main() {
       expect(opening, inExclusiveRange(28, 84));
       await tester.pumpAndSettle();
       expect(tester.getSize(find.byType(AmalfiDisclosureGroup)).height, 84);
-      expect(tester.getTopLeft(find.text('Body')), const Offset(28, 32));
+      expect(tester.getTopLeft(find.text('Body')), const Offset(32, 32));
       await tester.tap(find.text('Advanced options'));
       await tester.pumpAndSettle();
       expect(find.text('Body'), findsNothing);

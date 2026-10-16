@@ -49,11 +49,11 @@ class AmalfiToggleBoxMetrics {
         ),
       };
 
-  /// A radio button of [size] (`Toggles/Radio/*`): Small 16 (radius 7), Regular 16 and
-  /// Large 20 (circles); the dot is an 8 pt circle. Mini draws as Small.
+  /// A radio button of [size] (`Toggles/Radio/*`): Small and Regular 16, Large 20, all
+  /// circles; the dot is an 8 pt circle. Mini draws as Small.
   static AmalfiToggleBoxMetrics radio(AmalfiControlSize size) => switch (size) {
     AmalfiControlSize.mini || AmalfiControlSize.small =>
-      const AmalfiToggleBoxMetrics(side: 16, radius: 7, markSize: 8),
+      const AmalfiToggleBoxMetrics(side: 16, radius: 8, markSize: 8),
     AmalfiControlSize.regular => const AmalfiToggleBoxMetrics(
       side: 16,
       radius: 8,
@@ -84,7 +84,9 @@ abstract final class AmalfiToggleRowMetrics {
 }
 
 /// Draws a checkbox or radio box in [state]: [on] fills it with the accent and shows [mark]
-/// (built with its colour); off it is a raised box with a border.
+/// (built with its colour); off it is a raised box with a border. Disabled, the box keeps
+/// its look and the whole of it is at [AmalfiStates.disabledOpacity] (unless not
+/// [dimDisabled]: a labelled row dims as a whole instead).
 class AmalfiToggleBox extends StatelessWidget {
   const AmalfiToggleBox({
     super.key,
@@ -92,6 +94,7 @@ class AmalfiToggleBox extends StatelessWidget {
     required this.on,
     required this.state,
     required this.mark,
+    this.dimDisabled = true,
   });
 
   final AmalfiToggleBoxMetrics metrics;
@@ -104,9 +107,13 @@ class AmalfiToggleBox extends StatelessWidget {
   /// Builds the mark in the given colour; only called when [on].
   final Widget Function(Color color) mark;
 
+  /// Whether a disabled box draws itself at [AmalfiStates.disabledOpacity].
+  final bool dimDisabled;
+
   @override
   Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
+    final theme = AmalfiTheme.of(context);
+    final colors = theme.colors;
     final enabled = state.enabled;
     final pressed = enabled && state.pressed;
     final hovered = enabled && state.hovered && !pressed;
@@ -118,10 +125,7 @@ class AmalfiToggleBox extends StatelessWidget {
     final Color fill;
     BorderSide side = BorderSide.none;
     var shadows = const <BoxShadow>[];
-    if (!enabled) {
-      fill = colors.surfaceSunken;
-      side = border;
-    } else if (on) {
+    if (on) {
       fill = pressed ? colors.accentAmalfiPressed : colors.accentAmalfi;
     } else {
       fill = pressed ? colors.accentAmalfiSoft : colors.surfaceRaised;
@@ -129,7 +133,7 @@ class AmalfiToggleBox extends StatelessWidget {
       shadows = amalfiControlShadows(colors);
     }
     final radius = metrics.radius;
-    return SizedBox.square(
+    final box = SizedBox.square(
       dimension: metrics.side,
       child: Stack(
         clipBehavior: Clip.none,
@@ -164,19 +168,21 @@ class AmalfiToggleBox extends StatelessWidget {
               height: metrics.markSize,
               child: KeyedSubtree(
                 key: AmalfiLayerKeys.mark,
-                child: mark(
-                  enabled ? colors.textOnAccent : colors.textTertiary,
-                ),
+                child: mark(colors.textOnAccent),
               ),
             ),
         ],
       ),
     );
+    return enabled || !dimDisabled
+        ? box
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: box);
   }
 }
 
 /// A box with its label after it (`Toggles/*/With Label`): 4 pt padding, the box, 8 pt, the
-/// label in Body (`Text/Primary`, `Text/Tertiary` when disabled), 20 pt tall. The label box
+/// label in Body `Text/Primary`, 20 pt tall; disabled, the whole row is at
+/// [AmalfiStates.disabledOpacity] (build [box] with `dimDisabled: false`). The label box
 /// is its text rounded up to the 4 pt grid plus [AmalfiToggleRowMetrics.labelTrailing].
 class AmalfiToggleRow extends StatelessWidget {
   const AmalfiToggleRow({
@@ -193,7 +199,7 @@ class AmalfiToggleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
-    return Padding(
+    final row = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AmalfiToggleRowMetrics.padding,
       ),
@@ -220,11 +226,7 @@ class AmalfiToggleRow extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AmalfiType.body(
-                        color: enabled
-                            ? colors.textPrimary
-                            : colors.textTertiary,
-                      ),
+                      style: AmalfiType.body(color: colors.textPrimary),
                     ),
                   ),
                 ),
@@ -234,5 +236,8 @@ class AmalfiToggleRow extends StatelessWidget {
         ),
       ),
     );
+    return enabled
+        ? row
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: row);
   }
 }

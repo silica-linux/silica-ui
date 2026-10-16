@@ -1,6 +1,6 @@
 // The Amalfi switch (kit `Toggles/Switch/*`): off and on, Mini / Small / Regular, at rest,
 // hovered, pressed (the thumb stretches), focused, disabled and dragged (the thumb becomes a
-// Glass/Clear lens, `materials.md`), alone or in a labelled row (`Toggles/Switch/With Label`).
+// Glass/Clear lens, `materials.md` lens rule), alone or in a labelled row (`Toggles/Switch/With Label`).
 
 import 'dart:math' as math;
 
@@ -21,6 +21,7 @@ class AmalfiSwitchMetrics {
     required this.trackRadius,
     required this.thumb,
     required this.thumbRadius,
+    required this.lensGrowth,
   });
 
   /// The size of the track (the switch).
@@ -35,18 +36,18 @@ class AmalfiSwitchMetrics {
   /// The corner radius of the thumb.
   final double thumbRadius;
 
-  /// The space between the thumb at rest and the track's edges.
-  double get inset => (track.height - thumb) / 2;
+  /// How much the lens of a dragged thumb exceeds the thumb ([AmalfiLens.switchGrowth] at
+  /// Regular; 8 at Mini and Small, as the kit draws them).
+  final double lensGrowth;
 
-  /// How much wider the thumb gets while the switch is pressed (towards the other end).
-  static const double pressedStretch = 4;
+  /// The space between the thumb at rest and the track's edges, on every side.
+  double get inset => AmalfiSwitchTokens.thumbInset;
 
-  /// How much the lens of a dragged thumb exceeds the thumb on each side (`materials.md`:
-  /// the lens is the thumb's width + 8).
-  static const double lensOutset = 4;
+  /// How much wider the thumb gets while the switch is pressed (towards the middle).
+  static const double pressedStretch = AmalfiSwitchTokens.pressedStretch;
 
   /// The side of the lens over a dragged thumb.
-  double get lens => thumb + 2 * lensOutset;
+  double get lens => thumb + lensGrowth;
 
   /// The thumb's left edge at rest, off or on.
   double restX(bool on) => on ? track.width - inset - thumb : inset;
@@ -55,19 +56,21 @@ class AmalfiSwitchMetrics {
   double clampX(double x) => x.clamp(0, math.max(0, track.width - thumb));
 
   /// A switch of [size]: Mini 24 × 16, Small 32 × 20, Regular 40 × 24 (Large draws as
-  /// Regular), thumb 4 smaller than the track's height.
+  /// Regular), the thumb inset [AmalfiSwitchTokens.thumbInset] from the track.
   static AmalfiSwitchMetrics of(AmalfiControlSize size) => switch (size) {
     AmalfiControlSize.mini => const AmalfiSwitchMetrics(
       track: Size(24, 16),
       trackRadius: 7,
       thumb: 12,
       thumbRadius: 5,
+      lensGrowth: 8,
     ),
     AmalfiControlSize.small => const AmalfiSwitchMetrics(
       track: Size(32, 20),
       trackRadius: 9,
       thumb: 16,
       thumbRadius: 7,
+      lensGrowth: 8,
     ),
     AmalfiControlSize.regular ||
     AmalfiControlSize.large => const AmalfiSwitchMetrics(
@@ -75,6 +78,7 @@ class AmalfiSwitchMetrics {
       trackRadius: 12,
       thumb: 20,
       thumbRadius: 10,
+      lensGrowth: AmalfiLens.switchGrowth,
     ),
   };
 }
@@ -107,6 +111,7 @@ class AmalfiSwitchFace extends StatelessWidget {
     this.dragging = false,
     this.lens = 1,
     this.lensOpacity = 0,
+    this.dimDisabled = true,
   });
 
   /// Whether the switch is on.
@@ -129,6 +134,10 @@ class AmalfiSwitchFace extends StatelessWidget {
   /// The opacity of the lens fading out after a drag (when not [dragging]), 0–1; 0: none.
   final double lensOpacity;
 
+  /// Whether a disabled switch draws itself at [AmalfiStates.disabledOpacity] (a labelled
+  /// row dims as a whole instead).
+  final bool dimDisabled;
+
   @override
   Widget build(BuildContext context) {
     final theme = AmalfiTheme.of(context);
@@ -138,7 +147,6 @@ class AmalfiSwitchFace extends StatelessWidget {
     final pressed = enabled && state.pressed && !dragging;
     final hovered = enabled && state.hovered && !state.pressed;
     final x = m.clampX(thumbX ?? m.restX(value));
-    final opacity = enabled ? 1.0 : AmalfiStates.disabledOpacity;
 
     Widget track({Key? key}) => DecoratedBox(
       key: key,
@@ -162,17 +170,12 @@ class AmalfiSwitchFace extends StatelessWidget {
       height: lensSide,
     );
 
-    return SizedBox.fromSize(
+    final face = SizedBox.fromSize(
       size: m.track,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Positioned.fill(
-            child: Opacity(
-              opacity: opacity,
-              child: track(key: AmalfiLayerKeys.body),
-            ),
-          ),
+          Positioned.fill(child: track(key: AmalfiLayerKeys.body)),
           if (hovered)
             Positioned.fill(
               child: DecoratedBox(
@@ -193,15 +196,12 @@ class AmalfiSwitchFace extends StatelessWidget {
               top: m.inset,
               width: m.thumb + stretch,
               height: m.thumb,
-              child: Opacity(
-                opacity: opacity,
-                child: DecoratedBox(
-                  key: AmalfiLayerKeys.thumb,
-                  decoration: AmalfiShapeDecoration(
-                    color: colors.textOnAccent,
-                    shape: AmalfiSmoothBorder(radius: m.thumbRadius),
-                    shadows: amalfiControlShadows(colors),
-                  ),
+              child: DecoratedBox(
+                key: AmalfiLayerKeys.thumb,
+                decoration: AmalfiShapeDecoration(
+                  color: colors.textOnAccent,
+                  shape: AmalfiSmoothBorder(radius: m.thumbRadius),
+                  shadows: amalfiControlShadows(colors),
                 ),
               ),
             ),
@@ -221,11 +221,15 @@ class AmalfiSwitchFace extends StatelessWidget {
         ],
       ),
     );
+    return enabled || !dimDisabled
+        ? face
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: face);
   }
 }
 
-/// The Glass/Clear lens over a dragged thumb: a capsule that shows the track under it
-/// magnified ([AmalfiMaterials.clear]'s magnification) inside the glass's rims.
+/// The Glass/Clear lens over a dragged thumb: a rounded square ([AmalfiLens.radiusOf]) that
+/// shows the track under it magnified ([AmalfiMaterials.clear]'s magnification) inside the
+/// glass's rims.
 class _Lens extends StatelessWidget {
   const _Lens({
     super.key,
@@ -247,7 +251,7 @@ class _Lens extends StatelessWidget {
   Widget build(BuildContext context) {
     final magnification =
         AmalfiMaterials.clear.refraction?.magnification ?? 1.0;
-    final radius = rect.shortestSide / 2;
+    final radius = AmalfiLens.radiusOf(rect.size);
     return AmalfiGlass(
       material: AmalfiMaterials.clear,
       radius: radius,
@@ -428,6 +432,7 @@ class _AmalfiSwitchState extends State<AmalfiSwitch>
               dragging: _dragging,
               lens: _dragging ? _lens.value : 1,
               lensOpacity: _dragging ? 1 : _lens.value,
+              dimDisabled: label == null,
             );
             return label == null
                 ? face
@@ -439,9 +444,10 @@ class _AmalfiSwitchState extends State<AmalfiSwitch>
   }
 }
 
-/// A settings row: [label] at the leading edge in Body (`Text/Primary`, `Text/Tertiary`
-/// when not [enabled]), [child] (a switch) at the trailing edge (`Toggles/Switch/With
-/// Label`). [AmalfiSwitch] builds it when it has a label.
+/// A settings row: [label] at the leading edge in Body `Text/Primary`, [child] (a switch,
+/// built with `dimDisabled: false`) at the trailing edge (`Toggles/Switch/With Label`);
+/// when not [enabled] the whole row is at [AmalfiStates.disabledOpacity]. [AmalfiSwitch]
+/// builds it when it has a label.
 class AmalfiSwitchRow extends StatelessWidget {
   const AmalfiSwitchRow({
     super.key,
@@ -463,13 +469,11 @@ class AmalfiSwitchRow extends StatelessWidget {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AmalfiType.body(
-          color: enabled ? colors.textPrimary : colors.textTertiary,
-        ),
+        style: AmalfiType.body(color: colors.textPrimary),
       ),
     );
     final control = KeyedSubtree(key: AmalfiLayerKeys.control, child: child);
-    return Padding(
+    final row = Padding(
       padding: AmalfiSwitchRowMetrics.padding,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -489,5 +493,8 @@ class AmalfiSwitchRow extends StatelessWidget {
         },
       ),
     );
+    return enabled
+        ? row
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: row);
   }
 }

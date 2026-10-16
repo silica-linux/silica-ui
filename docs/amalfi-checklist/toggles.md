@@ -6,8 +6,8 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Toggles/Checkbox Group
 
-- [ ] Toggles/Checkbox Group/List/Rest/Dark
-- [ ] Toggles/Checkbox Group/List/Rest/Light
+- [x] Toggles/Checkbox Group/List/Rest/Dark
+- [x] Toggles/Checkbox Group/List/Rest/Light
 
 ## Toggles/Checkbox
 
@@ -134,8 +134,8 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Toggles/Radio Group
 
-- [ ] Toggles/Radio Group/List/Rest/Dark
-- [ ] Toggles/Radio Group/List/Rest/Light
+- [x] Toggles/Radio Group/List/Rest/Dark
+- [x] Toggles/Radio Group/List/Rest/Light
 
 ## Toggles/Radio
 
@@ -222,95 +222,95 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Toggles/Switch
 
-- [ ] Toggles/Switch/Off/Mini/Disabled/Dark
-- [ ] Toggles/Switch/Off/Mini/Disabled/Light
-- [ ] Toggles/Switch/Off/Mini/Dragging/Dark
-- [ ] Toggles/Switch/Off/Mini/Dragging/Light
-- [ ] Toggles/Switch/Off/Mini/Focused/Dark
-- [ ] Toggles/Switch/Off/Mini/Focused/Light
-- [ ] Toggles/Switch/Off/Mini/Hover/Dark
-- [ ] Toggles/Switch/Off/Mini/Hover/Light
-- [ ] Toggles/Switch/Off/Mini/Pressed/Dark
-- [ ] Toggles/Switch/Off/Mini/Pressed/Light
-- [ ] Toggles/Switch/Off/Mini/Rest/Dark
-- [ ] Toggles/Switch/Off/Mini/Rest/Light
-- [ ] Toggles/Switch/Off/Regular/Disabled/Dark
-- [ ] Toggles/Switch/Off/Regular/Disabled/Light
-- [ ] Toggles/Switch/Off/Regular/Dragging/Dark
-- [ ] Toggles/Switch/Off/Regular/Dragging/Light
-- [ ] Toggles/Switch/Off/Regular/Focused/Dark
-- [ ] Toggles/Switch/Off/Regular/Focused/Light
-- [ ] Toggles/Switch/Off/Regular/Hover/Dark
-- [ ] Toggles/Switch/Off/Regular/Hover/Light
-- [ ] Toggles/Switch/Off/Regular/Pressed/Dark
-- [ ] Toggles/Switch/Off/Regular/Pressed/Light
-- [ ] Toggles/Switch/Off/Regular/Rest/Dark
-- [ ] Toggles/Switch/Off/Regular/Rest/Light
-- [ ] Toggles/Switch/Off/Small/Disabled/Dark
-- [ ] Toggles/Switch/Off/Small/Disabled/Light
-- [ ] Toggles/Switch/Off/Small/Dragging/Dark
-- [ ] Toggles/Switch/Off/Small/Dragging/Light
-- [ ] Toggles/Switch/Off/Small/Focused/Dark
-- [ ] Toggles/Switch/Off/Small/Focused/Light
-- [ ] Toggles/Switch/Off/Small/Hover/Dark
-- [ ] Toggles/Switch/Off/Small/Hover/Light
-- [ ] Toggles/Switch/Off/Small/Pressed/Dark
-- [ ] Toggles/Switch/Off/Small/Pressed/Light
-- [ ] Toggles/Switch/Off/Small/Rest/Dark
-- [ ] Toggles/Switch/Off/Small/Rest/Light
-- [ ] Toggles/Switch/On/Mini/Disabled/Dark
-- [ ] Toggles/Switch/On/Mini/Disabled/Light
-- [ ] Toggles/Switch/On/Mini/Dragging/Dark
-- [ ] Toggles/Switch/On/Mini/Dragging/Light
-- [ ] Toggles/Switch/On/Mini/Focused/Dark
-- [ ] Toggles/Switch/On/Mini/Focused/Light
-- [ ] Toggles/Switch/On/Mini/Hover/Dark
-- [ ] Toggles/Switch/On/Mini/Hover/Light
-- [ ] Toggles/Switch/On/Mini/Pressed/Dark
-- [ ] Toggles/Switch/On/Mini/Pressed/Light
-- [ ] Toggles/Switch/On/Mini/Rest/Dark
-- [ ] Toggles/Switch/On/Mini/Rest/Light
-- [ ] Toggles/Switch/On/Regular/Disabled/Dark
-- [ ] Toggles/Switch/On/Regular/Disabled/Light
-- [ ] Toggles/Switch/On/Regular/Dragging/Dark
-- [ ] Toggles/Switch/On/Regular/Dragging/Light
-- [ ] Toggles/Switch/On/Regular/Focused/Dark
-- [ ] Toggles/Switch/On/Regular/Focused/Light
-- [ ] Toggles/Switch/On/Regular/Hover/Dark
-- [ ] Toggles/Switch/On/Regular/Hover/Light
-- [ ] Toggles/Switch/On/Regular/Pressed/Dark
-- [ ] Toggles/Switch/On/Regular/Pressed/Light
-- [ ] Toggles/Switch/On/Regular/Rest/Dark
-- [ ] Toggles/Switch/On/Regular/Rest/Light
-- [ ] Toggles/Switch/On/Small/Disabled/Dark
-- [ ] Toggles/Switch/On/Small/Disabled/Light
-- [ ] Toggles/Switch/On/Small/Dragging/Dark
-- [ ] Toggles/Switch/On/Small/Dragging/Light
-- [ ] Toggles/Switch/On/Small/Focused/Dark
-- [ ] Toggles/Switch/On/Small/Focused/Light
-- [ ] Toggles/Switch/On/Small/Hover/Dark
-- [ ] Toggles/Switch/On/Small/Hover/Light
-- [ ] Toggles/Switch/On/Small/Pressed/Dark
-- [ ] Toggles/Switch/On/Small/Pressed/Light
-- [ ] Toggles/Switch/On/Small/Rest/Dark
-- [ ] Toggles/Switch/On/Small/Rest/Light
-- [ ] Toggles/Switch/With Label/Off/Disabled/Dark
-- [ ] Toggles/Switch/With Label/Off/Disabled/Light
-- [ ] Toggles/Switch/With Label/Off/Focused/Dark
-- [ ] Toggles/Switch/With Label/Off/Focused/Light
-- [ ] Toggles/Switch/With Label/Off/Hover/Dark
-- [ ] Toggles/Switch/With Label/Off/Hover/Light
-- [ ] Toggles/Switch/With Label/Off/Pressed/Dark
-- [ ] Toggles/Switch/With Label/Off/Pressed/Light
-- [ ] Toggles/Switch/With Label/Off/Rest/Dark
-- [ ] Toggles/Switch/With Label/Off/Rest/Light
-- [ ] Toggles/Switch/With Label/On/Disabled/Dark
-- [ ] Toggles/Switch/With Label/On/Disabled/Light
-- [ ] Toggles/Switch/With Label/On/Focused/Dark
-- [ ] Toggles/Switch/With Label/On/Focused/Light
-- [ ] Toggles/Switch/With Label/On/Hover/Dark
-- [ ] Toggles/Switch/With Label/On/Hover/Light
-- [ ] Toggles/Switch/With Label/On/Pressed/Dark
-- [ ] Toggles/Switch/With Label/On/Pressed/Light
-- [ ] Toggles/Switch/With Label/On/Rest/Dark
-- [ ] Toggles/Switch/With Label/On/Rest/Light
+- [x] Toggles/Switch/Off/Mini/Disabled/Dark
+- [x] Toggles/Switch/Off/Mini/Disabled/Light
+- [x] Toggles/Switch/Off/Mini/Dragging/Dark
+- [x] Toggles/Switch/Off/Mini/Dragging/Light
+- [x] Toggles/Switch/Off/Mini/Focused/Dark
+- [x] Toggles/Switch/Off/Mini/Focused/Light
+- [x] Toggles/Switch/Off/Mini/Hover/Dark
+- [x] Toggles/Switch/Off/Mini/Hover/Light
+- [x] Toggles/Switch/Off/Mini/Pressed/Dark
+- [x] Toggles/Switch/Off/Mini/Pressed/Light
+- [x] Toggles/Switch/Off/Mini/Rest/Dark
+- [x] Toggles/Switch/Off/Mini/Rest/Light
+- [x] Toggles/Switch/Off/Regular/Disabled/Dark
+- [x] Toggles/Switch/Off/Regular/Disabled/Light
+- [x] Toggles/Switch/Off/Regular/Dragging/Dark
+- [x] Toggles/Switch/Off/Regular/Dragging/Light
+- [x] Toggles/Switch/Off/Regular/Focused/Dark
+- [x] Toggles/Switch/Off/Regular/Focused/Light
+- [x] Toggles/Switch/Off/Regular/Hover/Dark
+- [x] Toggles/Switch/Off/Regular/Hover/Light
+- [x] Toggles/Switch/Off/Regular/Pressed/Dark
+- [x] Toggles/Switch/Off/Regular/Pressed/Light
+- [x] Toggles/Switch/Off/Regular/Rest/Dark
+- [x] Toggles/Switch/Off/Regular/Rest/Light
+- [x] Toggles/Switch/Off/Small/Disabled/Dark
+- [x] Toggles/Switch/Off/Small/Disabled/Light
+- [x] Toggles/Switch/Off/Small/Dragging/Dark
+- [x] Toggles/Switch/Off/Small/Dragging/Light
+- [x] Toggles/Switch/Off/Small/Focused/Dark
+- [x] Toggles/Switch/Off/Small/Focused/Light
+- [x] Toggles/Switch/Off/Small/Hover/Dark
+- [x] Toggles/Switch/Off/Small/Hover/Light
+- [x] Toggles/Switch/Off/Small/Pressed/Dark
+- [x] Toggles/Switch/Off/Small/Pressed/Light
+- [x] Toggles/Switch/Off/Small/Rest/Dark
+- [x] Toggles/Switch/Off/Small/Rest/Light
+- [x] Toggles/Switch/On/Mini/Disabled/Dark
+- [x] Toggles/Switch/On/Mini/Disabled/Light
+- [x] Toggles/Switch/On/Mini/Dragging/Dark
+- [x] Toggles/Switch/On/Mini/Dragging/Light
+- [x] Toggles/Switch/On/Mini/Focused/Dark
+- [x] Toggles/Switch/On/Mini/Focused/Light
+- [x] Toggles/Switch/On/Mini/Hover/Dark
+- [x] Toggles/Switch/On/Mini/Hover/Light
+- [x] Toggles/Switch/On/Mini/Pressed/Dark
+- [x] Toggles/Switch/On/Mini/Pressed/Light
+- [x] Toggles/Switch/On/Mini/Rest/Dark
+- [x] Toggles/Switch/On/Mini/Rest/Light
+- [x] Toggles/Switch/On/Regular/Disabled/Dark
+- [x] Toggles/Switch/On/Regular/Disabled/Light
+- [x] Toggles/Switch/On/Regular/Dragging/Dark
+- [x] Toggles/Switch/On/Regular/Dragging/Light
+- [x] Toggles/Switch/On/Regular/Focused/Dark
+- [x] Toggles/Switch/On/Regular/Focused/Light
+- [x] Toggles/Switch/On/Regular/Hover/Dark
+- [x] Toggles/Switch/On/Regular/Hover/Light
+- [x] Toggles/Switch/On/Regular/Pressed/Dark
+- [x] Toggles/Switch/On/Regular/Pressed/Light
+- [x] Toggles/Switch/On/Regular/Rest/Dark
+- [x] Toggles/Switch/On/Regular/Rest/Light
+- [x] Toggles/Switch/On/Small/Disabled/Dark
+- [x] Toggles/Switch/On/Small/Disabled/Light
+- [x] Toggles/Switch/On/Small/Dragging/Dark
+- [x] Toggles/Switch/On/Small/Dragging/Light
+- [x] Toggles/Switch/On/Small/Focused/Dark
+- [x] Toggles/Switch/On/Small/Focused/Light
+- [x] Toggles/Switch/On/Small/Hover/Dark
+- [x] Toggles/Switch/On/Small/Hover/Light
+- [x] Toggles/Switch/On/Small/Pressed/Dark
+- [x] Toggles/Switch/On/Small/Pressed/Light
+- [x] Toggles/Switch/On/Small/Rest/Dark
+- [x] Toggles/Switch/On/Small/Rest/Light
+- [x] Toggles/Switch/With Label/Off/Disabled/Dark
+- [x] Toggles/Switch/With Label/Off/Disabled/Light
+- [x] Toggles/Switch/With Label/Off/Focused/Dark
+- [x] Toggles/Switch/With Label/Off/Focused/Light
+- [x] Toggles/Switch/With Label/Off/Hover/Dark
+- [x] Toggles/Switch/With Label/Off/Hover/Light
+- [x] Toggles/Switch/With Label/Off/Pressed/Dark
+- [x] Toggles/Switch/With Label/Off/Pressed/Light
+- [x] Toggles/Switch/With Label/Off/Rest/Dark
+- [x] Toggles/Switch/With Label/Off/Rest/Light
+- [x] Toggles/Switch/With Label/On/Disabled/Dark
+- [x] Toggles/Switch/With Label/On/Disabled/Light
+- [x] Toggles/Switch/With Label/On/Focused/Dark
+- [x] Toggles/Switch/With Label/On/Focused/Light
+- [x] Toggles/Switch/With Label/On/Hover/Dark
+- [x] Toggles/Switch/With Label/On/Hover/Light
+- [x] Toggles/Switch/With Label/On/Pressed/Dark
+- [x] Toggles/Switch/With Label/On/Pressed/Light
+- [x] Toggles/Switch/With Label/On/Rest/Dark
+- [x] Toggles/Switch/With Label/On/Rest/Light

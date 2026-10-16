@@ -23,6 +23,21 @@ AmalfiControlSize sizeOf(String name) => switch (name) {
   _ => AmalfiControlSize.large,
 };
 
+/// The corner deviations of [layers] (kit path → the radius the code draws) whose kit
+/// corners are a single radius: the kit export writes one value for a circle (`[8]`) where
+/// the harness compares four, so the test checks that value itself and lists the corners.
+Map<String, String> singleRadius(KitMaster master, Map<String, double> layers) {
+  final deviations = <String, String>{};
+  for (final MapEntry(key: path, value: radius) in layers.entries) {
+    if (master.layer(path).style?.corners?.radii case [final kit]) {
+      expect(kit, radius, reason: '$path: the kit radius');
+      deviations['$path#corners'] =
+          'kit export: one radius for four corners (harness request)';
+    }
+  }
+  return deviations;
+}
+
 void main() {
   setUpAll(loadAmalfiFonts);
 
@@ -43,9 +58,6 @@ void main() {
                 size: sizeOf(size),
                 onChanged: kitState.enabled ? (_) {} : null,
               );
-              // Kit defect: the Small glyphs keep the 24 pt stroke (1.5) at 12 pt; the Icon
-              // Kit rule scales it to 0.75 (README).
-              final thickGlyph = size == 'Small' && value != false;
               final glyph = value == null ? 'Glyph Dash' : 'Glyph Check';
               await checkKit(
                 tester,
@@ -61,11 +73,8 @@ void main() {
                   if (value != false)
                     glyph: layerOf(root, AmalfiLayerKeys.mark),
                 },
-                maskLayers: [if (thickGlyph) glyph],
-                maskMargin: 0,
                 tolerance: tolerance(
                   accentRim: kitState == KitState.hover && value == false,
-                  masked: thickGlyph,
                 ),
               );
             });
@@ -103,10 +112,6 @@ void main() {
         tester,
       ) async {
         final name = 'Toggles/Checkbox Group/List/Rest/$appearance';
-        // Kit defect: two rows keep a stale width (156) instead of their label's, and the
-        // group (172) is narrower than its widest row (168, which matches the code); the
-        // code sizes each row to its label and the group to its rows.
-        const rowWidth = 'kit rows keep stale instance widths';
         await checkKit(
           tester,
           name,
@@ -139,19 +144,20 @@ void main() {
             'Show hidden files': find.byKey(const ValueKey('b')),
             'Open folders in tabs': find.byKey(const ValueKey('c')),
           },
-          deviations: {
-            '#frame': rowWidth,
-            'Select all': rowWidth,
-            'Show hidden files': rowWidth,
-          },
-          // The rows are checked by their own masters; the overflowing kit row is cut.
-          pixels: false,
+          // The kit's last label overflows its text frame, which the text mask leaves
+          // out: the labels are masked to the group's edge.
+          mask: [
+            for (final y in [32.0, 56.0, 80.0])
+              Rect.fromLTRB(8 + 28, y, 184, y + 20),
+          ],
         );
       });
     }
   });
 
   group('radio', () {
+    const smallRadioRadius =
+        'kit Small radio overlay radius 7 (box: circle, 8)';
     for (final appearance in appearances) {
       for (final (variant, selected) in [('Off', false), ('On', true)]) {
         for (final size in ['Small', 'Regular', 'Large']) {
@@ -159,9 +165,16 @@ void main() {
             final name = 'Toggles/Radio/$variant/$size/$state/$appearance';
             testWidgets(name, (tester) async {
               final kitState = KitState.parse(state);
-              // Kit defect: the Small and Regular dots have radius 3 (a rounded square);
-              // the Large dot is a circle (radius 4). The code draws circles.
-              final squareDot = selected && size != 'Large';
+              final metrics = AmalfiToggleBoxMetrics.radio(sizeOf(size));
+              // Kit defect: the Small radio is a circle now, but its hover overlay and
+              // focus halo keep the old radius 7 (masked in the pixels).
+              final staleOverlay = size != 'Small'
+                  ? null
+                  : kitState == KitState.focused
+                  ? 'Focus Halo'
+                  : kitState == KitState.hover && selected
+                  ? 'State'
+                  : null;
               await checkKit(
                 tester,
                 name,
@@ -184,14 +197,17 @@ void main() {
                     ),
                 },
                 deviations: {
-                  if (squareDot)
-                    'Dot#corners': 'kit dot radius 3, not a circle',
+                  ...singleRadius(KitMaster.load(name), {
+                    'Box': metrics.radius,
+                    if (selected) 'Dot': metrics.markSize / 2,
+                  }),
+                  if (staleOverlay != null)
+                    '$staleOverlay#corners': smallRadioRadius,
                 },
-                maskLayers: [if (squareDot) 'Dot'],
-                maskMargin: 0,
+                maskLayers: [?staleOverlay],
                 tolerance: tolerance(
                   accentRim: kitState == KitState.hover && !selected,
-                  masked: squareDot,
+                  masked: staleOverlay != null,
                 ),
               );
             });
@@ -216,14 +232,14 @@ void main() {
                 'Radio box': layerOf(root, AmalfiLayerKeys.control),
                 'Label': layerOf(root, AmalfiLayerKeys.label),
               },
-              // Kit defect: the dot of the nested Regular radio (see above).
-              mask: [if (selected) const Rect.fromLTWH(8, 6, 8, 8)],
             );
           });
         }
       }
       testWidgets('Toggles/Radio Group/List/Rest/$appearance', (tester) async {
         final name = 'Toggles/Radio Group/List/Rest/$appearance';
+        // Kit defect: the rows keep a stale width (140); the code's rows are as wide as
+        // the widest of them (124, as `Toggles/Radio/With Label`).
         const rowWidth = 'kit rows keep stale instance widths (140)';
         await checkKit(
           tester,
@@ -255,21 +271,12 @@ void main() {
             'Heading':
                 'kit fixed-width heading frame 40 for "Order" (36 on the grid)',
           },
-          pixels: false,
         );
       });
     }
   });
 
   group('switch', () {
-    // Kit defect: the thumb is not inset evenly. At rest the kit puts it at x 0 (Mini,
-    // Small) or 4 (Regular) when off and flush with the right edge when on, while it is 2
-    // from the top and bottom; pressed, the Mini and Small thumbs do not stretch and move
-    // instead. The code insets the thumb 2 on every side and stretches it by 4 towards the
-    // middle when pressed.
-    const thumbDefect = 'kit thumb not inset evenly (code: 2 on every side)';
-    // Kit vs tokens: the disabled track and thumb are at 45 % opacity; the token
-    // `AmalfiStates.disabledOpacity` (content at 35 %) wins.
     for (final appearance in appearances) {
       for (final (variant, value) in [('Off', false), ('On', true)]) {
         for (final size in ['Mini', 'Small', 'Regular']) {
@@ -278,19 +285,6 @@ void main() {
             final name = 'Toggles/Switch/$variant/$size/$state/$appearance';
             testWidgets(name, (tester) async {
               final kitState = KitState.parse(state);
-              final master = KitMaster.load(name);
-              // Both thumbs (the kit's and the code's) are left out of the pixels.
-              final kitThumb = master.layer('Thumb').rectInMaster;
-              final stretch = kitState == KitState.pressed
-                  ? AmalfiSwitchMetrics.pressedStretch
-                  : 0.0;
-              final x = metrics.restX(value) - (value ? stretch : 0);
-              final ours = Rect.fromLTWH(
-                x,
-                metrics.inset,
-                metrics.thumb + stretch,
-                metrics.thumb,
-              );
               await checkKit(
                 tester,
                 name,
@@ -308,12 +302,6 @@ void main() {
                     'Focus Halo': layerOf(root, AmalfiLayerKeys.focusHalo),
                   'Thumb': layerOf(root, AmalfiLayerKeys.thumb),
                 },
-                deviations: {'Thumb': thumbDefect},
-                mask: [kitThumb.expandToInclude(ours).inflate(2)],
-                // What is left beside the masked thumb is mostly the track's edge.
-                tolerance: tolerance(masked: true),
-                // Disabled: the opacity differs from the kit (see above).
-                pixels: kitState.enabled,
               );
             });
           }
@@ -352,7 +340,6 @@ void main() {
 
             final root = await pumpKitScene(tester, widget, master: master);
             await drag(tester);
-            final regular = size == 'Regular';
             expectKitGeometry(
               tester,
               master,
@@ -362,11 +349,6 @@ void main() {
                 'Lens': layerOf(root, AmalfiLayerKeys.lens),
               },
               deviations: {
-                if (regular)
-                  'Lens':
-                      'kit lens 32 (thumb + 12); materials.md: thumb + 8 = 28',
-                'Lens#corners':
-                    'kit lens radius = side / 2 − 1; materials.md: capsule',
                 'Lens#blurs':
                     'kit encodes the Clear lens as a Glass blur, not Background',
               },
@@ -390,8 +372,6 @@ void main() {
           testWidgets(name, (tester) async {
             final kitState = KitState.parse(state);
             final master = KitMaster.load(name);
-            final at = master.layer('Switch').rectInMaster.topLeft;
-            final metrics = AmalfiSwitchMetrics.of(AmalfiControlSize.regular);
             await checkKit(
               tester,
               name,
@@ -412,16 +392,6 @@ void main() {
                 'Switch': layerOf(root, AmalfiLayerKeys.control),
                 'Label': layerOf(root, AmalfiLayerKeys.label),
               },
-              // The nested switch's thumb (see the switch's kit defect).
-              mask: [
-                Rect.fromLTWH(
-                  at.dx,
-                  at.dy,
-                  metrics.track.width,
-                  metrics.track.height,
-                ).deflate(1),
-              ],
-              pixels: kitState.enabled,
             );
           });
         }
