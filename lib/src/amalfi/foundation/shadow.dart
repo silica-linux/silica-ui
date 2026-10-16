@@ -20,11 +20,7 @@ double amalfiShadowSigma(double blur) => blur / 2;
 /// ([AmalfiShadows.level1]), `Shadow/1`, 0, 1, blur 2, as the kit draws it since
 /// silica-design 747ea80.
 List<BoxShadow> amalfiControlShadows(AmalfiColors colors) => [
-  BoxShadow(
-    color: colors.shadow1,
-    offset: const Offset(0, 1),
-    blurRadius: 2,
-  ),
+  BoxShadow(color: colors.shadow1, offset: const Offset(0, 1), blurRadius: 2),
 ];
 
 /// [shape] grown by [delta] on every side, for a shadow's spread: an [AmalfiSmoothBorder]

@@ -198,8 +198,10 @@ class AmalfiButtonSurface extends StatelessWidget {
     }
     final hoverOverlay = look.hoverOverlay;
     final pressOverlay = look.pressOverlay;
+    // Given more room than its content (a footer's minimum width), the content centres.
     final stack = Stack(
       clipBehavior: Clip.none,
+      alignment: Alignment.center,
       children: [
         if (back != null) Positioned.fill(child: back),
         if (hoverOverlay != null && hover > 0)

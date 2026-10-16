@@ -160,6 +160,8 @@ class AmalfiPushButton extends StatelessWidget {
                     child: AmalfiWholePoints(
                       step: AmalfiPushButtonMetrics.labelStep,
                       heightStep: 1,
+                      // The kit centres the label in its frame.
+                      alignment: Alignment.topCenter,
                       child: Text(
                         label,
                         maxLines: 1,

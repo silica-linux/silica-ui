@@ -7,7 +7,8 @@ import 'package:flutter/widgets.dart';
 
 /// Sizes [child] as it wants, then rounds its width up to a multiple of [step] points and its
 /// height up to a multiple of [heightStep] (by default [step] too), within the constraints.
-/// The child is laid out at its own size, at the top left.
+/// The child is laid out at its own size, placed by [alignment] (top left by default; a
+/// centred label is `Alignment.topCenter`, as the kit centres button labels in their frames).
 ///
 /// Use it around text whose box decides the layout: `AmalfiWholePoints(child: Text(…))`.
 /// With `step: AmalfiGrid.base` the box lands on the 4 pt grid, as the kit draws the text
@@ -20,6 +21,7 @@ class AmalfiWholePoints extends SingleChildRenderObjectWidget {
     super.key,
     this.step = 1,
     this.heightStep,
+    this.alignment = Alignment.topLeft,
     super.child,
   }) : assert(step > 0),
        assert(heightStep == null || heightStep > 0);
@@ -30,9 +32,12 @@ class AmalfiWholePoints extends SingleChildRenderObjectWidget {
   /// The rounding step of the height, in points; null: [step].
   final double? heightStep;
 
+  /// Where the child sits in the rounded box.
+  final Alignment alignment;
+
   @override
   RenderObject createRenderObject(BuildContext context) =>
-      _RenderWholePoints(step, heightStep ?? step);
+      _RenderWholePoints(step, heightStep ?? step, alignment);
 
   @override
   void updateRenderObject(
@@ -41,7 +46,8 @@ class AmalfiWholePoints extends SingleChildRenderObjectWidget {
   ) {
     renderObject
       ..step = step
-      ..heightStep = heightStep ?? step;
+      ..heightStep = heightStep ?? step
+      ..alignment = alignment;
   }
 }
 
@@ -50,8 +56,16 @@ double ceilToWholePoints(double x, [double step = 1]) => x.isFinite
     ? ((x - 1e-3) / step).ceilToDouble().clamp(0, double.infinity) * step
     : x;
 
-class _RenderWholePoints extends RenderProxyBox {
-  _RenderWholePoints(this._step, this._heightStep);
+class _RenderWholePoints extends RenderShiftedBox {
+  _RenderWholePoints(this._step, this._heightStep, this._alignment)
+    : super(null);
+
+  Alignment _alignment;
+  set alignment(Alignment value) {
+    if (value == _alignment) return;
+    _alignment = value;
+    markNeedsLayout();
+  }
 
   double _step;
   set step(double value) {
@@ -82,6 +96,9 @@ class _RenderWholePoints extends RenderProxyBox {
     }
     child.layout(constraints, parentUsesSize: true);
     size = constraints.constrain(_round(child.size));
+    (child.parentData! as BoxParentData).offset = _alignment.alongOffset(
+      size - child.size as Offset,
+    );
   }
 
   @override
@@ -106,8 +123,4 @@ class _RenderWholePoints extends RenderProxyBox {
   @override
   double computeMaxIntrinsicHeight(double width) =>
       _ceilHeight(super.computeMaxIntrinsicHeight(width));
-
-  @override
-  double? computeDistanceToActualBaseline(TextBaseline baseline) =>
-      child?.getDistanceToActualBaseline(baseline);
 }

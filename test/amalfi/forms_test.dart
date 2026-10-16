@@ -235,18 +235,10 @@ List<FormCase> cases() => [
       'Value/Message': find.text(invalid),
     },
   ),
-  FormCase(
-    'Forms/Footer/Actions/Rest',
-    SizedBox(width: 352, child: footer()),
-    {
-      'Cancel': find.byType(AmalfiPushButton).at(0),
-      'Save': find.byType(AmalfiPushButton).at(1),
-    },
-    // The push button stretched to the footer's 72 pt minimum keeps its label at the
-    // leading padding, the kit centres it ("Save", 56 pt of content): masked until the
-    // buttons family centres it (requested).
-    mask: const [Rect.fromLTWH(292, 5, 48, 18)],
-  ),
+  FormCase('Forms/Footer/Actions/Rest', SizedBox(width: 352, child: footer()), {
+    'Cancel': find.byType(AmalfiPushButton).at(0),
+    'Save': find.byType(AmalfiPushButton).at(1),
+  }),
   FormCase(
     'Forms/Section/Profile/Rest',
     profile(),
