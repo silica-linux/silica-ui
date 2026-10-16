@@ -104,7 +104,8 @@ final class AmalfiWindowControl {
   final double rimWidth;
 }
 
-/// The refraction of a lens material (`Glass/Clear`).
+/// The refraction of a glass material: a lens (`Glass/Clear`, which also magnifies) or the edge
+/// refraction of `Glass/Regular` and `Glass/Thick` (magnification 1).
 @immutable
 final class AmalfiRefraction {
   const AmalfiRefraction({
@@ -194,10 +195,10 @@ final class AmalfiGlassMaterial {
   /// Whether the material is a lens (it refracts and magnifies what is under it).
   final bool lens;
 
-  /// The lens refraction; null for a material that is not a lens.
+  /// The refraction; null for a material that does not refract.
   final AmalfiRefraction? refraction;
 
-  /// Whether the lens draws specular highlights along its top edge.
+  /// Whether the material draws specular highlights along its rim.
   final bool specularHighlights;
 
   /// The brightness factor of what is under the material, light appearance (1 = unchanged).

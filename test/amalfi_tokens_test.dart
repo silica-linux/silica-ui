@@ -338,7 +338,25 @@ void main() {
       _hex(_obj(regular['tint'])['dark'] as String),
     );
     expect(AmalfiMaterials.regular.shadowLevel, 2);
-    expect(AmalfiMaterials.thick.backgroundBlur, 16);
+    expect(AmalfiMaterials.thick.backgroundBlur, 10);
+    // Regular and Thick are real glass: edge refraction, specular rim, brightness.
+    final regularRefraction = AmalfiMaterials.regular.refraction!;
+    expect(regularRefraction.distortion, 0.3);
+    expect(regularRefraction.depth, 0.35);
+    expect(regularRefraction.chromaticAberration, 0.03);
+    expect(regularRefraction.magnification, 1);
+    expect(AmalfiMaterials.regular.lens, isFalse);
+    expect(AmalfiMaterials.regular.specularHighlights, isTrue);
+    expect(AmalfiMaterials.regular.brightnessLight, 1.25);
+    expect(AmalfiMaterials.regular.brightnessDark, 1.1);
+    final thickRefraction = AmalfiMaterials.thick.refraction!;
+    expect(thickRefraction.distortion, 0.22);
+    expect(thickRefraction.depth, 0.28);
+    expect(thickRefraction.chromaticAberration, 0.015);
+    expect(AmalfiMaterials.thick.specularHighlights, isTrue);
+    expect(AmalfiMaterials.thick.brightnessLight, 1.12);
+    expect(AmalfiMaterials.thick.brightnessDark, 1.05);
+    expect(AmalfiMaterials.thick.saturation, 1.1);
     expect(AmalfiMaterials.thick.shadowLevel, 3);
     expect(
       AmalfiMaterials.thick.tint(Brightness.light),

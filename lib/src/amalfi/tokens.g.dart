@@ -724,7 +724,7 @@ final class AmalfiColors {
   /// `Glass/Tint`: light `#FFFFFF99`, dark `#2A2B3099`.
   final Color glassTint;
 
-  /// `Glass/Tint Thick`: light `#FFFFFFC2`, dark `#2A2B30C2`.
+  /// `Glass/Tint Thick`: light `#FFFFFF94`, dark `#2A2B3094`.
   final Color glassTintThick;
 
   /// `Glass/Rim Light`: light `#FFFFFFB3`, dark `#FFFFFF38`.
@@ -801,7 +801,7 @@ final class AmalfiColors {
     lineBorder: Color(0x241D1E21),
     lineFocus: Color(0x730E77E6),
     glassTint: Color(0x99FFFFFF),
-    glassTintThick: Color(0xC2FFFFFF),
+    glassTintThick: Color(0x94FFFFFF),
     glassRimLight: Color(0xB3FFFFFF),
     glassRimDark: Color(0x1F000000),
     shadowSoft: Color(0x24000000),
@@ -846,7 +846,7 @@ final class AmalfiColors {
     lineBorder: Color(0x29F4F5F7),
     lineFocus: Color(0x733D95FF),
     glassTint: Color(0x992A2B30),
-    glassTintThick: Color(0xC22A2B30),
+    glassTintThick: Color(0x942A2B30),
     glassRimLight: Color(0x38FFFFFF),
     glassRimDark: Color(0x66000000),
     shadowSoft: Color(0x52000000),
@@ -1651,7 +1651,7 @@ abstract final class AmalfiMaterials {
   static const AmalfiGlassMaterial regular = AmalfiGlassMaterial(
     name: 'Glass/Regular',
     backgroundBlur: 6,
-    saturation: 1.5,
+    saturation: 1.1,
     tintLight: Color(0x99FFFFFF),
     tintDark: Color(0x992A2B30),
     rimInsideWidth: 1,
@@ -1663,19 +1663,24 @@ abstract final class AmalfiMaterials {
     rimLightDark: Color(0x38FFFFFF),
     shadowLevel: 2,
     lens: false,
-    refraction: null,
-    specularHighlights: false,
-    brightnessLight: 1,
-    brightnessDark: 1,
+    refraction: AmalfiRefraction(
+      distortion: 0.3,
+      depth: 0.35,
+      chromaticAberration: 0.03,
+      magnification: 1,
+    ),
+    specularHighlights: true,
+    brightnessLight: 1.25,
+    brightnessDark: 1.1,
   );
 
   /// `Glass/Thick`.
   static const AmalfiGlassMaterial thick = AmalfiGlassMaterial(
     name: 'Glass/Thick',
-    backgroundBlur: 16,
-    saturation: 1.5,
-    tintLight: Color(0xC2FFFFFF),
-    tintDark: Color(0xC22A2B30),
+    backgroundBlur: 10,
+    saturation: 1.1,
+    tintLight: Color(0x94FFFFFF),
+    tintDark: Color(0x942A2B30),
     rimInsideWidth: 1,
     rimInsideLight: Color(0x1F000000),
     rimInsideDark: Color(0x66000000),
@@ -1685,10 +1690,15 @@ abstract final class AmalfiMaterials {
     rimLightDark: Color(0x38FFFFFF),
     shadowLevel: 3,
     lens: false,
-    refraction: null,
-    specularHighlights: false,
-    brightnessLight: 1,
-    brightnessDark: 1,
+    refraction: AmalfiRefraction(
+      distortion: 0.22,
+      depth: 0.28,
+      chromaticAberration: 0.015,
+      magnification: 1,
+    ),
+    specularHighlights: true,
+    brightnessLight: 1.12,
+    brightnessDark: 1.05,
   );
 
   /// `Glass/Clear`.

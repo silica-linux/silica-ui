@@ -1401,13 +1401,15 @@ void _writeMaterials(
         'magnification',
       ];
       _onlyKeys(rr, keys.toSet(), '$path.refraction');
+      // The magnification belongs to a lens; the edge refraction of Regular and Thick has none.
+      if (!lens && rr.containsKey('magnification')) {
+        throw TokenError('$path.refraction: only a lens magnifies');
+      }
       refraction =
-          'AmalfiRefraction(${keys.map((k) => '$k: ${_num(_number(_field(rr, k, '$path.refraction'), '$path.refraction.$k'))}').join(', ')})';
+          'AmalfiRefraction(${keys.map((k) => '$k: ${_num(k == 'magnification' && !rr.containsKey(k) ? 1 : _number(_field(rr, k, '$path.refraction'), '$path.refraction.$k'))}').join(', ')})';
     }
-    if (lens != (r != null)) {
-      throw TokenError(
-        '$path: a lens has a refraction and only a lens has one',
-      );
+    if (lens && r == null) {
+      throw TokenError('$path: a lens has a refraction');
     }
     var brightnessLight = 1.0;
     var brightnessDark = 1.0;
