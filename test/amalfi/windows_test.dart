@@ -18,14 +18,6 @@ const String body =
     'Whisk the eggs with sugar until pale, fold in the flour, then the lemon zest and juice. '
     'Bake for forty minutes and let it cool before slicing.';
 
-/// Kit defect: the window shadow colour is not `shadows.3` (light `#24` / dark `#52` with
-/// level 3's offset and blur; the tokens give `#2E` / `#5C`, `materials.md`: windows use
-/// `shadows.3`).
-const Map<String, String> windowShadow = {
-  'Window shadow#shadows':
-      'kit window shadow colour #24 / #52, tokens shadows.3 #2E / #5C',
-};
-
 /// The sample content of a window: a Title 1 heading and a paragraph.
 Widget sampleContent({
   required EdgeInsets padding,
@@ -81,7 +73,7 @@ Map<String, Finder> frameLayers() {
 }
 
 /// A sidebar under a bar or a split toolbar (kit `Windows/Sidebar Body/Below Bar|Full`).
-Widget sidebarBody({required bool full, bool edge = false}) =>
+Widget sidebarBody({required bool full, bool edge = true}) =>
     AmalfiSidebarPanel(
       edge: edge,
       padding: EdgeInsets.fromLTRB(12, full ? 60 : 8, 12, 0),
@@ -146,7 +138,7 @@ Future<void> checkWindow(
           if (master.maybeLayer(e.key) != null) e.key: e.value,
       ...layers,
     },
-    deviations: {if (frame) ...windowShadow, ...deviations},
+    deviations: deviations,
   );
   await expectKitPixels(
     tester,
@@ -217,7 +209,7 @@ void main() {
                   inspector: inspector
                       ? SizedBox.expand(key: ValueKey('Inspector'))
                       : null,
-                  inspectorWidth: 220,
+                  inspectorWidth: AmalfiWindowMetrics.inspectorWidth,
                   content: sampleContent(
                     padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
                     gap: 12,
@@ -485,7 +477,6 @@ void main() {
               'Sidebar': find.byType(AmalfiSidebarPanel),
               'Sidebar toolbar': find.byKey(const ValueKey('Sidebar toolbar')),
               'Content toolbar': find.byKey(const ValueKey('Content toolbar')),
-              'Separator': find.byType(AmalfiWindowSeparator),
             },
             masks: ['Sidebar toolbar', 'Content toolbar'],
           );
@@ -604,7 +595,7 @@ void main() {
             tester,
             'Windows/Sidebar Body/$variant/$appearance',
             Size(240, full ? 600 : 548),
-            sidebarBody(full: full, edge: true),
+            sidebarBody(full: full),
             frame: false,
             layers: {
               'Surface': find.byType(ColoredBox).first,
@@ -623,6 +614,7 @@ void main() {
 AmalfiWindowColumn sidebarColumn() => AmalfiWindowColumn(
   width: AmalfiWindowMetrics.sidebarWidth,
   toolbarOverChild: true,
+  ownEdge: true,
   toolbar: AmalfiToolbar.sidebarSection(
     key: const ValueKey('Sidebar toolbar'),
     children: sidebarSectionPieces(),

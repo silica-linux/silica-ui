@@ -111,7 +111,7 @@ class AmalfiSidebarBadge extends StatelessWidget {
 ///
 /// Selected: `Accent/Amalfi Soft` capsule, the label in Body Emphasis and the icon in the
 /// accent. Under the pointer: a `Line/Separator` capsule. Disabled ([onTap] null and not
-/// [selected]): label and icon `Text/Tertiary`. Enter or Space activates a focused row.
+/// [selected]): the whole row at `AmalfiStates.disabledOpacity`. Enter or Space activates a focused row.
 class AmalfiSidebarRow extends StatefulWidget {
   const AmalfiSidebarRow({
     super.key,
@@ -151,14 +151,8 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
     final enabled = widget.enabled;
     final selected = widget.selected && enabled;
     final hovered = _hovered && enabled && !selected;
-    final iconColor = !enabled
-        ? colors.textTertiary
-        : selected
-        ? colors.accentAmalfi
-        : colors.textSecondary;
-    final labelStyle = !enabled
-        ? AmalfiType.body(color: colors.textTertiary)
-        : selected
+    final iconColor = selected ? colors.accentAmalfi : colors.textSecondary;
+    final labelStyle = selected
         ? AmalfiType.bodyEmphasis(color: colors.textPrimary)
         : AmalfiType.body(color: colors.textPrimary);
     final icon = widget.icon;
@@ -223,7 +217,9 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
         }),
         builder: (context, _) => SizedBox(
           height: AmalfiSidebarMetrics.rowHeight,
-          child: _focused && enabled
+          child: !enabled
+              ? Opacity(opacity: AmalfiStates.disabledOpacity, child: row)
+              : _focused
               ? Stack(
                   fit: StackFit.passthrough,
                   children: [

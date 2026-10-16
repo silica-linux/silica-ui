@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 import '../specimen.dart';
-import 'menus.dart' show GalleryButton, GalleryGlyph;
 
 /// The popovers page.
 final AmalfiGalleryPage popoversPage = AmalfiGalleryPage(
@@ -14,61 +13,64 @@ final AmalfiGalleryPage popoversPage = AmalfiGalleryPage(
   build: (context) => const _PopoversPage(),
 );
 
-/// A 228 × 28 text field standing in for the fields family until it exists.
-class _FieldStandIn extends StatelessWidget {
-  const _FieldStandIn();
+/// The form's name field, filled as in the kit.
+class _NameField extends StatefulWidget {
+  const _NameField();
 
   @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    return Container(
-      height: 28,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      alignment: Alignment.centerLeft,
-      decoration: ShapeDecoration(
-        color: colors.surfaceRaised,
-        shape: AmalfiSmoothBorder(
-          radius: AmalfiRadii.field,
-          side: BorderSide(color: colors.lineBorder),
-        ),
-      ),
-      child: Text(
-        'Amalfi coast',
-        style: AmalfiType.body(color: colors.textPrimary),
-      ),
-    );
-  }
+  State<_NameField> createState() => _NameFieldState();
 }
+
+class _NameFieldState extends State<_NameField> {
+  final _controller = TextEditingController(text: 'Amalfi coast');
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      AmalfiTextField(controller: _controller, width: 228);
+}
+
+void _pressed() {}
 
 Widget _content(String variant) => switch (variant) {
   'Form' => const AmalfiPopoverForm(
     title: 'New collection',
-    field: _FieldStandIn(),
-    actions: [GalleryButton('Cancel'), GalleryButton('Create', primary: true)],
+    field: _NameField(),
+    actions: [
+      AmalfiPushButton(
+        label: 'Cancel',
+        size: AmalfiControlSize.small,
+        onPressed: _pressed,
+      ),
+      AmalfiPushButton(
+        label: 'Create',
+        variant: AmalfiPushButtonVariant.primary,
+        size: AmalfiControlSize.small,
+        onPressed: _pressed,
+      ),
+    ],
   ),
   'List' => const AmalfiPopoverList(
     entries: [
       AmalfiMenuSection('Open in'),
-      AmalfiMenuAction('Recents', icon: GalleryGlyph()),
-      AmalfiMenuAction('Downloads', icon: GalleryGlyph()),
-      AmalfiMenuAction('Pictures', icon: GalleryGlyph()),
+      AmalfiMenuAction('Recents', icon: AmalfiSymbol('clock', size: 16)),
+      AmalfiMenuAction(
+        'Downloads',
+        icon: AmalfiSymbol('arrow-down-circle', size: 16),
+      ),
+      AmalfiMenuAction('Pictures', icon: AmalfiSymbol('photo', size: 16)),
     ],
   ),
-  _ => AmalfiPopoverText(
+  _ => const AmalfiPopoverText(
     title: 'About this ingredient',
     body:
         'Olive oil keeps the crust tender and adds a peppery note. Use a mild, fruity one for sweet bakes.',
-    action: Builder(
-      builder: (context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-        child: Text(
-          'Learn more',
-          style: AmalfiType.body(
-            color: AmalfiTheme.of(context).colors.accentAmalfi,
-          ),
-        ),
-      ),
-    ),
+    action: AmalfiLinkButton(label: 'Learn more', onPressed: _pressed),
   ),
 };
 
@@ -116,8 +118,8 @@ class _PopoversPage extends StatelessWidget {
             Specimen(
               label: _name(placement.name),
               child: Builder(
-                builder: (context) => GalleryButton(
-                  'Show',
+                builder: (context) => AmalfiPushButton(
+                  label: 'Show',
                   onPressed: () {
                     final box = context.findRenderObject();
                     if (box is! RenderBox) return;

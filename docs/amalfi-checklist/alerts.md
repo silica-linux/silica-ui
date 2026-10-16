@@ -6,15 +6,15 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Alerts/Alert
 
-- [ ] Alerts/Alert/Critical/Rest/Dark
-- [ ] Alerts/Alert/Critical/Rest/Light
-- [ ] Alerts/Alert/Glass/Rest/Dark
-- [ ] Alerts/Alert/Glass/Rest/Light
-- [ ] Alerts/Alert/One Button/Rest/Dark
-- [ ] Alerts/Alert/One Button/Rest/Light
-- [ ] Alerts/Alert/Three Buttons/Rest/Dark
-- [ ] Alerts/Alert/Three Buttons/Rest/Light
-- [ ] Alerts/Alert/Two Buttons/Rest/Dark
-- [ ] Alerts/Alert/Two Buttons/Rest/Light
-- [ ] Alerts/Alert/With Field/Rest/Dark
-- [ ] Alerts/Alert/With Field/Rest/Light
+- [x] Alerts/Alert/Critical/Rest/Dark
+- [x] Alerts/Alert/Critical/Rest/Light
+- [x] Alerts/Alert/Glass/Rest/Dark
+- [x] Alerts/Alert/Glass/Rest/Light
+- [x] Alerts/Alert/One Button/Rest/Dark
+- [x] Alerts/Alert/One Button/Rest/Light
+- [x] Alerts/Alert/Three Buttons/Rest/Dark
+- [x] Alerts/Alert/Three Buttons/Rest/Light
+- [x] Alerts/Alert/Two Buttons/Rest/Dark
+- [x] Alerts/Alert/Two Buttons/Rest/Light
+- [x] Alerts/Alert/With Field/Rest/Dark
+- [x] Alerts/Alert/With Field/Rest/Light

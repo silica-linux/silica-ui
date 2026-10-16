@@ -1,61 +1,128 @@
 // Dialogs against the kit (`Dialogs/*`). Checklist: docs/amalfi-checklist/dialogs.md.
 //
-// Layout only: the rows (form rows, sidebar groups and rows, push buttons) belong to other
-// families and are stood in for by boxes of their size, masked out of the pixel tests.
+// The buttons, the places group and the file rows are the real controls, compared with the
+// kit's nested masters in the dialog's pixels. The form rows and sections (`Forms/*`) are
+// another family's composites: boxes of their size here, masked out of the pixel tests.
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 
-import 'alerts_test.dart' show StandIn, standIn;
 import 'menus_support.dart';
 import 'support/harness.dart';
 
-const _openFooter = AmalfiDialogFooter(
-  actions: [StandIn('Cancel', 72, 28), StandIn('Open', 72, 28)],
+/// A box the size of a form row or section (`Forms/*`), masked out of the pixel tests.
+class StandIn extends StatelessWidget {
+  const StandIn(this.name, this.width, this.height, {super.key});
+
+  final String name;
+  final double width, height;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(width: width, height: height);
+}
+
+Finder standIn(String name) =>
+    find.byWidgetPredicate((w) => w is StandIn && w.name == name);
+
+Finder keyed(String name) => find.byKey(ValueKey(name));
+
+AmalfiPushButton _button(String label, {bool primary = false}) =>
+    AmalfiPushButton(
+      key: ValueKey(label),
+      label: label,
+      variant: primary
+          ? AmalfiPushButtonVariant.primary
+          : AmalfiPushButtonVariant.secondary,
+      onPressed: () {},
+    );
+
+final _openFooter = AmalfiDialogFooter(
+  actions: [_button('Cancel'), _button('Open', primary: true)],
 );
 
-const _saveFooter = AmalfiDialogFooter(
-  leading: [StandIn('New Folder', 96, 28)],
-  actions: [StandIn('Cancel', 72, 28), StandIn('Save', 72, 28)],
+final _saveFooter = AmalfiDialogFooter(
+  leading: [_button('New Folder')],
+  actions: [_button('Cancel'), _button('Save', primary: true)],
 );
 
-const _browser = AmalfiDialogBrowser(
+const _files = ['Lemon cake.recipe', 'Focaccia.recipe', 'Limoncello notes.txt'];
+
+final _browser = AmalfiDialogBrowser(
   places: Align(
     alignment: Alignment.topLeft,
-    child: StandIn('Places group', 200, 112),
+    child: AmalfiSidebarGroup(
+      key: const ValueKey('Places group'),
+      title: 'Places',
+      expanded: true,
+      onToggle: () {},
+      children: [
+        AmalfiSidebarRow(
+          label: 'Documents',
+          icon: AmalfiGlyphs.doc,
+          onTap: () {},
+        ),
+        AmalfiSidebarRow(
+          label: 'Downloads',
+          icon: AmalfiGlyphs.download,
+          badge: '3',
+          onTap: () {},
+        ),
+        AmalfiSidebarRow(
+          label: 'Pictures',
+          icon: AmalfiGlyphs.photo,
+          onTap: () {},
+        ),
+      ],
+    ),
   ),
   files: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      StandIn('Lemon cake.recipe', 216, 28),
-      StandIn('Focaccia.recipe', 216, 28),
-      StandIn('Limoncello notes.txt', 216, 28),
+      for (final f in _files)
+        AmalfiSidebarRow(
+          key: ValueKey(f),
+          label: f,
+          icon: AmalfiGlyphs.doc,
+          selected: f == _files.first,
+          onTap: () {},
+        ),
     ],
   ),
 );
 
-/// The kit's places group is 216 wide inside a 216 pane with 8 of padding; the code gives it
-/// the pane's inside (200).
-const _placesOverflow = 'kit places group 216 wide in a 200 pt inside';
+/// components.md: sidebar rows on a 32 pt pitch; the kit's `Sidebars/Group/Open` stacks
+/// them with no gap (see sidebars_test.dart), so the group is 124 tall, not 112.
+const _rowPitch =
+    'components.md row pitch 32 (gap 4); the kit stacks the group with gap 0';
 
-const _open = AmalfiDialog(
+final _open = AmalfiDialog(
   title: 'Open recipe',
-  children: [StandIn('Look in', 272, 28), _browser],
+  children: [const StandIn('Look in', 272, 28), _browser],
   footer: _openFooter,
 );
 
-const _save = AmalfiDialog(
+final _save = AmalfiDialog(
   title: 'Save as',
-  children: [StandIn('Save as', 348, 28), StandIn('Where', 264, 28), _browser],
+  children: [
+    const StandIn('Save as', 348, 28),
+    const StandIn('Where', 264, 28),
+    _browser,
+  ],
   footer: _saveFooter,
 );
 
-const _generic = AmalfiDialog(
+final _generic = AmalfiDialog(
   title: 'Share recipe',
   layout: AmalfiDialogLayout.generic,
-  children: [StandIn('Profile', 352, 156), StandIn('Preferences', 324, 116)],
-  footer: StandIn('Footer', 352, 28),
+  children: const [
+    StandIn('Profile', 352, 156),
+    StandIn('Preferences', 352, 116),
+  ],
+  footer: AmalfiDialogFooter(
+    key: const ValueKey('Footer'),
+    actions: [_button('Cancel'), _button('Save', primary: true)],
+  ),
 );
 
 Finder _dialogTitle(String text) => find
@@ -74,47 +141,48 @@ void main() {
     group('kit $appearance', () {
       testWidgets('Footer Open', (tester) async {
         final master = KitMaster.load('Dialogs/Footer/Open/Rest/$appearance');
-        const scene = SizedBox(width: 560, child: _openFooter);
+        final scene = SizedBox(width: 560, child: _openFooter);
         final root = await pumpKitScene(tester, scene, master: master);
         expectKitGeometry(
           tester,
           master,
           root: root,
-          layers: {'Cancel': standIn('Cancel'), 'Open': standIn('Open')},
+          layers: {'Cancel': keyed('Cancel'), 'Open': keyed('Open')},
         );
-        await expectKitPixels(
-          tester,
-          master,
-          scene,
-          maskLayers: ['Cancel', 'Open'],
-        );
+        await expectKitPixels(tester, master, scene, maskText: true);
       });
 
       testWidgets('Footer Save', (tester) async {
         final master = KitMaster.load('Dialogs/Footer/Save/Rest/$appearance');
-        const scene = SizedBox(width: 560, child: _saveFooter);
+        final scene = SizedBox(width: 560, child: _saveFooter);
         final root = await pumpKitScene(tester, scene, master: master);
         expectKitGeometry(
           tester,
           master,
           root: root,
           layers: {
-            'New Folder': standIn('New Folder'),
-            'Cancel': standIn('Cancel'),
-            'Save': standIn('Save'),
+            'New Folder': keyed('New Folder'),
+            'Cancel': keyed('Cancel'),
+            'Save': keyed('Save'),
           },
         );
+        // The PNG starts 2 pt left of the frame (the New Folder button's shadow), not the
+        // 2.7 the frame and the shadow's blur give.
         await expectKitPixels(
           tester,
           master,
           scene,
-          maskLayers: ['New Folder', 'Cancel', 'Save'],
+          maskText: true,
+          // The masked text frames are the nested master's (`Button`, 48 wide): the rest
+          // of the overridden label `New Folder`.
+          mask: [const Rect.fromLTWH(12, 5, 72, 18)],
+          origin: const Offset(2, 1),
         );
       });
 
       testWidgets('Browser Files', (tester) async {
         final master = KitMaster.load('Dialogs/Browser/Files/Rest/$appearance');
-        const scene = SizedBox(width: 560, child: _browser);
+        final scene = SizedBox(width: 560, child: _browser);
         final root = await pumpKitScene(tester, scene, master: master);
         final panes = find.byType(AmalfiAlertSurface);
         expectKitGeometry(
@@ -124,28 +192,21 @@ void main() {
           layers: {
             'Places': panes.first,
             'Places/Surface': panes.first,
-            'Places/Places group': standIn('Places group'),
+            'Places/Places group': keyed('Places group'),
             'File list': panes.last,
             'File list/Surface': panes.last,
-            for (final f in [
-              'Lemon cake.recipe',
-              'Focaccia.recipe',
-              'Limoncello notes.txt',
-            ])
-              'File list/$f': standIn(f),
+            for (final f in _files) 'File list/$f': keyed(f),
           },
-          deviations: {'Places/Places group': _placesOverflow},
+          deviations: {'Places/Places group': _rowPitch},
         );
+        // The places group's rows sit 4 apart in the code (see _rowPitch): its 128 pt
+        // (kit 112) left out.
         await expectKitPixels(
           tester,
           master,
           scene,
-          maskLayers: [
-            'Places/Places group',
-            'File list/Lemon cake.recipe',
-            'File list/Focaccia.recipe',
-            'File list/Limoncello notes.txt',
-          ],
+          maskText: true,
+          mask: [const Rect.fromLTWH(8, 8, 200, 128)],
           tolerance: largeCorners,
         );
       });
@@ -162,7 +223,7 @@ void main() {
           final root = await pumpKitScene(tester, dialog, master: master);
           Finder row(String r) => switch (r) {
             'Browser' => find.byType(AmalfiDialogBrowser),
-            'Footer' when name != 'Generic' => find.byType(AmalfiDialogFooter),
+            'Footer' => find.byType(AmalfiDialogFooter),
             _ => standIn(r),
           };
           expectKitGeometry(
@@ -174,11 +235,6 @@ void main() {
               'Title': _dialogTitle(dialog.title),
               for (final r in rows) r: row(r),
             },
-            deviations: {
-              if (name == 'Generic')
-                'Profile':
-                    'kit Profile section 372 wide in a 352 pt content (overflows)',
-            },
           );
           await expectKitPixels(
             tester,
@@ -187,8 +243,17 @@ void main() {
             maskText: true,
             maskLayers: [
               for (final r in rows)
-                if (r != 'Browser') r,
-              if (rows.contains('Browser')) 'Browser',
+                if (r != 'Browser' && r != 'Footer') r,
+            ],
+            mask: [
+              // The places group (see _rowPitch), inside the browser.
+              if (rows.contains('Browser'))
+                master.layer('Browser').rectInMaster.topLeft.translate(8, 8) &
+                    const Size(200, 128),
+              // The overridden label `New Folder` past the nested master's text frame.
+              if (name == 'Save Panel')
+                master.layer('Footer').rectInMaster.topLeft.translate(12, 5) &
+                    const Size(72, 18),
             ],
             tolerance: largeCorners,
           );

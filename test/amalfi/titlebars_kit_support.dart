@@ -357,14 +357,9 @@ const List<String> unifiedNames = [
 
 const List<String> unifiedMasked = ['Controls', 'Sidebar Toggle'];
 
-/// The unified bar of the kit (`Bar/Unified/Full Inset 8|16`).
-Widget unifiedBar({
-  bool? active,
-  EdgeInsets padding = AmalfiToolbarMetrics.unifiedPadding,
-  double? width,
-}) => AmalfiToolbar(
+/// The unified bar of the kit (`Bar/Unified/Full Inset 16`).
+Widget unifiedBar({bool? active}) => AmalfiToolbar(
   active: active,
-  padding: padding,
   children: [
     AmalfiControlsPiece(
       key: const ValueKey('Controls'),
@@ -510,17 +505,12 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
   ],
 );
 
-/// Kit defect: text layers with a fixed width are 4 wider than their text rounded up to the
-/// grid (the title "Lemon cake" is 76 in `Piece/Title`, 80 in `Piece/Title + Subtitle`), so
-/// the blocks around them are 4 wider too; we size every title the same way (76).
-const String fixedText =
-    'kit fixed-width text frame 4 wider than the text rounded to the 4 pt grid';
-
-/// Kit defect: the plain title bar's title block is 20 tall with the 18 pt title at its top
-/// (y 14); the document title bar centres it (y 15), as we do.
-const String plainTitleTop =
-    'kit plain title at y 14 (top of a 20 pt block); centred at y 15 as in Document; '
-    'also 4 narrower (fixed-width frame)';
+/// Kit defect: the subtitle "Edited today" of `Piece/Title + Subtitle` has a fixed-width
+/// frame 64 wide for 58.9 pt of text (the grid gives 60, as the other titlebar texts), the
+/// text at its left, so 2.5 pt left of the centre under the title.
+const String fixedSubtitle =
+    'kit fixed-width subtitle frame 64 for 58.9 pt of text, text not centred; ours rounded '
+    'to the grid (60) and centred';
 
 /// The separator along the bottom of a title bar (translucent `Line/Separator`).
 Finder titleBarEdge() => find.descendant(
@@ -534,11 +524,6 @@ Finder titleBarEdge() => find.descendant(
 Finder tabSurface() => find
     .descendant(of: find.byType(AmalfiTab), matching: find.byType(DecoratedBox))
     .first;
-
-/// Kit defect: the selected tab's shadow is `#00000024` / `#00000052` with level 1's offset
-/// and blur; the tokens' level 1 is `#1A000000` / `#33000000`.
-const String tabShadow =
-    'kit selected tab shadow colour is not shadows.1 (light #24 / dark #52 vs #1A / #33)';
 
 /// The track of the tab bar.
 Finder tabTrack() => find

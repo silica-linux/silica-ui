@@ -1,12 +1,11 @@
 // The surface of an Amalfi popover: Glass/Thick (`materials.md`: popovers on every edge and
-// detached are Thick, radius 16 — the kit's rebuilt popovers lost the glass), with an arrow
-// on one edge.
+// detached are Thick, radius 16; kit `Popovers/Popover/*`), with an arrow on one edge.
 //
-// The arrow is 8 deep with 45° flanks (16 at the base), its base corners rounded 4 and its
+// The arrow is 8 deep and 20 wide at the base (flanks at atan(8 / 10) ≈ 38.7°: the kit's
+// tangent lines through (30, 0), (20, 8) and (40, 8) on a top edge), its base corners rounded 4 and its
 // tip 3 (the kit's radii); its centre is 30 from the start or the end of its edge, or in the
-// middle (`Popovers/Popover/*/<Edge> Start|Center|End`). The kit draws the arrow ~9.85 deep
-// over a body cut short by 1.85, so the content sits 14 from the body on the arrow side and
-// 16 elsewhere; the code keeps the body edge 8 from the frame (content 16 from it).
+// middle (`Popovers/Popover/*/<Edge> Start|Center|End`). The body edge is 8 from the frame on
+// the arrow's side, as in the kit.
 
 import 'dart:math' as math;
 
@@ -52,8 +51,8 @@ abstract final class AmalfiPopoverMetrics {
   /// How far the arrow sticks out of the body.
   static const double arrowDepth = 8;
 
-  /// Half the width of the arrow's base (45° flanks).
-  static const double arrowHalfBase = 8;
+  /// Half the width of the arrow's base.
+  static const double arrowHalfBase = 10;
 
   /// The radius of the corners where the arrow meets the body.
   static const double arrowBaseRadius = 4;
@@ -67,8 +66,8 @@ abstract final class AmalfiPopoverMetrics {
   /// The space between the body's edge and the content (`Popovers/Popover/Form|Text`).
   static const EdgeInsets padding = EdgeInsets.all(16);
 
-  /// The space around a list (`Popovers/Popover/List`: 8, and 12 under the last row).
-  static const EdgeInsets listPadding = EdgeInsets.fromLTRB(8, 8, 8, 12);
+  /// The space around a list (`Popovers/Popover/List`: 8 on every side).
+  static const EdgeInsets listPadding = EdgeInsets.all(8);
 }
 
 /// The outline of a popover: a body with smooth corners and, unless [edge] is null
@@ -220,25 +219,26 @@ class AmalfiPopoverShape {
     const d = AmalfiPopoverMetrics.arrowDepth;
     const rb = AmalfiPopoverMetrics.arrowBaseRadius;
     const rt = AmalfiPopoverMetrics.arrowTipRadius;
-    // Tangent lengths: the base corners turn by 45°, the tip by 90°.
-    final tb = rb * math.tan(math.pi / 8);
-    const tt = rt; // rt × tan(45°)
-    final s = math.sqrt1_2;
+    // The flanks rise at θ from the base: the base corners turn by θ, the tip by 2θ.
+    final theta = math.atan2(d, h);
+    final tb = rb * math.tan(theta / 2);
+    final tt = rt * math.tan(theta);
+    final c = math.cos(theta), s = math.sin(theta);
     return Path()
       ..moveTo(-h - tb - 2, -1)
       ..lineTo(-h - tb - 2, 0)
       ..lineTo(-h - tb, 0)
       ..arcToPoint(
-        Offset(-h + tb * s, tb * s),
+        Offset(-h + tb * c, tb * s),
         radius: const Radius.circular(rb),
       )
-      ..lineTo(-tt * s, d - tt * s)
+      ..lineTo(-tt * c, d - tt * s)
       ..arcToPoint(
-        Offset(tt * s, d - tt * s),
+        Offset(tt * c, d - tt * s),
         radius: const Radius.circular(rt),
         clockwise: false,
       )
-      ..lineTo(h - tb * s, tb * s)
+      ..lineTo(h - tb * c, tb * s)
       ..arcToPoint(Offset(h + tb, 0), radius: const Radius.circular(rb))
       ..lineTo(h + tb + 2, 0)
       ..lineTo(h + tb + 2, -1)

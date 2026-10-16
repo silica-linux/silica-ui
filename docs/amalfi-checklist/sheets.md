@@ -8,5 +8,5 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Windows/Window
 
-- [ ] Windows/Window/Sheet Attached/Active/Dark
-- [ ] Windows/Window/Sheet Attached/Active/Light
+- [x] Windows/Window/Sheet Attached/Active/Dark
+- [x] Windows/Window/Sheet Attached/Active/Light

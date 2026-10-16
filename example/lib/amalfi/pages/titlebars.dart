@@ -348,22 +348,14 @@ class _TitlebarsPage extends StatelessWidget {
         title: 'Bar',
         children: [
           for (final active in [true, false])
-            for (final (inset, padding) in [
-              (8, AmalfiToolbarMetrics.unifiedPadding),
-              (16, AmalfiToolbarMetrics.unifiedPaddingWide),
-            ])
-              Specimen(
-                label:
-                    'Unified · Full Inset $inset · ${active ? 'Active' : 'Inactive'}',
-                child: SizedBox(
-                  width: 760,
-                  child: AmalfiToolbar(
-                    active: active,
-                    padding: padding,
-                    children: _unified(),
-                  ),
-                ),
+            Specimen(
+              label:
+                  'Unified · Full Inset 16 · ${active ? 'Active' : 'Inactive'}',
+              child: SizedBox(
+                width: 760,
+                child: AmalfiToolbar(active: active, children: _unified()),
               ),
+            ),
           for (final active in [true, false]) ...[
             Specimen(
               label: 'Compact · ${active ? 'Active' : 'Inactive'}',

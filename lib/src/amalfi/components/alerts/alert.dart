@@ -3,10 +3,11 @@
 // message left aligned, an optional accessory (a suppression checkbox, a field) and the
 // buttons centred at the bottom (stacked when there are three or more).
 //
-// Spacing: 24 above the icon, 20 at the sides and the bottom, 16 between the blocks. The kit
-// uses 14 (One Button, Critical, Glass), 16 (Two Buttons, With Field) and 12 (Three
-// Buttons), and its 16 masters are 8 shorter than their content; 16 is the one on the 4 pt
-// grid that most masters use.
+// Spacing (kit 747ea80): 24 above the icon, 20 at the sides, 16 between the blocks, at least
+// 20 at the bottom. The title keeps its 22 pt lines, so the content can end off the 4 pt
+// grid: the remainder (2) goes to the bottom padding and the alert's height stays on the grid
+// (components.md: every frame on the 4 pt grid; the kit does so in Two Buttons, Three
+// Buttons and With Field, not in One Button, Critical and Glass).
 
 import 'package:flutter/widgets.dart';
 
@@ -37,6 +38,9 @@ abstract final class AmalfiAlertMetrics {
   /// Between two buttons, side by side or stacked.
   static const double buttonGap = 8;
 
+  /// The least width of a button (the kit's `OK`, `Send`, `Cancel` are 72 wide).
+  static const double buttonMinWidth = 72;
+
   /// The disc of the critical badge, over the icon's bottom-trailing corner.
   static const double badge = 24;
 
@@ -58,7 +62,8 @@ enum AmalfiAlertMaterial {
 /// `Text/Primary`, the [message] in Callout `Text/Secondary`, an optional [accessory] (a
 /// suppression checkbox, a text field) and the [actions].
 ///
-/// [actions] are push buttons, the default one last: side by side, centred, up to two;
+/// [actions] are push buttons (at least 72 wide), the default one last: side by side,
+/// centred, up to two;
 /// stacked and centred, the default one on top, with three or more. [critical] adds the
 /// warning badge (`Palette/Terracotta` on a raised disc) over the icon's bottom-trailing
 /// corner.
@@ -128,6 +133,7 @@ class AmalfiAlert extends StatelessWidget {
         header: true,
         child: AmalfiWholePoints(
           step: AmalfiGrid.base,
+          heightStep: 1,
           child: Text(
             title,
             style: AmalfiType.title3(color: colors.textPrimary),
@@ -145,17 +151,20 @@ class AmalfiAlert extends StatelessWidget {
       ?accessory,
       if (actions.isNotEmpty) _buttons(),
     ];
-    final content = Padding(
-      padding: AmalfiAlertMetrics.padding,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (var i = 0; i < blocks.length; i++) ...[
-            if (i > 0) const SizedBox(height: AmalfiAlertMetrics.gap),
-            blocks[i],
+    final content = AmalfiWholePoints(
+      heightStep: AmalfiGrid.base,
+      child: Padding(
+        padding: AmalfiAlertMetrics.padding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < blocks.length; i++) ...[
+              if (i > 0) const SizedBox(height: AmalfiAlertMetrics.gap),
+              blocks[i],
+            ],
           ],
-        ],
+        ),
       ),
     );
     final surface = switch (material) {
@@ -180,16 +189,27 @@ class AmalfiAlert extends StatelessWidget {
   }
 
   Widget _buttons() {
+    final actions = [
+      for (final a in this.actions)
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: AmalfiAlertMetrics.buttonMinWidth,
+          ),
+          child: a,
+        ),
+    ];
     if (actions.length >= 3) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = actions.length - 1; i >= 0; i--) ...[
-            if (i < actions.length - 1)
-              const SizedBox(height: AmalfiAlertMetrics.buttonGap),
-            actions[i],
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = actions.length - 1; i >= 0; i--) ...[
+              if (i < actions.length - 1)
+                const SizedBox(height: AmalfiAlertMetrics.buttonGap),
+              actions[i],
+            ],
           ],
-        ],
+        ),
       );
     }
     // Side by side, centred; wide buttons wrap onto a second line instead of overflowing.

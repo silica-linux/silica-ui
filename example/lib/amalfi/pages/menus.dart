@@ -14,71 +14,6 @@ final AmalfiGalleryPage menusPage = AmalfiGalleryPage(
   build: (context) => const _MenusPage(),
 );
 
-/// A capsule push button standing in for the buttons family until it exists: [label] on
-/// `Surface/Control` (or `Accent/Amalfi` when [primary]), 28 tall.
-class GalleryButton extends StatelessWidget {
-  const GalleryButton(
-    this.label, {
-    super.key,
-    this.primary = false,
-    this.onPressed,
-    this.width,
-  });
-
-  final String label;
-  final bool primary;
-  final VoidCallback? onPressed;
-  final double? width;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: width,
-        height: AmalfiControlSize.regular.height,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        alignment: Alignment.center,
-        decoration: ShapeDecoration(
-          color: primary ? colors.accentAmalfi : colors.surfaceControl,
-          shape: StadiumBorder(
-            side: primary
-                ? BorderSide.none
-                : BorderSide(color: colors.lineBorder),
-          ),
-        ),
-        child: Text(
-          label,
-          style: AmalfiType.body(
-            color: primary ? colors.textOnAccent : colors.textPrimary,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A 16 pt glyph standing in for an Icon Kit symbol: a rounded square in the icon colour.
-class GalleryGlyph extends StatelessWidget {
-  const GalleryGlyph({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = IconTheme.of(context).color ?? const Color(0xFF000000);
-    return Center(
-      child: Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(
-          border: Border.all(color: color, width: 1.25),
-          borderRadius: BorderRadius.circular(3),
-        ),
-      ),
-    );
-  }
-}
-
 const List<AmalfiMenuEntry> _submenu = [
   AmalfiMenuAction('Lemon Cake'),
   AmalfiMenuAction('Fig Jam'),
@@ -92,7 +27,7 @@ const List<AmalfiMenuEntry> _full = [
   AmalfiMenuAction('Open Recent', submenu: _submenu),
   AmalfiMenuDivider(),
   AmalfiMenuSection('Share'),
-  AmalfiMenuAction('Send a Link', icon: GalleryGlyph()),
+  AmalfiMenuAction('Send a Link', icon: AmalfiGlyph(AmalfiGlyphs.share)),
   AmalfiMenuAction('Autosave', checked: true),
   AmalfiMenuAction('Duplicate', shortcut: '⌘D'),
   AmalfiMenuAction('Export…', shortcut: '⇧⌘E', enabled: false),
@@ -102,8 +37,8 @@ const List<AmalfiMenuEntry> _full = [
 
 const List<AmalfiMenuEntry> _simple = [
   AmalfiMenuAction('Orange'),
-  AmalfiMenuAction('Lemon'),
-  AmalfiMenuAction('Olive', checked: true),
+  AmalfiMenuAction('Lemon', checked: true),
+  AmalfiMenuAction('Olive'),
   AmalfiMenuAction('Fig'),
 ];
 
@@ -112,7 +47,7 @@ const List<AmalfiMenuEntry> _context = [
   AmalfiMenuAction('Copy', shortcut: '⌘C'),
   AmalfiMenuAction('Paste', shortcut: '⌘V'),
   AmalfiMenuDivider(),
-  AmalfiMenuAction('Look Up', icon: GalleryGlyph()),
+  AmalfiMenuAction('Look Up', icon: AmalfiGlyph(AmalfiGlyphs.search)),
   AmalfiMenuAction(
     'Services',
     submenu: [AmalfiMenuAction('Make a Note'), AmalfiMenuAction('Share')],
@@ -156,7 +91,10 @@ class _MenusPage extends StatelessWidget {
               ('Checkmark', (s) => item(s, checked: true)),
               ('Shortcut', (s) => item(s, shortcut: '⌘N')),
               ('Submenu', (s) => item(s, submenu: true)),
-              ('Icon', (s) => item(s, icon: const GalleryGlyph())),
+              (
+                'Icon',
+                (s) => item(s, icon: const AmalfiGlyph(AmalfiGlyphs.share)),
+              ),
               ('Destructive', (s) => item(s, destructive: true)),
             ])
           SpecimenSection(
@@ -212,8 +150,8 @@ class _MenusPage extends StatelessWidget {
             Specimen(
               label: 'showAmalfiMenu',
               child: Builder(
-                builder: (context) => GalleryButton(
-                  'Open menu',
+                builder: (context) => AmalfiPushButton(
+                  label: 'Open menu',
                   onPressed: () {
                     final box = context.findRenderObject();
                     if (box is! RenderBox) return;

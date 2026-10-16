@@ -32,12 +32,12 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 - [x] Menus/Item/Plain/Rest/Light
 - [x] Menus/Item/Separator/Rest/Dark
 - [x] Menus/Item/Separator/Rest/Light
-- [ ] Menus/Item/Shortcut/Disabled/Dark
-- [ ] Menus/Item/Shortcut/Disabled/Light
-- [ ] Menus/Item/Shortcut/Highlighted/Dark
-- [ ] Menus/Item/Shortcut/Highlighted/Light
-- [ ] Menus/Item/Shortcut/Rest/Dark
-- [ ] Menus/Item/Shortcut/Rest/Light
+- [x] Menus/Item/Shortcut/Disabled/Dark
+- [x] Menus/Item/Shortcut/Disabled/Light
+- [x] Menus/Item/Shortcut/Highlighted/Dark
+- [x] Menus/Item/Shortcut/Highlighted/Light
+- [x] Menus/Item/Shortcut/Rest/Dark
+- [x] Menus/Item/Shortcut/Rest/Light
 - [x] Menus/Item/Submenu/Disabled/Dark
 - [x] Menus/Item/Submenu/Disabled/Light
 - [x] Menus/Item/Submenu/Highlighted/Dark
@@ -49,11 +49,11 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 - [ ] Menus/Menu/Cascade/Rest/Dark
 - [ ] Menus/Menu/Cascade/Rest/Light
-- [ ] Menus/Menu/Context/Rest/Dark
-- [ ] Menus/Menu/Context/Rest/Light
-- [ ] Menus/Menu/Full/Rest/Dark
-- [ ] Menus/Menu/Full/Rest/Light
-- [ ] Menus/Menu/Simple/Rest/Dark
-- [ ] Menus/Menu/Simple/Rest/Light
-- [ ] Menus/Menu/Submenu/Rest/Dark
-- [ ] Menus/Menu/Submenu/Rest/Light
+- [x] Menus/Menu/Context/Rest/Dark
+- [x] Menus/Menu/Context/Rest/Light
+- [x] Menus/Menu/Full/Rest/Dark
+- [x] Menus/Menu/Full/Rest/Light
+- [x] Menus/Menu/Simple/Rest/Dark
+- [x] Menus/Menu/Simple/Rest/Light
+- [x] Menus/Menu/Submenu/Rest/Dark
+- [x] Menus/Menu/Submenu/Rest/Light

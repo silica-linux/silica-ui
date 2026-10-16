@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 import '../specimen.dart';
-import 'menus.dart' show GalleryButton;
 
 /// The alerts page.
 final AmalfiGalleryPage alertsPage = AmalfiGalleryPage(
@@ -35,91 +34,82 @@ class GalleryAppIcon extends StatelessWidget {
   }
 }
 
-/// A checkbox with a label standing in for the toggles family.
-class _Suppression extends StatelessWidget {
-  const _Suppression();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 16,
-          height: 16,
-          decoration: ShapeDecoration(
-            color: colors.surfaceControl,
-            shape: AmalfiSmoothBorder(
-              radius: 4,
-              side: BorderSide(color: colors.lineBorder),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          'Do not ask again',
-          style: AmalfiType.body(color: colors.textPrimary),
-        ),
-      ],
+AmalfiPushButton _button(String label, {bool primary = false}) =>
+    AmalfiPushButton(
+      label: label,
+      variant: primary
+          ? AmalfiPushButtonVariant.primary
+          : AmalfiPushButtonVariant.secondary,
+      onPressed: () {},
     );
-  }
-}
 
-class _AlertsPage extends StatelessWidget {
+class _AlertsPage extends StatefulWidget {
   const _AlertsPage();
 
   @override
+  State<_AlertsPage> createState() => _AlertsPageState();
+}
+
+class _AlertsPageState extends State<_AlertsPage> {
+  bool _suppress = false;
+
+  @override
   Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
     return SpecimenSection(
       title: 'Alert',
       children: [
-        const Specimen(
+        Specimen(
           label: 'One Button',
           child: AmalfiAlert(
-            icon: GalleryAppIcon(),
+            icon: const GalleryAppIcon(),
             title: 'Import complete',
             message: 'Twelve pictures were added to your library.',
-            actions: [GalleryButton('OK', primary: true, width: 72)],
+            actions: [_button('OK', primary: true)],
           ),
         ),
-        const Specimen(
+        Specimen(
           label: 'Two Buttons',
           child: AmalfiAlert(
-            icon: GalleryAppIcon(),
+            icon: const GalleryAppIcon(),
             title: 'Empty the outbox?',
             message: 'Messages waiting to be sent will be sent now.',
-            accessory: Center(child: _Suppression()),
-            actions: [
-              GalleryButton('Cancel', width: 72),
-              GalleryButton('Send', primary: true, width: 72),
-            ],
+            accessory: Center(
+              child: AmalfiCheckbox(
+                value: _suppress,
+                label: 'Do not ask again',
+                onChanged: (v) => setState(() => _suppress = v),
+              ),
+            ),
+            actions: [_button('Cancel'), _button('Send', primary: true)],
           ),
         ),
-        const Specimen(
+        Specimen(
           label: 'Three Buttons',
           child: AmalfiAlert(
-            icon: GalleryAppIcon(),
+            icon: const GalleryAppIcon(),
             title: 'Save changes to “Lemon cake”?',
             message: 'Your edits will be lost if you close without saving.',
             actions: [
-              GalleryButton('Cancel', width: 72),
-              GalleryButton('Don’t Save'),
-              GalleryButton('Save', primary: true, width: 72),
+              _button('Cancel'),
+              _button('Don’t Save'),
+              _button('Save', primary: true),
             ],
           ),
         ),
-        const Specimen(
+        Specimen(
           label: 'Critical',
           child: AmalfiAlert(
-            icon: GalleryAppIcon(),
+            icon: const GalleryAppIcon(),
             critical: true,
             title: 'Delete this list?',
             message: 'All reminders in it will be removed for good.',
             actions: [
-              GalleryButton('Cancel', width: 72),
-              GalleryButton('Delete', primary: true, width: 72),
+              _button('Cancel'),
+              AmalfiPushButton(
+                label: 'Delete',
+                variant: AmalfiPushButtonVariant.destructive,
+                onPressed: () {},
+              ),
             ],
           ),
         ),
@@ -129,36 +119,18 @@ class _AlertsPage extends StatelessWidget {
             icon: const GalleryAppIcon(),
             title: 'Name the note',
             message: 'Choose a short name you will recognise later.',
-            accessory: Container(
-              height: 28,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              alignment: Alignment.centerLeft,
-              decoration: ShapeDecoration(
-                color: colors.surfaceRaised,
-                shape: AmalfiSmoothBorder(
-                  radius: AmalfiRadii.field,
-                  side: BorderSide(color: colors.lineBorder),
-                ),
-              ),
-              child: Text(
-                'Name',
-                style: AmalfiType.body(color: colors.textTertiary),
-              ),
-            ),
-            actions: const [
-              GalleryButton('Cancel', width: 72),
-              GalleryButton('Save', primary: true, width: 72),
-            ],
+            accessory: const AmalfiTextField(placeholder: 'Name', width: 240),
+            actions: [_button('Cancel'), _button('Save', primary: true)],
           ),
         ),
-        const Specimen(
+        Specimen(
           label: 'Glass',
           child: AmalfiAlert(
-            icon: GalleryAppIcon(),
+            icon: const GalleryAppIcon(),
             material: AmalfiAlertMaterial.glass,
             title: 'Event moved',
             message: 'Lunch with Marta now starts at 13:30.',
-            actions: [GalleryButton('OK', primary: true, width: 72)],
+            actions: [_button('OK', primary: true)],
           ),
         ),
       ],

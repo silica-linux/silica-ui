@@ -1,75 +1,133 @@
 // Popovers against the kit (`Popovers/*`). Checklist: docs/amalfi-checklist/popovers.md.
 //
-// Kit defect: every popover master lost its glass (`Surface/Raised`, a `Line/Separator`
-// border and a 0/8/24 shadow); `materials.md` gives Glass/Thick, radius 16. The geometry
-// tests list that deviation; the pixel tests compare the opaque fallback of the glass (the
-// tint over `Surface/Window`, white in the light appearance) with the kit's raised surface,
-// with a tolerance for the different shadow.
+// Every popover is Glass/Thick (kit 747ea80); the contents hold the real push buttons, text
+// field and link button, checked against their own masters. The list rows' glyphs are
+// masked (the kit overrides them with Icon Kit symbols the fixtures do not name).
+
+import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
+import 'package:silica_ui/src/amalfi/components/buttons/button_surface.dart'
+    show AmalfiButtonLayers;
 
 import 'menus_support.dart';
 import 'support/harness.dart';
 
-/// A stand-in for a control of another family (push button, text field, link button): a box
-/// of its size, masked out of the pixel tests.
-class _StandIn extends StatelessWidget {
-  const _StandIn(this.name, this.width, this.height);
-
-  final String name;
-  final double width, height;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(width: width, height: height);
-}
-
-Finder _standIn(String name) =>
-    find.byWidgetPredicate((w) => w is _StandIn && w.name == name);
-
 const _body =
     'Olive oil keeps the crust tender and adds a peppery note. Use a mild, fruity one for sweet bakes.';
 
-const _form = AmalfiPopoverForm(
+void _pressed() {}
+
+final _form = AmalfiPopoverForm(
   title: 'New collection',
-  field: _StandIn('Name field', 228, 28),
-  actions: [_StandIn('Cancel', 56, 24), _StandIn('Create', 56, 24)],
+  field: AmalfiTextField(
+    width: 228,
+    controller: TextEditingController(text: 'Amalfi coast'),
+  ),
+  actions: const [
+    AmalfiPushButton(
+      label: 'Cancel',
+      size: AmalfiControlSize.small,
+      onPressed: _pressed,
+    ),
+    AmalfiPushButton(
+      label: 'Create',
+      variant: AmalfiPushButtonVariant.primary,
+      size: AmalfiControlSize.small,
+      onPressed: _pressed,
+    ),
+  ],
 );
 
 const _text = AmalfiPopoverText(
   title: 'About this ingredient',
   body: _body,
-  action: _StandIn('Link', 80, 24),
+  action: AmalfiLinkButton(label: 'Learn more', onPressed: _pressed),
 );
 
-class _Glyph extends StatelessWidget {
-  const _Glyph();
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.square(dimension: 16);
-}
-
+// The kit's list rows override their glyphs with Icon Kit symbols the fixtures do not
+// name: the rows show installed symbols, masked out of the pixels (`_listIcons`).
 const _list = AmalfiPopoverList(
   entries: [
     AmalfiMenuSection('Open in'),
-    AmalfiMenuAction('Recents', icon: _Glyph()),
-    AmalfiMenuAction('Downloads', icon: _Glyph()),
-    AmalfiMenuAction('Pictures', icon: _Glyph()),
+    AmalfiMenuAction('Recents', icon: AmalfiSymbol('clock', size: 16)),
+    AmalfiMenuAction(
+      'Downloads',
+      icon: AmalfiSymbol('arrow-down-circle', size: 16),
+    ),
+    AmalfiMenuAction('Pictures', icon: AmalfiSymbol('photo', size: 16)),
   ],
 );
 
-/// The content of each kit variant, and the layers of other families it holds.
-const _contents = <String, Widget>{'Form': _form, 'List': _list, 'Text': _text};
+/// The content of each kit variant.
+final _contents = <String, Widget>{'Form': _form, 'List': _list, 'Text': _text};
 
-/// Layers of a content master drawn by other families (masked) or by stand-ins.
-const _foreign = <String, List<String>>{
-  'Form': ['Name field', 'Buttons'],
-  'List': ['Pictures', 'Downloads', 'Recents'],
-  'Text': ['Link'],
-};
+/// The push button labelled [label].
+Finder _button(String label) =>
+    find.widgetWithText(AmalfiPushButton, label).first;
+
+/// The label box of [text] inside [within].
+Finder _labelOf(String text, Finder within) => find
+    .ancestor(
+      of: find.descendant(of: within, matching: find.text(text)),
+      matching: find.byType(AmalfiWholePoints),
+    )
+    .first;
+
+/// Checks the controls of the form content against their own kit masters.
+void _expectFormControls(WidgetTester tester, KitMaster content) {
+  for (final name in ['Cancel', 'Create']) {
+    final layer = content.layer('Buttons/$name');
+    final button = _button(name);
+    expectKitGeometry(
+      tester,
+      KitMaster.nested(layer),
+      root: button,
+      layers: {
+        'Background': find
+            .descendant(
+              of: button,
+              matching: find.byKey(AmalfiButtonLayers.background),
+            )
+            .first,
+        'Label': _labelOf(name, button),
+      },
+      // The harness reads the master, not the instance's label override.
+      deviations: const {'Label#text': 'the instance overrides the label'},
+    );
+  }
+  final field = find.byType(AmalfiTextField);
+  const stretched = 'the content stretches the 200 pt master to 228';
+  expectKitGeometry(
+    tester,
+    KitMaster.nested(content.layer('Name field')),
+    root: field,
+    layers: {
+      'Background': find.byType(AmalfiFieldSurface),
+      'Value': find.byType(AmalfiEditable),
+    },
+    deviations: const {
+      '#frame': stretched,
+      'Background': stretched,
+      'Value': stretched,
+    },
+  );
+}
+
+/// Checks the link button of the text content against its kit master.
+void _expectTextControls(WidgetTester tester, KitMaster content) {
+  final link = find.byType(AmalfiLinkButton);
+  expectKitGeometry(
+    tester,
+    KitMaster.nested(content.layer('Link')),
+    root: link,
+    layers: {'Label': _labelOf('Learn more', link)},
+  );
+}
 
 /// Hovers "Downloads" in a list (the kit highlights it).
 Future<void> _highlightDownloads(WidgetTester tester) async {
@@ -100,19 +158,21 @@ void main() {
           root: root,
           layers: {
             'Title': textBox('New collection'),
-            'Name field': _standIn('Name field'),
+            'Name field': find.byType(AmalfiTextField),
             'Buttons': find.byType(Wrap),
-            'Buttons/Cancel': _standIn('Cancel'),
-            'Buttons/Create': _standIn('Create'),
+            'Buttons/Cancel': _button('Cancel'),
+            'Buttons/Create': _button('Create'),
           },
         );
+        _expectFormControls(tester, master);
         await expectKitPixels(
           tester,
           master,
           _form,
-          maskLayers: _foreign['Form']!,
-          tolerance: denseText,
+          maskText: true,
+          tolerance: _fieldCorner,
         );
+        await expectKitPixels(tester, master, _form, tolerance: denseText);
       });
 
       testWidgets('Content Text', (tester) async {
@@ -130,16 +190,12 @@ void main() {
                 )
                 .first,
             'Body': textBox(_body),
-            'Link': _standIn('Link'),
+            'Link': find.byType(AmalfiLinkButton),
           },
         );
-        await expectKitPixels(
-          tester,
-          master,
-          _text,
-          maskLayers: _foreign['Text']!,
-          tolerance: denseText,
-        );
+        _expectTextControls(tester, master);
+        await expectKitPixels(tester, master, _text, maskText: true);
+        await expectKitPixels(tester, master, _text, tolerance: _allText);
       });
 
       testWidgets('Content List', (tester) async {
@@ -198,13 +254,12 @@ void main() {
                 'Popovers/Popover/$variant/$name/$appearance',
               );
               final surface = edge == null ? 'Body' : 'Surface';
-              Widget popover({bool opaque = false}) => AmalfiPopover(
+              Widget popover() => AmalfiPopover(
                 arrowEdge: edge,
                 arrowAlignment: alignment,
                 padding: variant == 'List'
                     ? AmalfiPopoverMetrics.listPadding
                     : AmalfiPopoverMetrics.padding,
-                opaque: opaque,
                 child: _contents[variant]!,
               );
               final root = await pumpKitScene(
@@ -212,7 +267,6 @@ void main() {
                 popover(),
                 master: master,
               );
-              const lost = 'kit popovers lost the glass (materials.md: Thick)';
               expectKitGeometry(
                 tester,
                 master,
@@ -220,16 +274,6 @@ void main() {
                 layers: {
                   surface: find.byType(AmalfiPopoverSurface),
                   'Content': find.byWidget(_contents[variant]!),
-                },
-                deviations: {
-                  for (final aspect in [
-                    'fills',
-                    'borders',
-                    'shadows',
-                    'innerShadows',
-                    'blurs',
-                  ])
-                    '$surface#$aspect': lost,
                 },
               );
               // The tip of the arrow is on the frame, at the kit's place along the edge.
@@ -245,26 +289,14 @@ void main() {
                 expect((tip! - kitTip).distance, lessThan(1.5));
               }
 
-              // Pixels: the opaque fallback against the kit's opaque surface. The arrow
-              // band differs (the kit's arrow is 9.85 deep over a body cut 1.85 short), and
-              // the content of other families is masked.
               final content = master.layer('Content').rectInMaster;
-              final nested = KitMaster.nested(master.layer('Content'));
-              final mask = <Rect>[
-                for (final l in _foreign[variant]!)
-                  if (variant != 'List')
-                    nested.layer(l).rectInMaster.shift(content.topLeft),
-                if (variant == 'List') ..._listIcons(content.topLeft),
-                ..._arrowBand(master.size, edgeName),
-              ];
               await expectKitPixels(
                 tester,
                 master,
-                popover(opaque: true),
+                popover(),
                 maskText: true,
-                mask: mask,
-                tolerance: _lostGlass,
-                origin: _origin(master, edgeName),
+                mask: [if (variant == 'List') ..._listIcons(content.topLeft)],
+                tolerance: _glass,
                 prepare: variant == 'List' ? _highlightDownloads : null,
               );
             });
@@ -364,63 +396,34 @@ void main() {
   });
 }
 
-/// The opaque fallback against the kit's raised surface: the kit's shadow is 0/8/24, the
-/// glass's 0/12/32, and in the dark the fallback is the tint over `Surface/Window`
-/// (#26272B) against `Surface/Raised` (#2A2B30); the edge pixels of the outline differ by up
-/// to 100 where the kit's opaque surface antialiases over its own shadow and the glass over
-/// a shadow drawn outside the shape only.
-const _lostGlass = KitPixelTolerance(mean: 3, max: 112);
+/// The glass against the kit's: [largeCorners], and on the body's corners beside the
+/// arrow (where Sketch smooths the 16 pt corner into the arrow's 4 pt base corner) one
+/// edge pixel differs by 103 in the light appearance (alpha 111 against 8); the rest of the
+/// outline agrees (mean ≤ 0.29).
+const _glass = KitPixelTolerance(max: 104);
 
-/// Where the master's origin is in its PNG. Sketch bounds the PNG by the outline's path,
-/// whose rounded arrow tip is 1.16 inside the frame: on the arrow's side the shadow starts
-/// 1 pt closer to the frame than the harness assumes. (Only the top and leading sides move
-/// the origin.)
-Offset _origin(KitMaster master, String? edge) {
-  final at = -master.renderBounds.topLeft;
-  return switch (edge) {
-    'Top' => at.translate(0, -1),
-    'Leading' => at.translate(-1, 0),
-    _ => at,
-  };
-}
+/// The text field's bottom corners: one antialiased pixel 56 apart from Sketch's (alpha 145
+/// against 201) on the 8 pt smooth corner; the rest of the form agrees (mean ≤ 0.19).
+const _fieldCorner = KitPixelTolerance(max: 56);
 
-/// Where the kit's arrow and body edge differ from the code's: the band of the arrow's edge,
-/// and the body's corners on that edge (moved by the 1.85 pt the kit cuts off the body).
-List<Rect> _arrowBand(Size size, String? edge) {
-  const band = 12.0, corner = 36.0;
-  final w = size.width, h = size.height;
-  return switch (edge) {
-    null => const [],
-    'Top' => [
-      Rect.fromLTWH(0, 0, w, band),
-      Rect.fromLTWH(0, 0, corner, corner),
-      Rect.fromLTWH(w - corner, 0, corner, corner),
-    ],
-    'Bottom' => [
-      Rect.fromLTWH(0, h - band, w, band),
-      Rect.fromLTWH(0, h - corner, corner, corner),
-      Rect.fromLTWH(w - corner, h - corner, corner, corner),
-    ],
-    'Leading' => [
-      Rect.fromLTWH(0, 0, band, h),
-      Rect.fromLTWH(0, 0, corner, corner),
-      Rect.fromLTWH(0, h - corner, corner, corner),
-    ],
-    _ => [
-      Rect.fromLTWH(w - band, 0, band, h),
-      Rect.fromLTWH(w - corner, 0, corner, corner),
-      Rect.fromLTWH(w - corner, h - corner, corner, corner),
-    ],
-  };
-}
+/// The text content master is text only (title, body and the link's label, no surface):
+/// CoreText's rasterisation averages 5.04 apart in the dark appearance ([denseText] is 5 for
+/// rows with some surface). The text is in place (masked, the shapes agree exactly).
+const _allText = KitPixelTolerance(mean: 5.1, max: 255);
 
-/// The sharp tip of the kit's arrow: its rounded tip moved out by 3 × (√2 − 1).
+/// The sharp tip of the kit's arrow: its rounded tip (radius 3) moved out to where the
+/// flanks meet.
 Offset _kitTip(String svg, String edge) {
   final points = [
     for (final m in RegExp(r'([\d.]+),([\d.]+)').allMatches(svg))
       Offset(double.parse(m.group(1)!), double.parse(m.group(2)!)),
   ];
-  const out = 3 * 0.41421356;
+  const r = AmalfiPopoverMetrics.arrowTipRadius;
+  final half = math.atan2(
+    AmalfiPopoverMetrics.arrowHalfBase,
+    AmalfiPopoverMetrics.arrowDepth,
+  );
+  final out = r / math.sin(half) - r;
   int byX(Offset a, Offset b) => a.dx.compareTo(b.dx);
   int byY(Offset a, Offset b) => a.dy.compareTo(b.dy);
   return switch (edge) {

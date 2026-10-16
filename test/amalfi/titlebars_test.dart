@@ -151,14 +151,17 @@ void main() {
               'Text block/Title': textBox('Lemon cake'),
               'Text block/Subtitle': textBox('Edited today'),
             },
-            deviations: const {
-              '#frame': fixedText,
-              'Text block': fixedText,
-              'Text block/Title': fixedText,
-              'Text block/Subtitle': fixedText,
-            },
+            deviations: const {'Text block/Subtitle': fixedSubtitle},
           );
-          await expectKitPixels(tester, master, piece, tolerance: chromeText);
+          // The kit's subtitle sits at the left of its wider frame, 2.5 pt left of the centre
+          // (deviation above): compare the rest of the piece.
+          await expectKitPixels(
+            tester,
+            master,
+            piece,
+            maskLayers: ['Text block/Subtitle'],
+            tolerance: chromeText,
+          );
         });
 
         testWidgets('Piece/Title + Document Icon/$state', (tester) async {
@@ -227,36 +230,26 @@ void main() {
 
       for (final state in ['Active', 'Inactive']) {
         final active = state == 'Active';
-        for (final inset in [8, 16]) {
-          testWidgets('Bar/Unified/Full Inset $inset/$state', (tester) async {
-            final master = KitMaster.load(
-              'Titlebars/Bar/Unified/Full Inset $inset/$state/$appearance',
-            );
-            final bar = SizedBox(
-              width: 760,
-              child: unifiedBar(
-                active: active,
-                padding: inset == 8
-                    ? AmalfiToolbarMetrics.unifiedPadding
-                    : AmalfiToolbarMetrics.unifiedPaddingWide,
-              ),
-            );
-            final root = await pumpKitScene(tester, bar, master: master);
-            expectKitGeometry(
-              tester,
-              master,
-              root: root,
-              layers: {'Surface': barSurface(), ...keyed(unifiedNames)},
-            );
-            await expectKitPixels(
-              tester,
-              master,
-              bar,
-              maskLayers: unifiedMasked,
-              tolerance: chromeText,
-            );
-          });
-        }
+        testWidgets('Bar/Unified/Full Inset 16/$state', (tester) async {
+          final master = KitMaster.load(
+            'Titlebars/Bar/Unified/Full Inset 16/$state/$appearance',
+          );
+          final bar = SizedBox(width: 760, child: unifiedBar(active: active));
+          final root = await pumpKitScene(tester, bar, master: master);
+          expectKitGeometry(
+            tester,
+            master,
+            root: root,
+            layers: {'Surface': barSurface(), ...keyed(unifiedNames)},
+          );
+          await expectKitPixels(
+            tester,
+            master,
+            bar,
+            maskLayers: unifiedMasked,
+            tolerance: chromeText,
+          );
+        });
 
         testWidgets('Section/Sidebar/$state', (tester) async {
           final master = KitMaster.load(
@@ -466,31 +459,14 @@ void main() {
                   _ => {'Title block/Title': textBox('Lemon cake')},
                 },
               },
-              deviations: {
-                'Window controls': measuredPitch,
-                'Title block': fixedText,
-                ...switch (variant) {
-                  'Subtitle' => const {
-                    'Title block/Title': fixedText,
-                    'Title block/Subtitle': fixedText,
-                  },
-                  'Document' => const {
-                    'Title block/Document proxy': fixedText,
-                    'Title block/Title': fixedText,
-                    'Title block/Chevron': fixedText,
-                  },
-                  _ => const {'Title block/Title': plainTitleTop},
-                },
-              },
+              deviations: const {'Window controls': measuredPitch},
             );
-            // The text is 2 pt off the kit's fixed-width frames (deviation above): compare the
-            // rest of the bar.
             await expectKitPixels(
               tester,
               master,
               bar,
-              maskText: true,
-              maskLayers: ['Window controls', 'Title block'],
+              maskLayers: ['Window controls'],
+              tolerance: chromeText,
             );
           });
         }
@@ -520,7 +496,6 @@ void main() {
               'Label': find.text('Lemon cake'),
               if (state != 'Rest') 'Close': glyphOf(AmalfiGlyphs.xmark),
             },
-            deviations: {if (state == 'Selected') 'Surface#shadows': tabShadow},
           );
           await expectKitPixels(
             tester,
@@ -748,11 +723,12 @@ void main() {
       tester,
     ) async {
       await pumpKitScene(tester, SizedBox(width: 760, child: unifiedBar()));
-      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 164);
+      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 156);
       // A wider bar gives the spacer the extra width.
       await pumpKitScene(tester, SizedBox(width: 960, child: unifiedBar()));
-      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 364);
-      expect(tester.getTopRight(find.byKey(const ValueKey('Search'))).dx, 952);
+      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 356);
+      // Trailing padding 16 (components.md, user decision 2026-10-16).
+      expect(tester.getTopRight(find.byKey(const ValueKey('Search'))).dx, 944);
     });
 
     testWidgets('an unbounded bar does not throw', (tester) async {

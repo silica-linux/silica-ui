@@ -1,38 +1,80 @@
 // Sheets against the kit (`Windows/Window/Sheet Attached`). Checklist:
 // docs/amalfi-checklist/sheets.md.
 //
-// The window is the windows family's (stood in for here), so the master is checked for its
-// geometry only: the pixels of the scrim cannot be compared without the window under it.
+// The window is the real document window of `windows_test.dart` (its group box and button
+// masked there and here) and the sheet the real Two Buttons alert with real buttons and
+// checkbox; the sheet is Glass/Thick (`materials.md`) where the kit nests the opaque alert, so
+// the pixels compare the window and the scrim and leave the sheet to `alerts_test.dart`.
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 
-import 'alerts_test.dart' show StandIn, standIn, alerts;
+import 'alerts_test.dart' show AppIconSlot;
 import 'menus_support.dart';
 import 'support/harness.dart';
+import 'titlebars_kit_support.dart';
+import 'windows_test.dart' show sampleContent;
+
+/// The kit's document window (`Windows/Window/Document`), the sheet's window.
+Widget _window() => AmalfiWindow(
+  key: const ValueKey('Window'),
+  child: AmalfiWindowLayout(
+    bar: AmalfiTitleBar(
+      title: 'Lemon cake.recipe',
+      document: true,
+      onClose: () {},
+      onMinimise: () {},
+      onZoom: () {},
+    ),
+    barHeight: AmalfiToolbarMetrics.titleBarHeight,
+    content: sampleContent(
+      padding: const EdgeInsets.fromLTRB(28, 28, 28, 0),
+      gap: 12,
+    ),
+  ),
+);
 
 Widget _scene({required bool open}) => SizedBox(
   width: 540,
   height: 400,
   child: AmalfiAttachedSheet(
     open: open,
-    sheet: const AmalfiAlert(
-      icon: StandIn('App icon', 56, 56),
+    sheet: AmalfiAlert(
+      icon: const AppIconSlot(),
       material: AmalfiAlertMaterial.glass,
       title: 'Empty the outbox?',
       message: 'Messages waiting to be sent will be sent now.',
-      accessory: Center(child: StandIn('Suppression', 168, 20)),
-      actions: [StandIn('Cancel', 72, 28), StandIn('Send', 72, 28)],
+      accessory: Center(
+        child: SizedBox(
+          width: 168,
+          child: AmalfiCheckbox(
+            value: false,
+            label: 'Do not ask again',
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+      actions: [
+        AmalfiPushButton(label: 'Cancel', onPressed: () {}),
+        AmalfiPushButton(
+          label: 'Send',
+          variant: AmalfiPushButtonVariant.primary,
+          onPressed: () {},
+        ),
+      ],
     ),
-    child: const StandIn('Window', 540, 400),
+    child: _window(),
   ),
 );
+
+final Finder _windowFinder = find.byKey(const ValueKey('Window'));
 
 void main() {
   setUpAll(() async {
     await loadAmalfiFonts();
     registerSurfaceStyles();
+    registerChromeStyles();
   });
 
   for (final appearance in ['Light', 'Dark']) {
@@ -50,14 +92,24 @@ void main() {
         master,
         root: root,
         layers: {
-          'Window': standIn('Window'),
+          'Window': _windowFinder,
           'Scrim': find.byType(AmalfiSheetScrim),
           'Sheet': find.byType(AmalfiAlert),
         },
       );
-      // The alert in the sheet is the kit's Two Buttons alert, now 268 tall as the sheet's
-      // instance (the master itself is 8 short).
-      expect(alerts.containsKey('Two Buttons'), isTrue);
+      await expectKitPixels(
+        tester,
+        master,
+        _scene(open: true),
+        maskLayers: ['Sheet'],
+        // The window's group box and button (`Window/Options`, `Window/Done`), not built
+        // here, as in windows_test.dart.
+        mask: const [
+          Rect.fromLTWH(28, 192, 184, 124),
+          Rect.fromLTWH(436, 348, 72, 28),
+        ],
+        tolerance: KitPixelTolerance.withText,
+      );
     });
   }
 
@@ -89,7 +141,7 @@ void main() {
           .widget<IgnorePointer>(
             find
                 .ancestor(
-                  of: standIn('Window'),
+                  of: _windowFinder,
                   matching: find.byType(IgnorePointer),
                 )
                 .first,

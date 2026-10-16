@@ -385,8 +385,13 @@ void main() {
       );
       await tester.tap(find.byType(AmalfiSidebarRow));
       expect(taps, 0);
-      final text = tester.widget<Text>(find.text('Documents'));
-      expect(text.style?.color, AmalfiColors.light.textTertiary);
+      final opacity = tester.widget<Opacity>(
+        find.ancestor(
+          of: find.text('Documents'),
+          matching: find.byType(Opacity),
+        ),
+      );
+      expect(opacity.opacity, AmalfiStates.disabledOpacity);
     });
 
     testWidgets('a group header toggles and hides its rows', (tester) async {

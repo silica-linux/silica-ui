@@ -1,12 +1,11 @@
 // Gallery page: dialogs (kit `Dialogs/*`): the save and open panels, the generic dialog,
-// the file browser and the footers. Layout only: the rows stand in for the forms, sidebars
-// and buttons families.
+// the file browser and the footers, built from the real form rows, sidebar rows and push
+// buttons.
 
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 import '../specimen.dart';
-import 'menus.dart' show GalleryButton;
 
 /// The dialogs page.
 final AmalfiGalleryPage dialogsPage = AmalfiGalleryPage(
@@ -15,117 +14,113 @@ final AmalfiGalleryPage dialogsPage = AmalfiGalleryPage(
   build: (context) => const _DialogsPage(),
 );
 
-/// A labelled row standing in for a form row ("Where: Recipes").
-class _Row extends StatelessWidget {
-  const _Row(this.label, this.value, {this.width = 272});
-
-  final String label, value;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    return SizedBox(
-      width: width,
-      height: 28,
-      child: Row(
-        children: [
-          SizedBox(
-            width: 72,
-            child: Text(
-              '$label:',
-              style: AmalfiType.body(color: colors.textSecondary),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              height: 28,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              alignment: Alignment.centerLeft,
-              decoration: ShapeDecoration(
-                color: colors.surfaceRaised,
-                shape: AmalfiSmoothBorder(
-                  radius: AmalfiRadii.field,
-                  side: BorderSide(color: colors.lineBorder),
-                ),
-              ),
-              child: Text(
-                value,
-                style: AmalfiType.body(color: colors.textPrimary),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A list row standing in for the sidebars family.
-class _ListRow extends StatelessWidget {
-  const _ListRow(this.label, {this.selected = false});
+/// A pop-up of folders ("Where: Recipes").
+class _Folders extends StatefulWidget {
+  const _Folders(this.label);
 
   final String label;
-  final bool selected;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    return Container(
-      height: 28,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      alignment: Alignment.centerLeft,
-      decoration: selected
-          ? ShapeDecoration(
-              color: colors.accentAmalfiSoft,
-              shape: const AmalfiSmoothBorder(radius: 8),
-            )
-          : null,
-      child: Text(label, style: AmalfiType.body(color: colors.textPrimary)),
-    );
-  }
+  State<_Folders> createState() => _FoldersState();
 }
 
-const _browser = AmalfiDialogBrowser(
-  places: Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _ListRow('Recents'),
-      _ListRow('Desktop'),
-      _ListRow('Documents', selected: true),
-      _ListRow('Downloads'),
-    ],
-  ),
-  files: Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _ListRow('Lemon cake.recipe', selected: true),
-      _ListRow('Focaccia.recipe'),
-      _ListRow('Limoncello notes.txt'),
-    ],
-  ),
+class _FoldersState extends State<_Folders> {
+  String _folder = 'Recipes';
+
+  @override
+  Widget build(BuildContext context) => AmalfiFormRow(
+    label: widget.label,
+    control: AmalfiPopUpButton<String>(
+      items: const [
+        AmalfiPopUpItem(value: 'Recipes', label: 'Recipes'),
+        AmalfiPopUpItem(value: 'Documents', label: 'Documents'),
+        AmalfiPopUpItem(value: 'Desktop', label: 'Desktop'),
+      ],
+      value: _folder,
+      onChanged: (v) => setState(() => _folder = v),
+    ),
+  );
+}
+
+AmalfiPushButton _button(String label, {bool primary = false}) =>
+    AmalfiPushButton(
+      label: label,
+      variant: primary
+          ? AmalfiPushButtonVariant.primary
+          : AmalfiPushButtonVariant.secondary,
+      onPressed: () {},
+    );
+
+/// The places and files of a file dialog, with a selection that follows clicks.
+class _Browser extends StatefulWidget {
+  const _Browser();
+
+  @override
+  State<_Browser> createState() => _BrowserState();
+}
+
+class _BrowserState extends State<_Browser> {
+  bool _open = true;
+  String _place = 'Documents';
+  String _file = 'Lemon cake.recipe';
+
+  @override
+  Widget build(BuildContext context) => AmalfiDialogBrowser(
+    places: Align(
+      alignment: Alignment.topLeft,
+      child: AmalfiSidebarGroup(
+        title: 'Places',
+        expanded: _open,
+        onToggle: () => setState(() => _open = !_open),
+        children: [
+          for (final (place, glyph, badge) in [
+            ('Documents', AmalfiGlyphs.doc, null),
+            ('Downloads', AmalfiGlyphs.download, '3'),
+            ('Pictures', AmalfiGlyphs.photo, null),
+          ])
+            AmalfiSidebarRow(
+              label: place,
+              icon: glyph,
+              badge: badge,
+              selected: place == _place,
+              onTap: () => setState(() => _place = place),
+            ),
+        ],
+      ),
+    ),
+    files: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final f in [
+          'Lemon cake.recipe',
+          'Focaccia.recipe',
+          'Limoncello notes.txt',
+        ])
+          AmalfiSidebarRow(
+            label: f,
+            icon: AmalfiGlyphs.doc,
+            selected: f == _file,
+            onTap: () => setState(() => _file = f),
+          ),
+      ],
+    ),
+  );
+}
+
+final _openFooter = AmalfiDialogFooter(
+  actions: [_button('Cancel'), _button('Open', primary: true)],
 );
 
-const _openFooter = AmalfiDialogFooter(
-  actions: [
-    GalleryButton('Cancel', width: 72),
-    GalleryButton('Open', primary: true, width: 72),
-  ],
-);
-
-const _saveFooter = AmalfiDialogFooter(
-  leading: [GalleryButton('New Folder', width: 96)],
-  actions: [
-    GalleryButton('Cancel', width: 72),
-    GalleryButton('Save', primary: true, width: 72),
-  ],
+final _saveFooter = AmalfiDialogFooter(
+  leading: [_button('New Folder')],
+  actions: [_button('Cancel'), _button('Save', primary: true)],
 );
 
 class _DialogsPage extends StatelessWidget {
   const _DialogsPage();
 
   @override
-  Widget build(BuildContext context) => const Column(
+  Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       SpecimenSection(
@@ -136,9 +131,12 @@ class _DialogsPage extends StatelessWidget {
             child: AmalfiDialog(
               title: 'Save as',
               children: [
-                _Row('Save as', 'Lemon cake', width: 348),
-                _Row('Where', 'Recipes', width: 264),
-                _browser,
+                const AmalfiFormRow(
+                  label: 'Save as:',
+                  control: AmalfiTextField(width: 268),
+                ),
+                const _Folders('Where:'),
+                const _Browser(),
               ],
               footer: _saveFooter,
             ),
@@ -147,7 +145,7 @@ class _DialogsPage extends StatelessWidget {
             label: 'Open Panel',
             child: AmalfiDialog(
               title: 'Open recipe',
-              children: [_Row('Look in', 'Recipes'), _browser],
+              children: [const _Folders('Look in:'), const _Browser()],
               footer: _openFooter,
             ),
           ),
@@ -156,15 +154,20 @@ class _DialogsPage extends StatelessWidget {
             child: AmalfiDialog(
               title: 'Share recipe',
               layout: AmalfiDialogLayout.generic,
-              children: [
-                _Row('Name', 'Lemon cake', width: 352),
-                _Row('With', 'Marta', width: 352),
+              children: const [
+                AmalfiFormRow(
+                  label: 'Name:',
+                  control: AmalfiTextField(),
+                  expand: true,
+                ),
+                AmalfiFormRow(
+                  label: 'With:',
+                  control: AmalfiTextField(placeholder: 'Marta'),
+                  expand: true,
+                ),
               ],
               footer: AmalfiDialogFooter(
-                actions: [
-                  GalleryButton('Cancel', width: 72),
-                  GalleryButton('Share', primary: true, width: 72),
-                ],
+                actions: [_button('Cancel'), _button('Share', primary: true)],
               ),
             ),
           ),
@@ -175,7 +178,7 @@ class _DialogsPage extends StatelessWidget {
         children: [
           Specimen(
             label: 'Browser · Files',
-            child: SizedBox(width: 560, child: _browser),
+            child: SizedBox(width: 560, child: _Browser()),
           ),
           Specimen(
             label: 'Footer · Open',

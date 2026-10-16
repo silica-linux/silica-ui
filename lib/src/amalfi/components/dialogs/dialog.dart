@@ -48,6 +48,9 @@ abstract final class AmalfiDialogMetrics {
   /// The space between the footer's buttons.
   static const double footerGap = 8;
 
+  /// The least width of a footer button (the kit's `Cancel`, `Open`, `Save` are 72 wide).
+  static const double buttonMinWidth = 72;
+
   /// The space between the places and the files of a browser.
   static const double browserGap = 16;
 
@@ -146,7 +149,7 @@ class AmalfiDialog extends StatelessWidget {
 
 /// The buttons row of a dialog (kit `Dialogs/Footer/Open|Save`): [leading] buttons (New
 /// Folder) at the leading end, [actions] (Cancel, then the default button) at the trailing
-/// end, 8 apart.
+/// end, 8 apart, each at least 72 wide.
 class AmalfiDialogFooter extends StatelessWidget {
   const AmalfiDialogFooter({
     super.key,
@@ -164,7 +167,12 @@ class AmalfiDialogFooter extends StatelessWidget {
     List<Widget> spaced(List<Widget> items) => [
       for (var i = 0; i < items.length; i++) ...[
         if (i > 0) const SizedBox(width: AmalfiDialogMetrics.footerGap),
-        items[i],
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: AmalfiDialogMetrics.buttonMinWidth,
+          ),
+          child: items[i],
+        ),
       ],
     ];
     return Row(

@@ -6,7 +6,6 @@ import 'package:silica_ui/silica_ui.dart';
 
 import '../specimen.dart';
 import 'alerts.dart' show GalleryAppIcon;
-import 'menus.dart' show GalleryButton;
 
 /// The sheets page.
 final AmalfiGalleryPage sheetsPage = AmalfiGalleryPage(
@@ -24,6 +23,7 @@ class _SheetsPage extends StatefulWidget {
 
 class _SheetsPageState extends State<_SheetsPage> {
   bool _open = true;
+  bool _suppress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,7 @@ class _SheetsPageState extends State<_SheetsPage> {
     void toggle() => setState(() => _open = !_open);
     return SpecimenSection(
       title: 'Sheet Attached',
-      note:
-          'A window stands in for the windows family; the buttons toggle the sheet.',
+      note: 'A document window with a sheet; the buttons toggle the sheet.',
       children: [
         Specimen(
           label: 'Active',
@@ -46,49 +45,50 @@ class _SheetsPageState extends State<_SheetsPage> {
                 material: AmalfiAlertMaterial.glass,
                 title: 'Empty the outbox?',
                 message: 'Messages waiting to be sent will be sent now.',
+                accessory: Center(
+                  child: AmalfiCheckbox(
+                    value: _suppress,
+                    label: 'Do not ask again',
+                    onChanged: (v) => setState(() => _suppress = v),
+                  ),
+                ),
                 actions: [
-                  GalleryButton('Cancel', width: 72, onPressed: toggle),
-                  GalleryButton(
-                    'Send',
-                    primary: true,
-                    width: 72,
+                  AmalfiPushButton(label: 'Cancel', onPressed: toggle),
+                  AmalfiPushButton(
+                    label: 'Send',
+                    variant: AmalfiPushButtonVariant.primary,
                     onPressed: toggle,
                   ),
                 ],
               ),
-              child: DecoratedBox(
-                decoration: ShapeDecoration(
-                  color: colors.surfaceWindow,
-                  shape: AmalfiSmoothBorder(
-                    radius: AmalfiRadii.window,
-                    side: BorderSide(color: colors.lineBorder),
+              child: AmalfiWindow(
+                child: AmalfiWindowLayout(
+                  bar: AmalfiTitleBar(
+                    title: 'Lemon cake.recipe',
+                    document: true,
+                    onClose: () {},
+                    onMinimise: () {},
+                    onZoom: () {},
                   ),
-                  shadows: AmalfiShadows.of(
-                    AmalfiTheme.of(context).brightness,
-                  ).level(3),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: AmalfiSheetMetrics.titleBarHeight,
-                      child: Center(
-                        child: Text(
-                          'Lemon cake.recipe',
-                          style: AmalfiType.headline(color: colors.textPrimary),
+                  barHeight: AmalfiToolbarMetrics.titleBarHeight,
+                  content: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Lemon cake',
+                          style: AmalfiType.title1(color: colors.textPrimary),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        AmalfiPushButton(
+                          label: 'Show the sheet',
+                          variant: AmalfiPushButtonVariant.primary,
+                          onPressed: toggle,
+                        ),
+                      ],
                     ),
-                    Container(height: 1, color: colors.lineSeparator),
-                    Padding(
-                      padding: const EdgeInsets.all(28),
-                      child: GalleryButton(
-                        'Show the sheet',
-                        primary: true,
-                        onPressed: toggle,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

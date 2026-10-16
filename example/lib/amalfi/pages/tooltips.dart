@@ -60,38 +60,37 @@ class _TooltipsPage extends StatelessWidget {
   };
 }
 
-/// A 28 pt round target (a stand-in until the buttons family exists) with a tooltip.
-class _Target extends StatelessWidget {
+/// A round icon button with a tooltip: it adds to (or removes from) the favourites.
+class _Target extends StatefulWidget {
   const _Target(this.placement);
 
   final AmalfiTooltipPlacement placement;
 
   @override
+  State<_Target> createState() => _TargetState();
+}
+
+class _TargetState extends State<_Target> {
+  bool _favourite = false;
+
+  @override
   Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
+    final message = _favourite ? 'Remove from favourites' : 'Add to favourites';
     return Padding(
       // Room for the tooltip on every side inside the gallery.
       padding: const EdgeInsets.symmetric(horizontal: 128, vertical: 36),
       child: AmalfiTooltipRegion(
-        message: 'Add to favourites',
-        placement: placement,
-        child: DecoratedBox(
-          decoration: ShapeDecoration(
-            color: colors.surfaceControl,
-            shape: StadiumBorder(side: BorderSide(color: colors.lineBorder)),
-            shadows: AmalfiShadows.of(
-              AmalfiTheme.of(context).brightness,
-            ).level1,
+        message: message,
+        placement: widget.placement,
+        child: AmalfiIconButton(
+          icon: AmalfiGlyph(
+            AmalfiGlyphs.star,
+            color: _favourite
+                ? AmalfiTheme.of(context).colors.accentAmalfi
+                : null,
           ),
-          child: SizedBox.square(
-            dimension: AmalfiControlSize.regular.height,
-            child: Center(
-              child: Text(
-                '+',
-                style: AmalfiType.body(color: colors.textPrimary),
-              ),
-            ),
-          ),
+          semanticLabel: message,
+          onPressed: () => setState(() => _favourite = !_favourite),
         ),
       ),
     );

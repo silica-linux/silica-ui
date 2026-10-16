@@ -8,6 +8,7 @@ import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../../whole_points.dart';
 
 /// The measures of menus and their rows, from the kit masters `Menus/*`.
 abstract final class AmalfiMenuMetrics {
@@ -73,9 +74,11 @@ abstract final class AmalfiMenuMetrics {
 /// label.
 ///
 /// [highlighted] draws the `Accent/Amalfi` highlight (`Palette/Terracotta` when
-/// [destructive]) with the text in `Text/On Accent`; a disabled item ([enabled] false) draws
-/// everything in `Text/Tertiary`. The checkmark slot (12) is always kept, so labels line up;
-/// an [icon] takes a 16 pt slot instead and gets the text colour through [IconTheme].
+/// [destructive]) with the text in `Text/On Accent`; a disabled item ([enabled] false) is
+/// drawn whole at `AmalfiStates.disabledOpacity`. The checkmark slot (12) is always kept, so
+/// labels line up; an [icon] takes a 16 pt slot instead and gets the text colour through
+/// [IconTheme]. The shortcut sits at the trailing edge, its box rounded up to whole points,
+/// and the label takes the rest of the row.
 ///
 /// This is the row only; [AmalfiMenu] lays items out and makes them interactive.
 class AmalfiMenuItem extends StatelessWidget {
@@ -119,16 +122,8 @@ class AmalfiMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
     final lit = highlighted && enabled;
-    final text = !enabled
-        ? colors.textTertiary
-        : lit
-        ? colors.textOnAccent
-        : colors.textPrimary;
-    final secondary = !enabled
-        ? colors.textTertiary
-        : lit
-        ? colors.textOnAccent
-        : colors.textSecondary;
+    final text = lit ? colors.textOnAccent : colors.textPrimary;
+    final secondary = lit ? colors.textOnAccent : colors.textSecondary;
     final icon = this.icon;
     final shortcut = this.shortcut;
     Widget row = Padding(
@@ -171,12 +166,14 @@ class AmalfiMenuItem extends StatelessWidget {
           ),
           if (shortcut != null) ...[
             const SizedBox(width: AmalfiMenuMetrics.gap),
-            Text(
-              shortcut,
-              maxLines: 1,
-              softWrap: false,
-              textAlign: TextAlign.right,
-              style: AmalfiType.body(color: secondary),
+            AmalfiWholePoints(
+              child: Text(
+                shortcut,
+                maxLines: 1,
+                softWrap: false,
+                textAlign: TextAlign.right,
+                style: AmalfiType.body(color: secondary),
+              ),
             ),
           ],
           if (submenu) ...[
@@ -201,7 +198,10 @@ class AmalfiMenuItem extends StatelessWidget {
         child: row,
       );
     }
-    return SizedBox(height: AmalfiMenuMetrics.itemHeight, child: row);
+    row = SizedBox(height: AmalfiMenuMetrics.itemHeight, child: row);
+    return enabled
+        ? row
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: row);
   }
 }
 

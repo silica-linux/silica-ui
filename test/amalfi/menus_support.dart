@@ -1,6 +1,6 @@
 // Shared helpers of the menus, popovers, alerts, dialogs and sheets tests: a mouse that
 // stays for the test, finders of label boxes, the style extractors of the surfaces these
-// families paint themselves, and the known kit defects of Glass/Thick.
+// families paint themselves, and the pixel tolerances they share.
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
@@ -8,16 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 
 import 'support/harness.dart';
-
-/// Kit defect: Dark/Glass/Thick drops the level 2 shadow colour (#52000000) with the level 3
-/// offset and blur; `materials.md` and the tokens give Glass/Thick level 3 (#5C000000).
-Map<String, String> thickShadowDefect(String path, Brightness brightness) =>
-    brightness == Brightness.dark
-    ? {
-        '$path#shadows':
-            'kit Dark/Glass/Thick shadow is #52000000, tokens level 3 #5C000000',
-      }
-    : const {};
 
 /// The 7 pt smooth corners of the highlight antialias up to 51 apart from Sketch's on one
 /// corner pixel (alpha 196 against 145); the rest of the shape agrees (mean ≤ 0.3).

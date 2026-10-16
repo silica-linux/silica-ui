@@ -293,12 +293,8 @@ abstract final class AmalfiToolbarMetrics {
   static const double titleBarHeight = 48;
 
   /// The padding of the unified toolbar after its last piece (kit `Bar/Unified/Full Inset
-  /// 8`, the bar of the window layouts: the last control ends 12 from the edge).
-  static const EdgeInsets unifiedPadding = EdgeInsets.only(right: 8);
-
-  /// The wider end padding (kit `Bar/Unified/Full Inset 16`: the last control ends 20 from
-  /// the edge).
-  static const EdgeInsets unifiedPaddingWide = EdgeInsets.only(right: 16);
+  /// 16`, `components.md`: trailing padding 16; the last control ends 20 from the edge).
+  static const EdgeInsets unifiedPadding = EdgeInsets.only(right: 16);
 
   /// The padding of a content, list or inspector section of a split toolbar.
   static const EdgeInsets sectionPadding = EdgeInsets.only(left: 12, right: 8);

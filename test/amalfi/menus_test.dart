@@ -8,16 +8,9 @@ import 'package:silica_ui/silica_ui.dart';
 import 'menus_support.dart';
 import 'support/harness.dart';
 
-/// A stand-in for an Icon Kit glyph passed as a menu icon: a 16 pt box (the pixel tests mask
-/// it; the glyph library is silica-icons).
-class _IconStandIn extends StatelessWidget {
-  const _IconStandIn();
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.square(dimension: 16);
-}
-
-const _icon = _IconStandIn();
+/// The icon of `Menus/Item/Icon` (`Regular / share`). The menus' icon rows override it
+/// with symbols the fixtures name only by id: those stay masked in the menu tests.
+const _icon = AmalfiGlyph(AmalfiGlyphs.share);
 
 /// The 12 pt slot before the label (empty or with the checkmark).
 Finder _checkSlot(Finder item) => find
@@ -33,12 +26,6 @@ Finder _glyph(Finder item, AmalfiGlyphData glyph) => find.descendant(
   of: item,
   matching: find.byWidgetPredicate((w) => w is AmalfiGlyph && w.glyph == glyph),
 );
-
-/// Kit defect: every menu surface is taller than its rows and padding (Simple 116 for 104,
-/// Full 240 for 216, Context 188 for 168, Submenu 124 for 112): the code keeps 4 pt of
-/// padding at the bottom as at the top.
-const _tallSurface =
-    'kit surface taller than its rows + 4 pt padding (bottom 12–28)';
 
 /// The rows of `Menus/Menu/Full`.
 List<AmalfiMenuEntry> fullEntries({VoidCallback? onNewWindow}) => [
@@ -65,8 +52,8 @@ const List<AmalfiMenuEntry> submenuEntries = [
 
 const List<AmalfiMenuEntry> simpleEntries = [
   AmalfiMenuAction('Orange'),
-  AmalfiMenuAction('Lemon'),
-  AmalfiMenuAction('Olive', checked: true),
+  AmalfiMenuAction('Lemon', checked: true),
+  AmalfiMenuAction('Olive'),
   AmalfiMenuAction('Fig'),
 ];
 
@@ -210,39 +197,22 @@ void main() {
             if (master.maybeLayer('Chevron') != null)
               'Chevron': _glyph(row, AmalfiGlyphs.chevronRight),
             if (master.maybeLayer('Icon') != null)
-              'Icon': find.byType(_IconStandIn),
+              'Icon': _glyph(row, AmalfiGlyphs.share),
             if (master.maybeLayer('Shortcut') != null)
-              'Shortcut': textBox('⌘N'),
+              'Shortcut': find.ancestor(
+                of: find.text('⌘N'),
+                matching: find.byType(AmalfiWholePoints),
+              ),
           };
-          // The kit splits a shortcut row in two halves (label 76, shortcut 76, right
-          // aligned); the code gives the label the room the shortcut leaves. The text is
-          // drawn in the same place.
-          final halves = master.maybeLayer('Shortcut') != null;
-          expectKitGeometry(
-            tester,
-            master,
-            root: root,
-            layers: layers,
-            deviations: {
-              if (halves) 'Label': 'kit splits the row in halves',
-              if (halves) 'Shortcut': 'kit splits the row in halves',
-            },
-          );
+          expectKitGeometry(tester, master, root: root, layers: layers);
           await expectKitPixels(
             tester,
             master,
             scene,
             maskText: true,
-            maskLayers: [if (master.maybeLayer('Icon') != null) 'Icon'],
             tolerance: highlightCorners,
           );
-          await expectKitPixels(
-            tester,
-            master,
-            scene,
-            tolerance: denseText,
-            maskLayers: [if (master.maybeLayer('Icon') != null) 'Icon'],
-          );
+          await expectKitPixels(tester, master, scene, tolerance: denseText);
         });
       }
 
@@ -282,7 +252,7 @@ void main() {
 
       // Menus: (variant, entries, item to highlight, rows to check).
       final menus = <(String, List<AmalfiMenuEntry>, String?)>[
-        ('Simple', simpleEntries, 'Lemon'),
+        ('Simple', simpleEntries, 'Olive'),
         ('Full', fullEntries(), 'Open Recent'),
         ('Context', contextEntries, 'Copy'),
         ('Submenu', submenuEntries, 'Fig Jam'),
@@ -322,41 +292,30 @@ void main() {
                     ? find.byType(AmalfiMenuHeader)
                     : menuItem(l.name),
           };
-          expectKitGeometry(
-            tester,
-            master,
-            root: root,
-            layers: layers,
-            deviations: {'#frame': _tallSurface, 'Surface': _tallSurface},
-          );
-          // The pixels, with the surface as tall as the kit's.
-          final tall = AmalfiMenu(
-            entries: entries,
-            width: master.size.width,
-            minHeight: master.size.height,
-            autofocus: true,
-          );
+          expectKitGeometry(tester, master, root: root, layers: layers);
           final icons = [
             for (final l in master.root.children)
               if (l.master?.contains('/Icon/') ?? false)
                 Rect.fromLTWH(l.frame.left + 8, l.frame.top + 4, 16, 16),
           ];
-          // The kit's text frames of shortcut rows are the halves of the 188 pt master, not
-          // of the wider rows ("New Window" overflows its frame): mask their text by hand.
+          // The masked text frames are the nested 188 pt master's, so the shortcuts of
+          // wider rows fall outside them: mask those by hand (in the text-free pass; the
+          // text pass compares them). Kit defect: `Export…` keeps the master's shortcut
+          // (⌘N, no override) where the code shows its own (⇧⌘E): masked in both passes.
           final shortcuts = [
             for (final l in master.root.children)
               if (l.master?.contains('/Shortcut/') ?? false)
-                Rect.fromLTWH(
-                  l.frame.left + 20,
-                  l.frame.top,
-                  l.frame.width - 28,
-                  24,
-                ),
+                Rect.fromLTWH(l.frame.right - 48, l.frame.top, 40, 24),
+          ];
+          final export = [
+            for (final l in master.root.children)
+              if (l.name == 'Export…')
+                Rect.fromLTWH(l.frame.right - 48, l.frame.top, 40, 24),
           ];
           await expectKitPixels(
             tester,
             master,
-            tall,
+            menu,
             maskText: true,
             mask: [...icons, ...shortcuts],
             prepare: highlight,
@@ -364,8 +323,8 @@ void main() {
           await expectKitPixels(
             tester,
             master,
-            tall,
-            mask: icons,
+            menu,
+            mask: [...icons, ...export],
             tolerance: KitPixelTolerance.withText,
             prepare: highlight,
           );
@@ -398,7 +357,12 @@ void main() {
           master,
           root: root,
           layers: {'Parent menu': menus.first, 'Submenu': menus.last},
-          deviations: {'Parent menu': _tallSurface, 'Submenu': _tallSurface},
+          // Kit choice: the submenu is the 188 pt `Menus/Menu/Submenu` master; the code
+          // sizes a submenu to its widest row (160, the least).
+          deviations: {
+            'Submenu':
+                'kit submenu 188 wide, the code fits it to its rows (160)',
+          },
         );
         expect(
           tester.getTopLeft(menus.last),
@@ -596,9 +560,9 @@ void main() {
       final semantics = tester.ensureSemantics();
       await pumpKitScene(tester, const AmalfiMenu(entries: simpleEntries));
       expect(
-        tester.getSemantics(menuItem('Olive')),
+        tester.getSemantics(menuItem('Lemon')),
         matchesSemantics(
-          label: 'Olive',
+          label: 'Lemon',
           isButton: true,
           hasEnabledState: true,
           isEnabled: true,
