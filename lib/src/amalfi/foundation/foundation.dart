@@ -5,6 +5,7 @@
 export 'focus_halo.dart';
 export 'glyph.dart';
 export 'interaction.dart';
+export 'lens.dart';
 export 'layer_keys.dart';
 export 'shadow.dart';
 export 'symbol.dart';

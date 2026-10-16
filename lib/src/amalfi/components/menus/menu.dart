@@ -95,6 +95,8 @@ class AmalfiMenu extends StatelessWidget {
     this.onBack,
     this.autofocus = false,
     this.highlightFirst = false,
+    this.initialHighlight,
+    this.focusNode,
     this.opaque = false,
     this.minHeight = 0,
   });
@@ -120,6 +122,13 @@ class AmalfiMenu extends StatelessWidget {
   /// Whether the first item is highlighted when the menu appears (opened by the keyboard).
   final bool highlightFirst;
 
+  /// The index in [entries] of the item highlighted when the menu appears (a pop-up
+  /// button's current value); null, or an item that cannot be chosen: see [highlightFirst].
+  final int? initialHighlight;
+
+  /// The focus node of the rows (to focus the menu from outside); null: its own.
+  final FocusNode? focusNode;
+
   /// Whether the glass is drawn without blur (see [AmalfiGlass.opaque]).
   final bool opaque;
 
@@ -142,6 +151,8 @@ class AmalfiMenu extends StatelessWidget {
             onBack: onBack,
             autofocus: autofocus,
             highlightFirst: highlightFirst,
+            initialHighlight: initialHighlight,
+            focusNode: focusNode,
             opaque: opaque,
           ),
         ),
@@ -174,6 +185,8 @@ class AmalfiMenuList extends StatefulWidget {
     this.onBack,
     this.autofocus = false,
     this.highlightFirst = false,
+    this.initialHighlight,
+    this.focusNode,
     this.opaque = false,
   });
 
@@ -190,6 +203,13 @@ class AmalfiMenuList extends StatefulWidget {
   /// Whether the first item starts highlighted.
   final bool highlightFirst;
 
+  /// The index of the item that starts highlighted; null (or an item that cannot be
+  /// chosen): see [highlightFirst].
+  final int? initialHighlight;
+
+  /// The focus node of the list; null: its own.
+  final FocusNode? focusNode;
+
   /// Passed to the submenus' glass.
   final bool opaque;
 
@@ -198,7 +218,10 @@ class AmalfiMenuList extends StatefulWidget {
 }
 
 class _AmalfiMenuListState extends State<AmalfiMenuList> {
-  final FocusNode _focus = FocusNode(debugLabel: 'AmalfiMenuList');
+  FocusNode? _ownFocus;
+  FocusNode get _focus =>
+      widget.focusNode ??
+      (_ownFocus ??= FocusNode(debugLabel: 'AmalfiMenuList'));
   final OverlayPortalController _portal = OverlayPortalController();
   final GlobalKey _submenuKey = GlobalKey();
   List<GlobalKey> _keys = const [];
@@ -218,7 +241,12 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
   void initState() {
     super.initState();
     _syncKeys();
-    if (widget.highlightFirst) _highlight = _step(null, 1);
+    final initial = widget.initialHighlight;
+    if (initial != null && _selectable(initial)) {
+      _highlight = initial;
+    } else if (widget.highlightFirst) {
+      _highlight = _step(null, 1);
+    }
     if (widget.autofocus) {
       // Autofocus does nothing while another node (the parent menu) has the focus.
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -244,7 +272,7 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
     for (final t in [_submenuTimer, _deferTimer, _blinkTimer, _closeTimer]) {
       t?.cancel();
     }
-    _focus.dispose();
+    _ownFocus?.dispose();
     super.dispose();
   }
 
