@@ -3,4 +3,4 @@
 // Checklist: `docs/amalfi-checklist/sheets.md`. Gallery: `example/lib/amalfi/pages/sheets.dart`.
 // The widgets live under `sheets/` and are exported from here.
 
-// Nothing yet.
+export 'sheets/sheet.dart';
