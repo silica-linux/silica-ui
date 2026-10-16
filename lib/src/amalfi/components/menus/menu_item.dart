@@ -152,8 +152,8 @@ class AmalfiMenuItem extends StatelessWidget {
             SizedBox.square(
               dimension: AmalfiMenuMetrics.checkSlot,
               child: checked
-                  ? AmalfiGlyphIcon(
-                      AmalfiGlyph.checkmark,
+                  ? AmalfiMenuGlyphIcon(
+                      AmalfiMenuGlyph.checkmark,
                       color: text,
                       size: AmalfiMenuMetrics.glyph,
                     )
@@ -181,8 +181,8 @@ class AmalfiMenuItem extends StatelessWidget {
           ],
           if (submenu) ...[
             const SizedBox(width: AmalfiMenuMetrics.gap),
-            AmalfiGlyphIcon(
-              AmalfiGlyph.chevronRight,
+            AmalfiMenuGlyphIcon(
+              AmalfiMenuGlyph.chevronRight,
               color: secondary,
               size: AmalfiMenuMetrics.glyph,
             ),

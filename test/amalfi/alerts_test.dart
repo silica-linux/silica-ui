@@ -202,7 +202,7 @@ void main() {
               if (accessory != null) accessory: standIn(accessory),
               if (alert.critical) ...{
                 'Badge disc': find.byType(AmalfiAlertSurface).last,
-                'Glyph Warning': find.byType(AmalfiGlyphIcon),
+                'Glyph Warning': find.byType(AmalfiMenuGlyphIcon),
               },
             },
             deviations: deviationsOf(variant),

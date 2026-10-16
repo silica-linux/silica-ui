@@ -30,10 +30,10 @@ Finder _checkSlot(Finder item) => find
     )
     .first;
 
-Finder _glyph(Finder item, AmalfiGlyph glyph) => find.descendant(
+Finder _glyph(Finder item, AmalfiMenuGlyph glyph) => find.descendant(
   of: item,
   matching: find.byWidgetPredicate(
-    (w) => w is AmalfiGlyphIcon && w.glyph == glyph,
+    (w) => w is AmalfiMenuGlyphIcon && w.glyph == glyph,
   ),
 );
 
@@ -209,9 +209,9 @@ void main() {
             if (master.maybeLayer('Check slot') != null)
               'Check slot': _checkSlot(row),
             if (master.maybeLayer('Check') != null)
-              'Check': _glyph(row, AmalfiGlyph.checkmark),
+              'Check': _glyph(row, AmalfiMenuGlyph.checkmark),
             if (master.maybeLayer('Chevron') != null)
-              'Chevron': _glyph(row, AmalfiGlyph.chevronRight),
+              'Chevron': _glyph(row, AmalfiMenuGlyph.chevronRight),
             if (master.maybeLayer('Icon') != null)
               'Icon': find.byType(_IconStandIn),
             if (master.maybeLayer('Shortcut') != null)

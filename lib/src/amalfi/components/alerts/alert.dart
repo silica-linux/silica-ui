@@ -215,8 +215,8 @@ class _CriticalBadge extends StatelessWidget {
       radius: AmalfiAlertMetrics.badge / 2,
       shadow: false,
       child: Center(
-        child: AmalfiGlyphIcon(
-          AmalfiGlyph.warning,
+        child: AmalfiMenuGlyphIcon(
+          AmalfiMenuGlyph.warning,
           color: AmalfiTheme.of(context).colors.paletteTerracotta,
           size: AmalfiAlertMetrics.badgeGlyph,
         ),
