@@ -310,6 +310,8 @@ void main() {
                 },
                 deviations: {'Thumb': thumbDefect},
                 mask: [kitThumb.expandToInclude(ours).inflate(2)],
+                // What is left beside the masked thumb is mostly the track's edge.
+                tolerance: tolerance(masked: true),
                 // Disabled: the opacity differs from the kit (see above).
                 pixels: kitState.enabled,
               );
