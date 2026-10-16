@@ -50,8 +50,23 @@ class KitPixelResult {
     this.compared,
     this.worst,
     this.expectedAtWorst,
-    this.actualAtWorst,
+    this.actualAtWorst, {
+    this.bandMasked = false,
+  });
+
+  KitPixelResult copyWith({bool? bandMasked}) => KitPixelResult(
+    mean,
+    max,
+    compared,
+    worst,
+    expectedAtWorst,
+    actualAtWorst,
+    bandMasked: bandMasked ?? this.bandMasked,
   );
+
+  /// Whether the comparison passed only with the glass refraction band masked (see
+  /// [expectKitPixels]).
+  final bool bandMasked;
 
   final double mean;
   final int max;
@@ -78,6 +93,9 @@ class KitPixelResult {
 /// - [maskText]: leave out every text frame of the master (nested masters included).
 /// - [maskLayers]: leave out what these layers paint (frame, shadows, nested masters).
 /// - [mask]: leave out these rectangles, in master coordinates.
+/// - [maskGlassBand]: when the comparison fails and the master has Regular or Thick glass,
+///   repeat it with the glass's refraction band masked (the Flutter side has no refraction
+///   without shaders); on by default, with the same tolerance.
 /// Masks are grown by [maskMargin] points for antialiasing.
 /// - [origin]: where the master's origin is in the PNG, in points; by default
 ///   `-renderBounds.topLeft` (see [KitMaster.renderBounds]).
@@ -96,6 +114,7 @@ Future<KitPixelResult> expectKitPixels(
   List<String> maskLayers = const [],
   List<Rect> mask = const [],
   double maskMargin = 1,
+  bool maskGlassBand = true,
   Offset? origin,
   Future<void> Function(WidgetTester tester)? prepare,
 }) async {
@@ -180,45 +199,83 @@ Future<KitPixelResult> expectKitPixels(
   }
   mask.forEach(cover);
 
-  var sum = 0, compared = 0, max = 0, worst = 0;
-  final diff = Uint8List(width * height * 4);
-  for (var i = 0; i < width * height; i++) {
-    final o = i * 4;
-    if (masked[i] == 1) {
+  // Compares outside [masked]; the diff image shows the masked pixels in blue.
+  (KitPixelResult, Uint8List) compare(Uint8List masked, {int? meanOver}) {
+    var sum = 0, compared = 0, max = 0, worst = 0;
+    final diff = Uint8List(width * height * 4);
+    for (var i = 0; i < width * height; i++) {
+      final o = i * 4;
+      if (masked[i] == 1) {
+        diff
+          ..[o] = 40
+          ..[o + 1] = 40
+          ..[o + 2] = 120
+          ..[o + 3] = 255;
+        continue;
+      }
+      var pixelMax = 0;
+      for (var c = 0; c < 4; c++) {
+        final d = (actual.bytes[o + c] - expected.bytes[o + c]).abs();
+        sum += d;
+        if (d > pixelMax) pixelMax = d;
+      }
+      compared++;
+      if (pixelMax > max) {
+        max = pixelMax;
+        worst = i;
+      }
+      // Black where equal, brighter red the larger the difference (x4).
       diff
-        ..[o] = 40
-        ..[o + 1] = 40
-        ..[o + 2] = 120
+        ..[o] = math.min(255, pixelMax * 4)
+        ..[o + 1] = 0
+        ..[o + 2] = 0
         ..[o + 3] = 255;
-      continue;
     }
-    var pixelMax = 0;
-    for (var c = 0; c < 4; c++) {
-      final d = (actual.bytes[o + c] - expected.bytes[o + c]).abs();
-      sum += d;
-      if (d > pixelMax) pixelMax = d;
-    }
-    compared++;
-    if (pixelMax > max) {
-      max = pixelMax;
-      worst = i;
-    }
-    // Black where equal, brighter red the larger the difference (×4).
-    diff
-      ..[o] = math.min(255, pixelMax * 4)
-      ..[o + 1] = 0
-      ..[o + 2] = 0
-      ..[o + 3] = 255;
+    return (
+      KitPixelResult(
+        (meanOver ?? compared) == 0 ? 0 : sum / ((meanOver ?? compared) * 4),
+        max,
+        compared,
+        Offset((worst % width).toDouble(), (worst ~/ width).toDouble()),
+        expected.bytes.sublist(worst * 4, worst * 4 + 4),
+        actual.bytes.sublist(worst * 4, worst * 4 + 4),
+      ),
+      diff,
+    );
   }
-  final result = KitPixelResult(
-    compared == 0 ? 0 : sum / (compared * 4),
-    max,
-    compared,
-    Offset((worst % width).toDouble(), (worst ~/ width).toDouble()),
-    expected.bytes.sublist(worst * 4, worst * 4 + 4),
-    actual.bytes.sublist(worst * 4, worst * 4 + 4),
-  );
-  if (result.mean > tolerance.mean || result.max > tolerance.max) {
+
+  bool within(KitPixelResult r) =>
+      r.mean <= tolerance.mean && r.max <= tolerance.max;
+
+  var (result, diff) = compare(masked);
+  // The edge of Regular and Thick is refracted in the kit (Sketch's `Glass` blur: the band
+  // `depth` x half the shorter side inside the outline bends the backdrop and gets a specular
+  // highlight and a chromatic split). The Flutter backend without shaders (Skia, these
+  // tests) draws no refraction, so a comparison that fails is repeated with that band masked.
+  // The tolerance is the same, and the mean still divides by the pixels compared before the
+  // band was masked, so that text and glyphs weigh what they did; [KitPixelResult.bandMasked]
+  // records it.
+  if (!within(result) && maskGlassBand) {
+    final bands = master.glassBands;
+    if (bands.isNotEmpty) {
+      final withBand = Uint8List.fromList(masked);
+      for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+          final p = Offset((x + 0.5) / 2, (y + 0.5) / 2) - at;
+          for (final band in bands) {
+            if (band.inBand(p)) {
+              withBand[y * width + x] = 1;
+              break;
+            }
+          }
+        }
+      }
+      final (banded, bandedDiff) = compare(withBand, meanOver: result.compared);
+      result = within(banded) ? banded.copyWith(bandMasked: true) : banded;
+      diff = bandedDiff;
+    }
+  }
+  if (!within(result)) {
     final file = await _writeDiff(tester, master, expected, actual, diff);
     fail(
       '${master.name}: pixels differ from the kit ($result; tolerance mean '

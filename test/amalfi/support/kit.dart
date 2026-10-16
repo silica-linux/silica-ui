@@ -546,6 +546,10 @@ class KitMaster {
   /// The frames of every text layer, nested masters included, in master coordinates.
   List<Rect> get textRects => _texts(root, Offset.zero, isRoot: true);
 
+  /// The regions of refracting glass (Glass/Regular and Thick, a `Glass` blur that is not
+  /// the Clear lens), nested masters included, in master coordinates.
+  List<KitGlassBand> get glassBands => _bands(root, Offset.zero, isRoot: true);
+
   /// The area [layer] paints, effects and nested masters included, in master coordinates.
   Rect paintBoundsOf(KitLayer layer) =>
       _bounds(layer, layer.rectInMaster.topLeft - layer.frame.topLeft)!;
@@ -601,6 +605,57 @@ Rect? _bounds(KitLayer layer, Offset origin, {bool isRoot = false}) {
     children = children.intersect(rect);
   }
   return _union(_effects(rect, layer.style), children);
+}
+
+/// The edge band of a glass layer: the shape's rounded rectangle and how far inside its edge
+/// the refraction reaches (`depth` × half the shorter side, `materials.md`).
+class KitGlassBand {
+  KitGlassBand(this.rect, this.radius, this.width);
+
+  final Rect rect;
+  final double radius;
+  final double width;
+
+  /// Whether [p] (master coordinates) lies in the band: inside the outline, within [width] of
+  /// it (and 1 pt either side: the rims and the antialiasing).
+  bool inBand(Offset p) {
+    final r = math.min(radius, rect.shortestSide / 2);
+    final c = rect.center - p;
+    final h = Offset(rect.width / 2 - r, rect.height / 2 - r);
+    final dx = math.max(c.dx.abs() - h.dx, 0.0);
+    final dy = math.max(c.dy.abs() - h.dy, 0.0);
+    final inside = r - math.sqrt(dx * dx + dy * dy);
+    return inside >= -1 && inside < width + 1;
+  }
+
+  KitGlassBand shifted(Offset by) =>
+      KitGlassBand(rect.shift(by), radius, width);
+}
+
+List<KitGlassBand> _bands(
+  KitLayer layer,
+  Offset origin, {
+  bool isRoot = false,
+}) {
+  final at = isRoot ? origin : origin + layer.frame.topLeft;
+  if (layer.isKitInstance) {
+    return [for (final b in KitMaster.nested(layer).glassBands) b.shifted(at)];
+  }
+  return [
+    for (final b in layer.style?.blurs ?? const <KitBlur>[])
+      if (b.type == 'Glass' &&
+          ((b.raw['chromaticAberration'] as num?) ?? 0) !=
+              AmalfiMaterials.clear.refraction!.chromaticAberration)
+        KitGlassBand(
+          at & layer.frame.size,
+          math.min(
+            layer.style?.corners?.maxRadius ?? 0,
+            layer.frame.shortestSide / 2,
+          ),
+          ((b.raw['depth'] as num?) ?? 0) * layer.frame.shortestSide / 2,
+        ),
+    for (final c in layer.children) ..._bands(c, at),
+  ];
 }
 
 List<Rect> _texts(KitLayer layer, Offset origin, {bool isRoot = false}) {

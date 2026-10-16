@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:silica_ui/silica_ui.dart';
 
 import 'kit.dart';
 import 'rendered_style.dart';
@@ -304,21 +305,70 @@ void _checkStyle(
   shadows('shadows', 'shadows', kit.shadows, r.shadows);
   shadows('inner shadows', 'innerShadows', kit.innerShadows, r.innerShadows);
 
+  // Background blurs (a plain material) and, since the kit gave Regular and Thick real glass,
+  // `Glass` blurs (blur, saturation, brightness, edge refraction). The lens of Glass/Clear is
+  // also a `Glass` blur, drawn by the lens itself, and is not compared here.
+  final clearChroma = AmalfiMaterials.clear.refraction!.chromaticAberration;
+  bool isLens(KitBlur b) =>
+      _same(_num(b.raw['chromaticAberration']), clearChroma);
   final backgrounds = kit.blurs.where((b) => b.type == 'Background').toList();
-  if (backgrounds.length != r.blurs.length) {
+  final glasses = kit.blurs
+      .where((b) => b.type == 'Glass' && !isLens(b))
+      .toList();
+  final renderedBackgrounds = r.blurs.where((b) => b.glass == null).toList();
+  final renderedGlasses = r.blurs.where((b) => b.glass != null).toList();
+  if (backgrounds.length != renderedBackgrounds.length) {
     add(
       'blurs',
-      '$what: ${r.blurs.length} background blurs, kit ${backgrounds.length}',
+      '$what: ${renderedBackgrounds.length} background blurs, kit ${backgrounds.length}',
     );
   } else {
     for (var i = 0; i < backgrounds.length; i++) {
       final k = backgrounds[i];
-      final b = r.blurs[i];
+      final b = renderedBackgrounds[i];
       if (!_same(k.radius, b.radius) || !_same(k.saturation, b.saturation)) {
         add(
           'blurs',
           '$what: background blur $i ${b.radius} × saturation ${b.saturation}, '
               'kit ${k.radius} × ${k.saturation}',
+        );
+      }
+    }
+  }
+  if (glasses.length != renderedGlasses.length) {
+    add(
+      'blurs',
+      '$what: ${renderedGlasses.length} glass blurs, kit ${glasses.length}',
+    );
+  } else {
+    for (var i = 0; i < glasses.length; i++) {
+      final k = glasses[i];
+      final b = renderedGlasses[i];
+      final g = b.glass!;
+      final want = [
+        b.radius,
+        b.saturation,
+        b.brightness,
+        g.distortion,
+        g.depth,
+        g.chromaticAberration,
+      ];
+      final have = [
+        k.radius,
+        k.saturation,
+        k.brightness,
+        _num(k.raw['distortion']),
+        _num(k.raw['depth']),
+        _num(k.raw['chromaticAberration']),
+      ];
+      final same = [
+        for (var j = 0; j < want.length; j++) _same(have[j], want[j]),
+      ].every((x) => x);
+      if (!same && !_knownKitGlass(have, want)) {
+        add(
+          'blurs',
+          '$what: glass blur $i (σ, saturation, brightness, distortion, depth, '
+              'chromatic aberration) $want, kit $have',
         );
       }
     }
@@ -455,4 +505,24 @@ void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
       );
     }
   }
+}
+
+double _num(Object? v) => v is num ? v.toDouble() : 0;
+
+/// Kit-side deviations of the `Glass` blur of Regular and Thick from tokens.json (see
+/// `docs/amalfi-checklist/kit-issues.md`), accepted exactly as they are in the kit at the
+/// recorded commit; any other difference fails. Fields: σ, saturation, brightness,
+/// distortion, depth, chromatic aberration.
+bool _knownKitGlass(List<double> kit, List<double> tokens) {
+  bool is_(List<double> x) =>
+      [for (var i = 0; i < x.length; i++) _same(kit[i], x[i])].every((b) => b);
+  // Thick: the kit has saturation 1 and no chromatic aberration (Sketch cannot draw it).
+  final thick = AmalfiMaterials.thick;
+  if (_same(tokens[0], thick.backgroundBlur) &&
+      _same(tokens[3], thick.refraction!.distortion)) {
+    return is_([tokens[0], 1, tokens[2], tokens[3], tokens[4], 0]);
+  }
+  // Regular, dark: the kit has σ 10, saturation 1, distortion 0.5, depth 0.5, no chromatic
+  // aberration (the light master has the token values).
+  return is_([10, 1, AmalfiMaterials.regular.brightnessDark, 0.5, 0.5, 0]);
 }

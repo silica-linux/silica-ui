@@ -96,6 +96,11 @@ void main() {
           'Scrim': find.byType(AmalfiSheetScrim),
           'Sheet': find.byType(AmalfiAlert),
         },
+        deviations: {
+          'Sheet':
+              'the kit instance is 266 tall (silica-design ba8183f9); its master '
+              'Alerts/Alert/Two Buttons is 268, as the code draws it',
+        },
       );
       await expectKitPixels(
         tester,

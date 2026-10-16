@@ -104,9 +104,7 @@ void registerSurfaceStyles() {
         ],
         radii: widget.shape.cornerRadii,
         smoothing: AmalfiRadii.smoothing,
-        blurs: [
-          if (!widget.opaque) RenderedBlur(m.backgroundBlur, m.saturation),
-        ],
+        blurs: [if (!widget.opaque) RenderedBlur.glass(m, brightness)],
         source: 'AmalfiPopoverSurface',
       );
     }

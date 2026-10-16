@@ -91,11 +91,6 @@ final _browser = AmalfiDialogBrowser(
   ),
 );
 
-/// components.md: sidebar rows on a 32 pt pitch; the kit's `Sidebars/Group/Open` stacks
-/// them with no gap (see sidebars_test.dart), so the group is 124 tall, not 112.
-const _rowPitch =
-    'components.md row pitch 32 (gap 4); the kit stacks the group with gap 0';
-
 final _open = AmalfiDialog(
   title: 'Open recipe',
   children: [const StandIn('Look in', 272, 28), _browser],
@@ -197,15 +192,14 @@ void main() {
             'File list/Surface': panes.last,
             for (final f in _files) 'File list/$f': keyed(f),
           },
-          deviations: {'Places/Places group': _rowPitch},
         );
-        // The places group's rows sit 4 apart in the code (see _rowPitch): its 128 pt
-        // (kit 112) left out.
         await expectKitPixels(
           tester,
           master,
           scene,
           maskText: true,
+          // The places group's glyphs and badge: stand-ins here, as in sidebars_test.dart
+          // (the kit's group now stacks its rows on the 32 pt pitch, as the code does).
           mask: [const Rect.fromLTWH(8, 8, 200, 128)],
           tolerance: largeCorners,
         );
@@ -246,7 +240,7 @@ void main() {
                 if (r != 'Browser' && r != 'Footer') r,
             ],
             mask: [
-              // The places group (see _rowPitch), inside the browser.
+              // The places group's glyphs and badge (see above), inside the browser.
               if (rows.contains('Browser'))
                 master.layer('Browser').rectInMaster.topLeft.translate(8, 8) &
                     const Size(200, 128),

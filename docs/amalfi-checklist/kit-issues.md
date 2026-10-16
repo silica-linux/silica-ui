@@ -50,7 +50,7 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 
 ## Fixed in silica-design `4dde030`
 
-- `Windows/Window/Sheet Attached` (Light, Dark): the nested `Alerts/Alert/Two Buttons` is 268 tall like its master.
+- `Windows/Window/Sheet Attached` (Light, Dark): the nested `Alerts/Alert/Two Buttons` instance is 266 tall (silica-design ba8183f9), its master 268; the code draws 268.
 - `Fields/Combo Button/Large` (6 masters) draws its chevron at 12 x 12 with the Regular/12 stroke; `Combo Box/Large` (6 masters) nests it. The tests no longer list the deviation or mask the glyphs.
 
 ## Still open (silica-design `4dde030`)
@@ -89,3 +89,5 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - Dialogs: `Dialogs/Footer/Save`: the PNG starts 2 pt left of the frame, not frame + blur (2.7).
 - 28 filled glyphs at 16 pt keep the 24 pt stroke (kit side; the code scales the stroke).
 - Glass/Clear lenses are encoded as a Sketch `Glass` blur (drawn as Clear's 2 pt background blur).
+- Glass/Regular and Thick are Sketch `Glass` blurs (silica-design ba8183f9). Kit deviations from `tokens.json` (accepted exactly, in `geometry.dart`): Thick has saturation 1 and chromatic aberration 0; Regular Dark has σ 10, saturation 1, distortion 0.5, depth 0.5, chromatic aberration 0 (Light matches the tokens).
+- Glass pixel tests: Sketch refracts the edge band (depth × half the shorter side) and lifts the fill there; the Flutter fallback (no shader in tests) draws none. A comparison that fails is repeated with that band masked (`maskGlassBand`, same tolerance, the mean still divided by the pixels of the full comparison); the shader itself is checked by `test/amalfi/glass_refraction_test.dart` (uniforms) only.

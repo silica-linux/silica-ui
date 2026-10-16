@@ -43,11 +43,26 @@ class RenderedBorder {
 /// A background blur as painted.
 @immutable
 class RenderedBlur {
-  const RenderedBlur(this.radius, this.saturation);
+  const RenderedBlur(this.radius, this.saturation)
+    : glass = null,
+      brightness = 1;
 
-  /// σ of the Gaussian, in points (the kit's `Background` radius).
+  /// The blur of a refracting glass material (Regular, Thick): the kit's `Glass` blur.
+  RenderedBlur.glass(AmalfiGlassMaterial m, Brightness appearance)
+    : radius = m.backgroundBlur,
+      saturation = m.saturation,
+      glass = m.refraction,
+      brightness = appearance == Brightness.dark
+          ? m.brightnessDark
+          : m.brightnessLight;
+
+  /// σ of the Gaussian, in points (the kit's `Background` / `Glass` radius).
   final double radius;
   final double saturation;
+
+  /// The edge refraction of a glass blur; null for a plain background blur.
+  final AmalfiRefraction? glass;
+  final double brightness;
 }
 
 /// The style of a painted surface, in the kit's terms.
@@ -138,7 +153,13 @@ class RenderedStyle {
       ],
       radii: _shape(widget.outline).$1,
       smoothing: _shape(widget.outline).$2,
-      blurs: [if (!widget.opaque) RenderedBlur(m.backgroundBlur, m.saturation)],
+      blurs: [
+        if (!widget.opaque)
+          if (widget.refracts)
+            RenderedBlur.glass(m, brightness)
+          else
+            RenderedBlur(m.backgroundBlur, m.saturation),
+      ],
       source: 'AmalfiGlass(${m.name})',
     );
   }
