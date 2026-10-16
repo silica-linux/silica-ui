@@ -44,7 +44,6 @@ class AmalfiLinkButton extends StatelessWidget {
     final look = AmalfiButtonLook(
       fillPressed: colors.accentAmalfiSoft,
       content: colors.accentAmalfi,
-      contentDisabled: colors.textTertiary,
     );
     const shape = AmalfiSmoothBorder(radius: radius);
     return AmalfiButtonBehavior(
@@ -73,7 +72,7 @@ class AmalfiLinkButton extends StatelessWidget {
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: AmalfiType.body(color: look.contentFor(visual)),
+                      style: AmalfiType.body(color: look.content),
                     ),
                   ),
                 ),

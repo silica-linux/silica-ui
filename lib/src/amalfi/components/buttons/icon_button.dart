@@ -21,9 +21,8 @@ enum AmalfiIconButtonShape {
 
 /// The measures of icon buttons per size, from the kit masters `Buttons/Icon/*`.
 abstract final class AmalfiIconButtonMetrics {
-  /// The glyph size: 12 for Mini, 16 for the others.
-  static double glyph(AmalfiControlSize size) =>
-      size == AmalfiControlSize.mini ? 12 : 16;
+  /// The glyph size: the control glyph size, 12 / 14 / 16 / 16 (user decision 2026-10-16).
+  static double glyph(AmalfiControlSize size) => size.iconSize;
 
   /// The corner radius of [shape] at [size].
   static double radius(AmalfiIconButtonShape shape, AmalfiControlSize size) =>
@@ -39,7 +38,7 @@ abstract final class AmalfiIconButtonMetrics {
 }
 
 /// A square button of [size] showing [icon] (an `AmalfiGlyph`, an `Icon` or any widget that
-/// reads [IconTheme]) centred, in the `Text/Primary` colour (`Text/Tertiary` disabled).
+/// reads [IconTheme]) centred, in the `Text/Primary` colour; disabled, the whole button at 35 %.
 ///
 /// Give it a [semanticLabel]: the glyph alone says nothing to a screen reader.
 class AmalfiIconButton extends StatelessWidget {
@@ -85,7 +84,7 @@ class AmalfiIconButton extends StatelessWidget {
           dimension: side,
           child: Center(
             child: AmalfiButtonIconTheme(
-              color: look.contentFor(visual),
+              color: look.content,
               size: AmalfiIconButtonMetrics.glyph(size),
               child: icon,
             ),
@@ -147,7 +146,7 @@ class AmalfiHelpButton extends StatelessWidget {
                   '?',
                   maxLines: 1,
                   softWrap: false,
-                  style: AmalfiType.label(color: look.contentFor(visual)),
+                  style: AmalfiType.label(color: look.content),
                 ),
               ),
             ),

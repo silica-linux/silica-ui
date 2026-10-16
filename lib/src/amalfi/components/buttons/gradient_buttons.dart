@@ -30,7 +30,8 @@ abstract final class AmalfiGradientButtonsMetrics {
 ///
 /// Each half is its own button, with its own focus, hover and press: the hover overlay, the
 /// pressed fill and the focus halo cover only that half, with the outer corners rounded. The
-/// whole control looks disabled when both callbacks are null.
+/// whole control is drawn at 35 % when both callbacks are null; a half without its callback
+/// dims its glyph alone.
 class AmalfiGradientButtons extends StatelessWidget {
   const AmalfiGradientButtons({
     super.key,
@@ -67,10 +68,10 @@ class AmalfiGradientButtons extends StatelessWidget {
     final background = AmalfiButtonSurface(
       look: look,
       shape: const AmalfiSmoothBorder(radius: r),
-      visual: AmalfiButtonVisual(enabled: enabled),
+      visual: AmalfiButtonVisual.rest,
       child: const SizedBox.shrink(),
     );
-    return SizedBox.fromSize(
+    final control = SizedBox.fromSize(
       size: size,
       child: Stack(
         clipBehavior: Clip.none,
@@ -87,6 +88,7 @@ class AmalfiGradientButtons extends StatelessWidget {
               glyph: AmalfiGlyphs.plus,
               onPressed: onAdd,
               semanticLabel: addLabel,
+              dim: enabled,
               shape: const AmalfiSmoothBorder.only(topLeft: r, bottomLeft: r),
             ),
           ),
@@ -101,6 +103,7 @@ class AmalfiGradientButtons extends StatelessWidget {
               glyph: AmalfiGlyphs.minus,
               onPressed: onRemove,
               semanticLabel: removeLabel,
+              dim: enabled,
               shape: const AmalfiSmoothBorder.only(topRight: r, bottomRight: r),
             ),
           ),
@@ -116,6 +119,7 @@ class AmalfiGradientButtons extends StatelessWidget {
         ],
       ),
     );
+    return AmalfiDisabledOpacity(enabled: enabled, child: control);
   }
 }
 
@@ -127,6 +131,7 @@ class _Half extends StatelessWidget {
     required this.onPressed,
     required this.semanticLabel,
     required this.shape,
+    required this.dim,
   });
 
   final AmalfiButtonLook look;
@@ -134,6 +139,9 @@ class _Half extends StatelessWidget {
   final VoidCallback? onPressed;
   final String semanticLabel;
   final AmalfiSmoothBorder shape;
+
+  /// Whether this half dims itself when disabled (false: the whole control is dimmed).
+  final bool dim;
 
   @override
   Widget build(BuildContext context) => AmalfiButtonBehavior(
@@ -163,9 +171,10 @@ class _Half extends StatelessWidget {
               shape: shape,
               visual: visual,
               background: false,
+              dimDisabled: dim,
               child: Center(
                 child: AmalfiButtonIconTheme(
-                  color: look.contentFor(visual),
+                  color: look.content,
                   size: AmalfiGradientButtonsMetrics.glyph,
                   child: AmalfiGlyph(glyph),
                 ),

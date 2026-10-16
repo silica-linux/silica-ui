@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
 import 'package:silica_ui/src/amalfi/components/buttons/button_base.dart';
-import 'package:silica_ui/src/amalfi/components/buttons/button_menu.dart';
 import 'package:silica_ui/src/amalfi/components/buttons/button_surface.dart';
 
 import 'support/harness.dart';
@@ -182,10 +181,14 @@ Future<void> checkMaster(
 }
 
 /// The pixel tolerance of the buttons (text masked). Sketch antialiases the edges of the
-/// small controls about a quarter point wider than Skia: on the 20 and 24 pt capsules, where
-/// the edge is a large share of the pixels, the mean reaches 1.82 and single edge pixels 83
-/// (the shapes match exactly: the outlines are the kit's, see `smooth_border.dart`).
-const KitPixelTolerance buttonsTolerance = KitPixelTolerance(mean: 2, max: 88);
+/// small controls about a quarter point wider than Skia: on the 20 pt capsules, where the edge
+/// is a large share of the pixels, single edge pixels reach 83 (Push Mini, measured with kit
+/// 747ea80); the mean reaches 1.40 (Gradient Pressed Light). The shapes match exactly: the
+/// outlines are the kit's (see `smooth_border.dart`).
+const KitPixelTolerance buttonsTolerance = KitPixelTolerance(
+  mean: 1.5,
+  max: 84,
+);
 
 /// [expectKitPixels] with real shadows: flutter_test draws BoxShadows solid
 /// (`debugDisableShadows`), the kit blurs them.
@@ -319,16 +322,6 @@ void main() {
   });
 
   group('kit Toolbar', () {
-    // Kit defect: the toolbar halo is 3 inside with radius 19; every other halo, and the
-    // focus token, is 3 outside following the control's radius.
-    const halo = {
-      'Focus Halo#borders': 'kit halo inside; tokens: outside the control',
-    };
-    // On the 44 tall button the kit's radius 19 is not clamped away.
-    const haloLabeled = {
-      ...halo,
-      'Focus Halo#corners': 'kit halo radius 19; tokens: the control radius',
-    };
     for (final state in states) {
       for (final a in appearances) {
         for (final (name, label) in [
@@ -342,20 +335,12 @@ void main() {
               state,
               keyed(
                 AmalfiToolbarButton(
-                  // A stand-in for the kit's gear glyph (pixels: masked).
-                  icon: const AmalfiGlyph(AmalfiGlyphs.plus),
+                  icon: const AmalfiGlyph(AmalfiGlyphs.gear),
                   label: label,
                   semanticLabel: 'Settings',
                   onPressed: state == 'Disabled' ? null : _noop,
                 ),
               ),
-              deviations: state != 'Focused'
-                  ? const {}
-                  : label == null
-                  ? halo
-                  : haloLabeled,
-              maskLayers: const ['Glyph Gear'],
-              pixels: state != 'Focused',
             );
           });
         }
@@ -472,20 +457,24 @@ void main() {
                       ],
                     );
               // Pressing opens the menu; the kit's Pressed master is the button alone.
-              // Kit defect: the 12 pt chevrons (Mini, Small) keep the 24 pt stroke (1.5);
-              // the Icon Kit rule scales it (0.75 at 12, 1 at 16), as the 12 pt plus of
-              // the icon buttons.
-              // The pop-up chevron keeps it at every size.
-              final small =
-                  kind == 'Pop-up' ||
-                  size == AmalfiControlSize.mini ||
-                  size == AmalfiControlSize.small;
+              // Kit defect: the Small chevron is 12; control glyphs are 14 at Small (user
+              // decision 2026-10-16, `AmalfiControlSize.iconSize`).
+              final smallGlyph = size == AmalfiControlSize.small;
+              // Kit defect (user decision 7, 2026-10-16): the pop-up chevron keeps the
+              // 24 pt stroke (1.5) at every size; the glyph rule scales it (1 at 16).
+              final maskChevron = smallGlyph || kind == 'Pop-up';
               await checkMaster(
                 tester,
                 'Buttons/$kind/$s/$state/$a',
                 state,
                 keyed(button),
-                maskLayers: small ? const ['Chevron'] : const [],
+                deviations: smallGlyph
+                    ? const {
+                        'Chevron': 'kit 12 pt glyph at Small; decision: 14',
+                        'Label': 'the 14 pt chevron (decision) leaves 2 less',
+                      }
+                    : const {},
+                maskLayers: maskChevron ? const ['Chevron'] : const [],
               );
             });
           }
@@ -535,20 +524,23 @@ void main() {
             await mouse.up();
             await tester.pump();
             await tester.pump(const Duration(milliseconds: 200));
-            if (!popUp) {
-              // The kit highlights "Duplicate", under the pointer.
+            if (popUp) {
+              // The kit highlights "Olive", under the pointer (the menu opens on the
+              // checked "Lemon").
               await mouse.moveTo(
-                tester.getTopLeft(find.byType(AmalfiButtonMenu)) +
-                    const Offset(100, 4 + 24 + 12),
+                tester.getTopLeft(find.byType(AmalfiMenu)) +
+                    const Offset(100, 4 + 2 * 24 + 12),
               );
+              await tester.pump();
+            } else {
+              // Nothing highlighted, as in the kit: the pointer leaves the button sideways.
+              await mouse.moveTo(const Offset(180, 14));
               await tester.pump();
             }
           }
 
           final root = await pumpKitScene(tester, widget, master: master);
           await open(tester);
-          // Kit defect: the menu is 116 tall for four items; 4 + 4 × 24 + 4 = 104.
-          const tall = 'kit menu 116 tall for 4 items of 24 + padding 4 (104)';
           expectKitGeometry(
             tester,
             master,
@@ -557,9 +549,8 @@ void main() {
               'Button': find.byType(
                 popUp ? AmalfiPopUpButton<String> : AmalfiPullDownButton,
               ),
-              'Menu': find.byType(AmalfiButtonMenu),
+              'Menu': find.byType(AmalfiMenu),
             },
-            deviations: const {'#frame': tall, 'Menu': tall},
           );
           await kitPixels(
             tester,
@@ -567,12 +558,11 @@ void main() {
             widget,
             maskText: true,
             mask: [
-              // The menu's bottom (kit 12 taller) and its shadow.
-              const Rect.fromLTWH(-40, 120, 280, 80),
-              // Kit defect (pop-up): the checkmark is on "Olive", not on the value.
-              if (popUp) const Rect.fromLTWH(8, 56, 20, 48),
-              // Kit defect: the pop-up chevron keeps the 24 pt stroke.
+              // Kit defect (user decision 7): the pop-up chevron keeps the 24 pt stroke.
               if (popUp) const Rect.fromLTWH(100, 6, 16, 16),
+              // Kit defect: the pull-down's second row keeps the nested menu's checkmark
+              // (its override names "Lemon", checked, instead of "Duplicate").
+              if (!popUp) const Rect.fromLTWH(8, 60, 16, 16),
             ],
             prepare: open,
           );
@@ -764,17 +754,22 @@ void main() {
       expect(find.text('One'), findsOneWidget);
       await tester.tap(find.byType(AmalfiPopUpButton<int>));
       await tester.pumpAndSettle();
-      expect(find.byType(AmalfiButtonMenu), findsOneWidget);
+      expect(find.byType(AmalfiMenu), findsOneWidget);
       // The current value is checked.
       expect(find.byType(AmalfiGlyph), findsNWidgets(2));
       await tester.tap(find.text('Three'));
+      await tester.pump(AmalfiMenuMetrics.chooseClose);
       await tester.pumpAndSettle();
       expect(chosen, isNull);
+      expect(find.byType(AmalfiMenu), findsOneWidget);
       await tester.tap(find.text('Two'));
-      await tester.pump();
-      await tester.pumpAndSettle();
+      // The menu blinks the item, chooses it at +114 ms, then fades out.
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(chosen, isNull);
+      await tester.pump(const Duration(milliseconds: 14));
       expect(chosen, '2');
-      expect(find.byType(AmalfiButtonMenu), findsNothing);
+      await tester.pumpAndSettle();
+      expect(find.byType(AmalfiMenu), findsNothing);
     });
 
     testWidgets(
@@ -799,11 +794,11 @@ void main() {
         await tester.pump();
         await tester.sendKeyEvent(LogicalKeyboardKey.space);
         await tester.pumpAndSettle();
-        expect(find.byType(AmalfiButtonMenu), findsOneWidget);
+        expect(find.byType(AmalfiMenu), findsOneWidget);
         await tester.sendKeyEvent(LogicalKeyboardKey.escape);
         await tester.pumpAndSettle();
         await tester.pump();
-        expect(find.byType(AmalfiButtonMenu), findsNothing);
+        expect(find.byType(AmalfiMenu), findsNothing);
         expect(chosen, isNull);
         node.requestFocus();
         await tester.pump();
@@ -811,10 +806,10 @@ void main() {
         await tester.pumpAndSettle();
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(AmalfiMenuMetrics.chooseClose);
         await tester.pumpAndSettle();
-        await tester.pump();
         expect(chosen, 2);
-        expect(find.byType(AmalfiButtonMenu), findsNothing);
+        expect(find.byType(AmalfiMenu), findsNothing);
       },
     );
 
@@ -843,12 +838,19 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tapAt(const Offset(700, 500));
       await tester.pumpAndSettle();
-      expect(find.byType(AmalfiButtonMenu), findsNothing);
+      expect(find.byType(AmalfiMenu), findsNothing);
       await tester.tap(find.byType(AmalfiPullDownButton));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete'));
+      await tester.pump(AmalfiMenuMetrics.chooseClose);
+      await tester.pumpAndSettle();
+      // A disabled item does nothing; the menu stays.
+      expect(find.byType(AmalfiMenu), findsOneWidget);
       await tester.tap(find.text('Duplicate'));
+      await tester.pump(AmalfiMenuMetrics.chooseClose);
       await tester.pumpAndSettle();
       expect(duplicated, 1);
+      expect(find.byType(AmalfiMenu), findsNothing);
     });
 
     testWidgets('AmalfiButtonPreview forces a look without input', (

@@ -15,13 +15,13 @@ import '../tokens.g.dart';
 /// The σ of a kit shadow of blur [blur] (CSS box-shadow semantics).
 double amalfiShadowSigma(double blur) => blur / 2;
 
-/// The soft shadow of raised opaque controls at rest (push buttons, checkbox and radio boxes,
-/// switch and slider thumbs, the selected segment, the disclosure button): `Shadow/Soft`,
-/// 0, 1, blur 2 — the kit's control shadow, which keeps the level 1 geometry
-/// ([AmalfiShadows.level1]) in the `Shadow/Soft` colour.
+/// The shadow of raised opaque controls at rest (push buttons, checkbox and radio boxes,
+/// switch and slider thumbs, the selected segment, the disclosure button): level 1
+/// ([AmalfiShadows.level1]), `Shadow/1`, 0, 1, blur 2, as the kit draws it since
+/// silica-design 747ea80.
 List<BoxShadow> amalfiControlShadows(AmalfiColors colors) => [
   BoxShadow(
-    color: colors.shadowSoft,
+    color: colors.shadow1,
     offset: const Offset(0, 1),
     blurRadius: 2,
   ),

@@ -8,12 +8,19 @@ import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../menus/menu.dart';
 import 'button_base.dart';
-import 'button_menu.dart';
 import 'button_surface.dart';
 
 /// The measures of pop-up and pull-down buttons per size, from the kit masters.
 abstract final class AmalfiPopUpButtonMetrics {
+  /// Between the button and its menu (`Buttons/Pop-up/Open`).
+  static const double menuDistance = 4;
+
+  /// The narrowest menu (`Buttons/Pop-up/Open` nests the 200 wide `Menus/Menu/Simple`); it
+  /// is at least as wide as the button, and wider when its rows need it.
+  static const double menuMinWidth = 200;
+
   /// The default width: 92 / 108 / 124 / 148.
   static double width(AmalfiControlSize size) => switch (size) {
     AmalfiControlSize.mini => 92,
@@ -37,11 +44,9 @@ abstract final class AmalfiPopUpButtonMetrics {
   /// Between the label and the chevron.
   static const double gap = 4;
 
-  /// The chevron's size: 12 for Mini and Small, 16 for Regular and Large.
-  static double chevron(AmalfiControlSize size) => switch (size) {
-    AmalfiControlSize.mini || AmalfiControlSize.small => 12,
-    _ => 16,
-  };
+  /// The chevron's size: the control glyph size, 12 / 14 / 16 / 16 (user decision
+  /// 2026-10-16; the kit draws Small's at 12).
+  static double chevron(AmalfiControlSize size) => size.iconSize;
 
   /// The label style: Caption, Label, Body, Body.
   static TextStyle labelStyle(AmalfiControlSize size, Color color) =>
@@ -126,7 +131,7 @@ class AmalfiPopUpButton<T> extends StatelessWidget {
       focusNode: focusNode,
       entries: [
         for (final item in items)
-          AmalfiButtonMenuEntry(
+          _MenuEntry(
             label: item.label,
             checked: item.value == value,
             enabled: item.enabled,
@@ -172,10 +177,7 @@ class AmalfiPullDownButton extends StatelessWidget {
     focusNode: focusNode,
     entries: [
       for (final item in items)
-        AmalfiButtonMenuEntry(
-          label: item.label,
-          enabled: item.onSelected != null,
-        ),
+        _MenuEntry(label: item.label, enabled: item.onSelected != null),
     ],
     highlighted: -1,
     onSelected: items.any((i) => i.onSelected != null)
@@ -205,7 +207,7 @@ class _MenuButton extends StatefulWidget {
   final double? width;
   final String? semanticLabel;
   final FocusNode? focusNode;
-  final List<AmalfiButtonMenuEntry> entries;
+  final List<_MenuEntry> entries;
   final int highlighted;
   final ValueChanged<int>? onSelected;
 
@@ -217,7 +219,7 @@ class _MenuButtonState extends State<_MenuButton>
     with SingleTickerProviderStateMixin {
   final OverlayPortalController _portal = OverlayPortalController();
   final Object _tapGroup = Object();
-  final FocusNode _menuFocus = FocusNode(debugLabel: 'AmalfiButtonMenu');
+  final FocusNode _menuFocus = FocusNode(debugLabel: 'AmalfiPopUpMenu');
 
   /// What had the focus before the menu opened; it gets it back when the menu closes.
   FocusNode? _returnFocus;
@@ -289,18 +291,10 @@ class _MenuButtonState extends State<_MenuButton>
     if (_portal.isShowing) setState(_portal.hide);
   }
 
-  void _select(int i) {
-    _close();
-    widget.onSelected?.call(i);
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
-    final look = amalfiControlLook(
-      colors,
-      contentDisabled: colors.textTertiary,
-    );
+    final look = amalfiControlLook(colors);
     final size = widget.size;
     final height = size.height;
     final shape = AmalfiSmoothBorder(radius: AmalfiRadii.capsule(height));
@@ -318,10 +312,8 @@ class _MenuButtonState extends State<_MenuButton>
               ? widget.label
               : '${widget.semanticLabel}, ${widget.label}',
           builder: (context, visual) {
-            final color = look.contentFor(visual);
-            final chevronColor = visual.enabled
-                ? colors.textSecondary
-                : colors.textTertiary;
+            final color = look.content;
+            final chevronColor = colors.textSecondary;
             return AmalfiButtonSurface(
               look: look,
               shape: shape,
@@ -394,9 +386,9 @@ class _MenuButtonState extends State<_MenuButton>
       target.getTransformTo(overlay),
       Offset.zero & target.size,
     );
-    final width = rect.width > AmalfiButtonMenuMetrics.minWidth
+    final minWidth = rect.width > AmalfiPopUpButtonMetrics.menuMinWidth
         ? rect.width
-        : AmalfiButtonMenuMetrics.minWidth;
+        : AmalfiPopUpButtonMetrics.menuMinWidth;
     return AmalfiTheme(
       brightness: AmalfiTheme.of(context).brightness,
       child: CustomSingleChildLayout(
@@ -406,11 +398,20 @@ class _MenuButtonState extends State<_MenuButton>
           onTapOutside: (_) => _close(),
           child: FadeTransition(
             opacity: _opacity,
-            child: AmalfiButtonMenu(
-              entries: widget.entries,
-              highlighted: widget.highlighted,
-              width: width,
-              onSelected: _select,
+            child: AmalfiMenu(
+              entries: [
+                for (final (i, e) in widget.entries.indexed)
+                  AmalfiMenuAction(
+                    e.label,
+                    checked: e.checked,
+                    enabled: e.enabled,
+                    onSelected: () => widget.onSelected?.call(i),
+                  ),
+              ],
+              initialHighlight: widget.highlighted < 0
+                  ? null
+                  : widget.highlighted,
+              minWidth: minWidth,
               onDismiss: _close,
               focusNode: _menuFocus,
             ),
@@ -434,7 +435,7 @@ class _MenuLayout extends SingleChildLayoutDelegate {
 
   @override
   Offset getPositionForChild(Size size, Size child) {
-    const d = AmalfiButtonMenuMetrics.distance;
+    const d = AmalfiPopUpButtonMetrics.menuDistance;
     var y = target.bottom + d;
     if (y + child.height > size.height && target.top - d - child.height >= 0) {
       y = target.top - d - child.height;
@@ -448,4 +449,18 @@ class _MenuLayout extends SingleChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_MenuLayout old) => old.target != target;
+}
+
+/// One item of the menu a pop-up or pull-down button opens.
+@immutable
+class _MenuEntry {
+  const _MenuEntry({
+    required this.label,
+    this.checked = false,
+    this.enabled = true,
+  });
+
+  final String label;
+  final bool checked;
+  final bool enabled;
 }

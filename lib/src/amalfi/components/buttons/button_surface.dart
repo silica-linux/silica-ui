@@ -27,23 +27,21 @@ abstract final class AmalfiButtonLayers {
 }
 
 /// The colours and materials of one kind of button in one appearance, per state, from the
-/// kit masters.
+/// kit masters. A disabled button keeps its resting look and is drawn whole at
+/// `AmalfiStates.disabledOpacity` (user decision 2026-10-16).
 @immutable
 class AmalfiButtonLook {
   const AmalfiButtonLook({
     this.fill,
     this.fillHovered,
     this.fillPressed,
-    this.fillDisabled,
     this.border,
     this.shadows = const [],
-    this.borderDisabled = false,
     this.hoverOverlay,
     this.pressOverlay,
     this.glass,
     this.glassActive,
     required this.content,
-    required this.contentDisabled,
   });
 
   /// The background at rest; null: none.
@@ -55,17 +53,11 @@ class AmalfiButtonLook {
   /// The background while pressed; null: [fill].
   final Color? fillPressed;
 
-  /// The background when disabled (`Surface/Sunken`); null: [fill].
-  final Color? fillDisabled;
-
   /// The border of the background (`Line/Border`, 1 inside).
   final BorderSide? border;
 
   /// The drop shadows of the background.
   final List<BoxShadow> shadows;
-
-  /// Whether the disabled button keeps its border and shadow.
-  final bool borderDisabled;
 
   /// Drawn over the background while hovered (and not pressed).
   final Color? hoverOverlay;
@@ -79,33 +71,41 @@ class AmalfiButtonLook {
 
   /// The colour of the label and glyph.
   final Color content;
-  final Color contentDisabled;
-
-  /// The content colour for [visual].
-  Color contentFor(AmalfiButtonVisual visual) =>
-      visual.enabled ? content : contentDisabled;
 }
 
 /// The kit's opaque control background: `Surface/Control` with a 1 pt `Line/Border` inside
-/// and the soft 0, 1, blur 2 shadow; `Surface/Control Pressed` when pressed, `Surface/Sunken`
-/// without border when disabled. The hover overlay is `Accent/Amalfi Soft`.
-AmalfiButtonLook amalfiControlLook(
-  AmalfiColors colors, {
-  Color? content,
-  Color? contentDisabled,
-}) => AmalfiButtonLook(
-  fill: colors.surfaceControl,
-  fillPressed: colors.surfaceControlPressed,
-  fillDisabled: colors.surfaceSunken,
-  border: BorderSide(
-    color: colors.lineBorder,
-    strokeAlign: BorderSide.strokeAlignInside,
-  ),
-  shadows: amalfiControlShadows(colors),
-  hoverOverlay: colors.accentAmalfiSoft,
-  content: content ?? colors.textPrimary,
-  contentDisabled: contentDisabled ?? colors.textTertiary,
-);
+/// and the control shadow (`amalfiControlShadows`); `Surface/Control Pressed` when pressed. The hover overlay
+/// is `Accent/Amalfi Soft`.
+AmalfiButtonLook amalfiControlLook(AmalfiColors colors, {Color? content}) =>
+    AmalfiButtonLook(
+      fill: colors.surfaceControl,
+      fillPressed: colors.surfaceControlPressed,
+      border: BorderSide(
+        color: colors.lineBorder,
+        strokeAlign: BorderSide.strokeAlignInside,
+      ),
+      shadows: amalfiControlShadows(colors),
+      hoverOverlay: colors.accentAmalfiSoft,
+      content: content ?? colors.textPrimary,
+    );
+
+/// [child] at `AmalfiStates.disabledOpacity` when [enabled] is false: the disabled look of
+/// every control (user decision 2026-10-16).
+class AmalfiDisabledOpacity extends StatelessWidget {
+  const AmalfiDisabledOpacity({
+    super.key,
+    required this.enabled,
+    required this.child,
+  });
+
+  final bool enabled;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => enabled
+      ? child
+      : Opacity(opacity: AmalfiStates.disabledOpacity, child: child);
+}
 
 /// An overlay of [color] in [shape], faded by [opacity].
 class AmalfiButtonOverlay extends StatelessWidget {
@@ -143,6 +143,7 @@ class AmalfiButtonSurface extends StatelessWidget {
     required this.visual,
     required this.child,
     this.background = true,
+    this.dimDisabled = true,
   });
 
   final AmalfiButtonLook look;
@@ -153,10 +154,13 @@ class AmalfiButtonSurface extends StatelessWidget {
   /// Whether to draw the background (false: a part of a larger control that draws it).
   final bool background;
 
+  /// Whether a disabled [visual] dims the whole surface (false: a part of a larger control
+  /// that dims itself).
+  final bool dimDisabled;
+
   @override
   Widget build(BuildContext context) {
     final look = this.look;
-    final enabled = visual.enabled;
     final press = visual.press;
     final hover = visual.hover * (1 - press);
     final glass = look.glass;
@@ -177,25 +181,24 @@ class AmalfiButtonSurface extends StatelessWidget {
         look.fillHovered ?? look.fill,
         hover,
       );
-      final fill = enabled
-          ? lerpButtonColor(hovered, look.fillPressed ?? look.fill, press)
-          : look.fillDisabled ?? look.fill;
-      final framed = enabled || look.borderDisabled;
+      final fill = lerpButtonColor(
+        hovered,
+        look.fillPressed ?? look.fill,
+        press,
+      );
       back = DecoratedBox(
         key: AmalfiButtonLayers.background,
         decoration: AmalfiShapeDecoration(
           color: fill,
-          shape: shape.copyWith(
-            side: framed ? look.border ?? BorderSide.none : BorderSide.none,
-          ),
-          shadows: framed && look.shadows.isNotEmpty ? look.shadows : null,
+          shape: shape.copyWith(side: look.border ?? BorderSide.none),
+          shadows: look.shadows.isNotEmpty ? look.shadows : null,
         ),
         child: const SizedBox.expand(),
       );
     }
     final hoverOverlay = look.hoverOverlay;
     final pressOverlay = look.pressOverlay;
-    return Stack(
+    final stack = Stack(
       clipBehavior: Clip.none,
       children: [
         if (back != null) Positioned.fill(child: back),
@@ -221,6 +224,10 @@ class AmalfiButtonSurface extends StatelessWidget {
           Positioned.fill(child: AmalfiFocusHalo(shape: shape)),
         child,
       ],
+    );
+    return AmalfiDisabledOpacity(
+      enabled: visual.enabled || !dimDisabled,
+      child: stack,
     );
   }
 }

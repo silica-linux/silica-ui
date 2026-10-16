@@ -118,9 +118,9 @@ class _ButtonsPage extends StatelessWidget {
             ..._states(
               label == null ? 'Icon' : 'Icon + Label',
               (enabled) => AmalfiToolbarButton(
-                icon: const AmalfiGlyph(AmalfiGlyphs.plus),
+                icon: const AmalfiGlyph(AmalfiGlyphs.gear),
                 label: label,
-                semanticLabel: 'Add',
+                semanticLabel: 'Settings',
                 onPressed: enabled ? _noop : null,
               ),
             ),
@@ -193,6 +193,18 @@ class _ButtonsPage extends StatelessWidget {
           Specimen(
             label: 'Pop-up',
             child: _Fruit(size: AmalfiControlSize.regular, enabled: true),
+          ),
+          Specimen(
+            label: 'Pull-down',
+            child: AmalfiPullDownButton(
+              label: 'Actions',
+              items: [
+                AmalfiPullDownItem(label: 'New window', onSelected: _noop),
+                AmalfiPullDownItem(label: 'Duplicate', onSelected: _noop),
+                AmalfiPullDownItem(label: 'Rename', onSelected: _noop),
+                AmalfiPullDownItem(label: 'Delete'),
+              ],
+            ),
           ),
         ],
       ),

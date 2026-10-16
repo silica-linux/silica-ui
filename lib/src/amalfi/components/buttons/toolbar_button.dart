@@ -69,7 +69,6 @@ class AmalfiToolbarButton extends StatelessWidget {
       hoverOverlay: colors.lineSeparator,
       pressOverlay: colors.lineBorder,
       content: colors.textPrimary,
-      contentDisabled: colors.textTertiary,
     );
     final label = this.label;
     final shape = AmalfiSmoothBorder(
@@ -83,7 +82,7 @@ class AmalfiToolbarButton extends StatelessWidget {
       autofocus: autofocus,
       semanticLabel: semanticLabel ?? label,
       builder: (context, visual) {
-        final color = look.contentFor(visual);
+        final color = look.content;
         final glyph = AmalfiButtonIconTheme(
           color: color,
           size: AmalfiToolbarButtonMetrics.glyph,

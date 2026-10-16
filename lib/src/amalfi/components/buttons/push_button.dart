@@ -98,32 +98,26 @@ class AmalfiPushButton extends StatelessWidget {
     AmalfiPushButtonVariant.primary => AmalfiButtonLook(
       fill: colors.accentAmalfi,
       fillPressed: colors.accentAmalfiPressed,
-      fillDisabled: colors.surfaceSunken,
       hoverOverlay: colors.stateHoverOverlay,
       content: colors.textOnAccent,
-      contentDisabled: colors.textTertiary,
     ),
     AmalfiPushButtonVariant.secondary => amalfiControlLook(colors),
     AmalfiPushButtonVariant.destructive => AmalfiButtonLook(
       fill: colors.paletteTerracotta,
-      fillDisabled: colors.surfaceSunken,
       hoverOverlay: colors.stateHoverOverlay,
       pressOverlay: colors.statePressOverlay,
       content: colors.textOnAccent,
-      contentDisabled: colors.textTertiary,
     ),
     AmalfiPushButtonVariant.borderless => AmalfiButtonLook(
       fillHovered: colors.accentAmalfiSoft,
       fillPressed: colors.accentAmalfiSoft,
       content: colors.accentAmalfi,
-      contentDisabled: colors.textTertiary,
     ),
     AmalfiPushButtonVariant.glass => AmalfiButtonLook(
       glass: AmalfiMaterials.regular,
       glassActive: AmalfiMaterials.thick,
       pressOverlay: colors.accentAmalfiSoft,
       content: colors.textPrimary,
-      contentDisabled: colors.textTertiary,
     ),
   };
 
@@ -140,7 +134,7 @@ class AmalfiPushButton extends StatelessWidget {
       autofocus: autofocus,
       semanticLabel: semanticLabel,
       builder: (context, visual) {
-        final color = look.contentFor(visual);
+        final color = look.content;
         return AmalfiButtonSurface(
           look: look,
           shape: shape,

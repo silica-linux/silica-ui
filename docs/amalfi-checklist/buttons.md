@@ -423,8 +423,8 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 - [x] Buttons/Toolbar/Icon + Label/Disabled/Dark
 - [x] Buttons/Toolbar/Icon + Label/Disabled/Light
-- [ ] Buttons/Toolbar/Icon + Label/Focused/Dark
-- [ ] Buttons/Toolbar/Icon + Label/Focused/Light
+- [x] Buttons/Toolbar/Icon + Label/Focused/Dark
+- [x] Buttons/Toolbar/Icon + Label/Focused/Light
 - [x] Buttons/Toolbar/Icon + Label/Hover/Dark
 - [x] Buttons/Toolbar/Icon + Label/Hover/Light
 - [x] Buttons/Toolbar/Icon + Label/Pressed/Dark
@@ -433,8 +433,8 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 - [x] Buttons/Toolbar/Icon + Label/Rest/Light
 - [x] Buttons/Toolbar/Icon/Disabled/Dark
 - [x] Buttons/Toolbar/Icon/Disabled/Light
-- [ ] Buttons/Toolbar/Icon/Focused/Dark
-- [ ] Buttons/Toolbar/Icon/Focused/Light
+- [x] Buttons/Toolbar/Icon/Focused/Dark
+- [x] Buttons/Toolbar/Icon/Focused/Light
 - [x] Buttons/Toolbar/Icon/Hover/Dark
 - [x] Buttons/Toolbar/Icon/Hover/Light
 - [x] Buttons/Toolbar/Icon/Pressed/Dark
