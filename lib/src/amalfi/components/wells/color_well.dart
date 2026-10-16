@@ -315,7 +315,6 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
             enabled: on,
             focusNode: _focus,
             mouseCursor: on ? SystemMouseCursors.click : MouseCursor.defer,
-            onShowHoverHighlight: (v) => setWellState(WidgetState.hovered, v),
             onFocusChange: (v) {
               setWellState(WidgetState.focused, v);
               if (!v) _close();
@@ -331,12 +330,21 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
                 onInvoke: (_) => _close(),
               ),
             },
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: on ? _toggle : null,
-              child: on
-                  ? well
-                  : Opacity(opacity: AmalfiStates.disabledOpacity, child: well),
+            // Hover from the pointer itself: the detector's hover highlight waits for the
+            // keyboard highlight mode.
+            child: MouseRegion(
+              onEnter: (_) => setWellState(WidgetState.hovered, on),
+              onExit: (_) => setWellState(WidgetState.hovered, false),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: on ? _toggle : null,
+                child: on
+                    ? well
+                    : Opacity(
+                        opacity: AmalfiStates.disabledOpacity,
+                        child: well,
+                      ),
+              ),
             ),
           ),
         ),

@@ -45,6 +45,8 @@ What every family draws with, exported from `silica_ui.dart`:
   silica-icons at runtime (`SILICA_ICONS_DIR`, then `silica/icons` in the XDG data folders),
   or a fallback when it is missing; tests set `AmalfiSymbols.debugEnvironment` to a folder of
   their own.
+- `AmalfiLens`: the lens rule (8 beyond the control on each side, 12 above and below, radius
+  half the height minus 1; the switch's thumb + 12), for the segmented, slider and switch lenses.
 - `AmalfiLayerKeys`: the kit's layer names (`Box`, `State`, `Focus Halo`, …) as keys.
 
 ## API (`support/harness.dart`)
