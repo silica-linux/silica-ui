@@ -198,12 +198,16 @@ void main() {
       if (token == null) continue;
       expect(token.family, s['family']);
       expect(token.size, _n(s['size']));
-      expect(token.lineHeight, _n(s['lineHeight']));
+      final lineHeight = s['lineHeight'] == null ? null : _n(s['lineHeight']);
+      expect(token.lineHeight, lineHeight);
       expect(token.weight.value, _n(s['weight']));
       expect(token.colorTokens, s['colors']);
       final style = AmalfiType.byName(name, color: const Color(0xFF123456));
       expect(style?.fontSize, _n(s['size']));
-      expect(style?.height, _n(s['lineHeight']) / _n(s['size']));
+      expect(
+        style?.height,
+        lineHeight == null ? null : lineHeight / _n(s['size']),
+      );
       expect(style?.color, const Color(0xFF123456));
       expect(style?.fontFamily, 'packages/silica_ui/${s['family']}');
     }
@@ -211,6 +215,27 @@ void main() {
     expect(AmalfiType.body().fontWeight, FontWeight.w400);
     expect(AmalfiType.title1().fontSize, 26);
     expect(AmalfiType.tokenNamed('Nope'), isNull);
+  });
+
+  test('text styles with a natural line height and a "use" note', () {
+    for (final style in [
+      AmalfiType.numeral40,
+      AmalfiType.numeral64,
+      AmalfiType.numeral72,
+      AmalfiType.numeral104,
+      AmalfiType.wordmark,
+    ]) {
+      expect(style().height, isNull);
+    }
+    expect(AmalfiType.numeral104Token.lineHeight, isNull);
+    expect(AmalfiType.numeral104Token.size, 104);
+    expect(AmalfiType.wordmarkToken.size, 110);
+    expect(AmalfiType.wordmarkToken.weight, FontWeight.w700);
+    expect(AmalfiType.field().height, 32 / 26);
+    expect(AmalfiType.fieldToken.lineHeight, 32);
+    final generated = File('lib/src/amalfi/tokens.g.dart').readAsStringSync();
+    expect(generated, contains('Use: Faro and Launcher search field.'));
+    expect(generated, contains('Use: kit cover only, not UI.'));
   });
 
   test('grid, spacing, controls, radii', () {

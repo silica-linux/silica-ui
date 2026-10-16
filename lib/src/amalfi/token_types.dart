@@ -55,8 +55,8 @@ final class AmalfiTextToken {
   /// Font size in points.
   final double size;
 
-  /// Line height in points.
-  final double lineHeight;
+  /// Line height in points; null for the font's natural line height.
+  final double? lineHeight;
 
   /// Font weight.
   final FontWeight weight;
@@ -72,7 +72,7 @@ final class AmalfiTextToken {
     fontFamily: family,
     package: 'silica_ui',
     fontSize: size,
-    height: lineHeight / size,
+    height: lineHeight == null ? null : lineHeight! / size,
     leadingDistribution: TextLeadingDistribution.even,
     fontWeight: weight,
     color: color,

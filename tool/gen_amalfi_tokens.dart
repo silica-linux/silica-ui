@@ -787,6 +787,7 @@ void _writeTypography(
       'lineHeight',
       'weight',
       'colors',
+      'use',
     }, path);
     final family = _string(_field(style, 'family', path), '$path.family');
     if (!fontFamilies.contains(family)) {
@@ -796,12 +797,15 @@ void _writeTypography(
       );
     }
     final size = _number(_field(style, 'size', path), '$path.size');
-    final lineHeight = _number(
-      _field(style, 'lineHeight', path),
-      '$path.lineHeight',
-    );
+    // A null (or absent) line height is the font's natural one.
+    final rawLineHeight = style['lineHeight'];
+    final lineHeight = rawLineHeight == null
+        ? null
+        : _number(rawLineHeight, '$path.lineHeight');
+    final rawUse = style['use'];
+    final use = rawUse == null ? null : _string(rawUse, '$path.use');
     final weight = _number(_field(style, 'weight', path), '$path.weight');
-    if (size <= 0 || lineHeight <= 0) {
+    if (size <= 0 || (lineHeight != null && lineHeight <= 0)) {
       throw TokenError('$path: size and lineHeight must be positive');
     }
     if (weight != weight.roundToDouble() ||
@@ -829,13 +833,16 @@ void _writeTypography(
     o.writeln();
     _doc(
       o,
-      '`$name`: $family ${_num(size)}/${_num(lineHeight)}, weight ${_num(weight)}.',
+      '`$name`: $family ${_num(size)}/${lineHeight == null ? 'natural' : _num(lineHeight)}, '
+      'weight ${_num(weight)}.${use == null ? '' : ' Use: $use.'}',
     );
     o.writeln('  static const AmalfiTextToken ${id}Token = AmalfiTextToken(');
     o.writeln('    name: ${_dartString(name)},');
     o.writeln('    family: ${_dartString(family)},');
     o.writeln('    size: ${_num(size)},');
-    o.writeln('    lineHeight: ${_num(lineHeight)},');
+    o.writeln(
+      '    lineHeight: ${lineHeight == null ? 'null' : _num(lineHeight)},',
+    );
     o.writeln('    weight: FontWeight.w${_num(weight)},');
     o.writeln('    colorTokens: [');
     for (final c in colorTokens) {

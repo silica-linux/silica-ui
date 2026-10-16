@@ -1278,6 +1278,93 @@ abstract final class AmalfiType {
   /// `Mono` in [color] (none: inherited).
   static TextStyle mono({Color? color}) => monoToken.style(color: color);
 
+  /// `Field`: Inter 26/32, weight 400. Use: Faro and Launcher search field.
+  static const AmalfiTextToken fieldToken = AmalfiTextToken(
+    name: 'Field',
+    family: 'Inter',
+    size: 26,
+    lineHeight: 32,
+    weight: FontWeight.w400,
+    colorTokens: ['Text/Primary', 'Text/Tertiary'],
+  );
+
+  /// `Field` in [color] (none: inherited).
+  static TextStyle field({Color? color}) => fieldToken.style(color: color);
+
+  /// `Numeral 40`: Inter 40/natural, weight 400. Use: Clock app large digits
+  /// (dark appearance).
+  static const AmalfiTextToken numeral40Token = AmalfiTextToken(
+    name: 'Numeral 40',
+    family: 'Inter',
+    size: 40,
+    lineHeight: null,
+    weight: FontWeight.w400,
+    colorTokens: ['Text/Primary', 'Text/Tertiary'],
+  );
+
+  /// `Numeral 40` in [color] (none: inherited).
+  static TextStyle numeral40({Color? color}) =>
+      numeral40Token.style(color: color);
+
+  /// `Numeral 64`: Inter 64/natural, weight 400. Use: Clock app large digits
+  /// (dark appearance).
+  static const AmalfiTextToken numeral64Token = AmalfiTextToken(
+    name: 'Numeral 64',
+    family: 'Inter',
+    size: 64,
+    lineHeight: null,
+    weight: FontWeight.w400,
+    colorTokens: ['Text/Primary', 'Text/Tertiary'],
+  );
+
+  /// `Numeral 64` in [color] (none: inherited).
+  static TextStyle numeral64({Color? color}) =>
+      numeral64Token.style(color: color);
+
+  /// `Numeral 72`: Inter 72/natural, weight 400. Use: Clock app large digits
+  /// (dark appearance).
+  static const AmalfiTextToken numeral72Token = AmalfiTextToken(
+    name: 'Numeral 72',
+    family: 'Inter',
+    size: 72,
+    lineHeight: null,
+    weight: FontWeight.w400,
+    colorTokens: ['Text/Primary', 'Text/Tertiary'],
+  );
+
+  /// `Numeral 72` in [color] (none: inherited).
+  static TextStyle numeral72({Color? color}) =>
+      numeral72Token.style(color: color);
+
+  /// `Numeral 104`: Inter 104/natural, weight 400. Use: Clock app large digits
+  /// (dark appearance).
+  static const AmalfiTextToken numeral104Token = AmalfiTextToken(
+    name: 'Numeral 104',
+    family: 'Inter',
+    size: 104,
+    lineHeight: null,
+    weight: FontWeight.w400,
+    colorTokens: ['Text/Primary', 'Text/Tertiary'],
+  );
+
+  /// `Numeral 104` in [color] (none: inherited).
+  static TextStyle numeral104({Color? color}) =>
+      numeral104Token.style(color: color);
+
+  /// `Wordmark`: Inter 110/natural, weight 700. Use: kit cover only, not UI.
+  static const AmalfiTextToken wordmarkToken = AmalfiTextToken(
+    name: 'Wordmark',
+    family: 'Inter',
+    size: 110,
+    lineHeight: null,
+    weight: FontWeight.w700,
+    colorTokens: ['Text/On Accent'],
+  );
+
+  /// `Wordmark` in [color] (none: inherited).
+  static TextStyle wordmark({Color? color}) =>
+      wordmarkToken.style(color: color);
+
   /// Every text style token, in the order of `tokens.json`.
   static const List<AmalfiTextToken> tokens = [
     displayToken,
@@ -1291,6 +1378,12 @@ abstract final class AmalfiType {
     labelToken,
     captionToken,
     monoToken,
+    fieldToken,
+    numeral40Token,
+    numeral64Token,
+    numeral72Token,
+    numeral104Token,
+    wordmarkToken,
   ];
 
   /// The token of the style named [name] (`Title 1`); null when there is none.
@@ -1306,6 +1399,12 @@ abstract final class AmalfiType {
     'Label' => labelToken,
     'Caption' => captionToken,
     'Mono' => monoToken,
+    'Field' => fieldToken,
+    'Numeral 40' => numeral40Token,
+    'Numeral 64' => numeral64Token,
+    'Numeral 72' => numeral72Token,
+    'Numeral 104' => numeral104Token,
+    'Wordmark' => wordmarkToken,
     _ => null,
   };
 
