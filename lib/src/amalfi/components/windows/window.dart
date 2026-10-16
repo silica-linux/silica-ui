@@ -50,7 +50,9 @@ abstract final class AmalfiWindowMetrics {
 ///
 /// It also tells the chrome below whether the window is [active] ([WindowActiveScope]).
 /// [shadow] false leaves the shadow to the compositor (a real toplevel window); the gallery and
-/// tests draw it.
+/// tests draw it. Ossido also draws the 1 pt `Line/Border` rim of every toplevel window, so a
+/// window without [shadow] draws no rim of its own ([rim] defaults to [shadow]): two rims on top
+/// of each other double the edge's alpha (silica-desktop#212).
 class AmalfiWindow extends StatelessWidget {
   const AmalfiWindow({
     super.key,
@@ -58,12 +60,16 @@ class AmalfiWindow extends StatelessWidget {
     this.active = true,
     this.kind = AmalfiWindowKind.regular,
     this.shadow = true,
-  });
+    bool? rim,
+  }) : rim = rim ?? shadow;
 
   final Widget child;
   final bool active;
   final AmalfiWindowKind kind;
   final bool shadow;
+
+  /// Whether to draw the 1 pt rim inside the edge.
+  final bool rim;
 
   /// The corner radius of [kind].
   static double radiusOf(AmalfiWindowKind kind) => switch (kind) {
@@ -92,21 +98,22 @@ class AmalfiWindow extends StatelessWidget {
               clipper: ShapeBorderClipper(shape: shape),
               child: ColoredBox(color: colors.surfaceWindow, child: child),
             ),
-            Positioned.fill(
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: AmalfiShapeDecoration(
-                    shape: AmalfiSmoothBorder(
-                      radius: radius,
-                      side: BorderSide(
-                        color: colors.lineBorder,
-                        strokeAlign: BorderSide.strokeAlignInside,
+            if (rim)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: AmalfiShapeDecoration(
+                      shape: AmalfiSmoothBorder(
+                        radius: radius,
+                        side: BorderSide(
+                          color: colors.lineBorder,
+                          strokeAlign: BorderSide.strokeAlignInside,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

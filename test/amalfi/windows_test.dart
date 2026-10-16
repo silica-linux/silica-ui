@@ -149,7 +149,39 @@ Future<void> checkWindow(
   );
 }
 
+void rimTests() {
+  testWidgets('a window under the compositor draws no rim of its own (#212)', (
+    tester,
+  ) async {
+    Future<int> rims(Widget window) async {
+      await pumpKitScene(
+        tester,
+        SizedBox(width: 200, height: 100, child: window),
+      );
+      return tester.widgetList<DecoratedBox>(find.byType(DecoratedBox)).where((
+        d,
+      ) {
+        final shape = (d.decoration as dynamic);
+        return shape is AmalfiShapeDecoration &&
+            shape.color == null &&
+            shape.shape is AmalfiSmoothBorder &&
+            (shape.shape as AmalfiSmoothBorder).side != BorderSide.none;
+      }).length;
+    }
+
+    expect(await rims(const AmalfiWindow(child: SizedBox())), 1);
+    expect(await rims(const AmalfiWindow(shadow: false, child: SizedBox())), 0);
+    expect(
+      await rims(
+        const AmalfiWindow(shadow: false, rim: true, child: SizedBox()),
+      ),
+      1,
+    );
+  });
+}
+
 void main() {
+  rimTests();
   setUpAll(() async {
     await loadAmalfiFonts();
     registerChromeStyles();
