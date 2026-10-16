@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../../whole_points.dart';
 import 'button_base.dart';
 import 'button_surface.dart';
 
@@ -37,7 +38,7 @@ abstract final class AmalfiIconButtonMetrics {
       };
 }
 
-/// A square button of [size] showing [icon] (an `AmalfiButtonGlyph`, an `Icon` or any widget that
+/// A square button of [size] showing [icon] (an `AmalfiGlyph`, an `Icon` or any widget that
 /// reads [IconTheme]) centred, in the `Text/Primary` colour (`Text/Tertiary` disabled).
 ///
 /// Give it a [semanticLabel]: the glyph alone says nothing to a screen reader.
@@ -139,8 +140,9 @@ class AmalfiHelpButton extends StatelessWidget {
             padding: EdgeInsets.only(left: labelOffset.dx, top: labelOffset.dy),
             child: Align(
               alignment: Alignment.topLeft,
-              child: AmalfiGridWidth(
+              child: AmalfiWholePoints(
                 step: 1,
+                heightStep: 1,
                 child: Text(
                   '?',
                   maxLines: 1,

@@ -2,11 +2,13 @@
 // a toolbar (`materials.md`: toolbar controls are Regular glass; `components.md`: a single icon
 // button is a 32 × 32 circle).
 
+import 'package:flutter/rendering.dart' show OverflowBoxFit;
 import 'package:flutter/widgets.dart';
 
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../../whole_points.dart';
 import 'button_base.dart';
 import 'button_surface.dart';
 
@@ -98,36 +100,44 @@ class AmalfiToolbarButton extends StatelessWidget {
             constraints: BoxConstraints(
               minWidth: AmalfiToolbarButtonMetrics.labeled.width,
             ),
-            child: SizedBox(
-              height: AmalfiToolbarButtonMetrics.labeled.height,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(
-                    height: AmalfiToolbarButtonMetrics.labeledGlyphTop,
-                  ),
-                  glyph,
-                  const SizedBox(
-                    height:
-                        AmalfiToolbarButtonMetrics.labelTop -
-                        AmalfiToolbarButtonMetrics.labeledGlyphTop -
-                        AmalfiToolbarButtonMetrics.glyph,
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: AmalfiToolbarButtonMetrics.labeled.width,
+            // Shorter than the button: clip instead of overflowing.
+            child: ClipRect(
+              child: OverflowBox(
+                fit: OverflowBoxFit.deferToChild,
+                alignment: Alignment.topCenter,
+                minHeight: AmalfiToolbarButtonMetrics.labeled.height,
+                maxHeight: AmalfiToolbarButtonMetrics.labeled.height,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      height: AmalfiToolbarButtonMetrics.labeledGlyphTop,
                     ),
-                    child: AmalfiGridWidth(
-                      child: Text(
-                        label,
-                        maxLines: 1,
-                        softWrap: false,
-                        textAlign: TextAlign.center,
-                        style: AmalfiType.caption(color: color),
+                    glyph,
+                    const SizedBox(
+                      height:
+                          AmalfiToolbarButtonMetrics.labelTop -
+                          AmalfiToolbarButtonMetrics.labeledGlyphTop -
+                          AmalfiToolbarButtonMetrics.glyph,
+                    ),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: AmalfiToolbarButtonMetrics.labeled.width,
+                      ),
+                      child: AmalfiWholePoints(
+                        step: AmalfiGrid.base,
+                        heightStep: 1,
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          softWrap: false,
+                          textAlign: TextAlign.center,
+                          style: AmalfiType.caption(color: color),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

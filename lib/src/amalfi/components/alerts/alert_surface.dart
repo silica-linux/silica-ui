@@ -6,7 +6,7 @@
 
 import 'package:flutter/widgets.dart';
 
-import '../../glass.dart' show amalfiShadowSigma;
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 
@@ -72,19 +72,9 @@ class _SurfacePainter extends CustomPainter {
     if (size.isEmpty) return;
     final rect = Offset.zero & size;
     final outline = shape.getOuterPath(rect);
-    paintOutsideShadows(canvas, rect, outline, shape, shadows);
-    canvas
-      ..drawPath(outline, Paint()..color = fill)
-      ..save()
-      ..clipPath(outline)
-      ..drawPath(
-        outline,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..color = border,
-      )
-      ..restore();
+    paintAmalfiShadows(canvas, rect, shadows, shape: shape);
+    canvas.drawPath(outline, Paint()..color = fill);
+    paintAmalfiInsideBorder(canvas, rect, shape, BorderSide(color: border));
   }
 
   @override
@@ -93,47 +83,4 @@ class _SurfacePainter extends CustomPainter {
       old.fill != fill ||
       old.border != border ||
       old.shadows != shadows;
-}
-
-/// Paints [shadows] of the shape [outline] (in [rect], drawn by [shape] at a grown size for
-/// a spread) outside [outline] only, with σ = blur / 2.
-void paintOutsideShadows(
-  Canvas canvas,
-  Rect rect,
-  Path outline,
-  AmalfiSmoothBorder shape,
-  List<BoxShadow> shadows, {
-  Path Function(Rect rect)? pathAt,
-}) {
-  if (shadows.isEmpty) return;
-  var reach = 0.0;
-  for (final s in shadows) {
-    final r = s.blurRadius + s.spreadRadius + s.offset.distance;
-    if (r > reach) reach = r;
-  }
-  canvas
-    ..save()
-    ..clipPath(
-      Path.combine(
-        PathOperation.difference,
-        Path()..addRect(rect.inflate(reach * 2 + 1)),
-        outline,
-      ),
-    );
-  for (final s in shadows) {
-    final paint = Paint()
-      ..color = s.color
-      ..maskFilter = s.blurRadius > 0
-          ? MaskFilter.blur(BlurStyle.normal, amalfiShadowSigma(s.blurRadius))
-          : null;
-    final cast = rect.shift(s.offset).inflate(s.spreadRadius);
-    canvas.drawPath(
-      pathAt?.call(cast) ??
-          shape
-              .copyWith(radius: shape.radius + s.spreadRadius)
-              .getOuterPath(cast),
-      paint,
-    );
-  }
-  canvas.restore();
 }

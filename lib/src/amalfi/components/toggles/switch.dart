@@ -11,7 +11,7 @@ import '../../glass.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import 'control_kit.dart';
+import '../../foundation/foundation.dart';
 
 /// The measures of a switch of one size, from `Toggles/Switch/*`.
 @immutable
@@ -186,12 +186,7 @@ class AmalfiSwitchFace extends StatelessWidget {
               ),
             ),
           if (state.focused && enabled)
-            Positioned.fill(
-              child: AmalfiToggleFocusHalo(
-                radius: m.trackRadius,
-                colors: colors,
-              ),
-            ),
+            Positioned.fill(child: AmalfiFocusHalo(radius: m.trackRadius)),
           if (!dragging)
             Positioned(
               left: thumbLeft,
@@ -205,7 +200,7 @@ class AmalfiSwitchFace extends StatelessWidget {
                   decoration: AmalfiShapeDecoration(
                     color: colors.textOnAccent,
                     shape: AmalfiSmoothBorder(radius: m.thumbRadius),
-                    shadows: amalfiControlShadow(colors),
+                    shadows: amalfiControlShadows(colors),
                   ),
                 ),
               ),

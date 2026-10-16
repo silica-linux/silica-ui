@@ -4,7 +4,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../tokens.g.dart';
-import 'control_kit.dart';
+import '../../foundation/foundation.dart';
 import 'toggle_box.dart';
 
 /// The look of a checkbox in a given state, without any interaction: the box of [size] for
@@ -35,10 +35,8 @@ class AmalfiCheckboxFace extends StatelessWidget {
       metrics: metrics,
       on: value != false,
       state: state,
-      mark: (color) => AmalfiToggleGlyphIcon(
-        glyph: value == null
-            ? AmalfiToggleGlyph.minus
-            : AmalfiToggleGlyph.checkmark,
+      mark: (color) => AmalfiGlyph(
+        value == null ? AmalfiGlyphs.minus : AmalfiGlyphs.checkmark,
         size: metrics.markSize,
         color: color,
       ),

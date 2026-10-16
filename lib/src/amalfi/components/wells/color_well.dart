@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../fields/glyph.dart';
+import '../../foundation/foundation.dart';
 import '../fields/surface.dart';
 import 'color_panel.dart';
 import 'states.dart';
@@ -202,7 +202,7 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
       opacity: on ? 1 : AmalfiStates.disabledOpacity,
       child: DecoratedBox(
         key: AmalfiColorWell.colourKey,
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: widget.color,
           shape: AmalfiSmoothBorder(
             radius: style.colourRadius,
@@ -223,8 +223,8 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
           colour,
           if (style == AmalfiColorWellStyle.standard) ...[
             SizedBox(width: style.gap),
-            AmalfiGlyphIcon(
-              AmalfiGlyph.chevronDown,
+            AmalfiGlyph(
+              AmalfiGlyphs.chevronDown,
               size: AmalfiColorWellMetrics.chevron,
               color: ink,
             ),
@@ -259,8 +259,8 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: on ? eyedropper : null,
-                    child: AmalfiGlyphIcon(
-                      AmalfiGlyph.eyedropper,
+                    child: AmalfiGlyph(
+                      AmalfiGlyphs.eyedropper,
                       size: AmalfiColorWellMetrics.eyedropper,
                       color: ink,
                     ),
@@ -293,7 +293,7 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
               curve: AmalfiFades.quick.curve,
               child: DecoratedBox(
                 key: AmalfiColorWell.stateKey,
-                decoration: ShapeDecoration(
+                decoration: AmalfiShapeDecoration(
                   color: colors.accentAmalfiSoft,
                   shape: AmalfiSmoothBorder(radius: style.radius),
                 ),

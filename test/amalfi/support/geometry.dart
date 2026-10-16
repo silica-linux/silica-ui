@@ -254,6 +254,16 @@ void _checkStyle(
               'kit ${_hex(want)} ${b.thickness} ${b.position.name}',
         );
       }
+      // Dashes: compared when the fixture has the kit's pattern (the export may not carry
+      // border options; a dashed border then checks colour, width and position only).
+      final kitDashes = b.dashPattern;
+      if (kitDashes != null &&
+          !listEquals(_pattern(rb.dashPattern), _pattern(kitDashes))) {
+        add(
+          'borders',
+          '$what: border $i dashes ${rb.dashPattern ?? 'none (solid)'}, kit $kitDashes',
+        );
+      }
     }
   }
 
@@ -328,6 +338,10 @@ void _checkStyle(
   }
 }
 
+/// A dash pattern with an odd count repeated to an even one, as SVG and Sketch read it.
+List<double>? _pattern(List<double>? p) =>
+    p == null || p.isEmpty ? null : (p.length.isOdd ? [...p, ...p] : p);
+
 List<double> _evenStops(int n) => [
   for (var i = 0; i < n; i++) n == 1 ? 0 : i / (n - 1),
 ];
@@ -339,13 +353,28 @@ void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
     matching: find.byType(RichText),
     matchRoot: true,
   );
-  if (paragraphs.evaluate().isEmpty) {
+  final editables = find.descendant(
+    of: finder,
+    matching: find.byType(EditableText),
+    matchRoot: true,
+  );
+  final String text;
+  final TextStyle? style;
+  if (paragraphs.evaluate().isNotEmpty) {
+    final span = tester.renderObject<RenderParagraph>(paragraphs.first).text;
+    text = span.toPlainText();
+    style = span.style;
+  } else if (editables.evaluate().isNotEmpty) {
+    // An editable value: its text (or the bullets of obscured text) and its style.
+    final editable = tester.widget<EditableText>(editables.first);
+    text = editable.obscureText
+        ? editable.obscuringCharacter * editable.controller.text.length
+        : editable.controller.text;
+    style = editable.style;
+  } else {
     add('text', '$p: no text at or below the widget');
     return;
   }
-  final paragraph = tester.renderObject<RenderParagraph>(paragraphs.first);
-  final span = paragraph.text;
-  final style = span.style;
   final font = layer.font;
   if (style == null || font == null) {
     add(
@@ -354,7 +383,6 @@ void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
     );
     return;
   }
-  final text = span.toPlainText();
   if (layer.text != null && text != layer.text) {
     add('text', '$p: text "$text", kit "${layer.text}"');
   }

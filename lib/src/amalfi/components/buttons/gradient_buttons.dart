@@ -3,12 +3,12 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'button_base.dart';
 import 'button_surface.dart';
-import 'glyph.dart';
 
 /// The measures of [AmalfiGradientButtons], from the kit masters.
 abstract final class AmalfiGradientButtonsMetrics {
@@ -84,7 +84,7 @@ class AmalfiGradientButtons extends StatelessWidget {
             child: _Half(
               key: addKey,
               look: look,
-              glyph: AmalfiButtonGlyphShape.plus,
+              glyph: AmalfiGlyphs.plus,
               onPressed: onAdd,
               semanticLabel: addLabel,
               shape: const AmalfiSmoothBorder.only(topLeft: r, bottomLeft: r),
@@ -98,7 +98,7 @@ class AmalfiGradientButtons extends StatelessWidget {
             child: _Half(
               key: removeKey,
               look: look,
-              glyph: AmalfiButtonGlyphShape.minus,
+              glyph: AmalfiGlyphs.minus,
               onPressed: onRemove,
               semanticLabel: removeLabel,
               shape: const AmalfiSmoothBorder.only(topRight: r, bottomRight: r),
@@ -130,7 +130,7 @@ class _Half extends StatelessWidget {
   });
 
   final AmalfiButtonLook look;
-  final AmalfiButtonGlyphShape glyph;
+  final AmalfiGlyphData glyph;
   final VoidCallback? onPressed;
   final String semanticLabel;
   final AmalfiSmoothBorder shape;
@@ -167,7 +167,7 @@ class _Half extends StatelessWidget {
                 child: AmalfiButtonIconTheme(
                   color: look.contentFor(visual),
                   size: AmalfiGradientButtonsMetrics.glyph,
-                  child: AmalfiButtonGlyph(glyph),
+                  child: AmalfiGlyph(glyph),
                 ),
               ),
             ),

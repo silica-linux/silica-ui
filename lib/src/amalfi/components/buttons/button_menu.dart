@@ -5,11 +5,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../glass.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import 'glyph.dart';
 
 /// The measures of the menu, from `Menus/Menu/Simple` and `Menus/Item/Plain`.
 abstract final class AmalfiButtonMenuMetrics {
@@ -209,8 +209,8 @@ class _Item extends StatelessWidget {
           SizedBox.square(
             dimension: AmalfiButtonMenuMetrics.check,
             child: entry.checked
-                ? AmalfiButtonGlyph(
-                    AmalfiButtonGlyphShape.checkmark,
+                ? AmalfiGlyph(
+                    AmalfiGlyphs.checkmark,
                     size: AmalfiButtonMenuMetrics.check,
                     color: color,
                   )
@@ -246,7 +246,7 @@ class _Item extends StatelessWidget {
             height: AmalfiButtonMenuMetrics.itemHeight,
             child: lit
                 ? DecoratedBox(
-                    decoration: ShapeDecoration(
+                    decoration: AmalfiShapeDecoration(
                       color: colors.accentAmalfi,
                       shape: const AmalfiSmoothBorder(
                         radius: AmalfiButtonMenuMetrics.highlightRadius,

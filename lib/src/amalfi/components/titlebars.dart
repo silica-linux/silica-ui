@@ -4,7 +4,6 @@
 // The widgets live under `titlebars/` and are exported from here.
 
 export 'titlebars/bars.dart';
-export 'titlebars/glyphs.dart';
 export 'titlebars/pieces.dart';
 export 'titlebars/tabs.dart';
 export 'titlebars/text_box.dart';

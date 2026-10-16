@@ -7,11 +7,11 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import 'surface.dart';
 
 /// The measures of [AmalfiInlineButton] (`Buttons/Push/Secondary/Small`).
 abstract final class AmalfiInlineButtonMetrics {
@@ -57,7 +57,7 @@ class _AmalfiInlineButtonState extends State<AmalfiInlineButton> {
     final enabled = _enabled;
     const radius = AmalfiInlineButtonMetrics.height / 2;
     final face = DecoratedBox(
-      decoration: ShapeDecoration(
+      decoration: AmalfiShapeDecoration(
         color: !enabled
             ? colors.surfaceSunken
             : _pressed

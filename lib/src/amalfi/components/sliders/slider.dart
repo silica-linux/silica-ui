@@ -8,6 +8,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -228,7 +229,7 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
       Positioned.fromRect(
         rect: layout.track,
         child: DecoratedBox(
-          decoration: ShapeDecoration(
+          decoration: AmalfiShapeDecoration(
             color: colors.surfaceSunken,
             shape: AmalfiSmoothBorder(
               radius: AmalfiSliderMetrics.track / 2,
@@ -243,7 +244,7 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
       Positioned.fromRect(
         rect: layout.fill,
         child: DecoratedBox(
-          decoration: ShapeDecoration(
+          decoration: AmalfiShapeDecoration(
             color: enabled ? colors.accentAmalfi : colors.textTertiary,
             shape: const AmalfiSmoothBorder(
               radius: AmalfiSliderMetrics.track / 2,

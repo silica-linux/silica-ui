@@ -4,13 +4,13 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'button_base.dart';
 import 'button_menu.dart';
 import 'button_surface.dart';
-import 'glyph.dart';
 
 /// The measures of pop-up and pull-down buttons per size, from the kit masters.
 abstract final class AmalfiPopUpButtonMetrics {
@@ -119,7 +119,7 @@ class AmalfiPopUpButton<T> extends StatelessWidget {
     final onChanged = this.onChanged;
     return _MenuButton(
       label: selected < 0 ? placeholder : items[selected].label,
-      chevron: AmalfiButtonGlyphShape.chevronUpDown,
+      chevron: AmalfiGlyphs.chevronUpDown,
       size: size,
       width: width,
       semanticLabel: semanticLabel,
@@ -165,7 +165,7 @@ class AmalfiPullDownButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _MenuButton(
     label: label,
-    chevron: AmalfiButtonGlyphShape.chevronDown,
+    chevron: AmalfiGlyphs.chevronDown,
     size: size,
     width: width,
     semanticLabel: semanticLabel,
@@ -200,7 +200,7 @@ class _MenuButton extends StatefulWidget {
   });
 
   final String label;
-  final AmalfiButtonGlyphShape chevron;
+  final AmalfiGlyphData chevron;
   final AmalfiControlSize size;
   final double? width;
   final String? semanticLabel;
@@ -334,27 +334,45 @@ class _MenuButtonState extends State<_MenuButton>
                     left: AmalfiPopUpButtonMetrics.leading(size),
                     right: AmalfiPopUpButtonMetrics.trailing(size),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.label,
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                          style: AmalfiPopUpButtonMetrics.labelStyle(
-                            size,
-                            color,
+                  child: LayoutBuilder(
+                    builder: (context, box) {
+                      final row = Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.label,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                              style: AmalfiPopUpButtonMetrics.labelStyle(
+                                size,
+                                color,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: AmalfiPopUpButtonMetrics.gap),
-                      AmalfiButtonGlyph(
-                        widget.chevron,
-                        size: AmalfiPopUpButtonMetrics.chevron(size),
-                        color: chevronColor,
-                      ),
-                    ],
+                          const SizedBox(width: AmalfiPopUpButtonMetrics.gap),
+                          AmalfiGlyph(
+                            widget.chevron,
+                            size: AmalfiPopUpButtonMetrics.chevron(size),
+                            color: chevronColor,
+                          ),
+                        ],
+                      );
+                      // Narrower than the chevron: clip instead of overflowing.
+                      final least =
+                          AmalfiPopUpButtonMetrics.gap +
+                          AmalfiPopUpButtonMetrics.chevron(size);
+                      return box.maxWidth >= least
+                          ? row
+                          : ClipRect(
+                              child: OverflowBox(
+                                alignment: AlignmentDirectional.centerStart,
+                                minWidth: least,
+                                maxWidth: least,
+                                child: row,
+                              ),
+                            );
+                    },
                   ),
                 ),
               ),

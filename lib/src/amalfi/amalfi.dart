@@ -2,6 +2,7 @@
 // surface and the components.
 
 export 'components/components.dart';
+export 'foundation/foundation.dart';
 export 'glass.dart';
 export 'smooth_border.dart';
 export 'theme.dart';

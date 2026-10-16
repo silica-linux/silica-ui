@@ -8,7 +8,8 @@
 
 import 'package:flutter/widgets.dart';
 
-import 'capsule.dart';
+import '../../foundation/foundation.dart';
+import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'metrics.dart';
@@ -75,18 +76,16 @@ class AmalfiSegmentItem extends StatelessWidget {
   static ShapeDecoration selectionDecoration(
     AmalfiThemeData theme,
     double height,
-  ) => ShapeDecoration(
+  ) => AmalfiShapeDecoration(
     color: theme.colors.surfaceControl,
-    shape: AmalfiCapsuleBorder(
+    shape: AmalfiSmoothBorder(
       radius: height / 2,
       side: BorderSide(
         color: theme.colors.lineBorder,
         strokeAlign: BorderSide.strokeAlignInside,
       ),
     ),
-    shadows: [
-      for (final s in theme.shadows.level1) AmalfiSegmentShadow.from(s),
-    ],
+    shadows: theme.shadows.level1,
   );
 
   @override
@@ -100,9 +99,9 @@ class AmalfiSegmentItem extends StatelessWidget {
     final color = on ? colors.textPrimary : colors.textTertiary;
     final decoration = selected && showSelection
         ? selectionDecoration(theme, h)
-        : ShapeDecoration(
+        : AmalfiShapeDecoration(
             color: hovered && on && !selected ? colors.lineSeparator : null,
-            shape: AmalfiCapsuleBorder(radius: h / 2),
+            shape: AmalfiSmoothBorder(radius: h / 2),
           );
 
     final Widget content;
@@ -161,28 +160,4 @@ class AmalfiSegmentItem extends StatelessWidget {
       ),
     );
   }
-}
-
-/// A drop shadow blurred as the kit blurs it: σ = blur / 2 (CSS `box-shadow`), where Flutter's
-/// [BoxShadow] uses σ = 0.58 × blur + 0.5.
-class AmalfiSegmentShadow extends BoxShadow {
-  const AmalfiSegmentShadow({
-    super.color,
-    super.offset,
-    super.blurRadius,
-    super.spreadRadius,
-  });
-
-  /// [shadow] with the kit's blur.
-  AmalfiSegmentShadow.from(BoxShadow shadow)
-    : super(
-        color: shadow.color,
-        offset: shadow.offset,
-        blurRadius: shadow.blurRadius,
-        spreadRadius: shadow.spreadRadius,
-        blurStyle: shadow.blurStyle,
-      );
-
-  @override
-  double get blurSigma => blurRadius / 2;
 }

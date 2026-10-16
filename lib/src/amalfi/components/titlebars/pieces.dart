@@ -10,12 +10,12 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../../controls/control_base.dart' show WindowActiveScope;
 
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'text_box.dart';
-import 'glyphs.dart';
 import 'window_controls.dart';
 import 'window_scope.dart';
 
@@ -232,16 +232,16 @@ class AmalfiTitleBlock extends StatelessWidget {
       block = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AmalfiTitlebarGlyph(
-            AmalfiTitlebarGlyphs.doc,
+          AmalfiGlyph(
+            AmalfiGlyphs.doc,
             size: AmalfiToolbarPieceMetrics.documentIcon,
             color: active ? colors.textSecondary : colors.textTertiary,
           ),
           const SizedBox(width: AmalfiToolbarPieceMetrics.titleGap),
           Flexible(child: titleText),
           const SizedBox(width: AmalfiToolbarPieceMetrics.titleGap),
-          AmalfiTitlebarGlyph(
-            AmalfiTitlebarGlyphs.chevronDown,
+          AmalfiGlyph(
+            AmalfiGlyphs.chevronDown,
             size: AmalfiToolbarPieceMetrics.chevron,
             color: colors.textTertiary,
           ),

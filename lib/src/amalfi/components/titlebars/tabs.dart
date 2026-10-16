@@ -3,12 +3,11 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import 'glyphs.dart';
 import '../buttons/icon_button.dart';
-import 'window_scope.dart';
 
 /// The measures of the tabs.
 abstract final class AmalfiTabMetrics {
@@ -79,6 +78,7 @@ class AmalfiTab extends StatefulWidget {
 
 class _AmalfiTabState extends State<AmalfiTab> {
   bool _hovered = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +87,7 @@ class _AmalfiTabState extends State<AmalfiTab> {
     final selected = widget.selected;
     final showClose = widget.onClose != null && (selected || _hovered);
     final ShapeDecoration? decoration = selected
-        ? ShapeDecoration(
+        ? AmalfiShapeDecoration(
             color: colors.surfaceRaised,
             shape: AmalfiSmoothBorder(
               radius: AmalfiTabMetrics.radius,
@@ -99,7 +99,7 @@ class _AmalfiTabState extends State<AmalfiTab> {
             shadows: theme.shadows.level1,
           )
         : _hovered
-        ? ShapeDecoration(
+        ? AmalfiShapeDecoration(
             color: colors.accentAmalfiSoft,
             shape: const AmalfiSmoothBorder(radius: AmalfiTabMetrics.radius),
           )
@@ -129,13 +129,24 @@ class _AmalfiTabState extends State<AmalfiTab> {
                     button: true,
                     label: widget.closeLabel,
                     onTap: widget.onClose,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: widget.onClose,
-                      child: AmalfiTitlebarGlyph(
-                        AmalfiTitlebarGlyphs.xmark,
-                        size: AmalfiTabMetrics.slot,
-                        color: colors.textSecondary,
+                    child: AmalfiInteraction(
+                      onActivate: widget.onClose,
+                      activators: AmalfiInteraction.buttonActivates,
+                      builder: (context, state) => Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          AmalfiGlyph(
+                            AmalfiGlyphs.xmark,
+                            size: AmalfiTabMetrics.slot,
+                            color: colors.textSecondary,
+                          ),
+                          if (state.focused)
+                            const Positioned.fill(
+                              child: AmalfiFocusHalo(
+                                radius: AmalfiTabMetrics.slot / 2,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   )
@@ -152,31 +163,32 @@ class _AmalfiTabState extends State<AmalfiTab> {
       selected: selected,
       label: widget.label,
       onTap: widget.onSelect,
-      child: FocusableActionDetector(
-        shortcuts: amalfiTitlebarActivateShortcuts,
-        enabled: widget.onSelect != null,
-        mouseCursor: SystemMouseCursors.basic,
-        actions: {
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) {
-              widget.onSelect?.call();
-              return null;
-            },
-          ),
+      child: AmalfiInteraction(
+        // A tab without an action still shows the hover.
+        onActivate: widget.onSelect ?? () {},
+        activators: AmalfiInteraction.buttonActivates,
+        onStateChanged: (state) => setState(() {
+          _hovered = state.hovered;
+          _focused = state.focused && widget.onSelect != null;
+        }),
+        builder: (context, _) {
+          final tab = SizedBox(
+            width: widget.width,
+            height: AmalfiTabMetrics.height,
+            child: content,
+          );
+          return _focused
+              ? Stack(
+                  fit: StackFit.passthrough,
+                  children: [
+                    tab,
+                    const Positioned.fill(
+                      child: AmalfiFocusHalo(radius: AmalfiTabMetrics.radius),
+                    ),
+                  ],
+                )
+              : tab;
         },
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _hovered = true),
-          onExit: (_) => setState(() => _hovered = false),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: widget.onSelect,
-            child: SizedBox(
-              width: widget.width,
-              height: AmalfiTabMetrics.height,
-              child: content,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -223,7 +235,7 @@ class AmalfiTabBar extends StatelessWidget {
     final colors = AmalfiTheme.of(context).colors;
     final onNewTab = this.onNewTab;
     return DecoratedBox(
-      decoration: ShapeDecoration(
+      decoration: AmalfiShapeDecoration(
         color: colors.surfaceSunken,
         shape: const AmalfiSmoothBorder(radius: AmalfiTabMetrics.barRadius),
       ),
@@ -251,7 +263,7 @@ class AmalfiTabBar extends StatelessWidget {
                 const SizedBox(width: AmalfiTabMetrics.barGap),
                 // Kit `Buttons/Icon/Square/Small`.
                 AmalfiIconButton(
-                  icon: const AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                  icon: const AmalfiGlyph(AmalfiGlyphs.plus),
                   onPressed: onNewTab,
                   semanticLabel: newTabLabel,
                   shape: AmalfiIconButtonShape.square,

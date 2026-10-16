@@ -8,7 +8,7 @@ import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import 'glyph.dart';
+import '../../foundation/foundation.dart';
 import 'metrics.dart';
 
 /// A token of a token or search field: [label], then a cross that runs [onRemove].
@@ -43,7 +43,7 @@ class AmalfiToken extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onPressed,
         child: DecoratedBox(
-          decoration: ShapeDecoration(
+          decoration: AmalfiShapeDecoration(
             color: selected ? colors.accentAmalfi : colors.accentAmalfiSoft,
             shape: const AmalfiSmoothBorder(
               radius: AmalfiTokenMetrics.height / 2,
@@ -77,8 +77,8 @@ class AmalfiToken extends StatelessWidget {
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: onRemove,
-                        child: AmalfiGlyphIcon(
-                          AmalfiGlyph.xmark,
+                        child: AmalfiGlyph(
+                          AmalfiGlyphs.xmark,
                           size: AmalfiTokenMetrics.removeGlyph,
                           color: ink,
                         ),

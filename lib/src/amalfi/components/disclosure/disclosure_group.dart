@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../toggles/control_kit.dart';
+import '../../foundation/foundation.dart';
 import 'disclosure_controls.dart';
 
 /// The measures of a disclosure group, from `Disclosure/Group*`.
@@ -72,9 +72,7 @@ class AmalfiDisclosureHeaderFace extends StatelessWidget {
               ),
             ),
           if (enabled && state.focused)
-            Positioned.fill(
-              child: AmalfiToggleFocusHalo(radius: radius, colors: colors),
-            ),
+            Positioned.fill(child: AmalfiFocusHalo(radius: radius)),
           Positioned.fill(
             child: Padding(
               padding: AmalfiDisclosureGroupMetrics.headerPadding,
@@ -189,6 +187,7 @@ class _AmalfiDisclosureGroupState extends State<AmalfiDisclosureGroup>
         ? null
         : () => onChanged(!widget.expanded);
     final header = Semantics(
+      container: true,
       button: true,
       expanded: widget.expanded,
       enabled: onChanged != null,

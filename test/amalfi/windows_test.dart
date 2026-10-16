@@ -105,7 +105,7 @@ Widget windowBar({
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        icon: AmalfiGlyph(AmalfiGlyphs.sidebar),
         onPressed: () {},
         semanticLabel: 'sidebar',
       ),
@@ -115,8 +115,8 @@ Widget windowBar({
     AmalfiSpacerPiece(),
     AmalfiToolbarPiece(
       child: viewSwitcher([
-        AmalfiTitlebarGlyphs.listBullet,
-        AmalfiTitlebarGlyphs.squareGrid2x2,
+        AmalfiGlyphs.listBullet,
+        AmalfiGlyphs.squareGrid2x2,
       ]),
     ),
     AmalfiToolbarPiece(child: toolbarSearch()),

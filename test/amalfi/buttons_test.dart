@@ -78,7 +78,13 @@ Future<void> enterState(
       await tester.pump(const Duration(milliseconds: 200));
     case 'Focused':
       final detector = find
-          .descendant(of: target, matching: find.byType(GestureDetector))
+          .descendant(
+            of: find.descendant(
+              of: target,
+              matching: find.byType(AmalfiInteraction),
+            ),
+            matching: find.byType(Listener),
+          )
           .first;
       Focus.of(tester.element(detector)).requestFocus();
       await tester.pump();
@@ -98,7 +104,7 @@ Finder labelOf(String text, [Finder? within]) {
   final t = within == null
       ? find.text(text)
       : find.descendant(of: within, matching: find.text(text));
-  final box = find.ancestor(of: t, matching: find.byType(AmalfiGridWidth));
+  final box = find.ancestor(of: t, matching: find.byType(AmalfiWholePoints));
   return box.evaluate().isEmpty ? t : box.first;
 }
 
@@ -116,7 +122,7 @@ Map<String, Finder> layersOf(KitMaster master, String state, Finder within) {
       'Label' || 'Help' => labelOf(layer.text ?? '', within),
       _ when layer.type == KitLayerType.symbolInstance => find.descendant(
         of: within,
-        matching: find.byType(AmalfiButtonGlyph),
+        matching: find.byType(AmalfiGlyph),
       ),
       _ => null,
     };
@@ -267,7 +273,7 @@ void main() {
                 state,
                 keyed(
                   AmalfiIconButton(
-                    icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+                    icon: const AmalfiGlyph(AmalfiGlyphs.plus),
                     semanticLabel: 'Add',
                     shape: shape,
                     size: size,
@@ -337,7 +343,7 @@ void main() {
               keyed(
                 AmalfiToolbarButton(
                   // A stand-in for the kit's gear glyph (pixels: masked).
-                  icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+                  icon: const AmalfiGlyph(AmalfiGlyphs.plus),
                   label: label,
                   semanticLabel: 'Settings',
                   onPressed: state == 'Disabled' ? null : _noop,
@@ -389,11 +395,11 @@ void main() {
               'Divider': find.byKey(AmalfiGradientButtons.dividerKey),
               'Glyph Plus': find.descendant(
                 of: add,
-                matching: find.byType(AmalfiButtonGlyph),
+                matching: find.byType(AmalfiGlyph),
               ),
               'Glyph Minus': find.descendant(
                 of: remove,
-                matching: find.byType(AmalfiButtonGlyph),
+                matching: find.byType(AmalfiGlyph),
               ),
               if (state == 'Hover')
                 'State': byKey(AmalfiButtonLayers.hover, add),
@@ -401,9 +407,9 @@ void main() {
                 'Focus Halo': byKey(AmalfiButtonLayers.halo, add),
             },
             deviations: switch (state) {
-              'Hover' => {'State': half},
+              'Hover' => {'State': half, 'State#corners': half},
               'Pressed' => {'Background#fills': half},
-              'Focused' => {'Focus Halo': half},
+              'Focused' => {'Focus Halo': half, 'Focus Halo#corners': half},
               _ => const {},
             },
           );
@@ -602,8 +608,6 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       expect(presses, 3);
 
-      // pumpKitScene's Overlay keeps its first entry: start a new scene.
-      await tester.pumpWidget(const SizedBox());
       await pumpKitScene(
         tester,
         const AmalfiPushButton(label: 'OK', onPressed: null),
@@ -618,7 +622,7 @@ void main() {
       await pumpKitScene(
         tester,
         AmalfiIconButton(
-          icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+          icon: const AmalfiGlyph(AmalfiGlyphs.plus),
           semanticLabel: 'Add',
           focusNode: node,
           onPressed: _noop,
@@ -682,7 +686,7 @@ void main() {
             AmalfiPushButton(label: 'Save', onPressed: _noop),
             AmalfiLinkButton(label: 'Learn more', onPressed: null),
             AmalfiIconButton(
-              icon: AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+              icon: AmalfiGlyph(AmalfiGlyphs.plus),
               semanticLabel: 'Add',
               onPressed: _noop,
             ),
@@ -730,7 +734,6 @@ void main() {
       await tester.tap(find.byKey(AmalfiGradientButtons.removeKey));
       await tester.tap(find.byKey(AmalfiGradientButtons.removeKey));
       expect((added, removed), (1, 2));
-      await tester.pumpWidget(const SizedBox());
       await pumpKitScene(
         tester,
         AmalfiGradientButtons(onAdd: () => added++, onRemove: null),
@@ -763,7 +766,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AmalfiButtonMenu), findsOneWidget);
       // The current value is checked.
-      expect(find.byType(AmalfiButtonGlyph), findsNWidgets(2));
+      expect(find.byType(AmalfiGlyph), findsNWidgets(2));
       await tester.tap(find.text('Three'));
       await tester.pumpAndSettle();
       expect(chosen, isNull);
@@ -819,38 +822,20 @@ void main() {
       tester,
     ) async {
       var duplicated = 0;
-      // The app's TapRegionSurface (WidgetsApp, above the Overlay) reports clicks outside
-      // the menu.
-      await ensureAmalfiFonts(tester);
-      await tester.pumpWidget(
-        TapRegionSurface(
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Overlay(
-              initialEntries: [
-                OverlayEntry(
-                  builder: (_) => ColoredBox(
-                    color: const Color(0xFFFFFFFF),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(40),
-                        child: AmalfiPullDownButton(
-                          label: 'Actions',
-                          items: [
-                            AmalfiPullDownItem(
-                              label: 'Duplicate',
-                              onSelected: () => duplicated++,
-                            ),
-                            const AmalfiPullDownItem(label: 'Delete'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      // pumpKitScene's app reports clicks outside the menu (its tap region surface).
+      await pumpKitScene(
+        tester,
+        Padding(
+          padding: const EdgeInsets.all(40),
+          child: AmalfiPullDownButton(
+            label: 'Actions',
+            items: [
+              AmalfiPullDownItem(
+                label: 'Duplicate',
+                onSelected: () => duplicated++,
+              ),
+              const AmalfiPullDownItem(label: 'Delete'),
+            ],
           ),
         ),
       );
@@ -874,7 +859,6 @@ void main() {
         (AmalfiButtonPreviewState.pressed, AmalfiButtonLayers.press),
         (AmalfiButtonPreviewState.focused, AmalfiButtonLayers.halo),
       ]) {
-        await tester.pumpWidget(const SizedBox());
         await pumpKitScene(
           tester,
           AmalfiButtonPreview(
@@ -889,7 +873,6 @@ void main() {
         expect(find.byKey(key), findsOneWidget, reason: '$state');
       }
       // A disabled button keeps its disabled look.
-      await tester.pumpWidget(const SizedBox());
       await pumpKitScene(
         tester,
         const AmalfiButtonPreview(
@@ -912,14 +895,13 @@ void main() {
           onChanged: (_) {},
         ),
         const AmalfiToolbarButton(
-          icon: AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+          icon: AmalfiGlyph(AmalfiGlyphs.plus),
           label: 'A long label',
           onPressed: _noop,
         ),
       ]) {
         await pumpKitScene(tester, SizedBox(width: 30, height: 10, child: w));
         expect(tester.takeException(), isNull);
-        await tester.pumpWidget(const SizedBox());
         await pumpKitScene(tester, SizedBox.shrink(child: w));
         expect(tester.takeException(), isNull);
       }

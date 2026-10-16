@@ -7,8 +7,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../smooth_border.dart';
 import '../../theme.dart';
-import '../../tokens.g.dart';
-import '../buttons/button_surface.dart' show amalfiControlShadows;
+import '../../foundation/foundation.dart';
 
 /// The measures of the sliders, from the kit masters `Sliders/*`.
 abstract final class AmalfiSliderMetrics {
@@ -88,7 +87,7 @@ class AmalfiSliderThumb extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           DecoratedBox(
-            decoration: ShapeDecoration(
+            decoration: AmalfiShapeDecoration(
               color: disabled
                   ? colors.surfaceSunken
                   : pressed
@@ -106,39 +105,14 @@ class AmalfiSliderThumb extends StatelessWidget {
           ),
           if (hovered)
             DecoratedBox(
-              decoration: ShapeDecoration(
+              decoration: AmalfiShapeDecoration(
                 color: colors.accentAmalfiSoft,
                 shape: const AmalfiSmoothBorder(radius: radius),
               ),
             ),
-          if (focused) AmalfiSliderFocusHalo(radius: radius),
+          if (focused) const AmalfiFocusHalo(radius: radius),
         ],
       ),
     );
   }
-}
-
-/// The keyboard focus halo of a slider part: [AmalfiFocus.halo] of `Line/Focus` outside a
-/// shape of [radius] the size of this widget.
-class AmalfiSliderFocusHalo extends StatelessWidget {
-  const AmalfiSliderFocusHalo({super.key, required this.radius});
-
-  /// The corner radius of the shape the halo surrounds.
-  final double radius;
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: DecoratedBox(
-      decoration: ShapeDecoration(
-        shape: AmalfiSmoothBorder(
-          radius: radius,
-          side: BorderSide(
-            color: AmalfiFocus.color(AmalfiTheme.of(context).colors),
-            width: AmalfiFocus.halo,
-            strokeAlign: BorderSide.strokeAlignOutside,
-          ),
-        ),
-      ),
-    ),
-  );
 }

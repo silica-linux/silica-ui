@@ -23,21 +23,21 @@ List<Widget> panelRows({bool library = true}) => [
   AmalfiSidebarRow(
     key: const ValueKey('Recents'),
     label: 'Recents',
-    icon: AmalfiTitlebarGlyphs.clock,
+    icon: AmalfiGlyphs.clock,
     selected: true,
     onTap: () {},
   ),
   AmalfiSidebarRow(
     key: const ValueKey('Documents'),
     label: 'Documents',
-    icon: AmalfiTitlebarGlyphs.doc,
+    icon: AmalfiGlyphs.doc,
     badge: '12',
     onTap: () {},
   ),
   AmalfiSidebarRow(
     key: const ValueKey('Downloads'),
     label: 'Downloads',
-    icon: AmalfiTitlebarGlyphs.download,
+    icon: AmalfiGlyphs.download,
     onTap: () {},
   ),
   const AmalfiSidebarHeader(
@@ -48,13 +48,13 @@ List<Widget> panelRows({bool library = true}) => [
   AmalfiSidebarRow(
     key: const ValueKey('Photos'),
     label: 'Photos',
-    icon: AmalfiTitlebarGlyphs.photo,
+    icon: AmalfiGlyphs.photo,
     onTap: () {},
   ),
   AmalfiSidebarRow(
     key: const ValueKey('Music'),
     label: 'Music',
-    icon: AmalfiTitlebarGlyphs.musicNote,
+    icon: AmalfiGlyphs.musicNote,
     onTap: () {},
   ),
 ];
@@ -74,7 +74,7 @@ void main() {
               width: 216,
               child: AmalfiSidebarRow(
                 label: 'Documents',
-                icon: AmalfiTitlebarGlyphs.folder,
+                icon: AmalfiGlyphs.folder,
                 badge: variant == 'Badge' ? '12' : null,
                 selected: state == 'Selected',
                 enabled: state != 'Disabled',
@@ -107,7 +107,7 @@ void main() {
                       )
                       .first,
                 'Label': find.text('Documents'),
-                'Icon': glyphOf(AmalfiTitlebarGlyphs.folder),
+                'Icon': glyphOf(AmalfiGlyphs.folder),
                 if (variant == 'Badge')
                   'Badge': find.byType(AmalfiSidebarBadge),
               },
@@ -163,8 +163,7 @@ void main() {
             root: root,
             layers: {
               'Title': find.text('Favourites'),
-              if (expanded != null)
-                'Disclosure': find.byType(AmalfiTitlebarGlyph),
+              if (expanded != null) 'Disclosure': find.byType(AmalfiGlyph),
             },
           );
           await expectKitPixels(tester, master, header, tolerance: chromeText);
@@ -186,20 +185,20 @@ void main() {
                 AmalfiSidebarRow(
                   key: const ValueKey('Documents'),
                   label: 'Documents',
-                  icon: AmalfiTitlebarGlyphs.doc,
+                  icon: AmalfiGlyphs.doc,
                   onTap: () {},
                 ),
                 AmalfiSidebarRow(
                   key: const ValueKey('Downloads'),
                   label: 'Downloads',
-                  icon: AmalfiTitlebarGlyphs.download,
+                  icon: AmalfiGlyphs.download,
                   badge: '12',
                   onTap: () {},
                 ),
                 AmalfiSidebarRow(
                   key: const ValueKey('Pictures'),
                   label: 'Pictures',
-                  icon: AmalfiTitlebarGlyphs.photo,
+                  icon: AmalfiGlyphs.photo,
                   onTap: () {},
                 ),
               ],
@@ -237,7 +236,7 @@ void main() {
             children: [
               AmalfiIconButton(
                 key: ValueKey('Add'),
-                icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                icon: AmalfiGlyph(AmalfiGlyphs.plus),
                 onPressed: () {},
                 semanticLabel: 'plus',
                 shape: AmalfiIconButtonShape.square,
@@ -245,7 +244,7 @@ void main() {
               ),
               AmalfiIconButton(
                 key: ValueKey('Settings'),
-                icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+                icon: AmalfiGlyph(AmalfiGlyphs.gear),
                 onPressed: () {},
                 semanticLabel: 'gear',
                 shape: AmalfiIconButtonShape.square,
@@ -287,14 +286,14 @@ void main() {
               key: ValueKey('Footer'),
               children: [
                 AmalfiIconButton(
-                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                  icon: AmalfiGlyph(AmalfiGlyphs.plus),
                   onPressed: () {},
                   semanticLabel: 'plus',
                   shape: AmalfiIconButtonShape.square,
                   size: AmalfiControlSize.small,
                 ),
                 AmalfiIconButton(
-                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+                  icon: AmalfiGlyph(AmalfiGlyphs.gear),
                   onPressed: () {},
                   semanticLabel: 'gear',
                   shape: AmalfiIconButtonShape.square,
@@ -410,7 +409,7 @@ void main() {
       await tester.tap(find.text('Places'));
       await tester.pump();
       expect(find.text('Documents'), findsNothing);
-      expect(glyphOf(AmalfiTitlebarGlyphs.chevronRight), findsOneWidget);
+      expect(glyphOf(AmalfiGlyphs.chevronRight), findsOneWidget);
     });
 
     testWidgets('semantics: selected row, expandable header', (tester) async {

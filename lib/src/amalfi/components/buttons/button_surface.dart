@@ -4,9 +4,9 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../glass.dart';
 import '../../smooth_border.dart';
-import '../../theme.dart';
 import '../../token_types.dart';
 import '../../tokens.g.dart';
 import 'button_base.dart';
@@ -22,8 +22,8 @@ abstract final class AmalfiButtonLayers {
   /// The press overlay.
   static const Key press = ValueKey('amalfi-button-press');
 
-  /// The keyboard focus halo.
-  static const Key halo = ValueKey('amalfi-button-halo');
+  /// The keyboard focus halo (drawn by `AmalfiFocusHalo`).
+  static const Key halo = AmalfiLayerKeys.focusHalo;
 }
 
 /// The colours and materials of one kind of button in one appearance, per state, from the
@@ -107,52 +107,6 @@ AmalfiButtonLook amalfiControlLook(
   contentDisabled: contentDisabled ?? colors.textTertiary,
 );
 
-/// A [BoxShadow] blurred as the kit blurs: a CSS box-shadow blur b is a Gaussian of σ = b / 2
-/// (Flutter's own conversion gives σ ≈ 0.58 b + 0.5).
-class AmalfiBoxShadow extends BoxShadow {
-  const AmalfiBoxShadow({
-    super.color,
-    super.offset,
-    super.blurRadius,
-    super.spreadRadius,
-  });
-
-  @override
-  double get blurSigma => amalfiShadowSigma(blurRadius);
-}
-
-/// The shadow of an opaque control in the kit: `Shadow/Soft`, 0, 1, blur 2.
-List<BoxShadow> amalfiControlShadows(AmalfiColors colors) => [
-  AmalfiBoxShadow(
-    color: colors.shadowSoft,
-    offset: const Offset(0, 1),
-    blurRadius: 2,
-  ),
-];
-
-/// A keyboard focus halo around [shape]: [AmalfiFocus.halo] wide, `Line/Focus`, outside the
-/// control and following its corners (tokens: `focus`).
-class AmalfiFocusHalo extends StatelessWidget {
-  const AmalfiFocusHalo({super.key, required this.shape});
-
-  final AmalfiSmoothBorder shape;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    key: AmalfiButtonLayers.halo,
-    decoration: ShapeDecoration(
-      shape: shape.copyWith(
-        side: BorderSide(
-          color: AmalfiFocus.color(AmalfiTheme.of(context).colors),
-          width: AmalfiFocus.halo,
-          strokeAlign: BorderSide.strokeAlignOutside,
-        ),
-      ),
-    ),
-    child: const SizedBox.expand(),
-  );
-}
-
 /// An overlay of [color] in [shape], faded by [opacity].
 class AmalfiButtonOverlay extends StatelessWidget {
   const AmalfiButtonOverlay({
@@ -172,7 +126,7 @@ class AmalfiButtonOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final box = DecoratedBox(
       key: layerKey,
-      decoration: ShapeDecoration(color: color, shape: shape),
+      decoration: AmalfiShapeDecoration(color: color, shape: shape),
       child: const SizedBox.expand(),
     );
     return opacity >= 1 ? box : Opacity(opacity: opacity, child: box);
@@ -229,7 +183,7 @@ class AmalfiButtonSurface extends StatelessWidget {
       final framed = enabled || look.borderDisabled;
       back = DecoratedBox(
         key: AmalfiButtonLayers.background,
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: fill,
           shape: shape.copyWith(
             side: framed ? look.border ?? BorderSide.none : BorderSide.none,

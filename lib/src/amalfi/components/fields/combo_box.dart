@@ -14,7 +14,7 @@ import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'editable.dart';
 import 'field_state.dart';
-import 'glyph.dart';
+import '../../foundation/foundation.dart';
 import 'metrics.dart';
 import 'text_field.dart';
 
@@ -97,15 +97,15 @@ class _AmalfiComboButtonState extends State<AmalfiComboButton> {
           child: SizedBox.square(
             dimension: side,
             child: DecoratedBox(
-              decoration: ShapeDecoration(
+              decoration: AmalfiShapeDecoration(
                 color: pressed
                     ? colors.surfaceControlPressed
                     : colors.surfaceSunken,
                 shape: AmalfiSmoothBorder(radius: side / 2),
               ),
               child: Center(
-                child: AmalfiGlyphIcon(
-                  AmalfiGlyph.chevronDown,
+                child: AmalfiGlyph(
+                  AmalfiGlyphs.chevronDown,
                   size: widget.size.comboGlyph,
                   color: enabled ? colors.textSecondary : colors.textTertiary,
                 ),
@@ -471,8 +471,8 @@ class _ComboItem extends StatelessWidget {
           SizedBox.square(
             dimension: AmalfiComboListMetrics.check,
             child: checked
-                ? AmalfiGlyphIcon(
-                    AmalfiGlyph.checkmark,
+                ? AmalfiGlyph(
+                    AmalfiGlyphs.checkmark,
                     size: AmalfiComboListMetrics.check,
                     color: ink,
                   )
@@ -504,7 +504,7 @@ class _ComboItem extends StatelessWidget {
             onTap: onPick,
             child: highlighted
                 ? DecoratedBox(
-                    decoration: ShapeDecoration(
+                    decoration: AmalfiShapeDecoration(
                       color: colors.accentAmalfi,
                       shape: const AmalfiSmoothBorder(
                         radius: AmalfiComboListMetrics.highlightRadius,

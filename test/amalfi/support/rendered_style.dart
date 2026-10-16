@@ -12,7 +12,12 @@ import 'package:silica_ui/silica_ui.dart';
 /// A border as painted.
 @immutable
 class RenderedBorder {
-  const RenderedBorder(this.color, this.width, this.strokeAlign);
+  const RenderedBorder(
+    this.color,
+    this.width,
+    this.strokeAlign, {
+    this.dashPattern,
+  });
 
   final Color color;
   final double width;
@@ -20,8 +25,13 @@ class RenderedBorder {
   /// [BorderSide.strokeAlign]: -1 inside, 0 centre, 1 outside.
   final double strokeAlign;
 
+  /// The dash pattern (on, off) of a dashed border; null: solid.
+  final List<double>? dashPattern;
+
   @override
-  String toString() => 'RenderedBorder($color, $width, align $strokeAlign)';
+  String toString() =>
+      'RenderedBorder($color, $width, align $strokeAlign'
+      '${dashPattern == null ? '' : ', dashes $dashPattern'})';
 }
 
 /// A background blur as painted.
@@ -120,8 +130,8 @@ class RenderedStyle {
           blurRadius: m.rimLightBlur,
         ),
       ],
-      radii: List.filled(4, widget.radius),
-      smoothing: AmalfiRadii.smoothing,
+      radii: _shape(widget.outline).$1,
+      smoothing: _shape(widget.outline).$2,
       blurs: [if (!widget.opaque) RenderedBlur(m.backgroundBlur, m.saturation)],
       source: 'AmalfiGlass(${m.name})',
     );
@@ -135,12 +145,20 @@ class RenderedStyle {
     final d = widget.decoration;
     if (d is ShapeDecoration) {
       final (radii, smoothing, side) = _shape(d.shape);
+      final shape = d.shape;
       return RenderedStyle(
         fills: [if (d.color case final c?) c],
         gradients: [if (d.gradient case final g?) g],
         borders: [
           if (side != null && side.style != BorderStyle.none && side.width > 0)
-            RenderedBorder(side.color, side.width, side.strokeAlign),
+            RenderedBorder(
+              side.color,
+              side.width,
+              side.strokeAlign,
+              dashPattern: shape is AmalfiDashedSmoothBorder
+                  ? [shape.dash, shape.gap]
+                  : null,
+            ),
         ],
         shadows: d.shadows ?? const [],
         radii: radii,
@@ -183,8 +201,8 @@ class RenderedStyle {
 
   static (List<double>, double, BorderSide?) _shape(ShapeBorder shape) =>
       switch (shape) {
-        AmalfiSmoothBorder(:final radius, :final smoothing, :final side) => (
-          List.filled(4, radius),
+        AmalfiSmoothBorder(:final radii, :final smoothing, :final side) => (
+          radii,
           smoothing,
           side,
         ),

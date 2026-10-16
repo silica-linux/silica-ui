@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../../whole_points.dart';
 import 'button_base.dart';
 import 'button_surface.dart';
 import 'push_button.dart';
@@ -64,8 +65,9 @@ class AmalfiLinkButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: AmalfiGridWidth(
+                  child: AmalfiWholePoints(
                     step: AmalfiPushButtonMetrics.labelStep,
+                    heightStep: 1,
                     child: Text(
                       label,
                       maxLines: 1,

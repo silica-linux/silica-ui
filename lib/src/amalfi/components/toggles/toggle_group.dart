@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import 'control_kit.dart';
+import '../../foundation/foundation.dart';
 
 /// The measures of a toggle group, from `Toggles/Checkbox Group/List`.
 abstract final class AmalfiToggleGroupMetrics {

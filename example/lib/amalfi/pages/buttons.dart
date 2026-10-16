@@ -86,7 +86,7 @@ class _ButtonsPage extends StatelessWidget {
               ..._states(
                 s,
                 (enabled) => AmalfiIconButton(
-                  icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+                  icon: const AmalfiGlyph(AmalfiGlyphs.plus),
                   semanticLabel: 'Add',
                   shape: shape,
                   size: size,
@@ -118,7 +118,7 @@ class _ButtonsPage extends StatelessWidget {
             ..._states(
               label == null ? 'Icon' : 'Icon + Label',
               (enabled) => AmalfiToolbarButton(
-                icon: const AmalfiButtonGlyph(AmalfiButtonGlyphShape.plus),
+                icon: const AmalfiGlyph(AmalfiGlyphs.plus),
                 label: label,
                 semanticLabel: 'Add',
                 onPressed: enabled ? _noop : null,

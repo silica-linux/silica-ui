@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../smooth_border.dart';
 import '../../tokens.g.dart';
-import 'control_kit.dart';
+import '../../foundation/foundation.dart';
 import 'toggle_box.dart';
 import 'toggle_group.dart';
 

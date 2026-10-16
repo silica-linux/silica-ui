@@ -6,10 +6,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../sliders/thumb.dart' show AmalfiSliderFocusHalo;
 
 /// The measures of the value field, from `Steppers/Value Field/Regular`.
 abstract final class AmalfiValueFieldMetrics {
@@ -151,7 +151,7 @@ class _AmalfiValueFieldState extends State<AmalfiValueField> {
           children: [
             Positioned.fill(
               child: DecoratedBox(
-                decoration: ShapeDecoration(
+                decoration: AmalfiShapeDecoration(
                   color: enabled ? colors.surfaceRaised : colors.surfaceSunken,
                   shape: AmalfiSmoothBorder(
                     radius: AmalfiValueFieldMetrics.radius,
@@ -165,9 +165,7 @@ class _AmalfiValueFieldState extends State<AmalfiValueField> {
             ),
             if (focused)
               const Positioned.fill(
-                child: AmalfiSliderFocusHalo(
-                  radius: AmalfiValueFieldMetrics.radius,
-                ),
+                child: AmalfiFocusHalo(radius: AmalfiValueFieldMetrics.radius),
               ),
             Positioned(
               left: AmalfiValueFieldMetrics.padding,

@@ -7,6 +7,7 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../../controls/control_base.dart' show WindowActiveScope;
 
 import '../../smooth_border.dart';
@@ -79,7 +80,7 @@ class AmalfiWindow extends StatelessWidget {
     return WindowActiveScope(
       active: active,
       child: DecoratedBox(
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: colors.surfaceWindow,
           shape: shape,
           shadows: shadow ? theme.shadows.level3 : null,
@@ -94,7 +95,7 @@ class AmalfiWindow extends StatelessWidget {
             Positioned.fill(
               child: IgnorePointer(
                 child: DecoratedBox(
-                  decoration: ShapeDecoration(
+                  decoration: AmalfiShapeDecoration(
                     shape: AmalfiSmoothBorder(
                       radius: radius,
                       side: BorderSide(

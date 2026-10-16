@@ -1,64 +1,13 @@
 // The face of a field-like control: the background (fill and border) and the keyboard focus
-// halo outside it (`AmalfiFocus`: 3 pt of `Line/Focus`, following the control's corners).
+// halo outside it (`AmalfiFocusHalo`).
 // Shared by the fields, wells and forms.
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../glass.dart';
 import '../../smooth_border.dart';
 import '../../token_types.dart';
-import '../../tokens.g.dart';
-
-/// The focus halo: a [width] ring of [color] outside a smooth rectangle of [radius], the size
-/// of this widget. It fades with [AmalfiFades.quick] when [visible] changes.
-///
-/// [opacity] dims the ring (the error halo is `Palette/Terracotta` at 30 %).
-class AmalfiFocusHalo extends StatelessWidget {
-  const AmalfiFocusHalo({
-    super.key,
-    required this.radius,
-    required this.color,
-    this.visible = true,
-    this.opacity = 1,
-    this.width = AmalfiFocus.halo,
-  });
-
-  /// The corner radius of the control (the ring follows it outside).
-  final double radius;
-
-  /// The ring colour (`Line/Focus`, or the error colour).
-  final Color color;
-
-  /// Whether the ring shows.
-  final bool visible;
-
-  /// The ring's opacity when shown.
-  final double opacity;
-
-  /// The ring width.
-  final double width;
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: AnimatedOpacity(
-      opacity: visible ? opacity : 0,
-      duration: AmalfiFades.quick.duration,
-      curve: AmalfiFades.quick.curve,
-      child: DecoratedBox(
-        decoration: ShapeDecoration(
-          shape: AmalfiSmoothBorder(
-            radius: radius,
-            side: BorderSide(
-              color: color,
-              width: width,
-              strokeAlign: BorderSide.strokeAlignOutside,
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
 
 /// The background of a field: a smooth rectangle of [radius] filled with [fill] and a
 /// [borderWidth] border of [border] inside it, or, with [glass], that material instead
@@ -108,7 +57,7 @@ class AmalfiFieldSurface extends StatelessWidget {
                   child: const SizedBox.expand(),
                 )
               : DecoratedBox(
-                  decoration: ShapeDecoration(
+                  decoration: AmalfiShapeDecoration(
                     color: fill,
                     shape: AmalfiSmoothBorder(
                       radius: radius,

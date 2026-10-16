@@ -10,11 +10,11 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../glass.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import '../menus/glyphs.dart';
 import 'alert_surface.dart';
 
 /// The measures of alerts, from the kit masters `Alerts/Alert/*`.
@@ -215,8 +215,8 @@ class _CriticalBadge extends StatelessWidget {
       radius: AmalfiAlertMetrics.badge / 2,
       shadow: false,
       child: Center(
-        child: AmalfiMenuGlyphIcon(
-          AmalfiMenuGlyph.warning,
+        child: AmalfiGlyph(
+          AmalfiGlyphs.warning,
           color: AmalfiTheme.of(context).colors.paletteTerracotta,
           size: AmalfiAlertMetrics.badgeGlyph,
         ),

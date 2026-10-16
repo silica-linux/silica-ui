@@ -9,13 +9,15 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
+import 'foundation/shadow.dart';
 import 'smooth_border.dart';
 import 'theme.dart';
 import 'token_types.dart';
 import 'tokens.g.dart';
 
-/// A surface of an Amalfi glass [material] with smooth corners of [radius], holding [child]
-/// (which is not clipped: keep it inside the shape).
+/// A surface of an Amalfi glass [material] with smooth corners of [radius] (or in the outline
+/// of any [shape]: a popover with its arrow), holding [child] (which is not clipped: keep it
+/// inside the shape).
 ///
 /// The appearance comes from [AmalfiTheme.of]. With [opaque] (no blur available, or reduced
 /// transparency) the backdrop is replaced by `Surface/Window` under the tint, as
@@ -26,6 +28,7 @@ class AmalfiGlass extends StatelessWidget {
     super.key,
     this.material = AmalfiMaterials.thick,
     this.radius = 0,
+    this.shape,
     this.opaque = false,
     this.child,
   });
@@ -36,6 +39,13 @@ class AmalfiGlass extends StatelessWidget {
   /// The corner radius in points (smoothing [AmalfiRadii.smoothing]); a radius of at least
   /// half the shorter side gives a capsule.
   final double radius;
+
+  /// The outline; null: an [AmalfiSmoothBorder] of [radius]. Its side is not painted (the
+  /// rim is the material's).
+  final ShapeBorder? shape;
+
+  /// The outline drawn: [shape], or smooth corners of [radius].
+  ShapeBorder get outline => shape ?? AmalfiSmoothBorder(radius: radius);
 
   /// Whether to draw an opaque fallback instead of blurring the backdrop.
   final bool opaque;
@@ -56,7 +66,7 @@ class AmalfiGlass extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = AmalfiTheme.of(context);
     final brightness = theme.brightness;
-    final shape = AmalfiSmoothBorder(radius: radius);
+    final shape = outline;
     final face = CustomPaint(
       painter: _GlassFacePainter(
         shape: shape,
@@ -116,53 +126,16 @@ List<double> _saturationMatrix(double s) {
   ];
 }
 
-/// The σ of a kit shadow of blur [blur] (CSS box-shadow semantics).
-double amalfiShadowSigma(double blur) => blur / 2;
-
 /// Paints [shadows] of [shape] outside the shape only, as the kit draws them under glass.
 class _OutsideShadowPainter extends CustomPainter {
   const _OutsideShadowPainter({required this.shape, required this.shadows});
 
-  final AmalfiSmoothBorder shape;
+  final ShapeBorder shape;
   final List<BoxShadow> shadows;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    if (shadows.isEmpty || size.isEmpty) return;
-    final rect = Offset.zero & size;
-    final outline = shape.getOuterPath(rect);
-    var reach = 0.0;
-    for (final s in shadows) {
-      reach = [
-        reach,
-        s.blurRadius + s.spreadRadius + s.offset.distance,
-      ].reduce((a, b) => a > b ? a : b);
-    }
-    canvas
-      ..save()
-      ..clipPath(
-        Path.combine(
-          PathOperation.difference,
-          Path()..addRect(rect.inflate(reach * 2 + 1)),
-          outline,
-        ),
-      );
-    for (final s in shadows) {
-      final paint = Paint()
-        ..color = s.color
-        ..maskFilter = s.blurRadius > 0
-            ? MaskFilter.blur(BlurStyle.normal, amalfiShadowSigma(s.blurRadius))
-            : null;
-      final cast = rect.shift(s.offset).inflate(s.spreadRadius);
-      canvas.drawPath(
-        shape
-            .copyWith(radius: shape.radius + s.spreadRadius)
-            .getOuterPath(cast),
-        paint,
-      );
-    }
-    canvas.restore();
-  }
+  void paint(Canvas canvas, Size size) =>
+      paintAmalfiShadows(canvas, Offset.zero & size, shadows, shape: shape);
 
   @override
   bool shouldRepaint(_OutsideShadowPainter old) =>
@@ -182,7 +155,7 @@ class _GlassFacePainter extends CustomPainter {
     required this.rimLightBlur,
   });
 
-  final AmalfiSmoothBorder shape;
+  final ShapeBorder shape;
   final Color? under;
   final Color? tint;
   final Color rim;
@@ -202,21 +175,13 @@ class _GlassFacePainter extends CustomPainter {
     if (tint case final color?) {
       canvas.drawPath(outline, Paint()..color = color);
     }
-    if (rimWidth > 0) {
-      // An inside stroke of the outline itself (as the kit strokes it): twice as wide,
-      // clipped to the shape.
-      canvas
-        ..save()
-        ..clipPath(outline)
-        ..drawPath(
-          outline,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = rimWidth * 2
-            ..color = rim,
-        )
-        ..restore();
-    }
+    // An inside stroke of the outline itself (as the kit strokes it).
+    paintAmalfiInsideBorder(
+      canvas,
+      rect,
+      shape,
+      BorderSide(color: rim, width: rimWidth),
+    );
     // The rim light: an inner shadow, the light falling inside the edge from [rimLightOffset].
     final reach = rimLightBlur * 2 + rimLightOffset.distance + 1;
     canvas
@@ -226,7 +191,7 @@ class _GlassFacePainter extends CustomPainter {
         Path.combine(
           PathOperation.difference,
           Path()..addRect(rect.inflate(reach)),
-          shape.getOuterPath(rect.shift(rimLightOffset)),
+          outline.shift(rimLightOffset),
         ),
         Paint()
           ..color = rimLight

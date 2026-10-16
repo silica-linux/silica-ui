@@ -4,10 +4,10 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import 'glyphs.dart';
 
 /// The measures of menus and their rows, from the kit masters `Menus/*`.
 abstract final class AmalfiMenuMetrics {
@@ -152,8 +152,8 @@ class AmalfiMenuItem extends StatelessWidget {
             SizedBox.square(
               dimension: AmalfiMenuMetrics.checkSlot,
               child: checked
-                  ? AmalfiMenuGlyphIcon(
-                      AmalfiMenuGlyph.checkmark,
+                  ? AmalfiGlyph(
+                      AmalfiGlyphs.checkmark,
                       color: text,
                       size: AmalfiMenuMetrics.glyph,
                     )
@@ -181,8 +181,8 @@ class AmalfiMenuItem extends StatelessWidget {
           ],
           if (submenu) ...[
             const SizedBox(width: AmalfiMenuMetrics.gap),
-            AmalfiMenuGlyphIcon(
-              AmalfiMenuGlyph.chevronRight,
+            AmalfiGlyph(
+              AmalfiGlyphs.chevronRight,
               color: secondary,
               size: AmalfiMenuMetrics.glyph,
             ),
@@ -192,7 +192,7 @@ class AmalfiMenuItem extends StatelessWidget {
     );
     if (lit) {
       row = DecoratedBox(
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: destructive ? colors.paletteTerracotta : colors.accentAmalfi,
           shape: const AmalfiSmoothBorder(
             radius: AmalfiMenuMetrics.highlightRadius,

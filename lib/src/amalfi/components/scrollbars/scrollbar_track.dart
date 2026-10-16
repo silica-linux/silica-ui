@@ -12,6 +12,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 
@@ -109,7 +110,7 @@ class AmalfiScrollbarTrack extends StatelessWidget {
     final vertical = axis == Axis.vertical;
 
     Widget track = DecoratedBox(
-      decoration: ShapeDecoration(
+      decoration: AmalfiShapeDecoration(
         color: colors.surfaceSunken,
         shape: AmalfiSmoothBorder(
           radius: overlay ? thickness / 2 : 0,
@@ -136,7 +137,7 @@ class AmalfiScrollbarTrack extends StatelessWidget {
               width: vertical ? thumbThickness : extent.roundToDouble(),
               height: vertical ? extent.roundToDouble() : thumbThickness,
               child: DecoratedBox(
-                decoration: ShapeDecoration(
+                decoration: AmalfiShapeDecoration(
                   color: thumbColor,
                   shape: AmalfiSmoothBorder(radius: thumbThickness / 2),
                 ),
@@ -158,7 +159,7 @@ class AmalfiScrollbarCorner extends StatelessWidget {
     return SizedBox.square(
       dimension: AmalfiScrollbarMetrics.corner,
       child: DecoratedBox(
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: colors.surfaceSunken,
           shape: AmalfiSmoothBorder(
             side: BorderSide(

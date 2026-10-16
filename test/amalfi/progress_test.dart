@@ -247,7 +247,7 @@ void main() {
             : tester.getTopLeft(boxes.at(1)).dx;
       }
 
-      // The scene's Overlay keeps its first entry: switch inside it.
+      // Switch the settings in place: the bar keeps its animation.
       final setting = ValueNotifier((enabled: true, ticking: true));
       addTearDown(setting.dispose);
       await pumpKitScene(

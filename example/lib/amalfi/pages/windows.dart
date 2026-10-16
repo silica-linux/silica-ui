@@ -17,13 +17,13 @@ final AmalfiGalleryPage windowsPage = AmalfiGalleryPage(
 const String _body =
     'Whisk the eggs with sugar until pale, fold in the flour, then the lemon zest and juice.';
 
-List<AmalfiSegment> _icons(List<AmalfiTitlebarGlyphData> glyphs) => [
+List<AmalfiSegment> _icons(List<AmalfiGlyphData> glyphs) => [
   for (final g in glyphs)
-    AmalfiSegment.icon(AmalfiTitlebarGlyph(g), semanticLabel: g.name),
+    AmalfiSegment.icon(AmalfiGlyph(g), semanticLabel: g.name),
 ];
 
 /// An action group (segmented family).
-Widget _actions(List<AmalfiTitlebarGlyphData> glyphs) =>
+Widget _actions(List<AmalfiGlyphData> glyphs) =>
     AmalfiActionSegments(segments: _icons(glyphs), onPressed: (_) {});
 
 class _Content extends StatelessWidget {
@@ -78,9 +78,9 @@ class _SidebarState extends State<_Sidebar> {
     children: [
       const AmalfiSidebarHeader(title: 'Favourites'),
       for (final (label, icon) in [
-        ('Recents', AmalfiTitlebarGlyphs.clock),
-        ('Documents', AmalfiTitlebarGlyphs.doc),
-        ('Downloads', AmalfiTitlebarGlyphs.download),
+        ('Recents', AmalfiGlyphs.clock),
+        ('Documents', AmalfiGlyphs.doc),
+        ('Downloads', AmalfiGlyphs.download),
       ])
         AmalfiSidebarRow(
           label: label,
@@ -93,10 +93,7 @@ class _SidebarState extends State<_Sidebar> {
 }
 
 final _nav = AmalfiToolbarPiece(
-  child: _actions([
-    AmalfiTitlebarGlyphs.chevronLeft,
-    AmalfiTitlebarGlyphs.chevronRight,
-  ]),
+  child: _actions([AmalfiGlyphs.chevronLeft, AmalfiGlyphs.chevronRight]),
 );
 
 final _search = AmalfiToolbarPiece(
@@ -114,7 +111,7 @@ Widget _unifiedBar({
     _controls(),
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        icon: AmalfiGlyph(AmalfiGlyphs.sidebar),
         onPressed: () {},
         semanticLabel: 'sidebar',
       ),
@@ -135,7 +132,7 @@ AmalfiWindowColumn _sidebarColumn() => AmalfiWindowColumn(
       AmalfiSpacerPiece(),
       AmalfiToolbarPiece(
         child: AmalfiToolbarButton(
-          icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+          icon: AmalfiGlyph(AmalfiGlyphs.sidebar),
           onPressed: () {},
           semanticLabel: 'sidebar',
         ),
@@ -323,9 +320,9 @@ class _WindowsPage extends StatelessWidget {
                         AmalfiSpacerPiece(),
                         AmalfiToolbarPiece(
                           child: _actions([
-                            AmalfiTitlebarGlyphs.plus,
-                            AmalfiTitlebarGlyphs.tag,
-                            AmalfiTitlebarGlyphs.star,
+                            AmalfiGlyphs.plus,
+                            AmalfiGlyphs.tag,
+                            AmalfiGlyphs.star,
                           ]),
                         ),
                       ],
@@ -372,7 +369,7 @@ class _WindowsPage extends StatelessWidget {
                     AmalfiSpacerPiece(),
                     AmalfiToolbarPiece(
                       child: AmalfiToolbarButton(
-                        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.share),
+                        icon: AmalfiGlyph(AmalfiGlyphs.share),
                         onPressed: () {},
                         semanticLabel: 'share',
                       ),

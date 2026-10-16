@@ -12,7 +12,7 @@ import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import '../fields/glyph.dart';
+import '../../foundation/foundation.dart';
 
 BoxShadow _lift(AmalfiColors colors) => BoxShadow(
   color: colors.shadowSoft,
@@ -49,7 +49,7 @@ class StandInPopUpButton extends StatelessWidget {
         width: width,
         height: 28,
         child: DecoratedBox(
-          decoration: ShapeDecoration(
+          decoration: AmalfiShapeDecoration(
             color: colors.surfaceControl,
             shape: AmalfiSmoothBorder(
               radius: 14,
@@ -73,8 +73,8 @@ class StandInPopUpButton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                AmalfiGlyphIcon(
-                  AmalfiGlyph.chevronUpDown,
+                AmalfiGlyph(
+                  AmalfiGlyphs.chevronUpDown,
                   size: 16,
                   color: colors.textSecondary,
                 ),
@@ -111,7 +111,7 @@ class StandInPushButton extends StatelessWidget {
         width: width,
         height: 28,
         child: DecoratedBox(
-          decoration: ShapeDecoration(
+          decoration: AmalfiShapeDecoration(
             color: primary ? colors.accentAmalfi : colors.surfaceControl,
             shape: AmalfiSmoothBorder(
               radius: 14,
@@ -169,7 +169,7 @@ class StandInCheckbox extends StatelessWidget {
               SizedBox.square(
                 dimension: 16,
                 child: DecoratedBox(
-                  decoration: ShapeDecoration(
+                  decoration: AmalfiShapeDecoration(
                     color: value ? colors.accentAmalfi : colors.surfaceRaised,
                     shape: AmalfiSmoothBorder(
                       radius: 5,
@@ -184,8 +184,8 @@ class StandInCheckbox extends StatelessWidget {
                   ),
                   child: value
                       ? Center(
-                          child: AmalfiGlyphIcon(
-                            AmalfiGlyph.checkmark,
+                          child: AmalfiGlyph(
+                            AmalfiGlyphs.checkmark,
                             size: 12,
                             color: colors.textOnAccent,
                           ),
@@ -259,7 +259,7 @@ class StandInSwitch extends StatelessWidget {
                 width: 40,
                 height: 24,
                 child: DecoratedBox(
-                  decoration: ShapeDecoration(
+                  decoration: AmalfiShapeDecoration(
                     color: value ? colors.accentAmalfi : colors.surfaceSunken,
                     shape: AmalfiSmoothBorder(
                       radius: 12,
@@ -281,7 +281,7 @@ class StandInSwitch extends StatelessWidget {
                       child: SizedBox.square(
                         dimension: 20,
                         child: DecoratedBox(
-                          decoration: ShapeDecoration(
+                          decoration: AmalfiShapeDecoration(
                             color: colors.textOnAccent,
                             shape: const CircleBorder(),
                             shadows: [_lift(colors)],

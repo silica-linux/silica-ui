@@ -10,7 +10,7 @@ import '../../tokens.g.dart';
 import 'clear_button.dart';
 import 'editable.dart';
 import 'field_state.dart';
-import 'glyph.dart';
+import '../../foundation/foundation.dart';
 import 'metrics.dart';
 import 'surface.dart';
 import 'token_editing.dart';
@@ -158,8 +158,8 @@ class _AmalfiSearchFieldState extends State<AmalfiSearchField>
                 padding: EdgeInsets.symmetric(horizontal: size.padding),
                 child: Row(
                   children: [
-                    AmalfiGlyphIcon(
-                      AmalfiGlyph.search,
+                    AmalfiGlyph(
+                      AmalfiGlyphs.search,
                       size: size.glyph,
                       color: enabled
                           ? colors.textSecondary

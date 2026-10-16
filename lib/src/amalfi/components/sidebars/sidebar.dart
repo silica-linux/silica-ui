@@ -8,12 +8,11 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../titlebars/glyphs.dart';
 import '../titlebars/text_box.dart';
-import '../titlebars/window_scope.dart';
 
 /// The measures of the sidebar.
 abstract final class AmalfiSidebarMetrics {
@@ -66,7 +65,7 @@ class AmalfiSidebarBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
     return DecoratedBox(
-      decoration: ShapeDecoration(
+      decoration: AmalfiShapeDecoration(
         color: colors.surfaceRaised,
         shape: AmalfiSmoothBorder(
           radius: AmalfiSidebarMetrics.badgeHeight / 2,
@@ -127,7 +126,7 @@ class AmalfiSidebarRow extends StatefulWidget {
   final String label;
 
   /// The Icon Kit glyph; null: an empty 16 pt slot.
-  final AmalfiTitlebarGlyphData? icon;
+  final AmalfiGlyphData? icon;
 
   /// The count shown in a badge; null: none.
   final String? badge;
@@ -144,6 +143,7 @@ class AmalfiSidebarRow extends StatefulWidget {
 
 class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
   bool _hovered = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +173,7 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
             dimension: AmalfiSidebarMetrics.icon,
             child: icon == null
                 ? null
-                : AmalfiTitlebarGlyph(
+                : AmalfiGlyph(
                     icon,
                     size: AmalfiSidebarMetrics.icon,
                     color: iconColor,
@@ -198,7 +198,7 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
     );
     if (selected || hovered) {
       row = DecoratedBox(
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: selected ? colors.accentAmalfiSoft : colors.lineSeparator,
           shape: const AmalfiSmoothBorder(radius: AmalfiSidebarMetrics.radius),
         ),
@@ -213,25 +213,29 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
       value: badge,
       onTap: enabled ? widget.onTap : null,
       excludeSemantics: true,
-      child: FocusableActionDetector(
-        shortcuts: amalfiTitlebarActivateShortcuts,
-        enabled: enabled && widget.onTap != null,
-        actions: {
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) {
-              widget.onTap?.call();
-              return null;
-            },
-          ),
-        },
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _hovered = true),
-          onExit: (_) => setState(() => _hovered = false),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: enabled ? widget.onTap : null,
-            child: SizedBox(height: AmalfiSidebarMetrics.rowHeight, child: row),
-          ),
+      child: AmalfiInteraction(
+        // An enabled row without an action still shows the hover.
+        onActivate: enabled ? (widget.onTap ?? () {}) : null,
+        activators: AmalfiInteraction.buttonActivates,
+        onStateChanged: (state) => setState(() {
+          _hovered = state.hovered;
+          _focused = state.focused && widget.onTap != null;
+        }),
+        builder: (context, _) => SizedBox(
+          height: AmalfiSidebarMetrics.rowHeight,
+          child: _focused && enabled
+              ? Stack(
+                  fit: StackFit.passthrough,
+                  children: [
+                    row,
+                    const Positioned.fill(
+                      child: AmalfiFocusHalo(
+                        radius: AmalfiSidebarMetrics.radius,
+                      ),
+                    ),
+                  ],
+                )
+              : row,
         ),
       ),
     );
@@ -285,10 +289,8 @@ class AmalfiSidebarHeader extends StatelessWidget {
             ),
             if (expanded != null) ...[
               const SizedBox(width: 4),
-              AmalfiTitlebarGlyph(
-                expanded
-                    ? AmalfiTitlebarGlyphs.chevronDown
-                    : AmalfiTitlebarGlyphs.chevronRight,
+              AmalfiGlyph(
+                expanded ? AmalfiGlyphs.chevronDown : AmalfiGlyphs.chevronRight,
                 size: AmalfiSidebarMetrics.chevron,
                 color: colors.textTertiary,
               ),
@@ -312,22 +314,20 @@ class AmalfiSidebarHeader extends StatelessWidget {
       label: title,
       onTap: onToggle,
       excludeSemantics: true,
-      child: FocusableActionDetector(
-        shortcuts: amalfiTitlebarActivateShortcuts,
-        enabled: onToggle != null,
-        actions: {
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) {
-              onToggle?.call();
-              return null;
-            },
-          ),
-        },
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onToggle,
-          child: header,
-        ),
+      child: AmalfiInteraction(
+        onActivate: onToggle,
+        activators: AmalfiInteraction.buttonActivates,
+        builder: (context, state) => state.focused
+            ? Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  header,
+                  const Positioned.fill(
+                    child: AmalfiFocusHalo(radius: AmalfiSidebarMetrics.radius),
+                  ),
+                ],
+              )
+            : header,
       ),
     );
   }

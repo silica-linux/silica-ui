@@ -7,9 +7,9 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../tokens.g.dart';
 
 /// How long the hover and press looks take to go away (`motion.md`: 60 ms out).
@@ -85,13 +85,6 @@ class AmalfiButtonPreview extends InheritedWidget {
   @override
   bool updateShouldNotify(AmalfiButtonPreview old) => old.state != state;
 }
-
-/// The shortcuts that activate a focused button.
-const Map<ShortcutActivator, Intent> amalfiButtonShortcuts = {
-  SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-  SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-  SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
-};
 
 /// A button's behaviour: calls [onPressed] on a click (pointer down and up inside) or when
 /// focused and Space or Return is pressed, tracks hover and press with the Amalfi fades, shows
@@ -172,6 +165,7 @@ class _AmalfiButtonBehaviorState extends State<AmalfiButtonBehavior>
     super.didUpdateWidget(old);
     if (!_enabled) {
       _down = false;
+      _focusHighlight = false;
       _hover.value = 0;
     }
     _updatePress();
@@ -195,19 +189,20 @@ class _AmalfiButtonBehaviorState extends State<AmalfiButtonBehavior>
     }
   }
 
-  void _setHover(bool value) {
-    _hovering = value;
-    if (value && _enabled) {
+  void _onState(AmalfiInteractionState state) {
+    _hovering = state.hovered;
+    if (state.hovered && _enabled) {
       _hover.forward();
     } else {
       _hover.reverse();
     }
-  }
-
-  void _setDown(bool value) {
-    if (_down == value) return;
-    setState(() => _down = value);
-    _updatePress();
+    if (state.focused != _focusHighlight) {
+      setState(() => _focusHighlight = state.focused);
+    }
+    if (state.pressed != _down) {
+      setState(() => _down = state.pressed);
+      _updatePress();
+    }
   }
 
   void _activate() {
@@ -225,70 +220,43 @@ class _AmalfiButtonBehaviorState extends State<AmalfiButtonBehavior>
         enabled: enabled,
         label: widget.semanticLabel,
         onTap: enabled ? _activate : null,
-        child: FocusableActionDetector(
-          enabled: enabled,
+        child: AmalfiInteraction(
+          onActivate: enabled ? _activate : null,
+          onPressDown: widget.onPressedDown,
+          onStateChanged: _onState,
+          activators: AmalfiInteraction.buttonActivates,
           focusNode: widget.focusNode,
           autofocus: widget.autofocus,
-          shortcuts: amalfiButtonShortcuts,
-          actions: {
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (_) {
-                _activate();
-                return null;
-              },
-            ),
-          },
-          mouseCursor: enabled ? widget.mouseCursor : MouseCursor.defer,
-          onShowFocusHighlight: (value) {
-            if (value != _focusHighlight) {
-              setState(() => _focusHighlight = value);
-            }
-          },
-          child: MouseRegion(
-            onEnter: (_) => _setHover(true),
-            onExit: (_) => _setHover(false),
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: enabled
-                  ? (_) {
-                      _setDown(true);
-                      widget.onPressedDown?.call();
-                    }
-                  : null,
-              onTapUp: enabled ? (_) => _setDown(false) : null,
-              onTap: enabled ? _activate : null,
-              onTapCancel: enabled ? () => _setDown(false) : null,
-              child: AnimatedBuilder(
-                animation: Listenable.merge([_hoverCurve, _pressCurve]),
-                builder: (context, _) {
-                  final preview = AmalfiButtonPreview.of(context);
-                  final built = widget.builder(
-                    context,
-                    AmalfiButtonVisual(
-                      enabled: enabled,
-                      hover: !enabled
-                          ? 0
-                          : preview == AmalfiButtonPreviewState.hover
-                          ? 1
-                          : _hoverCurve.value,
-                      press: !enabled
-                          ? 0
-                          : preview == AmalfiButtonPreviewState.pressed
-                          ? 1
-                          : _pressCurve.value,
-                      focused:
-                          enabled &&
-                          (_focusHighlight ||
-                              preview == AmalfiButtonPreviewState.focused),
-                    ),
-                  );
-                  // The semantic label replaces the text drawn in the button.
-                  return widget.semanticLabel == null
-                      ? built
-                      : ExcludeSemantics(child: built);
-                },
-              ),
-            ),
+          cursor: widget.mouseCursor,
+          builder: (context, _) => AnimatedBuilder(
+            animation: Listenable.merge([_hoverCurve, _pressCurve]),
+            builder: (context, _) {
+              final preview = AmalfiButtonPreview.of(context);
+              final built = widget.builder(
+                context,
+                AmalfiButtonVisual(
+                  enabled: enabled,
+                  hover: !enabled
+                      ? 0
+                      : preview == AmalfiButtonPreviewState.hover
+                      ? 1
+                      : _hoverCurve.value,
+                  press: !enabled
+                      ? 0
+                      : preview == AmalfiButtonPreviewState.pressed
+                      ? 1
+                      : _pressCurve.value,
+                  focused:
+                      enabled &&
+                      (_focusHighlight ||
+                          preview == AmalfiButtonPreviewState.focused),
+                ),
+              );
+              // The semantic label replaces the text drawn in the button.
+              return widget.semanticLabel == null
+                  ? built
+                  : ExcludeSemantics(child: built);
+            },
           ),
         ),
       ),
@@ -302,78 +270,4 @@ class _AmalfiButtonBehaviorState extends State<AmalfiButtonBehavior>
       ..add(FlagProperty('hovering', value: _hovering, ifTrue: 'hovering'))
       ..add(FlagProperty('down', value: _down, ifTrue: 'down'));
   }
-}
-
-/// Sizes [child] as it wants, then rounds its width up to a multiple of [step] points and
-/// its height up to whole points: the kit draws the label frames of buttons on the 4 pt grid
-/// horizontally ("Button" in Body Emphasis: 45.4 wide, frame 48) and at the line height.
-class AmalfiGridWidth extends SingleChildRenderObjectWidget {
-  const AmalfiGridWidth({super.key, this.step = AmalfiGrid.base, super.child})
-    : assert(step > 0);
-
-  /// The horizontal rounding step in points.
-  final double step;
-
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-      _RenderGridWidth(step);
-
-  @override
-  void updateRenderObject(
-    BuildContext context,
-    covariant _RenderGridWidth renderObject,
-  ) {
-    renderObject.step = step;
-  }
-}
-
-double _ceilTo(double x, double step) => x.isFinite
-    ? ((x - 1e-3) / step).ceilToDouble().clamp(0, double.infinity) * step
-    : x;
-
-class _RenderGridWidth extends RenderProxyBox {
-  _RenderGridWidth(this._step);
-
-  double _step;
-  set step(double value) {
-    if (value == _step) return;
-    _step = value;
-    markNeedsLayout();
-  }
-
-  Size _round(Size s) => Size(_ceilTo(s.width, _step), _ceilTo(s.height, 1));
-
-  @override
-  void performLayout() {
-    final child = this.child;
-    if (child == null) {
-      size = constraints.smallest;
-      return;
-    }
-    child.layout(constraints, parentUsesSize: true);
-    size = constraints.constrain(_round(child.size));
-  }
-
-  @override
-  Size computeDryLayout(BoxConstraints constraints) {
-    final child = this.child;
-    if (child == null) return constraints.smallest;
-    return constraints.constrain(_round(child.getDryLayout(constraints)));
-  }
-
-  @override
-  double computeMinIntrinsicWidth(double height) =>
-      _ceilTo(super.computeMinIntrinsicWidth(height), _step);
-
-  @override
-  double computeMaxIntrinsicWidth(double height) =>
-      _ceilTo(super.computeMaxIntrinsicWidth(height), _step);
-
-  @override
-  double computeMinIntrinsicHeight(double width) =>
-      _ceilTo(super.computeMinIntrinsicHeight(width), 1);
-
-  @override
-  double computeMaxIntrinsicHeight(double width) =>
-      _ceilTo(super.computeMaxIntrinsicHeight(width), 1);
 }

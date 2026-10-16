@@ -1,11 +1,8 @@
 // A segment of an Amalfi segmented control or action capsule, and the small pieces both
 // draw with: the glyph box, the label measure, the focus halo.
 
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
 
-import 'capsule.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
 
@@ -92,49 +89,4 @@ class AmalfiSegmentGlyph extends StatelessWidget {
       child: Center(child: child),
     ),
   );
-}
-
-/// The keyboard focus halo around a shape of [radius]: [AmalfiFocus.halo] wide, outside it,
-/// in `Line/Focus`.
-class AmalfiSegmentFocusHalo extends StatelessWidget {
-  const AmalfiSegmentFocusHalo({
-    super.key,
-    required this.radius,
-    required this.color,
-  });
-
-  final double radius;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: CustomPaint(
-      painter: _HaloPainter(radius, color),
-      child: const SizedBox.expand(),
-    ),
-  );
-}
-
-class _HaloPainter extends CustomPainter {
-  const _HaloPainter(this.radius, this.color);
-
-  final double radius;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (size.isEmpty) return;
-    AmalfiCapsuleBorder(
-      radius: math.max(radius, 0),
-      side: BorderSide(
-        color: color,
-        width: AmalfiFocus.halo,
-        strokeAlign: BorderSide.strokeAlignOutside,
-      ),
-    ).paint(canvas, Offset.zero & size);
-  }
-
-  @override
-  bool shouldRepaint(_HaloPainter old) =>
-      old.radius != radius || old.color != color;
 }

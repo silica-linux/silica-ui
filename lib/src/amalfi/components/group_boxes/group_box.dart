@@ -7,7 +7,7 @@ import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import '../toggles/control_kit.dart';
+import '../../foundation/foundation.dart';
 
 /// The measures of a group box, from `Group Boxes/Box/*`.
 abstract final class AmalfiGroupBoxMetrics {

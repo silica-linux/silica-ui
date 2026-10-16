@@ -1,7 +1,6 @@
 // Fields against the kit (`Fields/*`): every master in geometry and pixels, then behaviour.
 // Checklist: docs/amalfi-checklist/fields.md.
 
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,42 +21,6 @@ const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 2.5, max: 128);
 /// The text tolerance of the fields: CoreText draws Inter visibly heavier than Skia, which
 /// the text-dense masters (the text area's three lines) feel most.
 const KitPixelTolerance fieldsText = KitPixelTolerance(mean: 3, max: 255);
-
-/// The deviation every value drawn by an [EditableText] needs: it paints through
-/// [RenderEditable], not a [RichText]; [expectEditable] checks its text and style instead.
-const String editableText =
-    'the value is an EditableText (no RichText): checked by expectEditable';
-
-/// Checks the [EditableText] under [finder] against the text layer [path] of [master]: text
-/// (or its bullets when obscured), family, size, weight, line height, colour and token.
-void expectEditable(
-  WidgetTester tester,
-  KitMaster master,
-  String path,
-  Finder finder,
-) {
-  final layer = master.layer(path);
-  final editable = tester.widget<EditableText>(
-    find.descendant(of: finder, matching: find.byType(EditableText)),
-  );
-  final font = layer.font!;
-  final style = editable.style;
-  final text = editable.obscureText
-      ? editable.obscuringCharacter * editable.controller.text.length
-      : editable.controller.text;
-  expect(text, layer.text, reason: '${master.name} $path text');
-  expect(
-    style.fontFamily?.replaceFirst(RegExp('^packages/[^/]+/'), ''),
-    font.family,
-  );
-  expect(style.fontSize, font.size);
-  expect(style.fontWeight ?? FontWeight.w400, font.fontWeight);
-  expect(style.height! * style.fontSize!, font.lineHeight);
-  expect(style.color, font.color, reason: '${master.name} $path colour');
-  final ref = layer.textStyle!;
-  expect(ref.color, font.color);
-  expect(ref.style.size, font.size);
-}
 
 /// The carets of the focused editable texts under [root], relative to it.
 List<Rect> caretRects(WidgetTester tester, Finder root) {
@@ -112,7 +75,7 @@ Finder label(String text) => find
 final Finder background = find.byType(AmalfiFieldSurface);
 final Finder halo = find.byType(AmalfiFocusHalo);
 final Finder value = find.byType(AmalfiEditable);
-Finder glyph([int index = 0]) => find.byType(AmalfiGlyphIcon).at(index);
+Finder glyph([int index = 0]) => find.byType(AmalfiGlyph).at(index);
 
 /// One master: how to build the widget, which layers map to what, how to bring it into the
 /// master's state.
@@ -121,7 +84,6 @@ class FieldCase {
     this.key, {
     required this.build,
     required this.layers,
-    this.editable = const [],
     this.focus = false,
     this.prepare,
     this.deviations = const {},
@@ -133,9 +95,6 @@ class FieldCase {
   final String key;
   final Widget Function(FocusNode focus) build;
   final Map<String, Finder> layers;
-
-  /// Text layers drawn by an EditableText.
-  final List<String> editable;
 
   /// Focus the field (the caret is masked out of the pixels).
   final bool focus;
@@ -185,7 +144,6 @@ List<FieldCase> textFieldCases() => [
           'Value': value,
           if (state == 'Error') 'Error icon': glyph(),
         },
-        editable: [if (state != 'Placeholder' && state != 'Disabled') 'Value'],
         focus: state == 'Focused',
       ),
   for (final state in ['Placeholder', 'Filled', 'Focused', 'Disabled'])
@@ -205,7 +163,6 @@ List<FieldCase> textFieldCases() => [
         'Value': value,
         'Leading icon': glyph(),
       },
-      editable: [if (state == 'Filled' || state == 'Focused') 'Value'],
       focus: state == 'Focused',
       // The Icon Kit's lock has a narrower, taller shackle than silica-icons' lock.svg.
       maskLayers: const ['Leading icon'],
@@ -228,7 +185,6 @@ List<FieldCase> textFieldCases() => [
         if (state == 'Focused') 'Focus Halo': halo,
         'Value': value,
       },
-      editable: [if (state != 'Placeholder') 'Value'],
       focus: state == 'Focused',
     ),
   for (final state in ['Rest', 'Focused', 'Disabled'])
@@ -250,7 +206,6 @@ List<FieldCase> textFieldCases() => [
         'Value': value,
         'Inline button': find.byType(AmalfiInlineButton),
       },
-      editable: ['Value'],
       focus: state == 'Focused',
     ),
 ];
@@ -273,7 +228,6 @@ List<FieldCase> searchCases() => [
           'Search glyph': glyph(),
           if (state == 'Typing') 'Clear button': find.byType(AmalfiClearButton),
         },
-        editable: [if (state == 'Typing') 'Value'],
         focus: state == 'Focused',
       ),
   for (final state in ['Token', 'Token Focused'])
@@ -330,7 +284,6 @@ List<FieldCase> tokenCases() => [
         'Token 1': find.byType(AmalfiToken).at(0),
         'Token 2': find.byType(AmalfiToken).at(1),
       },
-      editable: const [],
       deviations: const {'Token 2': coastToken, 'Value': coastToken},
       mask: const [Rect.fromLTWH(68, 0, 192, 28)],
       focus: state == 'Focused',
@@ -389,7 +342,6 @@ List<FieldCase> comboCases() => [
           'Value': value,
           'Inline button': find.byType(AmalfiComboButton),
         },
-        editable: ['Value'],
         focus: state == 'Focused',
       ),
   for (final size in ['Small', 'Regular', 'Large'])
@@ -489,14 +441,8 @@ void main() {
             master,
             root: root,
             layers: c.layers,
-            deviations: {
-              for (final path in c.editable) '$path#text': editableText,
-              ...c.deviations,
-            },
+            deviations: c.deviations,
           );
-          for (final path in c.editable) {
-            expectEditable(tester, master, path, c.layers[path]!);
-          }
           // The caret blinks and sits after the text, whose width differs from CoreText's:
           // leave out the kit's caret and ours.
           final caret = master.maybeLayer('Caret');
@@ -533,23 +479,7 @@ void main() {
 
 /// Pumps [child] in an app (text editing shortcuts, focus) in the light appearance.
 Future<void> pumpApp(WidgetTester tester, Widget child) async {
-  await ensureAmalfiFonts(tester);
-  await tester.pumpWidget(
-    WidgetsApp(
-      color: const Color(0xFF0E77E6),
-      builder: (context, _) => Overlay(
-        initialEntries: [
-          OverlayEntry(
-            builder: (_) => AmalfiTheme(
-              brightness: Brightness.light,
-              child: Align(alignment: Alignment.topLeft, child: child),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-  await tester.pump();
+  await pumpKitScene(tester, child, brightness: Brightness.light);
 }
 
 /// Answers the clipboard calls of the platform channel.
@@ -761,7 +691,7 @@ void behaviour() {
       expect(find.text('Sea'), findsOneWidget);
       expect(find.byType(AmalfiToken), findsNWidgets(2));
       // The cross removes a token.
-      await tester.tap(find.byType(AmalfiGlyphIcon).first);
+      await tester.tap(find.byType(AmalfiGlyph).first);
       await tester.pump();
       expect(find.text('Travel'), findsNothing);
     });

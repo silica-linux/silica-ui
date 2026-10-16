@@ -139,8 +139,8 @@ Widget bar52(Widget piece) => SizedBox(
 );
 
 /// The chrome glyph [glyph] (one on screen).
-Finder glyphOf(AmalfiTitlebarGlyphData glyph) =>
-    find.byWidgetPredicate((w) => w is AmalfiTitlebarGlyph && w.glyph == glyph);
+Finder glyphOf(AmalfiGlyphData glyph) =>
+    find.byWidgetPredicate((w) => w is AmalfiGlyph && w.glyph == glyph);
 
 /// The states (`Active`, `Inactive`) the kit has for [prefix] in [appearance].
 List<String> availableStates(String prefix, String appearance) => [
@@ -155,7 +155,7 @@ final List<(String, String, Widget)> itemPieces = [
     'Toolbar button',
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        icon: AmalfiGlyph(AmalfiGlyphs.sidebar),
         onPressed: () {},
         semanticLabel: 'sidebar',
       ),
@@ -167,9 +167,7 @@ final List<(String, String, Widget)> itemPieces = [
       'Item Group $n',
       'Item group',
       AmalfiToolbarPiece(
-        child: toolbarActions([
-          for (var i = 0; i < n; i++) AmalfiTitlebarGlyphs.plus,
-        ]),
+        child: toolbarActions([for (var i = 0; i < n; i++) AmalfiGlyphs.plus]),
       ),
     ),
   (
@@ -177,8 +175,8 @@ final List<(String, String, Widget)> itemPieces = [
     'View switcher',
     AmalfiToolbarPiece(
       child: viewSwitcher([
-        AmalfiTitlebarGlyphs.listBullet,
-        AmalfiTitlebarGlyphs.squareGrid2x2,
+        AmalfiGlyphs.listBullet,
+        AmalfiGlyphs.squareGrid2x2,
       ]),
     ),
   ),
@@ -187,10 +185,10 @@ final List<(String, String, Widget)> itemPieces = [
     'View switcher',
     AmalfiToolbarPiece(
       child: viewSwitcher([
-        AmalfiTitlebarGlyphs.listBullet,
-        AmalfiTitlebarGlyphs.squareGrid2x2,
-        AmalfiTitlebarGlyphs.photo,
-        AmalfiTitlebarGlyphs.clock,
+        AmalfiGlyphs.listBullet,
+        AmalfiGlyphs.squareGrid2x2,
+        AmalfiGlyphs.photo,
+        AmalfiGlyphs.clock,
       ]),
     ),
   ),
@@ -204,22 +202,22 @@ final List<(String, String, Widget)> itemPieces = [
   ('Search', 'Search', AmalfiToolbarPiece(child: toolbarSearch())),
   ('Search Token', 'Search', AmalfiToolbarPiece(child: searchToken())),
   for (final (name, glyph) in [
-    ('Share', AmalfiTitlebarGlyphs.share),
-    ('More', AmalfiTitlebarGlyphs.ellipsisCircle),
-    ('Doc Info', AmalfiTitlebarGlyphs.doc),
-    ('Doc Share', AmalfiTitlebarGlyphs.share),
-    ('Mail Compose', AmalfiTitlebarGlyphs.compose),
-    ('Notes New', AmalfiTitlebarGlyphs.compose),
-    ('Preview Inspector', AmalfiTitlebarGlyphs.sidebar),
-    ('Preview Markup', AmalfiTitlebarGlyphs.compose),
-    ('Preview Rotate', AmalfiTitlebarGlyphs.plus),
+    ('Share', AmalfiGlyphs.share),
+    ('More', AmalfiGlyphs.ellipsisCircle),
+    ('Doc Info', AmalfiGlyphs.doc),
+    ('Doc Share', AmalfiGlyphs.share),
+    ('Mail Compose', AmalfiGlyphs.compose),
+    ('Notes New', AmalfiGlyphs.compose),
+    ('Preview Inspector', AmalfiGlyphs.sidebar),
+    ('Preview Markup', AmalfiGlyphs.compose),
+    ('Preview Rotate', AmalfiGlyphs.plus),
   ])
     (
       name,
       'Toolbar button',
       AmalfiToolbarPiece(
         child: AmalfiToolbarButton(
-          icon: AmalfiTitlebarGlyph(glyph),
+          icon: AmalfiGlyph(glyph),
           onPressed: () {},
           semanticLabel: 'glyph',
         ),
@@ -230,7 +228,7 @@ final List<(String, String, Widget)> itemPieces = [
     'Toolbar button',
     AmalfiToolbarPiece.add(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+        icon: AmalfiGlyph(AmalfiGlyphs.plus),
         onPressed: () {},
         semanticLabel: 'plus',
       ),
@@ -242,7 +240,7 @@ final List<(String, String, Widget)> itemPieces = [
     AmalfiToolbarPiece(
       trailing: 16,
       child: AmalfiIconButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+        icon: AmalfiGlyph(AmalfiGlyphs.plus),
         onPressed: () {},
         semanticLabel: 'plus',
       ),
@@ -265,9 +263,7 @@ final List<(String, String, Widget)> itemPieces = [
       name,
       layer,
       AmalfiToolbarPiece(
-        child: toolbarActions([
-          for (var i = 0; i < n; i++) AmalfiTitlebarGlyphs.plus,
-        ]),
+        child: toolbarActions([for (var i = 0; i < n; i++) AmalfiGlyphs.plus]),
       ),
     ),
   (
@@ -275,31 +271,30 @@ final List<(String, String, Widget)> itemPieces = [
     'List or gallery',
     AmalfiToolbarPiece(
       child: viewSwitcher([
-        AmalfiTitlebarGlyphs.listBullet,
-        AmalfiTitlebarGlyphs.squareGrid2x2,
+        AmalfiGlyphs.listBullet,
+        AmalfiGlyphs.squareGrid2x2,
       ]),
     ),
   ),
 ];
 
 /// Icon segments of [glyphs] (the segmented family takes any widget as icon).
-List<AmalfiSegment> iconSegments(List<AmalfiTitlebarGlyphData> glyphs) => [
+List<AmalfiSegment> iconSegments(List<AmalfiGlyphData> glyphs) => [
   for (final g in glyphs)
-    AmalfiSegment.icon(AmalfiTitlebarGlyph(g), semanticLabel: g.name),
+    AmalfiSegment.icon(AmalfiGlyph(g), semanticLabel: g.name),
 ];
 
 /// A toolbar action group (kit `Segments/Action/Icon N/Large`).
-Widget toolbarActions(List<AmalfiTitlebarGlyphData> glyphs) =>
+Widget toolbarActions(List<AmalfiGlyphData> glyphs) =>
     AmalfiActionSegments(segments: iconSegments(glyphs), onPressed: (_) {});
 
 /// A select-one control of icons (kit `Segments/Control/One N Icon/Large`).
-Widget viewSwitcher(List<AmalfiTitlebarGlyphData> glyphs) =>
-    AmalfiSegmentedControl(
-      segments: iconSegments(glyphs),
-      selected: const {0},
-      onChanged: (_) {},
-      size: AmalfiControlSize.large,
-    );
+Widget viewSwitcher(List<AmalfiGlyphData> glyphs) => AmalfiSegmentedControl(
+  segments: iconSegments(glyphs),
+  selected: const {0},
+  onChanged: (_) {},
+  size: AmalfiControlSize.large,
+);
 
 /// A select-one control of labels (kit `Segments/Control/One 4 Text/Large`).
 Widget textSwitcher(List<String> labels) => AmalfiSegmentedControl(
@@ -332,10 +327,7 @@ Finder pieceControl() => find
 /// Back and forward.
 Widget navPiece({Key? key}) => AmalfiToolbarPiece(
   key: key,
-  child: toolbarActions([
-    AmalfiTitlebarGlyphs.chevronLeft,
-    AmalfiTitlebarGlyphs.chevronRight,
-  ]),
+  child: toolbarActions([AmalfiGlyphs.chevronLeft, AmalfiGlyphs.chevronRight]),
 );
 
 /// The pieces found by their key (the kit layer name).
@@ -383,7 +375,7 @@ Widget unifiedBar({
     AmalfiToolbarPiece(
       key: ValueKey('Sidebar Toggle'),
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        icon: AmalfiGlyph(AmalfiGlyphs.sidebar),
         onPressed: () {},
         semanticLabel: 'sidebar',
       ),
@@ -394,8 +386,8 @@ Widget unifiedBar({
     AmalfiToolbarPiece(
       key: ValueKey('Segmented'),
       child: viewSwitcher([
-        AmalfiTitlebarGlyphs.listBullet,
-        AmalfiTitlebarGlyphs.squareGrid2x2,
+        AmalfiGlyphs.listBullet,
+        AmalfiGlyphs.squareGrid2x2,
       ]),
     ),
     AmalfiToolbarPiece(key: ValueKey('Search'), child: toolbarSearch()),
@@ -419,7 +411,7 @@ List<Widget> sidebarSectionPieces() => [
   AmalfiToolbarPiece(
     key: ValueKey('Sidebar Toggle'),
     child: AmalfiToolbarButton(
-      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+      icon: AmalfiGlyph(AmalfiGlyphs.sidebar),
       onPressed: () {},
       semanticLabel: 'sidebar',
     ),
@@ -441,17 +433,11 @@ List<Widget> contentSectionPieces() => [
   AmalfiSpacerPiece(key: ValueKey('Spacer')),
   AmalfiToolbarPiece(
     key: ValueKey('Item Group 2'),
-    child: toolbarActions([
-      AmalfiTitlebarGlyphs.plus,
-      AmalfiTitlebarGlyphs.tag,
-    ]),
+    child: toolbarActions([AmalfiGlyphs.plus, AmalfiGlyphs.tag]),
   ),
   AmalfiToolbarPiece(
     key: ValueKey('Segmented'),
-    child: viewSwitcher([
-      AmalfiTitlebarGlyphs.listBullet,
-      AmalfiTitlebarGlyphs.squareGrid2x2,
-    ]),
+    child: viewSwitcher([AmalfiGlyphs.listBullet, AmalfiGlyphs.squareGrid2x2]),
   ),
   AmalfiToolbarPiece(key: ValueKey('Search'), child: toolbarSearch()),
 ];
@@ -463,10 +449,7 @@ List<Widget> listSectionPieces() => [
   AmalfiSpacerPiece(key: ValueKey('Spacer')),
   AmalfiToolbarPiece(
     key: ValueKey('Item Group 2'),
-    child: toolbarActions([
-      AmalfiTitlebarGlyphs.plus,
-      AmalfiTitlebarGlyphs.tag,
-    ]),
+    child: toolbarActions([AmalfiGlyphs.plus, AmalfiGlyphs.tag]),
   ),
 ];
 
@@ -477,9 +460,9 @@ List<Widget> inspectorSectionPieces() => [
   AmalfiToolbarPiece(
     key: ValueKey('Item Group 3'),
     child: toolbarActions([
-      AmalfiTitlebarGlyphs.plus,
-      AmalfiTitlebarGlyphs.tag,
-      AmalfiTitlebarGlyphs.star,
+      AmalfiGlyphs.plus,
+      AmalfiGlyphs.tag,
+      AmalfiGlyphs.star,
     ]),
   ),
 ];
@@ -496,14 +479,14 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.chevronLeft),
+        icon: AmalfiGlyph(AmalfiGlyphs.chevronLeft),
         onPressed: () {},
         semanticLabel: 'chevronLeft',
       ),
     ),
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.chevronRight),
+        icon: AmalfiGlyph(AmalfiGlyphs.chevronRight),
         onPressed: () {},
         semanticLabel: 'chevronRight',
       ),
@@ -512,14 +495,14 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
     AmalfiSpacerPiece(),
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.share),
+        icon: AmalfiGlyph(AmalfiGlyphs.share),
         onPressed: () {},
         semanticLabel: 'share',
       ),
     ),
     AmalfiToolbarPiece(
       child: AmalfiToolbarButton(
-        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.ellipsisCircle),
+        icon: AmalfiGlyph(AmalfiGlyphs.ellipsisCircle),
         onPressed: () {},
         semanticLabel: 'ellipsisCircle',
       ),

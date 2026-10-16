@@ -20,6 +20,7 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../glass.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -361,7 +362,6 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
   @override
   Widget build(BuildContext context) {
     final theme = AmalfiTheme.of(context);
-    final colors = theme.colors;
     final m = AmalfiSegmentSizeMetrics.of(widget.size);
     final segments = widget.segments;
     final n = segments.length;
@@ -494,10 +494,7 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
       layers.add(
         Positioned.fromRect(
           rect: items[_focusIndex],
-          child: AmalfiSegmentFocusHalo(
-            radius: m.itemHeight / 2,
-            color: AmalfiFocus.color(colors),
-          ),
+          child: AmalfiFocusHalo(radius: m.itemHeight / 2),
         ),
       );
     }

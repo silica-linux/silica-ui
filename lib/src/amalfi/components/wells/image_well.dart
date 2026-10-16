@@ -11,7 +11,7 @@ import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import '../fields/glyph.dart';
+import '../../foundation/foundation.dart';
 import '../fields/surface.dart';
 import 'dashed_border.dart';
 import 'states.dart';
@@ -239,7 +239,7 @@ class _AmalfiImageWellState extends State<AmalfiImageWell>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AmalfiGlyphIcon(AmalfiGlyph.photo, size: size.glyph, color: ink),
+          AmalfiGlyph(AmalfiGlyphs.photo, size: size.glyph, color: ink),
           if (size.showsHint) ...[
             const SizedBox(height: AmalfiImageWellMetrics.hintGap),
             SizedBox(
@@ -265,7 +265,7 @@ class _AmalfiImageWellState extends State<AmalfiImageWell>
       children: [
         DecoratedBox(
           key: AmalfiImageWell.backgroundKey,
-          decoration: ShapeDecoration(
+          decoration: AmalfiShapeDecoration(
             color: over ? colors.accentAmalfiSoft : colors.surfaceSunken,
             // The drop zone is dashed at rest; dragged over, the border is solid.
             shape: over

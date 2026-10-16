@@ -9,7 +9,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
-import 'package:silica_ui/src/amalfi/components/menus/glyphs.dart';
 
 import 'menus_support.dart';
 import 'support/harness.dart';
@@ -202,7 +201,7 @@ void main() {
               if (accessory != null) accessory: standIn(accessory),
               if (alert.critical) ...{
                 'Badge disc': find.byType(AmalfiAlertSurface).last,
-                'Glyph Warning': find.byType(AmalfiMenuGlyphIcon),
+                'Glyph Warning': find.byType(AmalfiGlyph),
               },
             },
             deviations: deviationsOf(variant),

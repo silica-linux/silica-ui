@@ -15,12 +15,12 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../../controls/control_base.dart' show WindowActiveScope;
 
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import 'glyphs.dart';
 import 'window_scope.dart';
 
 /// Which window control.
@@ -258,13 +258,12 @@ class _Palette {
 }
 
 /// The symbol of [kind] (kit: `xmark`, `minus`, `plus`).
-AmalfiTitlebarGlyphData amalfiWindowControlGlyph(
-  AmalfiWindowControlKind kind,
-) => switch (kind) {
-  AmalfiWindowControlKind.close => AmalfiTitlebarGlyphs.xmark,
-  AmalfiWindowControlKind.minimise => AmalfiTitlebarGlyphs.minus,
-  AmalfiWindowControlKind.zoom => AmalfiTitlebarGlyphs.plus,
-};
+AmalfiGlyphData amalfiWindowControlGlyph(AmalfiWindowControlKind kind) =>
+    switch (kind) {
+      AmalfiWindowControlKind.close => AmalfiGlyphs.xmark,
+      AmalfiWindowControlKind.minimise => AmalfiGlyphs.minus,
+      AmalfiWindowControlKind.zoom => AmalfiGlyphs.plus,
+    };
 
 /// One window control disc, drawn in [state]: a 14 pt disc centred in a 16 pt cell, with its
 /// symbol at [symbolOpacity] when the state has one.
@@ -316,7 +315,7 @@ class AmalfiWindowDot extends StatelessWidget {
               top: glyphInset,
               child: Opacity(
                 opacity: symbolOpacity.clamp(0.0, 1.0),
-                child: AmalfiTitlebarGlyph(
+                child: AmalfiGlyph(
                   amalfiWindowControlGlyph(kind),
                   size: AmalfiWindowControlsMetrics.glyph,
                   color: glyph,
@@ -340,7 +339,7 @@ class _Disc extends StatelessWidget {
     final rim = style.rim;
     const radius = AmalfiWindowControlsMetrics.disc / 2;
     return DecoratedBox(
-      decoration: ShapeDecoration(
+      decoration: AmalfiShapeDecoration(
         gradient: style.gradient,
         shape: AmalfiSmoothBorder(
           radius: radius,

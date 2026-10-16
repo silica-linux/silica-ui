@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../smooth_border.dart';
 import '../../theme.dart';
-import 'glyph.dart';
+import '../../foundation/foundation.dart';
 import 'metrics.dart';
 
 /// The button that empties a field: [onPressed] runs on a click.
@@ -56,15 +56,15 @@ class _AmalfiClearButtonState extends State<AmalfiClearButton> {
               child: DecoratedBox(
                 // Pressed: the disc darkens to Text/Secondary (assumption: the kit has
                 // only the rest state).
-                decoration: ShapeDecoration(
+                decoration: AmalfiShapeDecoration(
                   color: _pressed ? colors.textSecondary : colors.textTertiary,
                   shape: const AmalfiSmoothBorder(
                     radius: AmalfiFieldMetrics.clearRadius,
                   ),
                 ),
                 child: Center(
-                  child: AmalfiGlyphIcon(
-                    AmalfiGlyph.xmark,
+                  child: AmalfiGlyph(
+                    AmalfiGlyphs.xmark,
                     size: AmalfiFieldMetrics.clearGlyph,
                     color: colors.surfaceWindow,
                   ),

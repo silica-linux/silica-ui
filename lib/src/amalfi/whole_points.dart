@@ -5,30 +5,43 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-/// Sizes [child] as it wants, then rounds its width and height up to a multiple of [step]
-/// points (within the constraints). The child is laid out at its own size, at the top left.
+/// Sizes [child] as it wants, then rounds its width up to a multiple of [step] points and its
+/// height up to a multiple of [heightStep] (by default [step] too), within the constraints.
+/// The child is laid out at its own size, at the top left.
 ///
 /// Use it around text whose box decides the layout: `AmalfiWholePoints(child: Text(…))`.
 /// With `step: AmalfiGrid.base` the box lands on the 4 pt grid, as the kit draws the text
 /// frames of controls whose size follows their label (the tooltip "Add to favourites": text
-/// 97.03 wide, frame 100).
+/// 97.03 wide, frame 100). `AmalfiWholePoints(step: AmalfiGrid.base, heightStep: 1)` keeps
+/// the line height while the width lands on the grid, as the kit draws button labels ("Button"
+/// in Body Emphasis: 45.4 wide, frame 48 × 20).
 class AmalfiWholePoints extends SingleChildRenderObjectWidget {
-  const AmalfiWholePoints({super.key, this.step = 1, super.child})
-    : assert(step > 0);
+  const AmalfiWholePoints({
+    super.key,
+    this.step = 1,
+    this.heightStep,
+    super.child,
+  }) : assert(step > 0),
+       assert(heightStep == null || heightStep > 0);
 
-  /// The rounding step in points.
+  /// The rounding step of the width (and of the height without [heightStep]), in points.
   final double step;
+
+  /// The rounding step of the height, in points; null: [step].
+  final double? heightStep;
 
   @override
   RenderObject createRenderObject(BuildContext context) =>
-      _RenderWholePoints(step);
+      _RenderWholePoints(step, heightStep ?? step);
 
   @override
   void updateRenderObject(
     BuildContext context,
     covariant _RenderWholePoints renderObject,
   ) {
-    renderObject.step = step;
+    renderObject
+      ..step = step
+      ..heightStep = heightStep ?? step;
   }
 }
 
@@ -38,7 +51,7 @@ double ceilToWholePoints(double x, [double step = 1]) => x.isFinite
     : x;
 
 class _RenderWholePoints extends RenderProxyBox {
-  _RenderWholePoints(this._step);
+  _RenderWholePoints(this._step, this._heightStep);
 
   double _step;
   set step(double value) {
@@ -47,9 +60,18 @@ class _RenderWholePoints extends RenderProxyBox {
     markNeedsLayout();
   }
 
+  double _heightStep;
+  set heightStep(double value) {
+    if (value == _heightStep) return;
+    _heightStep = value;
+    markNeedsLayout();
+  }
+
   double _ceil(double x) => ceilToWholePoints(x, _step);
 
-  Size _round(Size s) => Size(_ceil(s.width), _ceil(s.height));
+  double _ceilHeight(double x) => ceilToWholePoints(x, _heightStep);
+
+  Size _round(Size s) => Size(_ceil(s.width), _ceilHeight(s.height));
 
   @override
   void performLayout() {
@@ -79,11 +101,11 @@ class _RenderWholePoints extends RenderProxyBox {
 
   @override
   double computeMinIntrinsicHeight(double width) =>
-      _ceil(super.computeMinIntrinsicHeight(width));
+      _ceilHeight(super.computeMinIntrinsicHeight(width));
 
   @override
   double computeMaxIntrinsicHeight(double width) =>
-      _ceil(super.computeMaxIntrinsicHeight(width));
+      _ceilHeight(super.computeMaxIntrinsicHeight(width));
 
   @override
   double? computeDistanceToActualBaseline(TextBaseline baseline) =>

@@ -11,7 +11,7 @@ import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'editable.dart';
 import 'field_state.dart';
-import 'glyph.dart';
+import '../../foundation/foundation.dart';
 import 'metrics.dart';
 import 'surface.dart';
 
@@ -67,7 +67,7 @@ class AmalfiTextField extends StatefulWidget implements AmalfiFieldWidget {
   final bool obscureText;
 
   /// A glyph before the text, in `Text/Secondary`.
-  final AmalfiGlyph? leadingGlyph;
+  final AmalfiGlyphData? leadingGlyph;
 
   /// A widget after the text, vertically centred (an [AmalfiInlineButton]).
   final Widget? trailing;
@@ -122,11 +122,7 @@ class _AmalfiTextFieldState extends State<AmalfiTextField>
                 child: Row(
                   children: [
                     if (leading != null) ...[
-                      AmalfiGlyphIcon(
-                        leading,
-                        size: size.glyph,
-                        color: glyphColor,
-                      ),
+                      AmalfiGlyph(leading, size: size.glyph, color: glyphColor),
                       const SizedBox(width: AmalfiFieldMetrics.gap),
                     ],
                     Expanded(
@@ -150,8 +146,8 @@ class _AmalfiTextFieldState extends State<AmalfiTextField>
                     ),
                     if (error) ...[
                       const SizedBox(width: AmalfiFieldMetrics.gap),
-                      AmalfiGlyphIcon(
-                        AmalfiGlyph.warning,
+                      AmalfiGlyph(
+                        AmalfiGlyphs.warning,
                         size: size.glyph,
                         color: colors.paletteTerracotta,
                       ),
@@ -246,7 +242,7 @@ class AmalfiSecureField extends StatelessWidget {
     enabled: enabled,
     errorText: errorText,
     obscureText: true,
-    leadingGlyph: AmalfiGlyph.lock,
+    leadingGlyph: AmalfiGlyphs.lock,
     autofocus: autofocus,
     keyboardType: TextInputType.visiblePassword,
     onChanged: onChanged,

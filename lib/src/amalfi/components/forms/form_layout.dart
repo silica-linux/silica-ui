@@ -3,6 +3,7 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -31,7 +32,7 @@ class AmalfiFormSection extends StatelessWidget {
     final title = this.title;
     const pad = AmalfiFormMetrics.sectionPadding;
     final box = DecoratedBox(
-      decoration: ShapeDecoration(
+      decoration: AmalfiShapeDecoration(
         color: colors.surfaceRaised,
         shape: AmalfiSmoothBorder(
           radius: AmalfiFormMetrics.sectionRadius,
@@ -153,7 +154,7 @@ class AmalfiFormLayout extends StatelessWidget {
     return SizedBox(
       width: width,
       child: DecoratedBox(
-        decoration: ShapeDecoration(
+        decoration: AmalfiShapeDecoration(
           color: colors.surfaceWindow,
           shape: AmalfiSmoothBorder(
             radius: AmalfiRadii.window,

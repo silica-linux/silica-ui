@@ -5,6 +5,7 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -193,7 +194,7 @@ class _AmalfiProgressBarState extends State<AmalfiProgressBar>
         children: [
           Positioned.fill(
             child: DecoratedBox(
-              decoration: ShapeDecoration(
+              decoration: AmalfiShapeDecoration(
                 color: colors.surfaceSunken,
                 shape: AmalfiSmoothBorder(
                   radius: radius,
@@ -212,7 +213,7 @@ class _AmalfiProgressBarState extends State<AmalfiProgressBar>
               top: 0,
               bottom: 0,
               child: DecoratedBox(
-                decoration: ShapeDecoration(
+                decoration: AmalfiShapeDecoration(
                   color: color,
                   shape: AmalfiSmoothBorder(radius: radius),
                 ),

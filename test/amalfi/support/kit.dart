@@ -122,12 +122,18 @@ class KitBorder {
     required this.thickness,
     required this.position,
     this.swatch,
+    this.dashPattern,
   });
 
   final Color color;
   final double thickness;
   final KitBorderPosition position;
   final KitSwatch? swatch;
+
+  /// The dash pattern (on, off, …) of a dashed border: `dashPattern` of the border, or of
+  /// the style's `borderOptions`; null when the fixture does not say (solid, or an export
+  /// without border options).
+  final List<double>? dashPattern;
 }
 
 /// A drop or inner shadow, with the kit's (CSS) blur: σ = blur / 2.
@@ -716,6 +722,14 @@ KitStyle? _parseStyle(Map<String, Object?>? s, String where) {
     spread: n(m, 'spread', 0),
   );
 
+  final options = s['borderOptions'] is Map<String, Object?>
+      ? s['borderOptions']! as Map<String, Object?>
+      : null;
+  List<double>? dashes(Object? raw) {
+    if (raw is! List || raw.isEmpty) return null;
+    return [for (final x in raw) (x as num).toDouble()];
+  }
+
   final corners = s['corners'];
   return KitStyle(
     opacity: n(s, 'opacity', 1),
@@ -740,6 +754,7 @@ KitStyle? _parseStyle(Map<String, Object?>? s, String where) {
             ),
           },
           swatch: swatch(b),
+          dashPattern: dashes(b['dashPattern'] ?? options?['dashPattern']),
         ),
     ],
     shadows: [for (final x in list('shadows')) shadow(x)],

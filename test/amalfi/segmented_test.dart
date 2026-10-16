@@ -46,11 +46,9 @@ const lensBlur = {
       'kit Glass/Clear blur is a Sketch "Glass" blur; drawn as the 2 pt background blur',
 };
 
-/// Capsules of glass: `AmalfiGlass` draws its capsule with `AmalfiSmoothBorder`, which gives up
-/// the smoothing at the ends (a plain stadium); the kit keeps it along the long side
-/// (`AmalfiCapsuleBorder` here draws the kit's capsule, but the glass is not this family's).
-/// The ends differ by up to ~120 levels on a few antialiased pixels; the mean stays ≤ 1.
-const glassTolerance = KitPixelTolerance(mean: 1, max: 128);
+/// Capsules of glass: the rim and the blurred backdrop at the smooth ends antialias a little
+/// differently from Sketch (measured max 68 on a few edge pixels; the mean stays ≤ 1).
+const glassTolerance = KitPixelTolerance(mean: 1, max: 72);
 
 /// The items are tiny (12–24 pt tall): their antialiased edges and the shadow of the selection
 /// weigh much more in the mean, and the 28 × 20 capsules have no room for the smoothing.

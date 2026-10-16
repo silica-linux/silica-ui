@@ -4,7 +4,6 @@
 // The widgets live under `toggles/` and are exported from here.
 
 export 'toggles/checkbox.dart';
-export 'toggles/control_kit.dart';
 export 'toggles/radio.dart';
 export 'toggles/switch.dart';
 export 'toggles/toggle_box.dart';

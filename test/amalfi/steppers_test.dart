@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
-import 'package:silica_ui/src/amalfi/components/steppers/chevron.dart';
 
 import 'support/harness.dart';
 
@@ -187,9 +186,7 @@ void main() {
             final hasState = master.maybeLayer('State') != null;
             final chevrons = find.descendant(
               of: stepper,
-              matching: find.byWidgetPredicate(
-                (w) => w is CustomPaint && w.painter is AmalfiChevronPainter,
-              ),
+              matching: find.byWidgetPredicate((w) => w is AmalfiGlyph),
             );
             Rect mine(int i) =>
                 tester.getRect(chevrons.at(i)).shift(-tester.getTopLeft(root));
@@ -202,7 +199,7 @@ void main() {
                 if (hasState) 'State': colored.at(0),
                 'Divider': colored.at(hasState ? 1 : 0),
                 if (state == 'Focused')
-                  'Focus Halo': find.byType(AmalfiSliderFocusHalo),
+                  'Focus Halo': find.byType(AmalfiFocusHalo),
                 'Glyph Chevron Up': chevrons.at(0),
                 'Glyph Chevron Down': chevrons.at(1),
               },
@@ -279,23 +276,10 @@ void main() {
             layers: {
               'Background': within(field, DecoratedBox).first,
               if (state == 'Focused')
-                'Focus Halo': find.byType(AmalfiSliderFocusHalo),
+                'Focus Halo': find.byType(AmalfiFocusHalo),
               'Value': find.byType(EditableText),
             },
-            deviations: {
-              'Value#text':
-                  'EditableText paints without a RichText (checked below)',
-            },
           );
-          final value = master.layer('Value');
-          final editable = tester.widget<EditableText>(
-            find.byType(EditableText),
-          );
-          final ref = value.textStyle;
-          expect(editable.controller.text, value.text);
-          expect(ref, isNotNull);
-          expect(editable.style, ref?.style.style(color: ref.color));
-          expect(ref?.color, value.font?.color);
           focus.unfocus();
           await tester.pump();
           await expectKitPixels(

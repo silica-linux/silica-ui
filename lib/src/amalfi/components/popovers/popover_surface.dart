@@ -9,15 +9,12 @@
 // 16 elsewhere; the code keeps the body edge 8 from the frame (content 16 from it).
 
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
 import '../../glass.dart';
 import '../../smooth_border.dart';
-import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../alerts/alert_surface.dart' show paintOutsideShadows;
 
 /// The edge of a popover that carries the arrow (the side facing what it points at).
 enum AmalfiPopoverArrowEdge {
@@ -260,11 +257,42 @@ class AmalfiPopoverShape {
   int get hashCode => Object.hash(edge, alignment, arrowOffset, textDirection);
 }
 
-/// Glass/Thick in the outline of [shape], holding [child] (not clipped).
-///
-/// Drawn as `AmalfiGlass` draws it: backdrop blur and saturation clipped to the outline,
-/// tint, a 1 pt inside rim, the rim light, and the level 3 shadow outside the outline only.
-/// With [opaque] the backdrop is replaced by `Surface/Window`.
+/// The outline of an [AmalfiPopoverShape] as a [ShapeBorder], for `AmalfiGlass` and
+/// decorations.
+class AmalfiPopoverBorder extends ShapeBorder {
+  const AmalfiPopoverBorder(this.shape);
+
+  final AmalfiPopoverShape shape;
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
+      shape.path(rect);
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      shape.path(rect);
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
+
+  @override
+  ShapeBorder scale(double t) => this;
+
+  @override
+  bool operator ==(Object other) =>
+      other is AmalfiPopoverBorder && other.shape == shape;
+
+  @override
+  int get hashCode => shape.hashCode;
+}
+
+/// Glass/Thick in the outline of [shape], holding [child] (not clipped): an `AmalfiGlass`
+/// with an [AmalfiPopoverBorder] (backdrop blur and saturation clipped to the outline, tint,
+/// a 1 pt inside rim, the rim light, and the level 3 shadow outside the outline only). With
+/// [opaque] the backdrop is replaced by `Surface/Window`.
 class AmalfiPopoverSurface extends StatelessWidget {
   const AmalfiPopoverSurface({
     super.key,
@@ -281,153 +309,10 @@ class AmalfiPopoverSurface extends StatelessWidget {
   final Widget? child;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = AmalfiTheme.of(context);
-    final brightness = theme.brightness;
-    const m = AmalfiMaterials.thick;
-    final face = CustomPaint(
-      painter: _FacePainter(
-        shape: shape,
-        under: opaque ? theme.colors.surfaceWindow : null,
-        tint: m.tint(brightness),
-        rim: m.rimInside(brightness),
-        rimWidth: m.rimInsideWidth,
-        rimLight: m.rimLight(brightness),
-        rimLightOffset: m.rimLightOffset,
-        rimLightBlur: m.rimLightBlur,
-        shadows: AmalfiGlass.shadowsOf(m, brightness),
-      ),
-      child: child,
-    );
-    if (opaque) return face;
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: ClipPath(
-            clipper: _ShapeClipper(shape),
-            child: BackdropFilter(
-              filter: ui.ImageFilter.compose(
-                outer: ColorFilter.matrix(_saturation(m.saturation)),
-                inner: ui.ImageFilter.blur(
-                  sigmaX: m.backgroundBlur,
-                  sigmaY: m.backgroundBlur,
-                  tileMode: TileMode.clamp,
-                ),
-              ),
-              child: const SizedBox.expand(),
-            ),
-          ),
-        ),
-        face,
-      ],
-    );
-  }
-}
-
-List<double> _saturation(double s) {
-  const r = 0.2126, g = 0.7152, b = 0.0722;
-  final t = 1 - s;
-  return [
-    r * t + s, g * t, b * t, 0, 0, //
-    r * t, g * t + s, b * t, 0, 0, //
-    r * t, g * t, b * t + s, 0, 0, //
-    0, 0, 0, 1, 0, //
-  ];
-}
-
-class _ShapeClipper extends CustomClipper<Path> {
-  const _ShapeClipper(this.shape);
-
-  final AmalfiPopoverShape shape;
-
-  @override
-  Path getClip(Size size) => shape.path(Offset.zero & size);
-
-  @override
-  bool shouldReclip(_ShapeClipper old) => old.shape != shape;
-}
-
-class _FacePainter extends CustomPainter {
-  const _FacePainter({
-    required this.shape,
-    required this.under,
-    required this.tint,
-    required this.rim,
-    required this.rimWidth,
-    required this.rimLight,
-    required this.rimLightOffset,
-    required this.rimLightBlur,
-    required this.shadows,
-  });
-
-  final AmalfiPopoverShape shape;
-  final Color? under;
-  final Color? tint;
-  final Color rim;
-  final double rimWidth;
-  final Color rimLight;
-  final Offset rimLightOffset;
-  final double rimLightBlur;
-  final List<BoxShadow> shadows;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (size.isEmpty) return;
-    final rect = Offset.zero & size;
-    final outline = shape.path(rect);
-    paintOutsideShadows(
-      canvas,
-      rect,
-      outline,
-      const AmalfiSmoothBorder(radius: AmalfiPopoverMetrics.radius),
-      shadows,
-      pathAt: shape.path,
-    );
-    if (under case final color?)
-      canvas.drawPath(outline, Paint()..color = color);
-    if (tint case final color?)
-      canvas.drawPath(outline, Paint()..color = color);
-    if (rimWidth > 0) {
-      canvas
-        ..save()
-        ..clipPath(outline)
-        ..drawPath(
-          outline,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = rimWidth * 2
-            ..color = rim,
-        )
-        ..restore();
-    }
-    final reach = rimLightBlur * 2 + rimLightOffset.distance + 1;
-    canvas
-      ..save()
-      ..clipPath(outline)
-      ..drawPath(
-        Path.combine(
-          PathOperation.difference,
-          Path()..addRect(rect.inflate(reach)),
-          outline.shift(rimLightOffset),
-        ),
-        Paint()
-          ..color = rimLight
-          ..maskFilter = rimLightBlur > 0
-              ? MaskFilter.blur(
-                  BlurStyle.normal,
-                  amalfiShadowSigma(rimLightBlur),
-                )
-              : null,
-      )
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(_FacePainter old) =>
-      old.shape != shape ||
-      old.under != under ||
-      old.tint != tint ||
-      old.rim != rim ||
-      old.rimLight != rimLight ||
-      old.shadows != shadows;
+  Widget build(BuildContext context) => AmalfiGlass(
+    material: AmalfiMaterials.thick,
+    shape: AmalfiPopoverBorder(shape),
+    opaque: opaque,
+    child: child,
+  );
 }

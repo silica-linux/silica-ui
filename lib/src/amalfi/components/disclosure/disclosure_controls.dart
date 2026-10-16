@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../toggles/control_kit.dart';
+import '../../foundation/foundation.dart';
 
 /// The measures of the disclosure controls, from `Disclosure/*`.
 abstract final class AmalfiDisclosureMetrics {
@@ -77,7 +77,7 @@ class AmalfiDisclosureFace extends StatelessWidget {
       } else {
         fill = pressed ? colors.surfaceControlPressed : colors.surfaceControl;
         side = BorderSide(color: colors.lineBorder);
-        shadows = amalfiControlShadow(colors);
+        shadows = amalfiControlShadows(colors);
       }
     } else {
       fill = pressed
@@ -120,17 +120,13 @@ class AmalfiDisclosureFace extends StatelessWidget {
               ),
             ),
           if (state.focused && enabled)
-            Positioned.fill(
-              child: AmalfiToggleFocusHalo(radius: radius, colors: colors),
-            ),
+            Positioned.fill(child: AmalfiFocusHalo(radius: radius)),
           Positioned(
             left: inset,
             top: inset,
-            child: AmalfiToggleGlyphIcon(
+            child: AmalfiGlyph(
               key: AmalfiLayerKeys.mark,
-              glyph: button
-                  ? AmalfiToggleGlyph.chevronDown
-                  : AmalfiToggleGlyph.chevronRight,
+              button ? AmalfiGlyphs.chevronDown : AmalfiGlyphs.chevronRight,
               size: AmalfiDisclosureMetrics.glyph,
               color: glyphColor,
               // Right → down is a quarter turn; down → up a half turn.

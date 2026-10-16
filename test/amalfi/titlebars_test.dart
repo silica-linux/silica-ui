@@ -36,7 +36,7 @@ void main() {
               layers: {
                 'Dot': find.byType(AmalfiWindowDot),
                 if (state == AmalfiWindowControlState.hover)
-                  'Glyph': find.byType(AmalfiTitlebarGlyph),
+                  'Glyph': find.byType(AmalfiGlyph),
               },
               deviations: const {'Dot#corners': measuredDisc},
             );
@@ -178,9 +178,9 @@ void main() {
             master,
             root: root,
             layers: {
-              'Document': glyphOf(AmalfiTitlebarGlyphs.doc),
+              'Document': glyphOf(AmalfiGlyphs.doc),
               'Title': textBox('Lemon cake.recipe'),
-              'Chevron': glyphOf(AmalfiTitlebarGlyphs.chevronDown),
+              'Chevron': glyphOf(AmalfiGlyphs.chevronDown),
             },
           );
           await expectKitPixels(tester, master, piece, tolerance: chromeText);
@@ -459,13 +459,9 @@ void main() {
                     'Title block/Subtitle': textBox('Edited today at 09:41'),
                   },
                   'Document' => {
-                    'Title block/Document proxy': glyphOf(
-                      AmalfiTitlebarGlyphs.doc,
-                    ),
+                    'Title block/Document proxy': glyphOf(AmalfiGlyphs.doc),
                     'Title block/Title': textBox('Lemon cake.recipe'),
-                    'Title block/Chevron': glyphOf(
-                      AmalfiTitlebarGlyphs.chevronDown,
-                    ),
+                    'Title block/Chevron': glyphOf(AmalfiGlyphs.chevronDown),
                   },
                   _ => {'Title block/Title': textBox('Lemon cake')},
                 },
@@ -522,7 +518,7 @@ void main() {
             layers: {
               if (state != 'Rest') 'Surface': tabSurface(),
               'Label': find.text('Lemon cake'),
-              if (state != 'Rest') 'Close': glyphOf(AmalfiTitlebarGlyphs.xmark),
+              if (state != 'Rest') 'Close': glyphOf(AmalfiGlyphs.xmark),
             },
             deviations: {if (state == 'Selected') 'Surface#shadows': tabShadow},
           );
@@ -753,10 +749,7 @@ void main() {
     ) async {
       await pumpKitScene(tester, SizedBox(width: 760, child: unifiedBar()));
       expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 164);
-    });
-
-    testWidgets('a wider bar gives the spacer the extra width', (tester) async {
-      // (pumpKitScene keeps the first scene of a test in its overlay: one scene per test.)
+      // A wider bar gives the spacer the extra width.
       await pumpKitScene(tester, SizedBox(width: 960, child: unifiedBar()));
       expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 364);
       expect(tester.getTopRight(find.byKey(const ValueKey('Search'))).dx, 952);
@@ -815,11 +808,11 @@ void main() {
           ),
         ),
       );
-      expect(glyphOf(AmalfiTitlebarGlyphs.xmark), findsOneWidget);
+      expect(glyphOf(AmalfiGlyphs.xmark), findsOneWidget);
       await tester.tap(find.text('B'));
       await hover(tester, find.text('B'));
-      expect(glyphOf(AmalfiTitlebarGlyphs.xmark), findsNWidgets(2));
-      await tester.tap(glyphOf(AmalfiTitlebarGlyphs.xmark).last);
+      expect(glyphOf(AmalfiGlyphs.xmark), findsNWidgets(2));
+      await tester.tap(glyphOf(AmalfiGlyphs.xmark).last);
       await tester.tap(newTabButton());
       expect(log, ['select 1', 'close 1', 'new']);
       // Equal widths: (560 − 8 − 24 − 2 × 4) / 2.

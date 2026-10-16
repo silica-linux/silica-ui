@@ -7,7 +7,6 @@ export 'fields/clear_button.dart';
 export 'fields/combo_box.dart';
 export 'fields/editable.dart';
 export 'fields/field_state.dart';
-export 'fields/glyph.dart';
 export 'fields/inline_button.dart';
 export 'fields/metrics.dart';
 export 'fields/search_field.dart';

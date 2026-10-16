@@ -18,9 +18,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
+import '../../smooth_border.dart';
 import '../../../controls/control_base.dart' show WindowActiveScope;
 import '../../glass.dart';
-import 'capsule.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../tooltips/tooltip_region.dart';
@@ -276,11 +277,11 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
             curve: AmalfiFades.quick.curve,
             child: DecoratedBox(
               key: ValueKey('amalfi-segment-highlight-$i'),
-              decoration: ShapeDecoration(
+              decoration: AmalfiShapeDecoration(
                 color: look == _Look.pressed
                     ? colors.lineBorder
                     : colors.lineSeparator,
-                shape: AmalfiCapsuleBorder(radius: rect.height / 2),
+                shape: AmalfiSmoothBorder(radius: rect.height / 2),
               ),
             ),
           ),
@@ -388,10 +389,7 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
       layers.add(
         Positioned.fromRect(
           rect: rect,
-          child: AmalfiSegmentFocusHalo(
-            radius: rect.height / 2,
-            color: AmalfiFocus.color(colors),
-          ),
+          child: AmalfiFocusHalo(radius: rect.height / 2),
         ),
       );
     }

@@ -12,9 +12,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../buttons/button_surface.dart' show amalfiControlShadows;
-import '../sliders/thumb.dart' show AmalfiSliderFocusHalo;
-import 'chevron.dart';
+import '../../foundation/foundation.dart';
 
 /// The measures of the steppers, from the kit masters `Steppers/Stepper/*`.
 abstract final class AmalfiStepperMetrics {
@@ -249,11 +247,10 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
         top: (r.top + (r.height - glyph) / 2).roundToDouble(),
         width: glyph,
         height: glyph,
-        child: CustomPaint(
-          painter: AmalfiChevronPainter(
-            up: h == _Half.up,
-            color: _can(h) ? colors.textPrimary : colors.textTertiary,
-          ),
+        child: AmalfiGlyph(
+          h == _Half.up ? AmalfiGlyphs.chevronUp : AmalfiGlyphs.chevronDown,
+          size: glyph,
+          color: _can(h) ? colors.textPrimary : colors.textTertiary,
         ),
       );
     }
@@ -265,7 +262,7 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
         children: [
           Positioned.fill(
             child: DecoratedBox(
-              decoration: ShapeDecoration(
+              decoration: AmalfiShapeDecoration(
                 color: enabled ? colors.surfaceControl : colors.surfaceSunken,
                 shape: AmalfiSmoothBorder(
                   radius: radius,
@@ -297,8 +294,7 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
                   ),
                 ),
               ),
-          if (focused)
-            Positioned.fill(child: AmalfiSliderFocusHalo(radius: radius)),
+          if (focused) Positioned.fill(child: AmalfiFocusHalo(radius: radius)),
           Positioned(
             left: AmalfiStepperMetrics.dividerInset,
             top: divider,

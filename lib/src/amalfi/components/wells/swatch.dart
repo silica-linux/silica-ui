@@ -4,9 +4,9 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
-import '../fields/surface.dart';
 
 /// The measures of the swatches.
 abstract final class AmalfiSwatchMetrics {
@@ -48,8 +48,6 @@ class AmalfiSwatchChip extends StatefulWidget {
 }
 
 class _AmalfiSwatchChipState extends State<AmalfiSwatchChip> {
-  bool _focused = false;
-
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
@@ -59,56 +57,44 @@ class _AmalfiSwatchChipState extends State<AmalfiSwatchChip> {
       button: enabled,
       selected: widget.selected,
       label: widget.semanticLabel,
-      child: FocusableActionDetector(
-        enabled: enabled,
+      onTap: widget.onPressed,
+      child: AmalfiInteraction(
+        onActivate: widget.onPressed,
+        activators: AmalfiInteraction.buttonActivates,
         focusNode: widget.focusNode,
-        mouseCursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
-        onShowFocusHighlight: (v) => setState(() => _focused = v),
-        actions: {
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) => widget.onPressed?.call(),
-          ),
-        },
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.onPressed,
-          child: SizedBox.square(
-            dimension: AmalfiSwatchMetrics.chip,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (widget.selected)
-                  DecoratedBox(
-                    decoration: ShapeDecoration(
-                      shape: AmalfiSmoothBorder(
-                        radius: radius,
-                        side: BorderSide(
-                          color: colors.accentAmalfi,
-                          width: AmalfiSwatchMetrics.ring,
-                          strokeAlign: BorderSide.strokeAlignOutside,
-                        ),
-                      ),
-                    ),
-                  ),
+        cursor: SystemMouseCursors.click,
+        builder: (context, state) => SizedBox.square(
+          dimension: AmalfiSwatchMetrics.chip,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (widget.selected)
                 DecoratedBox(
-                  decoration: ShapeDecoration(
-                    color: widget.color,
+                  decoration: AmalfiShapeDecoration(
                     shape: AmalfiSmoothBorder(
                       radius: radius,
                       side: BorderSide(
-                        color: colors.lineBorder,
-                        strokeAlign: BorderSide.strokeAlignInside,
+                        color: colors.accentAmalfi,
+                        width: AmalfiSwatchMetrics.ring,
+                        strokeAlign: BorderSide.strokeAlignOutside,
                       ),
                     ),
                   ),
                 ),
-                AmalfiFocusHalo(
-                  radius: radius,
-                  color: colors.lineFocus,
-                  visible: _focused,
+              DecoratedBox(
+                decoration: AmalfiShapeDecoration(
+                  color: widget.color,
+                  shape: AmalfiSmoothBorder(
+                    radius: radius,
+                    side: BorderSide(
+                      color: colors.lineBorder,
+                      strokeAlign: BorderSide.strokeAlignInside,
+                    ),
+                  ),
                 ),
-              ],
-            ),
+              ),
+              AmalfiFocusHalo(radius: radius, visible: state.focused),
+            ],
           ),
         ),
       ),

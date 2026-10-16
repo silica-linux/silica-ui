@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
-import 'package:silica_ui/src/amalfi/components/menus/glyphs.dart';
 
 import 'menus_support.dart';
 import 'support/harness.dart';
@@ -30,11 +29,9 @@ Finder _checkSlot(Finder item) => find
     )
     .first;
 
-Finder _glyph(Finder item, AmalfiMenuGlyph glyph) => find.descendant(
+Finder _glyph(Finder item, AmalfiGlyphData glyph) => find.descendant(
   of: item,
-  matching: find.byWidgetPredicate(
-    (w) => w is AmalfiMenuGlyphIcon && w.glyph == glyph,
-  ),
+  matching: find.byWidgetPredicate((w) => w is AmalfiGlyph && w.glyph == glyph),
 );
 
 /// Kit defect: every menu surface is taller than its rows and padding (Simple 116 for 104,
@@ -209,9 +206,9 @@ void main() {
             if (master.maybeLayer('Check slot') != null)
               'Check slot': _checkSlot(row),
             if (master.maybeLayer('Check') != null)
-              'Check': _glyph(row, AmalfiMenuGlyph.checkmark),
+              'Check': _glyph(row, AmalfiGlyphs.checkmark),
             if (master.maybeLayer('Chevron') != null)
-              'Chevron': _glyph(row, AmalfiMenuGlyph.chevronRight),
+              'Chevron': _glyph(row, AmalfiGlyphs.chevronRight),
             if (master.maybeLayer('Icon') != null)
               'Icon': find.byType(_IconStandIn),
             if (master.maybeLayer('Shortcut') != null)

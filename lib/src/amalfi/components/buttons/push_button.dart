@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../../whole_points.dart';
 import 'button_base.dart';
 import 'button_surface.dart';
 
@@ -162,8 +163,9 @@ class AmalfiPushButton extends StatelessWidget {
                     SizedBox(width: AmalfiPushButtonMetrics.gap(size)),
                   ],
                   Flexible(
-                    child: AmalfiGridWidth(
+                    child: AmalfiWholePoints(
                       step: AmalfiPushButtonMetrics.labelStep,
+                      heightStep: 1,
                       child: Text(
                         label,
                         maxLines: 1,

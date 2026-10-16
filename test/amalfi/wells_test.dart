@@ -203,7 +203,7 @@ void main() {
               layers: {
                 'Background': find.byKey(AmalfiImageWell.backgroundKey),
                 if (dragged) 'Focus Halo': find.byType(AmalfiFocusHalo),
-                'Photo': find.byType(AmalfiGlyphIcon),
+                'Photo': find.byType(AmalfiGlyph),
                 if (hint != null)
                   'Hint': find
                       .ancestor(
@@ -333,9 +333,9 @@ void main() {
                   'Focus Halo': find.byType(AmalfiFocusHalo),
                 'Colour': find.byKey(AmalfiColorWell.colourKey),
                 if (style == 'Default')
-                  'Picker chevron': find.byType(AmalfiGlyphIcon),
+                  'Picker chevron': find.byType(AmalfiGlyph),
                 if (style == 'Expanded') ...{
-                  'Eyedropper': find.byType(AmalfiGlyphIcon),
+                  'Eyedropper': find.byType(AmalfiGlyph),
                   'Name': find.byKey(AmalfiColorWell.nameKey),
                 },
               },
@@ -605,33 +605,22 @@ void main() {
       await pumpKitScene(
         tester,
         // Space and Enter activate through the app's shortcuts; a click outside reaches
-        // the well through the app's tap region surface, above its overlay.
+        // the well through the app's tap region surface (both from pumpKitScene's app).
         SizedBox(
           width: 400,
           height: 300,
-          child: TapRegionSurface(
-            child: Shortcuts(
-              shortcuts: WidgetsApp.defaultShortcuts,
-              child: Overlay(
-                initialEntries: [
-                  OverlayEntry(
-                    // A window background to click on.
-                    builder: (_) => ColoredBox(
-                      color: const Color(0x00000000),
-                      child: Padding(
-                        padding: const EdgeInsets.all(40),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: AmalfiColorWell(
-                            color: AmalfiColors.light.accentAmalfi,
-                            focusNode: focus,
-                            onChanged: (_) {},
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          // A window background to click on.
+          child: ColoredBox(
+            color: const Color(0x00000000),
+            child: Padding(
+              padding: const EdgeInsets.all(40),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: AmalfiColorWell(
+                  color: AmalfiColors.light.accentAmalfi,
+                  focusNode: focus,
+                  onChanged: (_) {},
+                ),
               ),
             ),
           ),
@@ -665,7 +654,7 @@ void main() {
         onPickFromScreen: pick,
       );
       await pumpKitScene(tester, well(pick: () => picks++));
-      await tester.tap(find.byType(AmalfiGlyphIcon));
+      await tester.tap(find.byType(AmalfiGlyph));
       await tester.pump();
       expect(picks, 1);
       expect(find.byType(AmalfiColorPanel), findsNothing);
@@ -681,7 +670,7 @@ void main() {
           onChanged: (_) {},
         ),
       );
-      expect(find.byType(AmalfiGlyphIcon), findsNothing);
+      expect(find.byType(AmalfiGlyph), findsNothing);
     });
 
     testWidgets('a disabled well does not open', (tester) async {

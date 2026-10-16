@@ -380,21 +380,7 @@ void main() {
     });
 
     testWidgets('fields in a form take focus with Tab', (tester) async {
-      await tester.pumpWidget(
-        WidgetsApp(
-          color: const Color(0xFF0E77E6),
-          builder: (context, _) => Overlay(
-            initialEntries: [
-              OverlayEntry(
-                builder: (_) => Align(
-                  alignment: Alignment.topLeft,
-                  child: profile(width: null),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      await pumpKitScene(tester, profile(width: null));
       await tester.tap(find.text('Marta Esposito'));
       await tester.pump();
       FocusNode node(int i) => tester

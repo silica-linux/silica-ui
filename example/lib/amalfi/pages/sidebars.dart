@@ -41,7 +41,7 @@ class _SidebarsPage extends StatelessWidget {
                   child: onSidebar(
                     AmalfiSidebarRow(
                       label: 'Documents',
-                      icon: AmalfiTitlebarGlyphs.folder,
+                      icon: AmalfiGlyphs.folder,
                       badge: badge,
                       selected: selected,
                       enabled: enabled,
@@ -91,14 +91,14 @@ class _SidebarsPage extends StatelessWidget {
                 AmalfiSidebarFooter(
                   children: [
                     AmalfiIconButton(
-                      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                      icon: AmalfiGlyph(AmalfiGlyphs.plus),
                       onPressed: () {},
                       semanticLabel: 'plus',
                       shape: AmalfiIconButtonShape.square,
                       size: AmalfiControlSize.small,
                     ),
                     AmalfiIconButton(
-                      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+                      icon: AmalfiGlyph(AmalfiGlyphs.gear),
                       onPressed: () {},
                       semanticLabel: 'gear',
                       shape: AmalfiIconButtonShape.square,
@@ -142,18 +142,18 @@ class _GroupState extends State<_Group> {
     children: [
       AmalfiSidebarRow(
         label: 'Documents',
-        icon: AmalfiTitlebarGlyphs.doc,
+        icon: AmalfiGlyphs.doc,
         onTap: () {},
       ),
       AmalfiSidebarRow(
         label: 'Downloads',
-        icon: AmalfiTitlebarGlyphs.download,
+        icon: AmalfiGlyphs.download,
         badge: '12',
         onTap: () {},
       ),
       AmalfiSidebarRow(
         label: 'Pictures',
-        icon: AmalfiTitlebarGlyphs.photo,
+        icon: AmalfiGlyphs.photo,
         onTap: () {},
       ),
     ],
@@ -169,43 +169,40 @@ class _Panel extends StatefulWidget {
 
 class _PanelState extends State<_Panel> {
   static const _rows = [
-    ('Recents', AmalfiTitlebarGlyphs.clock, null),
-    ('Documents', AmalfiTitlebarGlyphs.doc, '12'),
-    ('Downloads', AmalfiTitlebarGlyphs.download, null),
+    ('Recents', AmalfiGlyphs.clock, null),
+    ('Documents', AmalfiGlyphs.doc, '12'),
+    ('Downloads', AmalfiGlyphs.download, null),
   ];
   static const _library = [
-    ('Photos', AmalfiTitlebarGlyphs.photo),
-    ('Music', AmalfiTitlebarGlyphs.musicNote),
+    ('Photos', AmalfiGlyphs.photo),
+    ('Music', AmalfiGlyphs.musicNote),
   ];
 
   String _selected = 'Recents';
   bool _favourites = true, _libraryOpen = true, _tags = false;
 
-  AmalfiSidebarRow _row(
-    String label,
-    AmalfiTitlebarGlyphData icon, [
-    String? badge,
-  ]) => AmalfiSidebarRow(
-    label: label,
-    icon: icon,
-    badge: badge,
-    selected: _selected == label,
-    onTap: () => setState(() => _selected = label),
-  );
+  AmalfiSidebarRow _row(String label, AmalfiGlyphData icon, [String? badge]) =>
+      AmalfiSidebarRow(
+        label: label,
+        icon: icon,
+        badge: badge,
+        selected: _selected == label,
+        onTap: () => setState(() => _selected = label),
+      );
 
   @override
   Widget build(BuildContext context) => AmalfiSidebarPanel(
     footer: AmalfiSidebarFooter(
       children: [
         AmalfiIconButton(
-          icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+          icon: AmalfiGlyph(AmalfiGlyphs.plus),
           onPressed: () {},
           semanticLabel: 'plus',
           shape: AmalfiIconButtonShape.square,
           size: AmalfiControlSize.small,
         ),
         AmalfiIconButton(
-          icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+          icon: AmalfiGlyph(AmalfiGlyphs.gear),
           onPressed: () {},
           semanticLabel: 'gear',
           shape: AmalfiIconButtonShape.square,
@@ -230,7 +227,7 @@ class _PanelState extends State<_Panel> {
         title: 'Tags',
         expanded: _tags,
         onToggle: () => setState(() => _tags = !_tags),
-        children: [_row('Recipes', AmalfiTitlebarGlyphs.tag)],
+        children: [_row('Recipes', AmalfiGlyphs.tag)],
       ),
     ],
   );

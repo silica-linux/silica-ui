@@ -8,7 +8,7 @@ import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
-import 'control_kit.dart';
+import '../../foundation/foundation.dart';
 
 /// The measures of a checkbox or radio box of one size.
 @immutable
@@ -126,7 +126,7 @@ class AmalfiToggleBox extends StatelessWidget {
     } else {
       fill = pressed ? colors.accentAmalfiSoft : colors.surfaceRaised;
       side = border;
-      shadows = amalfiControlShadow(colors);
+      shadows = amalfiControlShadows(colors);
     }
     final radius = metrics.radius;
     return SizedBox.square(
@@ -155,9 +155,7 @@ class AmalfiToggleBox extends StatelessWidget {
               ),
             ),
           if (state.focused && enabled)
-            Positioned.fill(
-              child: AmalfiToggleFocusHalo(radius: radius, colors: colors),
-            ),
+            Positioned.fill(child: AmalfiFocusHalo(radius: radius)),
           if (on)
             Positioned(
               left: metrics.markInset,
