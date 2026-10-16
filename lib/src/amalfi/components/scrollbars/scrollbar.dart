@@ -1,6 +1,7 @@
 // The scroll bar of a scroll view (kit `Scrollbars/Overlay|Legacy`), with its behaviour:
 //
-// - Overlay: hidden at rest; scrolling shows the thin bar, which fades out a moment after the
+// - Overlay: hidden at rest, and always when the content fits (nothing to scroll: no thumb, no
+//   track, not even under the pointer); scrolling shows the thin bar, which fades out a moment after the
 //   scrolling stops; the pointer over the bar's strip shows it expanded (track and wider
 //   thumb), and keeps it while dragging. The reference does not measure the timing: showing
 //   uses `fade.quick`, hiding `fade.standard` after [AmalfiScrollbar.hideDelay] (assumption).
@@ -190,6 +191,15 @@ class _AmalfiScrollbarState extends State<AmalfiScrollbar>
     return (f * (length - extent), extent);
   }
 
+  /// All the content is visible: known from the metrics, which an overlay bar waits for.
+  bool get _fits {
+    final m = _metrics;
+    if (m == null || !m.hasContentDimensions || !m.hasViewportDimension) {
+      return false;
+    }
+    return m.maxScrollExtent - m.minScrollExtent <= 0;
+  }
+
   double _along(Offset local) =>
       widget.axis == Axis.vertical ? local.dy : local.dx;
 
@@ -265,7 +275,8 @@ class _AmalfiScrollbarState extends State<AmalfiScrollbar>
               : constraints.maxWidth;
           final thumb = length.isFinite ? _thumb(length) : null;
           final visible =
-              widget.enabled && (!_overlay || _shown.value > 0 || _held);
+              widget.enabled &&
+              (!_overlay || (!_fits && (_shown.value > 0 || _held)));
           final face = AmalfiScrollbarTrack(
             axis: widget.axis,
             style: widget.style,
@@ -294,7 +305,9 @@ class _AmalfiScrollbarState extends State<AmalfiScrollbar>
               onPanCancel: _up,
               child: _overlay
                   ? Opacity(
-                      opacity: _held
+                      opacity: _fits
+                          ? 0
+                          : _held
                           ? 1
                           : AmalfiFades.quick.curve.transform(_shown.value),
                       child: face,

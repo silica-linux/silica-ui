@@ -298,6 +298,19 @@ void main() {
       expect(opacity(tester), 0);
     });
 
+    testWidgets('overlay: never shown when the content fits, even hovered', (
+      tester,
+    ) async {
+      await pumpList(tester, extent: 100);
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(mouse.removePointer);
+      await mouse.addPointer(location: const Offset(100, 100));
+      await mouse.moveTo(const Offset(194, 10));
+      await tester.pump();
+      await tester.pump(AmalfiFades.quick.duration);
+      expect(opacity(tester), 0);
+    });
+
     testWidgets('legacy: beside the content, no thumb when all fits', (
       tester,
     ) async {
