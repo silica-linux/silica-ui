@@ -1,0 +1,521 @@
+// The Amalfi combo box (kit `Fields/Combo Box/*`, `Fields/Combo Button/*`): a text field with
+// a round button at its end that opens the list of options under it (`Fields/Combo Box/Open`:
+// the list is `Menus/Menu/Simple`, 4 below the field and as wide).
+//
+// The list is drawn here (Glass/Thick, radius 12, 24 pt items with a check slot) as a
+// stand-in for the menus family; it should become that family's menu once it lands.
+
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
+import '../../glass.dart';
+import '../../smooth_border.dart';
+import '../../theme.dart';
+import '../../tokens.g.dart';
+import 'editable.dart';
+import 'field_state.dart';
+import 'glyph.dart';
+import 'metrics.dart';
+import 'text_field.dart';
+
+/// The measures of the combo box list (`Menus/Menu/Simple`, `Menus/Item/Plain`).
+abstract final class AmalfiComboListMetrics {
+  /// Between the field and the list.
+  static const double gap = 4;
+
+  /// The list's padding around the items.
+  static const double padding = 4;
+
+  /// The list's corner radius (`menu`).
+  static const double radius = AmalfiRadii.menu;
+
+  /// An item's height.
+  static const double itemHeight = 24;
+
+  /// An item's padding on each side.
+  static const double itemPadding = 8;
+
+  /// The highlight's corner radius.
+  static const double highlightRadius = AmalfiRadii.smallControl;
+
+  /// The check slot before the label.
+  static const double check = 12;
+
+  /// The most items shown before the list scrolls.
+  static const int maxVisibleItems = 8;
+}
+
+/// The round button at the end of a combo box: a [AmalfiFieldSize.comboButton] disc of
+/// `Surface/Sunken` with a chevron, `Surface/Control Pressed` while pressed.
+///
+/// [onPressed] null disables it (tertiary chevron).
+class AmalfiComboButton extends StatefulWidget {
+  const AmalfiComboButton({
+    super.key,
+    required this.onPressed,
+    this.size = AmalfiFieldSize.regular,
+    this.pressed = false,
+    this.semanticLabel = 'Show options',
+  });
+
+  final VoidCallback? onPressed;
+  final AmalfiFieldSize size;
+
+  /// Draws it pressed (while its list is being opened by the pointer).
+  final bool pressed;
+  final String semanticLabel;
+
+  @override
+  State<AmalfiComboButton> createState() => _AmalfiComboButtonState();
+}
+
+class _AmalfiComboButtonState extends State<AmalfiComboButton> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AmalfiTheme.of(context).colors;
+    final enabled = widget.onPressed != null;
+    final pressed = enabled && (_down || widget.pressed);
+    final side = widget.size.comboButton;
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: widget.semanticLabel,
+      onTap: widget.onPressed,
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: enabled ? (_) => setState(() => _down = true) : null,
+          onTapCancel: () => setState(() => _down = false),
+          onTapUp: enabled
+              ? (_) {
+                  setState(() => _down = false);
+                  widget.onPressed?.call();
+                }
+              : null,
+          child: SizedBox.square(
+            dimension: side,
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                color: pressed
+                    ? colors.surfaceControlPressed
+                    : colors.surfaceSunken,
+                shape: AmalfiSmoothBorder(radius: side / 2),
+              ),
+              child: Center(
+                child: AmalfiGlyphIcon(
+                  AmalfiGlyph.chevronDown,
+                  size: widget.size.comboGlyph,
+                  color: enabled ? colors.textSecondary : colors.textTertiary,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A combo box: editable text with a list of [options] to pick from.
+///
+/// The combo button, ↓ or ↑ open the list under the field; ↓ and ↑ move the highlight,
+/// Enter picks the highlighted option, Esc or a click outside closes the list. A click on
+/// an option picks it. Picking puts the option in the field and runs [onSelected]; the
+/// option equal to the text is checked. While the list is open, typing highlights the first
+/// option that starts with the text.
+class AmalfiComboBox extends StatefulWidget implements AmalfiFieldWidget {
+  const AmalfiComboBox({
+    super.key,
+    required this.options,
+    this.controller,
+    this.focusNode,
+    this.placeholder,
+    this.size = AmalfiFieldSize.regular,
+    this.width = AmalfiFieldMetrics.width,
+    this.enabled = true,
+    this.autofocus = false,
+    this.onChanged,
+    this.onSubmitted,
+    this.onSelected,
+    this.semanticLabel,
+    this.statesController,
+  });
+
+  final List<String> options;
+  @override
+  final TextEditingController? controller;
+  @override
+  final FocusNode? focusNode;
+  final String? placeholder;
+  final AmalfiFieldSize size;
+  final double width;
+  @override
+  final bool enabled;
+  final bool autofocus;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+
+  /// Called with the option picked from the list.
+  final ValueChanged<String>? onSelected;
+  final String? semanticLabel;
+  @override
+  final WidgetStatesController? statesController;
+
+  @override
+  State<AmalfiComboBox> createState() => _AmalfiComboBoxState();
+}
+
+class _AmalfiComboBoxState extends State<AmalfiComboBox>
+    with AmalfiFieldStateMixin {
+  final OverlayPortalController _portal = OverlayPortalController();
+  final Object _tapGroup = Object();
+  int? _highlight;
+
+  bool get _open => _portal.isShowing;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(_textChanged);
+  }
+
+  @override
+  void didUpdateWidget(AmalfiComboBox old) {
+    final before = old.controller;
+    super.didUpdateWidget(old);
+    if (before != widget.controller) {
+      before?.removeListener(_textChanged);
+      controller.addListener(_textChanged);
+    }
+    if (!widget.enabled && _open) _close();
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_textChanged);
+    super.dispose();
+  }
+
+  String? _lastText;
+
+  void _textChanged() {
+    final text = controller.text;
+    if (text == _lastText) return;
+    _lastText = text;
+    if (!_open || text.isEmpty) return;
+    final lower = text.toLowerCase();
+    final match = widget.options.indexWhere(
+      (o) => o.toLowerCase().startsWith(lower),
+    );
+    if (match >= 0) setState(() => _highlight = match);
+  }
+
+  @override
+  void onFocusChanged(bool focused) {
+    if (!focused && _open) _close();
+  }
+
+  int? _indexOfText() {
+    final i = widget.options.indexOf(controller.text);
+    return i < 0 ? null : i;
+  }
+
+  void _show() {
+    if (!widget.enabled || widget.options.isEmpty) return;
+    setState(() {
+      _highlight = _indexOfText() ?? 0;
+      _portal.show();
+    });
+    if (!focusNode.hasFocus) focusNode.requestFocus();
+  }
+
+  void _close() {
+    if (!_open) return;
+    setState(() {
+      _portal.hide();
+      _highlight = null;
+    });
+  }
+
+  void _toggle() => _open ? _close() : _show();
+
+  void _pick(int index) {
+    if (index < 0 || index >= widget.options.length) return;
+    final option = widget.options[index];
+    controller.value = TextEditingValue(
+      text: option,
+      selection: TextSelection.collapsed(offset: option.length),
+    );
+    _lastText = option;
+    _close();
+    widget.onChanged?.call(option);
+    widget.onSelected?.call(option);
+    if (!focusNode.hasFocus) focusNode.requestFocus();
+  }
+
+  void _move(int by) {
+    final n = widget.options.length;
+    if (n == 0) return;
+    final from = _highlight ?? (by > 0 ? -1 : n);
+    setState(() => _highlight = (from + by).clamp(0, n - 1));
+  }
+
+  KeyEventResult _key(FocusNode node, KeyEvent event) {
+    if (event is KeyUpEvent) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.arrowDown ||
+        key == LogicalKeyboardKey.arrowUp) {
+      if (!_open) {
+        _show();
+      } else {
+        _move(key == LogicalKeyboardKey.arrowDown ? 1 : -1);
+      }
+      return KeyEventResult.handled;
+    }
+    if (!_open) return KeyEventResult.ignored;
+    if (key == LogicalKeyboardKey.escape) {
+      _close();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter) {
+      final h = _highlight;
+      if (h != null) {
+        _pick(h);
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AmalfiTheme.of(context).colors;
+    final size = widget.size;
+    final enabled = widget.enabled;
+    final field = Semantics(
+      label: widget.semanticLabel ?? widget.placeholder,
+      enabled: enabled,
+      expanded: _open,
+      child: ExcludeFocus(
+        excluding: !enabled,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: focusFromTap,
+          child: SizedBox(
+            width: widget.width,
+            height: size.height,
+            child: amalfiFieldFace(
+              colors: colors,
+              radius: size.radius,
+              enabled: enabled,
+              focused: focused && enabled,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.padding),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Focus(
+                        canRequestFocus: false,
+                        skipTraversal: true,
+                        onKeyEvent: _key,
+                        child: AmalfiEditable(
+                          controller: controller,
+                          focusNode: focusNode,
+                          enabled: enabled,
+                          autofocus: widget.autofocus,
+                          placeholder: widget.placeholder,
+                          style: size.textStyle(
+                            enabled ? colors.textPrimary : colors.textTertiary,
+                          ),
+                          placeholderStyle: size.textStyle(colors.textTertiary),
+                          onChanged: widget.onChanged,
+                          onSubmitted: widget.onSubmitted,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AmalfiFieldMetrics.gap),
+                    AmalfiComboButton(
+                      size: size,
+                      onPressed: enabled ? _toggle : null,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    return TapRegion(
+      groupId: _tapGroup,
+      onTapOutside: (_) => _close(),
+      child: OverlayPortal(
+        controller: _portal,
+        overlayChildBuilder: _list,
+        child: field,
+      ),
+    );
+  }
+
+  Widget _list(BuildContext overlayContext) {
+    final box = context.findRenderObject() as RenderBox?;
+    final overlay =
+        Overlay.maybeOf(context)?.context.findRenderObject() as RenderBox?;
+    if (box == null || overlay == null || !box.hasSize) {
+      return const SizedBox.shrink();
+    }
+    final origin = box.localToGlobal(Offset.zero, ancestor: overlay);
+    final theme = AmalfiTheme.of(context);
+    return Positioned(
+      left: origin.dx,
+      top: origin.dy + box.size.height + AmalfiComboListMetrics.gap,
+      width: box.size.width,
+      child: AmalfiTheme(
+        brightness: theme.brightness,
+        child: TapRegion(
+          groupId: _tapGroup,
+          child: AmalfiComboList(
+            options: widget.options,
+            highlighted: _highlight,
+            checked: _indexOfText(),
+            onHighlight: (i) => setState(() => _highlight = i),
+            onPick: _pick,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The list of a combo box (`Menus/Menu/Simple`): Glass/Thick, radius 12, 4 pt padding, one
+/// 24 pt item per option with a check slot; the [highlighted] item is filled with the
+/// accent, the [checked] one has a checkmark.
+class AmalfiComboList extends StatelessWidget {
+  const AmalfiComboList({
+    super.key,
+    required this.options,
+    this.highlighted,
+    this.checked,
+    this.onHighlight,
+    this.onPick,
+  });
+
+  final List<String> options;
+  final int? highlighted;
+  final int? checked;
+
+  /// Called when the pointer moves over an item.
+  final ValueChanged<int>? onHighlight;
+
+  /// Called when an item is clicked.
+  final ValueChanged<int>? onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final visible = options.length.clamp(
+      0,
+      AmalfiComboListMetrics.maxVisibleItems,
+    );
+    return AmalfiGlass(
+      material: AmalfiMaterials.thick,
+      radius: AmalfiComboListMetrics.radius,
+      child: SizedBox(
+        height:
+            visible * AmalfiComboListMetrics.itemHeight +
+            2 * AmalfiComboListMetrics.padding,
+        child: ListView.builder(
+          padding: const EdgeInsets.all(AmalfiComboListMetrics.padding),
+          itemExtent: AmalfiComboListMetrics.itemHeight,
+          itemCount: options.length,
+          itemBuilder: (context, i) => _ComboItem(
+            label: options[i],
+            highlighted: i == highlighted,
+            checked: i == checked,
+            onHover: onHighlight == null ? null : () => onHighlight?.call(i),
+            onPick: onPick == null ? null : () => onPick?.call(i),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ComboItem extends StatelessWidget {
+  const _ComboItem({
+    required this.label,
+    required this.highlighted,
+    required this.checked,
+    this.onHover,
+    this.onPick,
+  });
+
+  final String label;
+  final bool highlighted;
+  final bool checked;
+  final VoidCallback? onHover;
+  final VoidCallback? onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AmalfiTheme.of(context).colors;
+    final ink = highlighted ? colors.textOnAccent : colors.textPrimary;
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AmalfiComboListMetrics.itemPadding,
+      ),
+      child: Row(
+        children: [
+          SizedBox.square(
+            dimension: AmalfiComboListMetrics.check,
+            child: checked
+                ? AmalfiGlyphIcon(
+                    AmalfiGlyph.checkmark,
+                    size: AmalfiComboListMetrics.check,
+                    color: ink,
+                  )
+                : null,
+          ),
+          const SizedBox(width: AmalfiFieldMetrics.gap),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              style: AmalfiType.body(color: ink),
+            ),
+          ),
+        ],
+      ),
+    );
+    return Semantics(
+      button: true,
+      selected: checked,
+      label: label,
+      onTap: onPick,
+      child: ExcludeSemantics(
+        child: MouseRegion(
+          onEnter: (_) => onHover?.call(),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onPick,
+            child: highlighted
+                ? DecoratedBox(
+                    decoration: ShapeDecoration(
+                      color: colors.accentAmalfi,
+                      shape: const AmalfiSmoothBorder(
+                        radius: AmalfiComboListMetrics.highlightRadius,
+                      ),
+                    ),
+                    child: content,
+                  )
+                : content,
+          ),
+        ),
+      ),
+    );
+  }
+}

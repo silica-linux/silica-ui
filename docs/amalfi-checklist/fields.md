@@ -6,158 +6,158 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Fields/Clear Button
 
-- [ ] Fields/Clear Button/Rest/Dark
-- [ ] Fields/Clear Button/Rest/Light
+- [x] Fields/Clear Button/Rest/Dark
+- [x] Fields/Clear Button/Rest/Light
 
 ## Fields/Combo Box
 
-- [ ] Fields/Combo Box/Large/Disabled/Dark
-- [ ] Fields/Combo Box/Large/Disabled/Light
-- [ ] Fields/Combo Box/Large/Focused/Dark
-- [ ] Fields/Combo Box/Large/Focused/Light
-- [ ] Fields/Combo Box/Large/Rest/Dark
-- [ ] Fields/Combo Box/Large/Rest/Light
-- [ ] Fields/Combo Box/Open/Rest/Dark
-- [ ] Fields/Combo Box/Open/Rest/Light
-- [ ] Fields/Combo Box/Regular/Disabled/Dark
-- [ ] Fields/Combo Box/Regular/Disabled/Light
-- [ ] Fields/Combo Box/Regular/Focused/Dark
-- [ ] Fields/Combo Box/Regular/Focused/Light
-- [ ] Fields/Combo Box/Regular/Rest/Dark
-- [ ] Fields/Combo Box/Regular/Rest/Light
-- [ ] Fields/Combo Box/Small/Disabled/Dark
-- [ ] Fields/Combo Box/Small/Disabled/Light
-- [ ] Fields/Combo Box/Small/Focused/Dark
-- [ ] Fields/Combo Box/Small/Focused/Light
-- [ ] Fields/Combo Box/Small/Rest/Dark
-- [ ] Fields/Combo Box/Small/Rest/Light
+- [x] Fields/Combo Box/Large/Disabled/Dark
+- [x] Fields/Combo Box/Large/Disabled/Light
+- [x] Fields/Combo Box/Large/Focused/Dark
+- [x] Fields/Combo Box/Large/Focused/Light
+- [x] Fields/Combo Box/Large/Rest/Dark
+- [x] Fields/Combo Box/Large/Rest/Light
+- [x] Fields/Combo Box/Open/Rest/Dark
+- [x] Fields/Combo Box/Open/Rest/Light
+- [x] Fields/Combo Box/Regular/Disabled/Dark
+- [x] Fields/Combo Box/Regular/Disabled/Light
+- [x] Fields/Combo Box/Regular/Focused/Dark
+- [x] Fields/Combo Box/Regular/Focused/Light
+- [x] Fields/Combo Box/Regular/Rest/Dark
+- [x] Fields/Combo Box/Regular/Rest/Light
+- [x] Fields/Combo Box/Small/Disabled/Dark
+- [x] Fields/Combo Box/Small/Disabled/Light
+- [x] Fields/Combo Box/Small/Focused/Dark
+- [x] Fields/Combo Box/Small/Focused/Light
+- [x] Fields/Combo Box/Small/Rest/Dark
+- [x] Fields/Combo Box/Small/Rest/Light
 
 ## Fields/Combo Button
 
-- [ ] Fields/Combo Button/Large/Disabled/Dark
-- [ ] Fields/Combo Button/Large/Disabled/Light
-- [ ] Fields/Combo Button/Large/Pressed/Dark
-- [ ] Fields/Combo Button/Large/Pressed/Light
-- [ ] Fields/Combo Button/Large/Rest/Dark
-- [ ] Fields/Combo Button/Large/Rest/Light
-- [ ] Fields/Combo Button/Regular/Disabled/Dark
-- [ ] Fields/Combo Button/Regular/Disabled/Light
-- [ ] Fields/Combo Button/Regular/Pressed/Dark
-- [ ] Fields/Combo Button/Regular/Pressed/Light
-- [ ] Fields/Combo Button/Regular/Rest/Dark
-- [ ] Fields/Combo Button/Regular/Rest/Light
-- [ ] Fields/Combo Button/Small/Disabled/Dark
-- [ ] Fields/Combo Button/Small/Disabled/Light
-- [ ] Fields/Combo Button/Small/Pressed/Dark
-- [ ] Fields/Combo Button/Small/Pressed/Light
-- [ ] Fields/Combo Button/Small/Rest/Dark
-- [ ] Fields/Combo Button/Small/Rest/Light
+- [x] Fields/Combo Button/Large/Disabled/Dark
+- [x] Fields/Combo Button/Large/Disabled/Light
+- [x] Fields/Combo Button/Large/Pressed/Dark
+- [x] Fields/Combo Button/Large/Pressed/Light
+- [x] Fields/Combo Button/Large/Rest/Dark
+- [x] Fields/Combo Button/Large/Rest/Light
+- [x] Fields/Combo Button/Regular/Disabled/Dark
+- [x] Fields/Combo Button/Regular/Disabled/Light
+- [x] Fields/Combo Button/Regular/Pressed/Dark
+- [x] Fields/Combo Button/Regular/Pressed/Light
+- [x] Fields/Combo Button/Regular/Rest/Dark
+- [x] Fields/Combo Button/Regular/Rest/Light
+- [x] Fields/Combo Button/Small/Disabled/Dark
+- [x] Fields/Combo Button/Small/Disabled/Light
+- [x] Fields/Combo Button/Small/Pressed/Dark
+- [x] Fields/Combo Button/Small/Pressed/Light
+- [x] Fields/Combo Button/Small/Rest/Dark
+- [x] Fields/Combo Button/Small/Rest/Light
 
 ## Fields/Inline Button
 
-- [ ] Fields/Inline Button/Regular/Disabled/Dark
-- [ ] Fields/Inline Button/Regular/Disabled/Light
-- [ ] Fields/Inline Button/Regular/Focused/Dark
-- [ ] Fields/Inline Button/Regular/Focused/Light
-- [ ] Fields/Inline Button/Regular/Rest/Dark
-- [ ] Fields/Inline Button/Regular/Rest/Light
+- [x] Fields/Inline Button/Regular/Disabled/Dark
+- [x] Fields/Inline Button/Regular/Disabled/Light
+- [x] Fields/Inline Button/Regular/Focused/Dark
+- [x] Fields/Inline Button/Regular/Focused/Light
+- [x] Fields/Inline Button/Regular/Rest/Dark
+- [x] Fields/Inline Button/Regular/Rest/Light
 
 ## Fields/Search Field
 
-- [ ] Fields/Search Field/Large/Disabled/Dark
-- [ ] Fields/Search Field/Large/Disabled/Light
-- [ ] Fields/Search Field/Large/Empty/Dark
-- [ ] Fields/Search Field/Large/Empty/Light
-- [ ] Fields/Search Field/Large/Focused/Dark
-- [ ] Fields/Search Field/Large/Focused/Light
-- [ ] Fields/Search Field/Large/Typing/Dark
-- [ ] Fields/Search Field/Large/Typing/Light
-- [ ] Fields/Search Field/Regular/Disabled/Dark
-- [ ] Fields/Search Field/Regular/Disabled/Light
-- [ ] Fields/Search Field/Regular/Empty/Dark
-- [ ] Fields/Search Field/Regular/Empty/Light
-- [ ] Fields/Search Field/Regular/Focused/Dark
-- [ ] Fields/Search Field/Regular/Focused/Light
-- [ ] Fields/Search Field/Regular/Token Focused/Dark
-- [ ] Fields/Search Field/Regular/Token Focused/Light
-- [ ] Fields/Search Field/Regular/Token/Dark
-- [ ] Fields/Search Field/Regular/Token/Light
-- [ ] Fields/Search Field/Regular/Typing/Dark
-- [ ] Fields/Search Field/Regular/Typing/Light
-- [ ] Fields/Search Field/Small/Disabled/Dark
-- [ ] Fields/Search Field/Small/Disabled/Light
-- [ ] Fields/Search Field/Small/Empty/Dark
-- [ ] Fields/Search Field/Small/Empty/Light
-- [ ] Fields/Search Field/Small/Focused/Dark
-- [ ] Fields/Search Field/Small/Focused/Light
-- [ ] Fields/Search Field/Small/Typing/Dark
-- [ ] Fields/Search Field/Small/Typing/Light
+- [x] Fields/Search Field/Large/Disabled/Dark
+- [x] Fields/Search Field/Large/Disabled/Light
+- [x] Fields/Search Field/Large/Empty/Dark
+- [x] Fields/Search Field/Large/Empty/Light
+- [x] Fields/Search Field/Large/Focused/Dark
+- [x] Fields/Search Field/Large/Focused/Light
+- [x] Fields/Search Field/Large/Typing/Dark
+- [x] Fields/Search Field/Large/Typing/Light
+- [x] Fields/Search Field/Regular/Disabled/Dark
+- [x] Fields/Search Field/Regular/Disabled/Light
+- [x] Fields/Search Field/Regular/Empty/Dark
+- [x] Fields/Search Field/Regular/Empty/Light
+- [x] Fields/Search Field/Regular/Focused/Dark
+- [x] Fields/Search Field/Regular/Focused/Light
+- [x] Fields/Search Field/Regular/Token Focused/Dark
+- [x] Fields/Search Field/Regular/Token Focused/Light
+- [x] Fields/Search Field/Regular/Token/Dark
+- [x] Fields/Search Field/Regular/Token/Light
+- [x] Fields/Search Field/Regular/Typing/Dark
+- [x] Fields/Search Field/Regular/Typing/Light
+- [x] Fields/Search Field/Small/Disabled/Dark
+- [x] Fields/Search Field/Small/Disabled/Light
+- [x] Fields/Search Field/Small/Empty/Dark
+- [x] Fields/Search Field/Small/Empty/Light
+- [x] Fields/Search Field/Small/Focused/Dark
+- [x] Fields/Search Field/Small/Focused/Light
+- [x] Fields/Search Field/Small/Typing/Dark
+- [x] Fields/Search Field/Small/Typing/Light
 
 ## Fields/Secure Field
 
-- [ ] Fields/Secure Field/Regular/Disabled/Dark
-- [ ] Fields/Secure Field/Regular/Disabled/Light
-- [ ] Fields/Secure Field/Regular/Filled/Dark
-- [ ] Fields/Secure Field/Regular/Filled/Light
-- [ ] Fields/Secure Field/Regular/Focused/Dark
-- [ ] Fields/Secure Field/Regular/Focused/Light
-- [ ] Fields/Secure Field/Regular/Placeholder/Dark
-- [ ] Fields/Secure Field/Regular/Placeholder/Light
+- [x] Fields/Secure Field/Regular/Disabled/Dark
+- [x] Fields/Secure Field/Regular/Disabled/Light
+- [x] Fields/Secure Field/Regular/Filled/Dark
+- [x] Fields/Secure Field/Regular/Filled/Light
+- [x] Fields/Secure Field/Regular/Focused/Dark
+- [x] Fields/Secure Field/Regular/Focused/Light
+- [x] Fields/Secure Field/Regular/Placeholder/Dark
+- [x] Fields/Secure Field/Regular/Placeholder/Light
 
 ## Fields/Text Area
 
-- [ ] Fields/Text Area/Regular/Disabled/Dark
-- [ ] Fields/Text Area/Regular/Disabled/Light
-- [ ] Fields/Text Area/Regular/Filled/Dark
-- [ ] Fields/Text Area/Regular/Filled/Light
-- [ ] Fields/Text Area/Regular/Focused/Dark
-- [ ] Fields/Text Area/Regular/Focused/Light
-- [ ] Fields/Text Area/Regular/Placeholder/Dark
-- [ ] Fields/Text Area/Regular/Placeholder/Light
+- [x] Fields/Text Area/Regular/Disabled/Dark
+- [x] Fields/Text Area/Regular/Disabled/Light
+- [x] Fields/Text Area/Regular/Filled/Dark
+- [x] Fields/Text Area/Regular/Filled/Light
+- [x] Fields/Text Area/Regular/Focused/Dark
+- [x] Fields/Text Area/Regular/Focused/Light
+- [x] Fields/Text Area/Regular/Placeholder/Dark
+- [x] Fields/Text Area/Regular/Placeholder/Light
 
 ## Fields/Text Field
 
-- [ ] Fields/Text Field/Large/Disabled/Dark
-- [ ] Fields/Text Field/Large/Disabled/Light
-- [ ] Fields/Text Field/Large/Error/Dark
-- [ ] Fields/Text Field/Large/Error/Light
-- [ ] Fields/Text Field/Large/Filled/Dark
-- [ ] Fields/Text Field/Large/Filled/Light
-- [ ] Fields/Text Field/Large/Focused/Dark
-- [ ] Fields/Text Field/Large/Focused/Light
-- [ ] Fields/Text Field/Large/Placeholder/Dark
-- [ ] Fields/Text Field/Large/Placeholder/Light
-- [ ] Fields/Text Field/Regular/Disabled/Dark
-- [ ] Fields/Text Field/Regular/Disabled/Light
-- [ ] Fields/Text Field/Regular/Error/Dark
-- [ ] Fields/Text Field/Regular/Error/Light
-- [ ] Fields/Text Field/Regular/Filled/Dark
-- [ ] Fields/Text Field/Regular/Filled/Light
-- [ ] Fields/Text Field/Regular/Focused/Dark
-- [ ] Fields/Text Field/Regular/Focused/Light
-- [ ] Fields/Text Field/Regular/Placeholder/Dark
-- [ ] Fields/Text Field/Regular/Placeholder/Light
-- [ ] Fields/Text Field/Small/Disabled/Dark
-- [ ] Fields/Text Field/Small/Disabled/Light
-- [ ] Fields/Text Field/Small/Error/Dark
-- [ ] Fields/Text Field/Small/Error/Light
-- [ ] Fields/Text Field/Small/Filled/Dark
-- [ ] Fields/Text Field/Small/Filled/Light
-- [ ] Fields/Text Field/Small/Focused/Dark
-- [ ] Fields/Text Field/Small/Focused/Light
-- [ ] Fields/Text Field/Small/Placeholder/Dark
-- [ ] Fields/Text Field/Small/Placeholder/Light
+- [x] Fields/Text Field/Large/Disabled/Dark
+- [x] Fields/Text Field/Large/Disabled/Light
+- [x] Fields/Text Field/Large/Error/Dark
+- [x] Fields/Text Field/Large/Error/Light
+- [x] Fields/Text Field/Large/Filled/Dark
+- [x] Fields/Text Field/Large/Filled/Light
+- [x] Fields/Text Field/Large/Focused/Dark
+- [x] Fields/Text Field/Large/Focused/Light
+- [x] Fields/Text Field/Large/Placeholder/Dark
+- [x] Fields/Text Field/Large/Placeholder/Light
+- [x] Fields/Text Field/Regular/Disabled/Dark
+- [x] Fields/Text Field/Regular/Disabled/Light
+- [x] Fields/Text Field/Regular/Error/Dark
+- [x] Fields/Text Field/Regular/Error/Light
+- [x] Fields/Text Field/Regular/Filled/Dark
+- [x] Fields/Text Field/Regular/Filled/Light
+- [x] Fields/Text Field/Regular/Focused/Dark
+- [x] Fields/Text Field/Regular/Focused/Light
+- [x] Fields/Text Field/Regular/Placeholder/Dark
+- [x] Fields/Text Field/Regular/Placeholder/Light
+- [x] Fields/Text Field/Small/Disabled/Dark
+- [x] Fields/Text Field/Small/Disabled/Light
+- [x] Fields/Text Field/Small/Error/Dark
+- [x] Fields/Text Field/Small/Error/Light
+- [x] Fields/Text Field/Small/Filled/Dark
+- [x] Fields/Text Field/Small/Filled/Light
+- [x] Fields/Text Field/Small/Focused/Dark
+- [x] Fields/Text Field/Small/Focused/Light
+- [x] Fields/Text Field/Small/Placeholder/Dark
+- [x] Fields/Text Field/Small/Placeholder/Light
 
 ## Fields/Token Field
 
-- [ ] Fields/Token Field/Regular/Focused/Dark
-- [ ] Fields/Token Field/Regular/Focused/Light
-- [ ] Fields/Token Field/Regular/Rest/Dark
-- [ ] Fields/Token Field/Regular/Rest/Light
+- [x] Fields/Token Field/Regular/Focused/Dark
+- [x] Fields/Token Field/Regular/Focused/Light
+- [x] Fields/Token Field/Regular/Rest/Dark
+- [x] Fields/Token Field/Regular/Rest/Light
 
 ## Fields/Token
 
-- [ ] Fields/Token/Rest/Dark
-- [ ] Fields/Token/Rest/Light
-- [ ] Fields/Token/Selected/Dark
-- [ ] Fields/Token/Selected/Light
+- [x] Fields/Token/Rest/Dark
+- [x] Fields/Token/Rest/Light
+- [x] Fields/Token/Selected/Dark
+- [x] Fields/Token/Selected/Light

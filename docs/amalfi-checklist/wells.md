@@ -6,89 +6,89 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Wells/Color Panel
 
-- [ ] Wells/Color Panel/Swatch Grid/Rest/Dark
-- [ ] Wells/Color Panel/Swatch Grid/Rest/Light
+- [x] Wells/Color Panel/Swatch Grid/Rest/Dark
+- [x] Wells/Color Panel/Swatch Grid/Rest/Light
 
 ## Wells/Color Well
 
-- [ ] Wells/Color Well/Default/Disabled/Dark
-- [ ] Wells/Color Well/Default/Disabled/Light
-- [ ] Wells/Color Well/Default/Focused/Dark
-- [ ] Wells/Color Well/Default/Focused/Light
-- [ ] Wells/Color Well/Default/Hover/Dark
-- [ ] Wells/Color Well/Default/Hover/Light
-- [ ] Wells/Color Well/Default/Rest/Dark
-- [ ] Wells/Color Well/Default/Rest/Light
-- [ ] Wells/Color Well/Expanded/Disabled/Dark
-- [ ] Wells/Color Well/Expanded/Disabled/Light
-- [ ] Wells/Color Well/Expanded/Focused/Dark
-- [ ] Wells/Color Well/Expanded/Focused/Light
-- [ ] Wells/Color Well/Expanded/Hover/Dark
-- [ ] Wells/Color Well/Expanded/Hover/Light
-- [ ] Wells/Color Well/Expanded/Rest/Dark
-- [ ] Wells/Color Well/Expanded/Rest/Light
-- [ ] Wells/Color Well/Minimal/Disabled/Dark
-- [ ] Wells/Color Well/Minimal/Disabled/Light
-- [ ] Wells/Color Well/Minimal/Focused/Dark
-- [ ] Wells/Color Well/Minimal/Focused/Light
-- [ ] Wells/Color Well/Minimal/Hover/Dark
-- [ ] Wells/Color Well/Minimal/Hover/Light
-- [ ] Wells/Color Well/Minimal/Rest/Dark
-- [ ] Wells/Color Well/Minimal/Rest/Light
+- [x] Wells/Color Well/Default/Disabled/Dark
+- [x] Wells/Color Well/Default/Disabled/Light
+- [x] Wells/Color Well/Default/Focused/Dark
+- [x] Wells/Color Well/Default/Focused/Light
+- [x] Wells/Color Well/Default/Hover/Dark
+- [x] Wells/Color Well/Default/Hover/Light
+- [x] Wells/Color Well/Default/Rest/Dark
+- [x] Wells/Color Well/Default/Rest/Light
+- [x] Wells/Color Well/Expanded/Disabled/Dark
+- [x] Wells/Color Well/Expanded/Disabled/Light
+- [x] Wells/Color Well/Expanded/Focused/Dark
+- [x] Wells/Color Well/Expanded/Focused/Light
+- [x] Wells/Color Well/Expanded/Hover/Dark
+- [x] Wells/Color Well/Expanded/Hover/Light
+- [x] Wells/Color Well/Expanded/Rest/Dark
+- [x] Wells/Color Well/Expanded/Rest/Light
+- [x] Wells/Color Well/Minimal/Disabled/Dark
+- [x] Wells/Color Well/Minimal/Disabled/Light
+- [x] Wells/Color Well/Minimal/Focused/Dark
+- [x] Wells/Color Well/Minimal/Focused/Light
+- [x] Wells/Color Well/Minimal/Hover/Dark
+- [x] Wells/Color Well/Minimal/Hover/Light
+- [x] Wells/Color Well/Minimal/Rest/Dark
+- [x] Wells/Color Well/Minimal/Rest/Light
 
 ## Wells/Image Well
 
-- [ ] Wells/Image Well/Empty/Large/Disabled/Dark
-- [ ] Wells/Image Well/Empty/Large/Disabled/Light
-- [ ] Wells/Image Well/Empty/Large/Drag Over/Dark
-- [ ] Wells/Image Well/Empty/Large/Drag Over/Light
-- [ ] Wells/Image Well/Empty/Large/Rest/Dark
-- [ ] Wells/Image Well/Empty/Large/Rest/Light
-- [ ] Wells/Image Well/Empty/Regular/Disabled/Dark
-- [ ] Wells/Image Well/Empty/Regular/Disabled/Light
-- [ ] Wells/Image Well/Empty/Regular/Drag Over/Dark
-- [ ] Wells/Image Well/Empty/Regular/Drag Over/Light
-- [ ] Wells/Image Well/Empty/Regular/Rest/Dark
-- [ ] Wells/Image Well/Empty/Regular/Rest/Light
-- [ ] Wells/Image Well/Empty/Small/Disabled/Dark
-- [ ] Wells/Image Well/Empty/Small/Disabled/Light
-- [ ] Wells/Image Well/Empty/Small/Drag Over/Dark
-- [ ] Wells/Image Well/Empty/Small/Drag Over/Light
-- [ ] Wells/Image Well/Empty/Small/Rest/Dark
-- [ ] Wells/Image Well/Empty/Small/Rest/Light
-- [ ] Wells/Image Well/Filled/Large/Disabled/Dark
-- [ ] Wells/Image Well/Filled/Large/Disabled/Light
-- [ ] Wells/Image Well/Filled/Large/Focused/Dark
-- [ ] Wells/Image Well/Filled/Large/Focused/Light
-- [ ] Wells/Image Well/Filled/Large/Rest/Dark
-- [ ] Wells/Image Well/Filled/Large/Rest/Light
-- [ ] Wells/Image Well/Filled/Regular/Disabled/Dark
-- [ ] Wells/Image Well/Filled/Regular/Disabled/Light
-- [ ] Wells/Image Well/Filled/Regular/Focused/Dark
-- [ ] Wells/Image Well/Filled/Regular/Focused/Light
-- [ ] Wells/Image Well/Filled/Regular/Rest/Dark
-- [ ] Wells/Image Well/Filled/Regular/Rest/Light
-- [ ] Wells/Image Well/Filled/Small/Disabled/Dark
-- [ ] Wells/Image Well/Filled/Small/Disabled/Light
-- [ ] Wells/Image Well/Filled/Small/Focused/Dark
-- [ ] Wells/Image Well/Filled/Small/Focused/Light
-- [ ] Wells/Image Well/Filled/Small/Rest/Dark
-- [ ] Wells/Image Well/Filled/Small/Rest/Light
+- [x] Wells/Image Well/Empty/Large/Disabled/Dark
+- [x] Wells/Image Well/Empty/Large/Disabled/Light
+- [x] Wells/Image Well/Empty/Large/Drag Over/Dark
+- [x] Wells/Image Well/Empty/Large/Drag Over/Light
+- [x] Wells/Image Well/Empty/Large/Rest/Dark
+- [x] Wells/Image Well/Empty/Large/Rest/Light
+- [x] Wells/Image Well/Empty/Regular/Disabled/Dark
+- [x] Wells/Image Well/Empty/Regular/Disabled/Light
+- [x] Wells/Image Well/Empty/Regular/Drag Over/Dark
+- [x] Wells/Image Well/Empty/Regular/Drag Over/Light
+- [x] Wells/Image Well/Empty/Regular/Rest/Dark
+- [x] Wells/Image Well/Empty/Regular/Rest/Light
+- [x] Wells/Image Well/Empty/Small/Disabled/Dark
+- [x] Wells/Image Well/Empty/Small/Disabled/Light
+- [x] Wells/Image Well/Empty/Small/Drag Over/Dark
+- [x] Wells/Image Well/Empty/Small/Drag Over/Light
+- [x] Wells/Image Well/Empty/Small/Rest/Dark
+- [x] Wells/Image Well/Empty/Small/Rest/Light
+- [x] Wells/Image Well/Filled/Large/Disabled/Dark
+- [x] Wells/Image Well/Filled/Large/Disabled/Light
+- [x] Wells/Image Well/Filled/Large/Focused/Dark
+- [x] Wells/Image Well/Filled/Large/Focused/Light
+- [x] Wells/Image Well/Filled/Large/Rest/Dark
+- [x] Wells/Image Well/Filled/Large/Rest/Light
+- [x] Wells/Image Well/Filled/Regular/Disabled/Dark
+- [x] Wells/Image Well/Filled/Regular/Disabled/Light
+- [x] Wells/Image Well/Filled/Regular/Focused/Dark
+- [x] Wells/Image Well/Filled/Regular/Focused/Light
+- [x] Wells/Image Well/Filled/Regular/Rest/Dark
+- [x] Wells/Image Well/Filled/Regular/Rest/Light
+- [x] Wells/Image Well/Filled/Small/Disabled/Dark
+- [x] Wells/Image Well/Filled/Small/Disabled/Light
+- [x] Wells/Image Well/Filled/Small/Focused/Dark
+- [x] Wells/Image Well/Filled/Small/Focused/Light
+- [x] Wells/Image Well/Filled/Small/Rest/Dark
+- [x] Wells/Image Well/Filled/Small/Rest/Light
 
 ## Wells/Swatch Chip
 
-- [ ] Wells/Swatch Chip/Rest/Dark
-- [ ] Wells/Swatch Chip/Rest/Light
-- [ ] Wells/Swatch Chip/Selected/Dark
-- [ ] Wells/Swatch Chip/Selected/Light
+- [x] Wells/Swatch Chip/Rest/Dark
+- [x] Wells/Swatch Chip/Rest/Light
+- [x] Wells/Swatch Chip/Selected/Dark
+- [x] Wells/Swatch Chip/Selected/Light
 
 ## Wells/Swatch Row
 
-- [ ] Wells/Swatch Row/Row 1/Rest/Dark
-- [ ] Wells/Swatch Row/Row 1/Rest/Light
-- [ ] Wells/Swatch Row/Row 2/Rest/Dark
-- [ ] Wells/Swatch Row/Row 2/Rest/Light
-- [ ] Wells/Swatch Row/Row 3/Rest/Dark
-- [ ] Wells/Swatch Row/Row 3/Rest/Light
-- [ ] Wells/Swatch Row/Row 4/Rest/Dark
-- [ ] Wells/Swatch Row/Row 4/Rest/Light
+- [x] Wells/Swatch Row/Row 1/Rest/Dark
+- [x] Wells/Swatch Row/Row 1/Rest/Light
+- [x] Wells/Swatch Row/Row 2/Rest/Dark
+- [x] Wells/Swatch Row/Row 2/Rest/Light
+- [x] Wells/Swatch Row/Row 3/Rest/Dark
+- [x] Wells/Swatch Row/Row 3/Rest/Light
+- [x] Wells/Swatch Row/Row 4/Rest/Dark
+- [x] Wells/Swatch Row/Row 4/Rest/Light

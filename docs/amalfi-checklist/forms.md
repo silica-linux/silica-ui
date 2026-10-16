@@ -6,34 +6,34 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Forms/Footer
 
-- [ ] Forms/Footer/Actions/Rest/Dark
-- [ ] Forms/Footer/Actions/Rest/Light
+- [x] Forms/Footer/Actions/Rest/Dark
+- [x] Forms/Footer/Actions/Rest/Light
 
 ## Forms/Layout
 
-- [ ] Forms/Layout/Full/Rest/Dark
-- [ ] Forms/Layout/Full/Rest/Light
+- [x] Forms/Layout/Full/Rest/Dark
+- [x] Forms/Layout/Full/Rest/Light
 
 ## Forms/Row
 
-- [ ] Forms/Row/Check/Rest/Dark
-- [ ] Forms/Row/Check/Rest/Light
-- [ ] Forms/Row/Error/Rest/Dark
-- [ ] Forms/Row/Error/Rest/Light
-- [ ] Forms/Row/Help/Rest/Dark
-- [ ] Forms/Row/Help/Rest/Light
-- [ ] Forms/Row/Popup/Rest/Dark
-- [ ] Forms/Row/Popup/Rest/Light
-- [ ] Forms/Row/Switch/Rest/Dark
-- [ ] Forms/Row/Switch/Rest/Light
-- [ ] Forms/Row/Text/Rest/Dark
-- [ ] Forms/Row/Text/Rest/Light
+- [x] Forms/Row/Check/Rest/Dark
+- [x] Forms/Row/Check/Rest/Light
+- [x] Forms/Row/Error/Rest/Dark
+- [x] Forms/Row/Error/Rest/Light
+- [x] Forms/Row/Help/Rest/Dark
+- [x] Forms/Row/Help/Rest/Light
+- [x] Forms/Row/Popup/Rest/Dark
+- [x] Forms/Row/Popup/Rest/Light
+- [x] Forms/Row/Switch/Rest/Dark
+- [x] Forms/Row/Switch/Rest/Light
+- [x] Forms/Row/Text/Rest/Dark
+- [x] Forms/Row/Text/Rest/Light
 
 ## Forms/Section
 
-- [ ] Forms/Section/Preferences/Rest/Dark
-- [ ] Forms/Section/Preferences/Rest/Light
-- [ ] Forms/Section/Profile/Rest/Dark
-- [ ] Forms/Section/Profile/Rest/Light
-- [ ] Forms/Section/Validation/Rest/Dark
-- [ ] Forms/Section/Validation/Rest/Light
+- [x] Forms/Section/Preferences/Rest/Dark
+- [x] Forms/Section/Preferences/Rest/Light
+- [x] Forms/Section/Profile/Rest/Dark
+- [x] Forms/Section/Profile/Rest/Light
+- [x] Forms/Section/Validation/Rest/Dark
+- [x] Forms/Section/Validation/Rest/Light
