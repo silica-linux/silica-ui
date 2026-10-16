@@ -17,3 +17,4 @@ Every non-code file has a row here: author, license, source. Licenses allowed as
 | `shaders/glass_lens.frag` | Silica project | MIT OR Apache-2.0 | original, the edge refraction of `GlassLens` |
 | `docs/spec/diagrams/*.svg` | Silica project | MIT OR Apache-2.0 | original, drawn from the measured values in `docs/spec/` |
 | `tool/amalfi/tokens.json`, `tool/amalfi/motion.md` | Silica project | MIT OR Apache-2.0 | original, copies of `silica-desktop/docs/design/amalfi/` at `f17b47c` |
+| `test/amalfi/kit/**` | the Silica project | CC BY-SA 4.0 | https://github.com/silica-os/silica-design (`kit/symbols/`), copied by `tool/sync_kit.dart` at the commit in `test/amalfi/kit/SOURCE.md` |
