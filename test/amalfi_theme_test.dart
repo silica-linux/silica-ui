@@ -94,6 +94,136 @@ void main() {
       expect(const AmalfiSmoothBorder().smoothing, AmalfiRadii.smoothing);
     });
 
+    test('a uniform border is the same as the same radius on each corner', () {
+      const uniform = AmalfiSmoothBorder(radius: 14);
+      const only = AmalfiSmoothBorder.only(
+        topLeft: 14,
+        topRight: 14,
+        bottomRight: 14,
+        bottomLeft: 14,
+      );
+      expect(only, uniform);
+      expect(only.hashCode, uniform.hashCode);
+      expect(only.isUniform, isTrue);
+      expect(only.radius, 14);
+      expect(uniform.radii, [14, 14, 14, 14]);
+      expect(uniform.toString(), contains('radius: 14.0'));
+      // Same outline: sample rows near the top and bottom edges.
+      final a = uniform.getOuterPath(rect);
+      final b = only.getOuterPath(rect);
+      for (var x = rect.left; x <= rect.right; x += 0.5) {
+        for (final y in [rect.top + 0.3, rect.top + 3, rect.bottom - 3]) {
+          expect(b.contains(Offset(x, y)), a.contains(Offset(x, y)));
+        }
+      }
+    });
+
+    test('each corner has its own radius, 0 is square', () {
+      const border = AmalfiSmoothBorder.only(topLeft: 20, bottomRight: 10);
+      expect(border.isUniform, isFalse);
+      expect(border.radius, 20);
+      expect(border.radii, [20, 0, 10, 0]);
+      expect(border.toString(), contains('bottomRight: 10.0'));
+      final path = border.getOuterPath(rect);
+      _expectRect(path.getBounds(), rect);
+      // Square corners keep their vertex.
+      expect(path.contains(rect.topRight + const Offset(-0.5, 0.5)), isTrue);
+      expect(path.contains(rect.bottomLeft + const Offset(0.5, -0.5)), isTrue);
+      // Rounded ones cut it away, each by its own radius.
+      expect(path.contains(rect.topLeft + const Offset(1, 1)), isFalse);
+      expect(path.contains(rect.topLeft + const Offset(12, 12)), isTrue);
+      expect(path.contains(rect.bottomRight + const Offset(-1, -1)), isFalse);
+      expect(path.contains(rect.bottomRight + const Offset(-5, -5)), isTrue);
+      // Where the 20 corner is still curving (30 from the vertex in this 60-high rect), the
+      // 10 one (16) is already straight.
+      expect(path.contains(rect.topLeft + const Offset(20, 0.1)), isFalse);
+      expect(path.contains(rect.bottomRight + const Offset(-20, -0.1)), isTrue);
+      // The smooth corner matches the uniform one at that corner.
+      final uniform = smoothRectPath(rect, 20, AmalfiRadii.smoothing);
+      for (var i = 0.0; i < 32; i += 0.5) {
+        for (final o in [Offset(i, 0.4), Offset(0.4, i), Offset(i, i / 2)]) {
+          final p = rect.topLeft + o;
+          expect(path.contains(p), uniform.contains(p), reason: '$o');
+        }
+      }
+    });
+
+    test('per-corner radii clamp to a capsule end', () {
+      // A segment end: left capsule, right square.
+      const pill = Rect.fromLTWH(0, 0, 60, 24);
+      final end = smoothRectPathOnly(pill, topLeft: 50, bottomLeft: 50);
+      _expectRect(end.getBounds(), pill);
+      final capsule = smoothRectPath(pill, 50, AmalfiRadii.smoothing);
+      for (var x = 0.0; x <= 12; x += 0.5) {
+        for (var y = 0.0; y <= 24; y += 0.5) {
+          final p = Offset(x, y);
+          expect(end.contains(p), capsule.contains(p), reason: '$p');
+        }
+      }
+      expect(end.contains(const Offset(59.5, 0.5)), isTrue);
+      expect(end.contains(const Offset(59.5, 23.5)), isTrue);
+      // Degenerate corners never throw.
+      _expectRect(
+        smoothRectPathOnly(
+          rect,
+          topLeft: double.nan,
+          topRight: -3,
+          bottomRight: double.infinity,
+          smoothing: double.nan,
+        ).getBounds(),
+        rect,
+      );
+      expect(smoothRectPathOnly(Rect.zero, topLeft: 4).getBounds(), Rect.zero);
+    });
+
+    test('per-corner scale, copyWith, lerp, inflate, inner path, paint', () {
+      const border = AmalfiSmoothBorder.only(
+        topLeft: 6,
+        bottomLeft: 6,
+        side: BorderSide(width: 2, color: Color(0xFF000000)),
+      );
+      expect(border.scale(2).radii, [12, 0, 0, 12]);
+      expect(border.copyWith(topRight: 3).radii, [6, 3, 0, 6]);
+      expect(border.copyWith(radius: 4).radii, [4, 4, 4, 4]);
+      expect(border.copyWith(radius: 4, topLeft: 1).radii, [1, 4, 4, 4]);
+      expect(border.inflateRadii(2).radii, [8, 0, 0, 8]);
+      expect(border.inflateRadii(-10).radii, [0, 0, 0, 0]);
+      final mid = ShapeBorder.lerp(
+        const AmalfiSmoothBorder(radius: 10),
+        const AmalfiSmoothBorder.only(topLeft: 20),
+        0.5,
+      );
+      expect(
+        mid,
+        const AmalfiSmoothBorder.only(
+          topLeft: 15,
+          topRight: 5,
+          bottomRight: 5,
+          bottomLeft: 5,
+        ),
+      );
+      expect(
+        const AmalfiSmoothBorder.only(topRight: 8)
+            .lerpTo(const AmalfiSmoothBorder(radius: 8), 1),
+        const AmalfiSmoothBorder(radius: 8),
+      );
+      final inner = border.getInnerPath(rect);
+      _expectRect(inner.getBounds(), rect.deflate(2));
+      // The inner path keeps square corners square.
+      expect(inner.contains(rect.topRight + const Offset(-2.5, 2.5)), isTrue);
+      for (final align in [
+        BorderSide.strokeAlignInside,
+        BorderSide.strokeAlignCenter,
+        BorderSide.strokeAlignOutside,
+      ]) {
+        final recorder = ui.PictureRecorder();
+        border
+            .copyWith(side: border.side.copyWith(strokeAlign: align))
+            .paint(Canvas(recorder), rect);
+        recorder.endRecording().dispose();
+      }
+    });
+
     testWidgets('draws as a decoration', (tester) async {
       await tester.pumpWidget(
         const Center(
