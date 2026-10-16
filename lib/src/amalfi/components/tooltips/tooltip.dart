@@ -22,8 +22,8 @@ abstract final class AmalfiTooltipMetrics {
   /// The corner radius (`materials.md`: tooltips are Glass/Thick, radius 8).
   static const double radius = 8;
 
-  /// The widest tooltip; longer text wraps (`Tooltips/Tooltip/Two Lines` is 184 wide).
-  static const double maxWidth = 184;
+  /// The widest tooltip; longer text wraps (`Tooltips/Tooltip/Two Lines` is 224 wide).
+  static const double maxWidth = 224;
 
   /// Between the tooltip and its target (`Tooltips/Placement/*`).
   static const double distance = 8;

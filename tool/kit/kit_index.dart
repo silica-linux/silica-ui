@@ -37,12 +37,9 @@ class KitEntry {
   /// The 2× PNG, relative to the checkout.
   final String png;
 
-  /// The master's key: its JSON path below `kit/symbols/` without `.json`. It equals [name]
-  /// except for masters sharing a name, whose files carry an id suffix (`Dark (7B023A23)`).
-  String get key {
-    const prefix = 'kit/symbols/';
-    return json.substring(prefix.length, json.length - '.json'.length);
-  }
+  /// The master's key: its JSON path below `kit/symbols/` without `.json`, which equals
+  /// [name] (names are unique since silica-design `7db1d1c`).
+  String get key => name;
 
   /// The kit category (the first name segment).
   String get category => name.split('/').first;
@@ -58,7 +55,7 @@ class KitIndex {
   /// Every symbol master, in index order.
   final List<KitEntry> entries;
 
-  /// The entries named [name] (more than one for the few masters sharing a name).
+  /// The entries named [name] (one master, or none).
   List<KitEntry> named(String name) =>
       entries.where((e) => e.name == name).toList();
 

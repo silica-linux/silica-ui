@@ -398,7 +398,8 @@ void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
     final t = ref.style;
     if (t.family != font.family ||
         !_same(t.size, font.size ?? -1) ||
-        !_same(t.lineHeight, font.lineHeight ?? -1) ||
+        (t.lineHeight != null &&
+            !_same(t.lineHeight!, font.lineHeight ?? -1)) ||
         t.weight != weight) {
       add(
         'style',

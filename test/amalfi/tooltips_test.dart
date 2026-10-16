@@ -13,15 +13,6 @@ Finder label(String text) => find
     .ancestor(of: find.text(text), matching: find.byType(AmalfiWholePoints))
     .first;
 
-/// Kit defect: Dark/Glass/Thick drops the level 2 shadow colour (#52000000) with the level 3
-/// offset and blur; `materials.md` and the tokens give Glass/Thick level 3 (#5C000000).
-Map<String, String> glassShadow(String appearance) => appearance == 'Dark'
-    ? {
-        'Surface#shadows':
-            'kit Dark/Glass/Thick shadow is #52000000, tokens level 3 #5C000000',
-      }
-    : const {};
-
 const Key targetKey = ValueKey('target');
 
 /// The scene of `Tooltips/Placement/*`: a target at [target] in an area of [size], with a
@@ -88,7 +79,6 @@ void main() {
             'Surface': find.byType(AmalfiGlass),
             'Label': label('Add to favourites'),
           },
-          deviations: glassShadow(appearance),
         );
         await expectKitPixels(tester, master, tooltip, maskText: true);
         await expectKitPixels(
@@ -99,7 +89,7 @@ void main() {
         );
       });
 
-      testWidgets('Two Lines (three in the kit)', (tester) async {
+      testWidgets('Two Lines', (tester) async {
         final master = KitMaster.load(
           'Tooltips/Tooltip/Two Lines/Rest/$appearance',
         );
@@ -112,7 +102,6 @@ void main() {
           master,
           root: root,
           layers: {'Surface': find.byType(AmalfiGlass), 'Label': label(text)},
-          deviations: glassShadow(appearance),
         );
         await expectKitPixels(tester, master, tooltip, maskText: true);
         await expectKitPixels(
@@ -123,18 +112,12 @@ void main() {
         );
       });
 
-      testWidgets('Shortcut: styles and spacing (kit frames are defective)', (
-        tester,
-      ) async {
+      testWidgets('Shortcut', (tester) async {
         final master = KitMaster.load(
           'Tooltips/Tooltip/Shortcut/Rest/$appearance',
         );
         const tooltip = AmalfiTooltip(message: 'Duplicate', shortcut: '⌘D');
         final root = await pumpKitScene(tester, tooltip, master: master);
-        // Kit defect: the label frame is 40 wide, so "Duplicate" breaks inside the word over
-        // two lines and the tooltip is 40 tall; the shortcut frame is 40 wide for "⌘D".
-        // The tooltip keeps the kit's padding, gap and width (104) on one line, 24 tall.
-        const defect = 'kit label frame 40 wide breaks "Duplicate" mid-word';
         expectKitGeometry(
           tester,
           master,
@@ -144,19 +127,19 @@ void main() {
             'Label': label('Duplicate'),
             'Shortcut': label('⌘D'),
           },
-          deviations: {
-            '#frame': defect,
-            'Surface': defect,
-            'Label': defect,
-            'Shortcut': defect,
-            ...glassShadow(appearance),
-          },
         );
         expect(tester.getSize(root), const Size(104, 24));
         expect(
           tester.getTopLeft(label('⌘D')) -
               tester.getTopRight(label('Duplicate')),
           const Offset(AmalfiTooltipMetrics.shortcutGap, 0),
+        );
+        await expectKitPixels(tester, master, tooltip, maskText: true);
+        await expectKitPixels(
+          tester,
+          master,
+          tooltip,
+          tolerance: KitPixelTolerance.withText,
         );
       });
 
@@ -174,9 +157,6 @@ void main() {
           final scene = placementScene(master.size, target, placement);
           final root = await pumpKitScene(tester, scene, master: master);
           await hoverTarget(tester);
-          // Kit defect: Above leaves 12 between tooltip and target (Below, Leading and
-          // Trailing leave 8, the tooltip distance): the tooltip is 4 lower than the kit's.
-          final above = placement == AmalfiTooltipPlacement.above;
           expectKitGeometry(
             tester,
             master,
@@ -185,17 +165,7 @@ void main() {
               'Target': find.byKey(targetKey),
               'Tooltip': find.byType(AmalfiTooltip),
             },
-            deviations: {
-              if (above) 'Tooltip': 'kit gap 12 above the target, 8 elsewhere',
-            },
           );
-          if (above) {
-            expect(
-              tester.getTopLeft(find.byType(AmalfiTooltip)),
-              master.layer('Tooltip').rectInMaster.topLeft + const Offset(0, 4),
-            );
-            return;
-          }
           await expectKitPixels(
             tester,
             master,

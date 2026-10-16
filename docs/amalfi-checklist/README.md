@@ -10,7 +10,7 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Fields](fields.md) | `Fields` | 128 | 0 |
 | [Menus](menus.md) | `Menus` | 48 | 0 |
 | [Popovers](popovers.md) | `Popovers` | 84 | 0 |
-| [Tooltips](tooltips.md) | `Tooltips` | 14 | 10 |
+| [Tooltips](tooltips.md) | `Tooltips` | 14 | 14 |
 | [Sliders](sliders.md) | `Sliders` | 64 | 0 |
 | [Steppers](steppers.md) | `Steppers` | 68 | 0 |
 | [Progress](progress.md) | `Progress` | 84 | 0 |
@@ -20,13 +20,13 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Disclosure](disclosure.md) | `Disclosure` | 44 | 0 |
 | [Group Boxes](group_boxes.md) | `Group Boxes` | 8 | 0 |
 | [Forms](forms.md) | `Forms` | 22 | 0 |
-| [Titlebars](titlebars.md) | `Titlebars` | 235 | 0 |
+| [Titlebars](titlebars.md) | `Titlebars` | 199 | 0 |
 | [Windows](windows.md) | `Windows` | 38 | 0 |
 | [Alerts](alerts.md) | `Alerts` | 12 | 0 |
 | [Dialogs](dialogs.md) | `Dialogs` | 12 | 0 |
 | [Sheets](sheets.md) | `Windows/Window/Sheet Attached` | 2 | 0 |
 | [Wells](wells.md) | `Wells` | 74 | 0 |
-| **Total** | | **2201** | **10** |
+| **Total** | | **2165** | **14** |
 
 ## Out of scope of the component milestone (M3)
 
