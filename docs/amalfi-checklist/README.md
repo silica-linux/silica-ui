@@ -5,7 +5,7 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | Family | Kit | Masters | Done |
 | --- | --- | ---: | ---: |
 | [Buttons](buttons.md) | `Buttons` | 414 | 0 |
-| [Segmented](segmented.md) | `Segments` | 488 | 0 |
+| [Segmented](segmented.md) | `Segments` | 488 | 424 |
 | [Toggles](toggles.md) | `Toggles` | 296 | 0 |
 | [Fields](fields.md) | `Fields` | 128 | 0 |
 | [Menus](menus.md) | `Menus` | 48 | 0 |
@@ -26,7 +26,7 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Dialogs](dialogs.md) | `Dialogs` | 12 | 0 |
 | [Sheets](sheets.md) | `Windows/Window/Sheet Attached` | 2 | 0 |
 | [Wells](wells.md) | `Wells` | 74 | 0 |
-| **Total** | | **2165** | **14** |
+| **Total** | | **2165** | **438** |
 
 ## Out of scope of the component milestone (M3)
 
