@@ -4,8 +4,7 @@
 // The masters are whole windows with sample content: the frame, the regions, the separators
 // and the bars are ours; nested controls of other families (buttons, group boxes, pop-ups,
 // segmented controls, checkboxes, search fields, the menu bar) are masked in the pixel tests,
-// and so are bars already compared on their own (`titlebars_test.dart`) whose controls are
-// stand-ins.
+// and so are bars already compared on their own (`titlebars_test.dart`).
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -105,7 +104,11 @@ Widget windowBar({
   children: [
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        onPressed: () {},
+        semanticLabel: 'sidebar',
+      ),
     ),
     navPiece(),
     AmalfiTitlePiece(title: 'Lemon cake'),

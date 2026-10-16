@@ -148,13 +148,17 @@ List<String> availableStates(String prefix, String appearance) => [
     if (File('$kitFixturesPath/$prefix/$s/$appearance.json').existsSync()) s,
 ];
 
-/// The item pieces: kit piece name, the layer of its control, the piece with a stand-in.
+/// The item pieces: kit piece name, the layer of its control, the piece with its control.
 final List<(String, String, Widget)> itemPieces = [
   (
     'Sidebar Toggle',
     'Toolbar button',
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        onPressed: () {},
+        semanticLabel: 'sidebar',
+      ),
     ),
   ),
   ('Nav', 'Back and forward', navPiece()),
@@ -213,13 +217,23 @@ final List<(String, String, Widget)> itemPieces = [
     (
       name,
       'Toolbar button',
-      AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.icon(glyph)),
+      AmalfiToolbarPiece(
+        child: AmalfiToolbarButton(
+          icon: AmalfiTitlebarGlyph(glyph),
+          onPressed: () {},
+          semanticLabel: 'glyph',
+        ),
+      ),
     ),
   (
     'Add',
     'Toolbar button',
     AmalfiToolbarPiece.add(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.plus),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+        onPressed: () {},
+        semanticLabel: 'plus',
+      ),
     ),
   ),
   (
@@ -227,7 +241,11 @@ final List<(String, String, Widget)> itemPieces = [
     'Send',
     AmalfiToolbarPiece(
       trailing: 16,
-      child: AmalfiToolbarPlaceholder.round(AmalfiTitlebarGlyphs.plus),
+      child: AmalfiIconButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+        onPressed: () {},
+        semanticLabel: 'plus',
+      ),
     ),
   ),
   for (final (name, layer, n) in [
@@ -299,11 +317,12 @@ Widget toolbarSearch() =>
 Widget searchToken() =>
     const AmalfiSearchField(width: 240, tokens: ['Recipes']);
 
-/// The control in an item piece: one of the merged families' widgets or a stand-in.
+/// The control in an item piece: a widget of the buttons, segmented or fields family.
 Finder pieceControl() => find
     .byWidgetPredicate(
       (w) =>
-          w is AmalfiToolbarPlaceholder ||
+          w is AmalfiToolbarButton ||
+          w is AmalfiIconButton ||
           w is AmalfiActionSegments ||
           w is AmalfiSegmentedControl ||
           w is AmalfiSearchField,
@@ -363,7 +382,11 @@ Widget unifiedBar({
     ),
     AmalfiToolbarPiece(
       key: ValueKey('Sidebar Toggle'),
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        onPressed: () {},
+        semanticLabel: 'sidebar',
+      ),
     ),
     navPiece(key: const ValueKey('Nav')),
     AmalfiTitlePiece(key: ValueKey('Title'), title: 'Lemon cake'),
@@ -395,7 +418,11 @@ List<Widget> sidebarSectionPieces() => [
   AmalfiSpacerPiece(key: ValueKey('Spacer')),
   AmalfiToolbarPiece(
     key: ValueKey('Sidebar Toggle'),
-    child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+    child: AmalfiToolbarButton(
+      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+      onPressed: () {},
+      semanticLabel: 'sidebar',
+    ),
   ),
 ];
 
@@ -468,18 +495,34 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
   children: [
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.chevronLeft),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.chevronLeft),
+        onPressed: () {},
+        semanticLabel: 'chevronLeft',
+      ),
     ),
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.chevronRight),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.chevronRight),
+        onPressed: () {},
+        semanticLabel: 'chevronRight',
+      ),
     ),
     AmalfiTitlePiece(title: 'Lemon cake'),
     AmalfiSpacerPiece(),
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.share),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.share),
+        onPressed: () {},
+        semanticLabel: 'share',
+      ),
     ),
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.ellipsisCircle),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.ellipsisCircle),
+        onPressed: () {},
+        semanticLabel: 'ellipsisCircle',
+      ),
     ),
   ],
 );
@@ -523,11 +566,7 @@ Finder tabTrack() => find
     .first;
 
 /// The new-tab button.
-Finder newTabButton() => find
-    .ancestor(
-      of: glyphOf(AmalfiTitlebarGlyphs.plus),
-      matching: find.byWidgetPredicate(
-        (w) => w is SizedBox && w.width == AmalfiTabMetrics.newTabButton,
-      ),
-    )
-    .first;
+Finder newTabButton() => find.descendant(
+  of: find.byType(AmalfiTabBar),
+  matching: find.byType(AmalfiIconButton),
+);

@@ -198,7 +198,7 @@ void main() {
       }
 
       // Item pieces: the slot around a control of another family (the merged segmented and
-      // fields widgets, or a stand-in for the buttons family). The pixel tests mask the
+      // fields and buttons widgets). The pixel tests mask the
       // control: its glyphs are the app's choice and the control has its own kit tests.
       for (final (piece, child, widget) in itemPieces) {
         for (final state in availableStates(

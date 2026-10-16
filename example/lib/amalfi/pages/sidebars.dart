@@ -51,7 +51,7 @@ class _SidebarsPage extends StatelessWidget {
                 ),
           ],
         ),
-        const SpecimenSection(
+        SpecimenSection(
           title: 'Badge',
           children: [
             Specimen(label: '12', child: AmalfiSidebarBadge('12')),
@@ -88,17 +88,29 @@ class _SidebarsPage extends StatelessWidget {
             Specimen(
               label: 'Footer',
               child: onSidebar(
-                const AmalfiSidebarFooter(
+                AmalfiSidebarFooter(
                   children: [
-                    AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.plus),
-                    AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.gear),
+                    AmalfiIconButton(
+                      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                      onPressed: () {},
+                      semanticLabel: 'plus',
+                      shape: AmalfiIconButtonShape.square,
+                      size: AmalfiControlSize.small,
+                    ),
+                    AmalfiIconButton(
+                      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+                      onPressed: () {},
+                      semanticLabel: 'gear',
+                      shape: AmalfiIconButtonShape.square,
+                      size: AmalfiControlSize.small,
+                    ),
                   ],
                 ),
               ),
             ),
           ],
         ),
-        const SpecimenSection(
+        SpecimenSection(
           title: 'Panel',
           children: [
             Specimen(
@@ -183,10 +195,22 @@ class _PanelState extends State<_Panel> {
 
   @override
   Widget build(BuildContext context) => AmalfiSidebarPanel(
-    footer: const AmalfiSidebarFooter(
+    footer: AmalfiSidebarFooter(
       children: [
-        AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.plus),
-        AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.gear),
+        AmalfiIconButton(
+          icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+          onPressed: () {},
+          semanticLabel: 'plus',
+          shape: AmalfiIconButtonShape.square,
+          size: AmalfiControlSize.small,
+        ),
+        AmalfiIconButton(
+          icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+          onPressed: () {},
+          semanticLabel: 'gear',
+          shape: AmalfiIconButtonShape.square,
+          size: AmalfiControlSize.small,
+        ),
       ],
     ),
     children: [

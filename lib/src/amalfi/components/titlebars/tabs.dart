@@ -7,7 +7,7 @@ import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'glyphs.dart';
-import 'placeholders.dart';
+import '../buttons/icon_button.dart';
 import 'window_scope.dart';
 
 /// The measures of the tabs.
@@ -249,18 +249,13 @@ class AmalfiTabBar extends StatelessWidget {
               ],
               if (onNewTab != null) ...[
                 const SizedBox(width: AmalfiTabMetrics.barGap),
-                // TEMPORARY stand-in for `Buttons/Icon/Square/Small` (buttons family).
-                Semantics(
-                  button: true,
-                  label: newTabLabel,
-                  onTap: onNewTab,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: onNewTab,
-                    child: const AmalfiToolbarPlaceholder.square(
-                      AmalfiTitlebarGlyphs.plus,
-                    ),
-                  ),
+                // Kit `Buttons/Icon/Square/Small`.
+                AmalfiIconButton(
+                  icon: const AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                  onPressed: onNewTab,
+                  semanticLabel: newTabLabel,
+                  shape: AmalfiIconButtonShape.square,
+                  size: AmalfiControlSize.small,
                 ),
               ],
             ],

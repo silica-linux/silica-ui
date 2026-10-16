@@ -231,17 +231,25 @@ void main() {
 
       testWidgets('Footer', (tester) async {
         final master = KitMaster.load('Sidebars/Footer/Rest/$appearance');
-        const footer = SizedBox(
+        final footer = SizedBox(
           width: 216,
           child: AmalfiSidebarFooter(
             children: [
-              AmalfiToolbarPlaceholder.square(
-                AmalfiTitlebarGlyphs.plus,
+              AmalfiIconButton(
                 key: ValueKey('Add'),
+                icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                onPressed: () {},
+                semanticLabel: 'plus',
+                shape: AmalfiIconButtonShape.square,
+                size: AmalfiControlSize.small,
               ),
-              AmalfiToolbarPlaceholder.square(
-                AmalfiTitlebarGlyphs.gear,
+              AmalfiIconButton(
                 key: ValueKey('Settings'),
+                icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+                onPressed: () {},
+                semanticLabel: 'gear',
+                shape: AmalfiIconButtonShape.square,
+                size: AmalfiControlSize.small,
               ),
             ],
           ),
@@ -265,7 +273,7 @@ void main() {
           tester,
           master,
           footer,
-          maskLayers: const ['Add', 'Settings'],
+          maskLayers: ['Add', 'Settings'],
         );
       });
 
@@ -275,11 +283,23 @@ void main() {
           height: 460,
           child: AmalfiSidebarPanel(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-            footer: const AmalfiSidebarFooter(
+            footer: AmalfiSidebarFooter(
               key: ValueKey('Footer'),
               children: [
-                AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.plus),
-                AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.gear),
+                AmalfiIconButton(
+                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                  onPressed: () {},
+                  semanticLabel: 'plus',
+                  shape: AmalfiIconButtonShape.square,
+                  size: AmalfiControlSize.small,
+                ),
+                AmalfiIconButton(
+                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.gear),
+                  onPressed: () {},
+                  semanticLabel: 'gear',
+                  shape: AmalfiIconButtonShape.square,
+                  size: AmalfiControlSize.small,
+                ),
               ],
             ),
             children: [
@@ -381,7 +401,7 @@ void main() {
               title: 'Places',
               expanded: open,
               onToggle: () => setState(() => open = !open),
-              children: const [AmalfiSidebarRow(label: 'Documents')],
+              children: [AmalfiSidebarRow(label: 'Documents')],
             ),
           ),
         ),

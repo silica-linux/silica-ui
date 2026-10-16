@@ -6,7 +6,6 @@
 export 'titlebars/bars.dart';
 export 'titlebars/glyphs.dart';
 export 'titlebars/pieces.dart';
-export 'titlebars/placeholders.dart';
 export 'titlebars/tabs.dart';
 export 'titlebars/text_box.dart';
 export 'titlebars/window_controls.dart';

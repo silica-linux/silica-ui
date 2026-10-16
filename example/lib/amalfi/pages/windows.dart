@@ -1,6 +1,5 @@
 // Gallery page: windows (kit `Windows/*`): the frame, every layout of the regions, active and
-// inactive, with sample content. Toolbar controls are stand-ins (AmalfiToolbarPlaceholder)
-// until the buttons, segmented and fields families land.
+// inactive, with sample content; the toolbar controls are the other families' widgets.
 
 import 'package:flutter/widgets.dart';
 
@@ -114,7 +113,11 @@ Widget _unifiedBar({
   children: [
     _controls(),
     AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+      child: AmalfiToolbarButton(
+        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+        onPressed: () {},
+        semanticLabel: 'sidebar',
+      ),
     ),
     _nav,
     AmalfiTitlePiece(title: 'Lemon cake'),
@@ -131,7 +134,11 @@ AmalfiWindowColumn _sidebarColumn() => AmalfiWindowColumn(
       _controls(),
       AmalfiSpacerPiece(),
       AmalfiToolbarPiece(
-        child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+        child: AmalfiToolbarButton(
+          icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+          onPressed: () {},
+          semanticLabel: 'sidebar',
+        ),
       ),
     ],
   ),
@@ -364,8 +371,10 @@ class _WindowsPage extends StatelessWidget {
                     AmalfiTitlePiece(title: 'Lemon cake'),
                     AmalfiSpacerPiece(),
                     AmalfiToolbarPiece(
-                      child: AmalfiToolbarPlaceholder.icon(
-                        AmalfiTitlebarGlyphs.share,
+                      child: AmalfiToolbarButton(
+                        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.share),
+                        onPressed: () {},
+                        semanticLabel: 'share',
                       ),
                     ),
                   ],
@@ -395,7 +404,7 @@ class _WindowsPage extends StatelessWidget {
           ),
         ],
       ),
-      const SpecimenSection(
+      SpecimenSection(
         title: 'Sidebar Body',
         children: [
           Specimen(

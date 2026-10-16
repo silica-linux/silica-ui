@@ -1,7 +1,6 @@
 // Gallery page: title bars and toolbars (kit `Titlebars/*`): window controls in every state,
 // the modular pieces, the bars and split toolbar sections, title bars and tabs, active and
-// inactive. Toolbar controls are stand-ins (AmalfiToolbarPlaceholder) until the buttons,
-// segmented and fields families land.
+// inactive. The toolbar controls are the buttons, segmented and fields families' widgets.
 
 import 'package:flutter/widgets.dart';
 
@@ -96,7 +95,11 @@ final _view = _Switcher(
 List<Widget> _unified() => [
   AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
   AmalfiToolbarPiece(
-    child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+    child: AmalfiToolbarButton(
+      icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+      onPressed: () {},
+      semanticLabel: 'sidebar',
+    ),
   ),
   AmalfiToolbarPiece(child: _nav),
   AmalfiTitlePiece(title: 'Lemon cake'),
@@ -204,8 +207,10 @@ class _TitlebarsPage extends StatelessWidget {
             (
               'Sidebar Toggle',
               AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.icon(
-                  AmalfiTitlebarGlyphs.sidebar,
+                child: AmalfiToolbarButton(
+                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.sidebar),
+                  onPressed: () {},
+                  semanticLabel: 'sidebar',
                 ),
               ),
             ),
@@ -257,31 +262,43 @@ class _TitlebarsPage extends StatelessWidget {
             (
               'Share',
               AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.icon(
-                  AmalfiTitlebarGlyphs.share,
+                child: AmalfiToolbarButton(
+                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.share),
+                  onPressed: () {},
+                  semanticLabel: 'share',
                 ),
               ),
             ),
             (
               'More',
               AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.icon(
-                  AmalfiTitlebarGlyphs.ellipsisCircle,
+                child: AmalfiToolbarButton(
+                  icon: AmalfiTitlebarGlyph(
+                    AmalfiTitlebarGlyphs.ellipsisCircle,
+                  ),
+                  onPressed: () {},
+                  semanticLabel: 'ellipsisCircle',
                 ),
               ),
             ),
             (
               'Add',
               AmalfiToolbarPiece.add(
-                child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.plus),
+                child: AmalfiToolbarButton(
+                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                  onPressed: () {},
+                  semanticLabel: 'plus',
+                ),
               ),
             ),
             (
               'Mail Send',
               AmalfiToolbarPiece(
                 trailing: 16,
-                child: AmalfiToolbarPlaceholder.round(
-                  AmalfiTitlebarGlyphs.plus,
+                child: AmalfiIconButton(
+                  icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.plus),
+                  onPressed: () {},
+                  semanticLabel: 'plus',
                 ),
               ),
             ),
@@ -319,7 +336,13 @@ class _TitlebarsPage extends StatelessWidget {
             ])
               (
                 name,
-                AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.icon(glyph)),
+                AmalfiToolbarPiece(
+                  child: AmalfiToolbarButton(
+                    icon: AmalfiTitlebarGlyph(glyph),
+                    onPressed: () {},
+                    semanticLabel: 'glyph',
+                  ),
+                ),
               ),
             ('Notes View', AmalfiToolbarPiece(child: _view)),
           ])
@@ -363,8 +386,10 @@ class _TitlebarsPage extends StatelessWidget {
                     AmalfiTitlePiece(title: 'Lemon cake'),
                     AmalfiSpacerPiece(),
                     AmalfiToolbarPiece(
-                      child: AmalfiToolbarPlaceholder.icon(
-                        AmalfiTitlebarGlyphs.share,
+                      child: AmalfiToolbarButton(
+                        icon: AmalfiTitlebarGlyph(AmalfiTitlebarGlyphs.share),
+                        onPressed: () {},
+                        semanticLabel: 'share',
                       ),
                     ),
                   ],
@@ -412,8 +437,12 @@ class _TitlebarsPage extends StatelessWidget {
                             ),
                             AmalfiSpacerPiece(),
                             AmalfiToolbarPiece(
-                              child: AmalfiToolbarPlaceholder.icon(
-                                AmalfiTitlebarGlyphs.sidebar,
+                              child: AmalfiToolbarButton(
+                                icon: AmalfiTitlebarGlyph(
+                                  AmalfiTitlebarGlyphs.sidebar,
+                                ),
+                                onPressed: () {},
+                                semanticLabel: 'sidebar',
                               ),
                             ),
                           ],
@@ -502,7 +531,7 @@ class _TitlebarsPage extends StatelessWidget {
               onClose: () {},
             ),
           ),
-          const Specimen(label: 'Tab Bar', child: _LiveTabBar()),
+          Specimen(label: 'Tab Bar', child: _LiveTabBar()),
         ],
       ),
     ],
