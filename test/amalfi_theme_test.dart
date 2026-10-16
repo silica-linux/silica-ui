@@ -134,7 +134,7 @@ void main() {
       expect(path.contains(rect.topLeft + const Offset(12, 12)), isTrue);
       expect(path.contains(rect.bottomRight + const Offset(-1, -1)), isFalse);
       expect(path.contains(rect.bottomRight + const Offset(-5, -5)), isTrue);
-      // Where the 20 corner is still curving (30 from the vertex in this 60-high rect), the
+      // Where the 20 corner is still curving (32 from the vertex along the top edge), the
       // 10 one (16) is already straight.
       expect(path.contains(rect.topLeft + const Offset(20, 0.1)), isFalse);
       expect(path.contains(rect.bottomRight + const Offset(-20, -0.1)), isTrue);
@@ -146,6 +146,27 @@ void main() {
           expect(path.contains(p), uniform.contains(p), reason: '$o');
         }
       }
+    });
+
+    test('a capsule keeps the smoothing along its long sides, as the kit', () {
+      // The kit's 72 × 28 push button: the top edge is straight up to 1.6 × 14 = 22.4 from
+      // each end, the first Bézier ends on the circle at (64.356, 1.526) and the ends meet
+      // the short sides as a circle, at mid-height.
+      const pill = Rect.fromLTWH(0, 0, 72, 28);
+      final path = smoothRectPath(pill, 14, AmalfiRadii.smoothing);
+      _expectRect(path.getBounds(), pill);
+      expect(path.contains(const Offset(49.4, 0.02)), isTrue);
+      expect(path.contains(const Offset(22.6, 0.02)), isTrue);
+      expect(path.contains(const Offset(64.356, 1.7)), isTrue);
+      expect(path.contains(const Offset(64.356, 1.35)), isFalse);
+      expect(path.contains(const Offset(71.95, 14)), isTrue);
+      expect(path.contains(const Offset(71.95, 12)), isFalse);
+      // A circle with the same radius would already be at the edge at 58.
+      expect(
+        smoothRectPath(pill, 14, 0).contains(const Offset(58, 0.05)),
+        isTrue,
+      );
+      expect(path.contains(const Offset(58, 0.05)), isFalse);
     });
 
     test('per-corner radii clamp to a capsule end', () {
@@ -203,8 +224,9 @@ void main() {
         ),
       );
       expect(
-        const AmalfiSmoothBorder.only(topRight: 8)
-            .lerpTo(const AmalfiSmoothBorder(radius: 8), 1),
+        const AmalfiSmoothBorder.only(
+          topRight: 8,
+        ).lerpTo(const AmalfiSmoothBorder(radius: 8), 1),
         const AmalfiSmoothBorder(radius: 8),
       );
       final inner = border.getInnerPath(rect);

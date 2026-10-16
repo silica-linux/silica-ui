@@ -1,27 +1,26 @@
 // Smooth (continuous) corners: a rounded rectangle whose corners blend into the sides with a
 // curvature that grows gradually instead of jumping from 0 to 1 / radius as a circular arc does.
 //
-// Each corner is a circular arc in the middle, shortened by the smoothing, joined to each side
-// by a cubic Bézier that starts tangent to the side. With smoothing s the corner starts
-// (1 + s) × radius from the vertex instead of radius, and the arc covers 90° × (1 − s). The
-// geometry, per corner of radius r (all angles in degrees):
+// Each corner is a circular arc in the middle, joined to each side by a cubic Bézier that
+// starts tangent to the side. With smoothing s on a side, the corner starts (1 + s) × radius
+// from the vertex along that side instead of radius, and the Bézier covers α = 45° × s of the
+// corner's turn; the arc covers what is left (90° × (1 − s) when both sides have s). Per side,
+// for a corner of radius r (angles in degrees):
 //
 //   p     = (1 + s) r                       distance from the vertex where the corner starts
-//   arc   = 90 (1 − s)                      angle of the circular part
-//   L     = √2 r sin(arc / 2)               each leg of the arc's chord
-//   α     = (90 − arc) / 2                  angle covered by each Bézier
-//   t     = r tan(α / 2)
-//   c     = t cos(45 s),  d = c tan(45 s)
-//   b     = (p − L − c − d) / 3,  a = 2 b
+//   α     = 45 s                            angle covered by the Bézier
+//   c     = r tan(α / 2) cos α,  d = c tan α
+//   b     = (p − r + r sin α − c) / 3,  a = 2 b
 //
-// The Bézier from the side to the arc has the relative control points (a, 0), (a + b, 0) and
-// the end (a + b + c, d); the arc then runs (L, L); the second Bézier mirrors the first.
-// When the shape is too small for p, the smoothing shrinks first (it never makes the corner
-// rounder than a capsule), then the radius.
+// The Bézier from the side has the relative control points (a, 0), (a + b, 0) and ends on the
+// circle at α, (a + b + c, d) from its start; the arc runs to 90 − α of the other side, whose
+// Bézier mirrors the first.
 //
-// Each corner can have its own radius (independent corners, 0 for a square one). Every radius
-// is clamped to half the shorter side and every corner fits in that half, so adjacent corners
-// never overlap and a uniform border is drawn exactly as with a single radius.
+// The smoothing is fitted to each side on its own, as the kit's editor does: on a side
+// shorter than 2 p it shrinks until the corner fits in half of the side (a capsule keeps the
+// smoothing along its long sides and meets its short sides as a circle). Every radius is
+// clamped to half the shorter side, so a large radius gives a capsule. Each corner can have
+// its own radius (independent corners, 0 for a square one); adjacent corners never overlap.
 
 import 'dart:math' as math;
 
@@ -240,84 +239,115 @@ Path smoothRectPathOnly(
 }) {
   final path = Path();
   if (!rect.isFinite || rect.width <= 0 || rect.height <= 0) return path;
-  final budget = math.min(rect.width, rect.height) / 2;
+  final halfWidth = rect.width / 2, halfHeight = rect.height / 2;
+  final limit = math.min(halfWidth, halfHeight);
   final s = smoothing.isFinite ? smoothing.clamp(0.0, 1.0) : 0.0;
-  final tl = _SmoothCorner(topLeft, s, budget);
-  final tr = _SmoothCorner(topRight, s, budget);
-  final br = _SmoothCorner(bottomRight, s, budget);
-  final bl = _SmoothCorner(bottomLeft, s, budget);
+  // Going clockwise, each corner is entered along one side and left along the other: the
+  // top-right corner from the top edge (horizontal) to the right edge (vertical), and so on.
+  final tr = _SmoothCorner(topRight, s, limit, halfWidth, halfHeight);
+  final br = _SmoothCorner(bottomRight, s, limit, halfHeight, halfWidth);
+  final bl = _SmoothCorner(bottomLeft, s, limit, halfWidth, halfHeight);
+  final tl = _SmoothCorner(topLeft, s, limit, halfHeight, halfWidth);
   if (tl.isSquare && tr.isSquare && br.isSquare && bl.isSquare) {
     return path..addRect(rect);
   }
 
   final Rect(:left, :top, :right, :bottom) = rect;
-  path.moveTo(left + tl.p, top);
-  // Top edge, then the top-right corner.
-  path.lineTo(right - tr.p, top);
-  if (!tr.isSquare) {
-    final _SmoothCorner(:a, :b, :c, :d, :l) = tr;
-    path
-      ..relativeCubicTo(a, 0, a + b, 0, a + b + c, d)
-      ..relativeArcToPoint(Offset(l, l), radius: tr.circular)
-      ..relativeCubicTo(d, c, d, b + c, d, a + b + c);
-  }
-  // Right edge, bottom-right corner.
-  path.lineTo(right, bottom - br.p);
-  if (!br.isSquare) {
-    final _SmoothCorner(:a, :b, :c, :d, :l) = br;
-    path
-      ..relativeCubicTo(0, a, 0, a + b, -d, a + b + c)
-      ..relativeArcToPoint(Offset(-l, l), radius: br.circular)
-      ..relativeCubicTo(-c, d, -(b + c), d, -(a + b + c), d);
-  }
-  // Bottom edge, bottom-left corner.
-  path.lineTo(left + bl.p, bottom);
-  if (!bl.isSquare) {
-    final _SmoothCorner(:a, :b, :c, :d, :l) = bl;
-    path
-      ..relativeCubicTo(-a, 0, -(a + b), 0, -(a + b + c), -d)
-      ..relativeArcToPoint(Offset(-l, -l), radius: bl.circular)
-      ..relativeCubicTo(-d, -c, -d, -(b + c), -d, -(a + b + c));
-  }
-  // Left edge, top-left corner.
-  path.lineTo(left, top + tl.p);
-  if (!tl.isSquare) {
-    final _SmoothCorner(:a, :b, :c, :d, :l) = tl;
-    path
-      ..relativeCubicTo(0, -a, 0, -(a + b), d, -(a + b + c))
-      ..relativeArcToPoint(Offset(l, -l), radius: tl.circular)
-      ..relativeCubicTo(c, -d, b + c, -d, a + b + c, -d);
-  }
+  // Each corner is drawn in its own frame (see _SmoothCorner), rotated onto the rect.
+  Offset atTopRight(Offset p) => Offset(right + p.dx, top + p.dy);
+  Offset atBottomRight(Offset p) => Offset(right - p.dy, bottom + p.dx);
+  Offset atBottomLeft(Offset p) => Offset(left - p.dx, bottom - p.dy);
+  Offset atTopLeft(Offset p) => Offset(left + p.dy, top - p.dx);
+
+  final start = atTopLeft(tl.end);
+  path.moveTo(start.dx, start.dy);
+  tr.addTo(path, atTopRight);
+  br.addTo(path, atBottomRight);
+  bl.addTo(path, atBottomLeft);
+  tl.addTo(path, atTopLeft);
   return path..close();
 }
 
-/// The geometry of one smooth corner (see the comment at the top of this file).
+/// The geometry of one smooth corner (see the comment at the top of this file), in the frame
+/// of a top-right corner: the vertex at the origin, entered along the top edge (y = 0, from
+/// negative x) and left along the right edge (x = 0, towards positive y).
 class _SmoothCorner {
-  factory _SmoothCorner(double radius, double smoothing, double budget) {
-    final r = radius.isFinite ? radius.clamp(0.0, budget) : 0.0;
+  factory _SmoothCorner(
+    double radius,
+    double smoothing,
+    double limit,
+    double inBudget,
+    double outBudget,
+  ) {
+    final r = radius.isFinite ? radius.clamp(0.0, limit) : 0.0;
     if (r <= 0) return const _SmoothCorner._square();
-    // Shrink the smoothing until the corner fits in its half of the shorter side.
-    final s = math.min(smoothing, budget / r - 1);
-    final p = math.min((1 + s) * r, budget);
-    double rad(double degrees) => degrees * math.pi / 180;
-    final arc = 90 * (1 - s);
-    final l = math.sin(rad(arc / 2)) * r * math.sqrt2;
-    final alpha = (90 - arc) / 2;
-    final t = r * math.tan(rad(alpha / 2));
-    final beta = 45 * s;
-    final c = t * math.cos(rad(beta));
-    final d = c * math.tan(rad(beta));
-    final b = (p - l - c - d) / 3;
-    return _SmoothCorner._(r, p, 2 * b, b, c, d, l);
+    // On each side the smoothing shrinks until the corner fits in half of that side.
+    double fit(double budget) =>
+        math.max(0.0, math.min(smoothing, budget / r - 1));
+    return _SmoothCorner._(r, fit(inBudget), fit(outBudget));
   }
 
-  const _SmoothCorner._(this.r, this.p, this.a, this.b, this.c, this.d, this.l);
+  const _SmoothCorner._(this.r, this.sIn, this.sOut);
 
-  const _SmoothCorner._square() : this._(0, 0, 0, 0, 0, 0, 0);
+  const _SmoothCorner._square() : this._(0, 0, 0);
 
-  final double r, p, a, b, c, d, l;
+  final double r;
+
+  /// The smoothing on the side the corner is entered from and on the side it leaves along.
+  final double sIn, sOut;
 
   bool get isSquare => r <= 0;
 
-  Radius get circular => Radius.circular(r);
+  static double _rad(double degrees) => degrees * math.pi / 180;
+
+  /// The point of the corner's circle at [degrees] from the top (0) to the right (90).
+  Offset _onCircle(double degrees) {
+    final a = _rad(degrees);
+    return Offset(-r + r * math.sin(a), r - r * math.cos(a));
+  }
+
+  /// Where the corner starts on the incoming side.
+  Offset get start => Offset(-(1 + sIn) * r, 0);
+
+  /// Where the corner ends on the outgoing side.
+  Offset get end => Offset(0, (1 + sOut) * r);
+
+  /// Draws the incoming side up to the corner, then the corner, with [at] mapping the
+  /// corner's frame onto the rect.
+  void addTo(Path path, Offset Function(Offset) at) {
+    if (isSquare) {
+      final v = at(Offset.zero);
+      path.lineTo(v.dx, v.dy);
+      return;
+    }
+    final s0 = at(start);
+    path.lineTo(s0.dx, s0.dy);
+    void cubic(Offset c1, Offset c2, Offset e) {
+      final p1 = at(c1), p2 = at(c2), p3 = at(e);
+      path.cubicTo(p1.dx, p1.dy, p2.dx, p2.dy, p3.dx, p3.dy);
+    }
+
+    // The Bézier from the incoming side to the arc, tangent to the side at its start and to
+    // the circle at its end, which is αIn = 45 sIn into the corner.
+    final alphaIn = 45 * sIn;
+    final arcStart = _onCircle(alphaIn);
+    if (alphaIn > 0) {
+      final c = r * math.tan(_rad(alphaIn / 2)) * math.cos(_rad(alphaIn));
+      final b = (arcStart.dx - start.dx - c) / 3;
+      cubic(start + Offset(2 * b, 0), start + Offset(3 * b, 0), arcStart);
+    }
+    // The circular part.
+    final alphaOut = 45 * sOut;
+    final arcEnd = _onCircle(90 - alphaOut);
+    if (90 - alphaOut - alphaIn > 1e-9) {
+      final e = at(arcEnd);
+      path.arcToPoint(e, radius: Radius.circular(r));
+    }
+    // The Bézier from the arc to the outgoing side, the mirror of the first.
+    if (alphaOut > 0) {
+      final c = r * math.tan(_rad(alphaOut / 2)) * math.cos(_rad(alphaOut));
+      final b = (end.dy - arcEnd.dy - c) / 3;
+      cubic(Offset(0, arcEnd.dy + c), Offset(0, arcEnd.dy + b + c), end);
+    }
+  }
 }
