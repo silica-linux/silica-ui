@@ -15,7 +15,7 @@ abstract final class AmalfiColorPanelMetrics {
   static const double radius = AmalfiRadii.popover;
 
   /// The space around the content.
-  static const EdgeInsets padding = EdgeInsets.fromLTRB(12, 14, 12, 12);
+  static const EdgeInsets padding = EdgeInsets.fromLTRB(12, 14, 12, 16);
 }
 
 /// A panel of colour swatches: [title], then one [AmalfiSwatchRow] per list of [swatches]

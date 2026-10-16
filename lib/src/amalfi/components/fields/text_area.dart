@@ -95,9 +95,7 @@ class _AmalfiTextAreaState extends State<AmalfiTextArea>
                     minLines: 1,
                     maxLines: lines,
                     placeholder: widget.placeholder,
-                    style: token.style(
-                      color: enabled ? colors.textPrimary : colors.textTertiary,
-                    ),
+                    style: token.style(color: colors.textPrimary),
                     placeholderStyle: token.style(color: colors.textTertiary),
                     inputFormatters: widget.inputFormatters,
                     onChanged: widget.onChanged,

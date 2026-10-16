@@ -1,17 +1,11 @@
 // The push button inside a field (kit `Fields/Inline Button`, which nests
-// `Buttons/Push/Secondary/Small`): a 24 pt `Surface/Control` capsule with a 1 pt `Line/Border`,
-// the `Shadow/Soft` lift and a Label text.
-//
-// Stand-in: it draws the small secondary push button itself until the buttons family lands;
-// then it should become that button (same look and behaviour).
+// `Buttons/Push/Secondary/Small`): the buttons family's small secondary push button.
 
 import 'package:flutter/widgets.dart';
 
-import '../../foundation/foundation.dart';
-import '../../smooth_border.dart';
-import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../../whole_points.dart';
+import '../buttons/push_button.dart';
+import 'field_state.dart';
 
 /// The measures of [AmalfiInlineButton] (`Buttons/Push/Secondary/Small`).
 abstract final class AmalfiInlineButtonMetrics {
@@ -22,11 +16,13 @@ abstract final class AmalfiInlineButtonMetrics {
   static const double padding = 8;
 }
 
-/// A small secondary push button for the end of a field ("Browse", "Choose…").
+/// A small secondary push button for the end of a field ("Browse", "Choose…"): an
+/// [AmalfiPushButton] of [AmalfiControlSize.small].
 ///
-/// [onPressed] runs on a click, or on Space / Enter while the button has the keyboard focus;
-/// null disables it (`Surface/Sunken`, tertiary label).
-class AmalfiInlineButton extends StatefulWidget {
+/// [onPressed] runs on a click, or on Space / Return while the button has the keyboard
+/// focus; null disables it. Inside a disabled field it keeps its rest look, dimmed once with
+/// the whole field ([AmalfiFieldEnabledScope]), and takes no input.
+class AmalfiInlineButton extends StatelessWidget {
   const AmalfiInlineButton({
     super.key,
     required this.label,
@@ -38,114 +34,30 @@ class AmalfiInlineButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final FocusNode? focusNode;
 
-  @override
-  State<AmalfiInlineButton> createState() => _AmalfiInlineButtonState();
-}
-
-class _AmalfiInlineButtonState extends State<AmalfiInlineButton> {
-  bool _pressed = false;
-  bool _focused = false;
-
-  bool get _enabled => widget.onPressed != null;
-
-  void _activate() => widget.onPressed?.call();
+  static void _inert() {}
 
   @override
   Widget build(BuildContext context) {
-    final theme = AmalfiTheme.of(context);
-    final colors = theme.colors;
-    final enabled = _enabled;
-    const radius = AmalfiInlineButtonMetrics.height / 2;
-    final face = DecoratedBox(
-      decoration: AmalfiShapeDecoration(
-        color: !enabled
-            ? colors.surfaceSunken
-            : _pressed
-            ? colors.surfaceControlPressed
-            : colors.surfaceControl,
-        shape: AmalfiSmoothBorder(
-          radius: radius,
-          side: enabled
-              ? BorderSide(
-                  color: colors.lineBorder,
-                  strokeAlign: BorderSide.strokeAlignInside,
-                )
-              : BorderSide.none,
-        ),
-        shadows: enabled
-            ? [
-                BoxShadow(
-                  color: colors.shadowSoft,
-                  offset: const Offset(0, 1),
-                  blurRadius: 2,
-                ),
-              ]
-            : null,
-      ),
-      child: SizedBox(
-        height: AmalfiInlineButtonMetrics.height,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AmalfiInlineButtonMetrics.padding,
-          ),
-          child: Center(
-            widthFactor: 1,
-            child: SizedBox(
-              height: AmalfiType.labelToken.lineHeight,
-              child: AmalfiWholePoints(
-                step: AmalfiGrid.base,
-                child: Text(
-                  widget.label,
-                  maxLines: 1,
-                  softWrap: false,
-                  textAlign: TextAlign.center,
-                  style: AmalfiType.label(
-                    color: enabled ? colors.textPrimary : colors.textTertiary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    if (AmalfiFieldEnabledScope.enabledOf(context)) {
+      return AmalfiPushButton(
+        label: label,
+        onPressed: onPressed,
+        size: AmalfiControlSize.small,
+        focusNode: focusNode,
+      );
+    }
     return Semantics(
       button: true,
-      enabled: enabled,
-      label: widget.label,
+      enabled: false,
+      label: label,
       child: ExcludeSemantics(
-        child: FocusableActionDetector(
-          enabled: enabled,
-          focusNode: widget.focusNode,
-          mouseCursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
-          onShowFocusHighlight: (v) => setState(() => _focused = v),
-          actions: {
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (_) => _activate(),
-            ),
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
-            onTapCancel: () => setState(() => _pressed = false),
-            onTapUp: enabled
-                ? (_) {
-                    setState(() => _pressed = false);
-                    _activate();
-                  }
-                : null,
-            child: Stack(
-              fit: StackFit.passthrough,
-              children: [
-                face,
-                Positioned.fill(
-                  child: AmalfiFocusHalo(
-                    radius: radius,
-                    color: colors.lineFocus,
-                    visible: _focused && enabled,
-                  ),
-                ),
-              ],
+        child: IgnorePointer(
+          child: ExcludeFocus(
+            child: AmalfiPushButton(
+              label: label,
+              onPressed: _inert,
+              size: AmalfiControlSize.small,
+              focusNode: focusNode,
             ),
           ),
         ),

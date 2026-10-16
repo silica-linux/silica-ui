@@ -2,7 +2,8 @@
 // square that takes a dropped image. Empty, it is `Surface/Sunken` with a 1.5 pt `Line/Border`,
 // the photo glyph and a hint; while an image is dragged over it, `Accent/Amalfi Soft` with an
 // accent border, accent glyph and hint and the focus halo. Filled, the image fills it under a
-// 1 pt `Line/Border` rim; focused, an accent rim and the halo.
+// 1 pt `Line/Border` rim; focused, an accent rim and the halo. Disabled, the whole well at
+// `States/disabledOpacity`.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -208,11 +209,14 @@ class _AmalfiImageWellState extends State<AmalfiImageWell>
           builder: (context, candidates, rejected) => GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: enabled && widget.onPressed != null ? _press : null,
-            child: SizedBox.square(
-              dimension: size.side,
-              child: image == null
-                  ? _empty(colors, size, enabled)
-                  : _filled(colors, size, enabled, focused, image),
+            child: Opacity(
+              opacity: enabled ? 1 : AmalfiStates.disabledOpacity,
+              child: SizedBox.square(
+                dimension: size.side,
+                child: image == null
+                    ? _empty(colors, size, enabled)
+                    : _filled(colors, size, focused, image),
+              ),
             ),
           ),
         ),
@@ -223,11 +227,7 @@ class _AmalfiImageWellState extends State<AmalfiImageWell>
   Widget _empty(AmalfiColors colors, AmalfiImageWellSize size, bool enabled) {
     final over = enabled && has(WidgetState.selected);
     final focused = enabled && has(WidgetState.focused);
-    final ink = !enabled
-        ? colors.textTertiary
-        : over
-        ? colors.accentAmalfi
-        : colors.textSecondary;
+    final ink = over ? colors.accentAmalfi : colors.textSecondary;
     final side = BorderSide(
       color: over ? colors.accentAmalfi : colors.lineBorder,
       width: over
@@ -291,7 +291,6 @@ class _AmalfiImageWellState extends State<AmalfiImageWell>
   Widget _filled(
     AmalfiColors colors,
     AmalfiImageWellSize size,
-    bool enabled,
     bool focused,
     Widget image,
   ) {
@@ -301,10 +300,7 @@ class _AmalfiImageWellState extends State<AmalfiImageWell>
       children: [
         ClipPath(
           clipper: ShapeBorderClipper(shape: shape),
-          child: Opacity(
-            opacity: enabled ? 1 : AmalfiStates.disabledOpacity,
-            child: image,
-          ),
+          child: image,
         ),
         AmalfiFieldSurface(
           radius: size.radius,

@@ -1,6 +1,7 @@
 // A form row (kit `Forms/Row/Text|Popup|Check|Switch|Help|Error`): the label right-aligned in a
 // 112 pt column, 12 pt, then the control and, under it, a help or error message as wide as
-// the control.
+// the control. Rows lie on a 328 pt grid: text fields and labelled switches fill the 204 pt
+// value column, pop-up buttons and checkboxes keep their own width.
 
 import 'dart:math' as math;
 
@@ -18,6 +19,13 @@ abstract final class AmalfiFormMetrics {
   /// Between the label column and the control.
   static const double labelGap = 12;
 
+  /// The width of the value column, which an expanded control fills (text fields and
+  /// labelled switches in the kit).
+  static const double valueWidth = 204;
+
+  /// The width of a row in a section: the label column, the gap and the value column.
+  static const double rowWidth = labelWidth + labelGap + valueWidth;
+
   /// The height of a row's first line: labels are centred on it, and so are controls
   /// shorter than it (checkboxes).
   static const double lineHeight = 28;
@@ -31,6 +39,9 @@ abstract final class AmalfiFormMetrics {
   /// The padding of a section's group box.
   static const double sectionPadding = 12;
 
+  /// The least width of a section: a row and the padding on both sides.
+  static const double sectionWidth = rowWidth + 2 * sectionPadding;
+
   /// The corner radius of a section's group box.
   static const double sectionRadius = AmalfiRadii.menu;
 
@@ -39,6 +50,10 @@ abstract final class AmalfiFormMetrics {
 
   /// Between the buttons of the footer.
   static const double footerGap = 8;
+
+  /// The least width of a footer button (the kit's `Cancel` and `Save` are 72 wide, as the
+  /// dialogs' and alerts' buttons).
+  static const double buttonMinWidth = 72;
 
   /// The padding of the form layout: 26 on top puts the title's 22 pt line and the 20 pt
   /// gap after it on the grid.
@@ -65,7 +80,9 @@ enum AmalfiFormMessageKind {
 /// [message] under the control, wrapped to its width.
 ///
 /// A row without a label keeps the column empty (a second checkbox of a group). Controls
-/// shorter than [AmalfiFormMetrics.lineHeight] are centred on the label's line.
+/// shorter than [AmalfiFormMetrics.lineHeight] are centred on the label's line. With
+/// [expand] the control fills the value column ([AmalfiFormMetrics.valueWidth]), as text
+/// fields and labelled switches do in the kit; otherwise it keeps its own width.
 class AmalfiFormRow extends StatelessWidget {
   const AmalfiFormRow({
     super.key,
@@ -74,6 +91,7 @@ class AmalfiFormRow extends StatelessWidget {
     this.message,
     this.messageKind = AmalfiFormMessageKind.help,
     this.labelWidth = AmalfiFormMetrics.labelWidth,
+    this.expand = false,
   });
 
   final String? label;
@@ -81,6 +99,9 @@ class AmalfiFormRow extends StatelessWidget {
   final String? message;
   final AmalfiFormMessageKind messageKind;
   final double labelWidth;
+
+  /// Whether [control] fills the value column.
+  final bool expand;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +135,9 @@ class AmalfiFormRow extends StatelessWidget {
         const SizedBox(width: AmalfiFormMetrics.labelGap),
         Flexible(
           child: _ControlWithMessage(
-            control: control,
+            control: expand
+                ? SizedBox(width: AmalfiFormMetrics.valueWidth, child: control)
+                : control,
             message: message == null
                 ? null
                 : Text(
@@ -243,13 +266,38 @@ class _RenderControlWithMessage extends RenderBox
   double computeMaxIntrinsicWidth(double height) =>
       _control?.getMaxIntrinsicWidth(height) ?? 0;
 
+  // From the children's intrinsics, not a dry layout: controls built with a LayoutBuilder
+  // (labelled switches, pop-up buttons) cannot lay out dry.
+  double _intrinsicHeight(double width, {required bool max}) {
+    final control = _control;
+    final controlHeight = control == null
+        ? 0.0
+        : max
+        ? control.getMaxIntrinsicHeight(width)
+        : control.getMinIntrinsicHeight(width);
+    final top = math.max(0.0, (_lineHeight - controlHeight) / 2);
+    var height = math.max(_lineHeight, top + controlHeight);
+    final message = _message;
+    if (message != null) {
+      final controlWidth = control?.getMaxIntrinsicWidth(controlHeight) ?? 0;
+      final messageWidth = controlWidth > 0
+          ? math.min(controlWidth, width)
+          : width;
+      final messageHeight = max
+          ? message.getMaxIntrinsicHeight(messageWidth)
+          : message.getMinIntrinsicHeight(messageWidth);
+      height = math.max(height, top + controlHeight + _gap + messageHeight);
+    }
+    return height;
+  }
+
   @override
   double computeMinIntrinsicHeight(double width) =>
-      _layout(BoxConstraints(maxWidth: width), dry: true).height;
+      _intrinsicHeight(width, max: false);
 
   @override
   double computeMaxIntrinsicHeight(double width) =>
-      computeMinIntrinsicHeight(width);
+      _intrinsicHeight(width, max: true);
 
   @override
   void paint(PaintingContext context, Offset offset) {

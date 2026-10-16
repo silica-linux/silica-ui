@@ -1,7 +1,7 @@
 // The value field beside a stepper (kit `Steppers/Value Field/Regular/*`): 56 × 28,
 // `Surface/Raised` with a `Line/Border` rim, radius 9, Body text 8 from the sides; focused,
-// the rim turns `Accent/Amalfi` and the halo shows; disabled is `Surface/Sunken` with
-// `Text/Tertiary` text.
+// the rim turns `Accent/Amalfi` and the halo shows; disabled, the whole field is at
+// `AmalfiStates.disabledOpacity`.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -116,9 +116,7 @@ class _AmalfiValueFieldState extends State<AmalfiValueField> {
       autofocus: widget.autofocus,
       maxLines: 1,
       textAlign: widget.textAlign,
-      style: AmalfiType.body(
-        color: enabled ? colors.textPrimary : colors.textTertiary,
-      ),
+      style: AmalfiType.body(color: colors.textPrimary),
       cursorColor: colors.textPrimary,
       cursorWidth: 1,
       showCursor: enabled,
@@ -143,38 +141,45 @@ class _AmalfiValueFieldState extends State<AmalfiValueField> {
     return Semantics(
       label: widget.semanticLabel,
       textField: true,
-      child: SizedBox(
-        width: widget.width,
-        height: AmalfiValueFieldMetrics.height,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: AmalfiShapeDecoration(
-                  color: enabled ? colors.surfaceRaised : colors.surfaceSunken,
-                  shape: AmalfiSmoothBorder(
-                    radius: AmalfiValueFieldMetrics.radius,
-                    side: BorderSide(
-                      color: focused ? colors.accentAmalfi : colors.lineBorder,
-                      strokeAlign: BorderSide.strokeAlignInside,
+      child: Opacity(
+        opacity: enabled ? 1 : AmalfiStates.disabledOpacity,
+        child: SizedBox(
+          width: widget.width,
+          height: AmalfiValueFieldMetrics.height,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: AmalfiShapeDecoration(
+                    color: colors.surfaceRaised,
+                    shape: AmalfiSmoothBorder(
+                      radius: AmalfiValueFieldMetrics.radius,
+                      side: BorderSide(
+                        color: focused
+                            ? colors.accentAmalfi
+                            : colors.lineBorder,
+                        strokeAlign: BorderSide.strokeAlignInside,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            if (focused)
-              const Positioned.fill(
-                child: AmalfiFocusHalo(radius: AmalfiValueFieldMetrics.radius),
+              if (focused)
+                const Positioned.fill(
+                  child: AmalfiFocusHalo(
+                    radius: AmalfiValueFieldMetrics.radius,
+                  ),
+                ),
+              Positioned(
+                left: AmalfiValueFieldMetrics.padding,
+                right: AmalfiValueFieldMetrics.padding,
+                top: (AmalfiValueFieldMetrics.height - lineHeight) / 2,
+                height: lineHeight,
+                child: editable,
               ),
-            Positioned(
-              left: AmalfiValueFieldMetrics.padding,
-              right: AmalfiValueFieldMetrics.padding,
-              top: (AmalfiValueFieldMetrics.height - lineHeight) / 2,
-              height: lineHeight,
-              child: editable,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

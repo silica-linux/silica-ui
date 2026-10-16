@@ -154,11 +154,7 @@ class _AmalfiTokenFieldState extends State<AmalfiTokenField>
                               enabled: enabled,
                               autofocus: widget.autofocus,
                               placeholder: widget.placeholder,
-                              style: size.textStyle(
-                                enabled
-                                    ? colors.textPrimary
-                                    : colors.textTertiary,
-                              ),
+                              style: size.textStyle(colors.textPrimary),
                               placeholderStyle: size.textStyle(
                                 colors.textTertiary,
                               ),

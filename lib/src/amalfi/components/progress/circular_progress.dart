@@ -1,10 +1,12 @@
 // The circular progress indicator (kit `Progress/Circular/Determinate/<Small|Regular|Large>`):
 // a `Surface/Sunken` ring and the part done as an `Accent/Amalfi` arc from the top clockwise
-// with round ends (`Palette/Ulivo` once complete, `Text/Tertiary` disabled).
+// with round ends (`Palette/Ulivo` once complete); disabled, the whole indicator at
+// `AmalfiStates.disabledOpacity`.
 
 import 'package:flutter/widgets.dart';
 
 import '../../theme.dart';
+import '../../tokens.g.dart';
 import '../sliders/arc.dart';
 import 'progress_bar.dart' show AmalfiProgressSize;
 
@@ -17,10 +19,10 @@ abstract final class AmalfiCircularProgressMetrics {
     AmalfiProgressSize.large => 40,
   };
 
-  /// The ring of [size] (the centre line of its stroke) inside the indicator. The small
-  /// ring runs on the indicator's edge, so half its stroke lies outside, as in the kit.
+  /// The ring of [size] (the centre line of its stroke) inside the indicator: half the
+  /// stroke in from the edge.
   static Rect ringOf(AmalfiProgressSize size) => switch (size) {
-    AmalfiProgressSize.small => const Rect.fromLTWH(0, 0, 16, 16),
+    AmalfiProgressSize.small => const Rect.fromLTWH(1, 1, 14, 14),
     AmalfiProgressSize.regular => const Rect.fromLTWH(2, 2, 20, 20),
     AmalfiProgressSize.large => const Rect.fromLTWH(2, 2, 36, 36),
   };
@@ -48,7 +50,7 @@ class AmalfiCircularProgress extends StatelessWidget {
 
   final AmalfiProgressSize size;
 
-  /// Whether the task is active; disabled rings are grey.
+  /// Whether the task is active; a disabled ring is dimmed as a whole.
   final bool enabled;
 
   /// What is in progress, for screen readers.
@@ -61,41 +63,40 @@ class AmalfiCircularProgress extends StatelessWidget {
     final side = AmalfiCircularProgressMetrics.sideOf(size);
     final ring = AmalfiCircularProgressMetrics.ringOf(size);
     final stroke = AmalfiCircularProgressMetrics.strokeOf(size);
-    final color = !enabled
-        ? colors.textTertiary
-        : v >= 1
-        ? colors.paletteUlivo
-        : colors.accentAmalfi;
+    final color = v >= 1 ? colors.paletteUlivo : colors.accentAmalfi;
     return Semantics(
       label: semanticLabel,
       value: '${(v * 100).round()}%',
       enabled: enabled,
-      child: SizedBox.square(
-        dimension: side,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned.fromRect(
-              rect: ring,
-              child: CustomPaint(
-                painter: AmalfiArcPainter(
-                  color: colors.surfaceSunken,
-                  width: stroke,
+      child: Opacity(
+        opacity: enabled ? 1 : AmalfiStates.disabledOpacity,
+        child: SizedBox.square(
+          dimension: side,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fromRect(
+                rect: ring,
+                child: CustomPaint(
+                  painter: AmalfiArcPainter(
+                    color: colors.surfaceSunken,
+                    width: stroke,
+                  ),
                 ),
               ),
-            ),
-            Positioned.fromRect(
-              rect: ring,
-              child: CustomPaint(
-                painter: AmalfiArcPainter(
-                  color: color,
-                  width: stroke,
-                  sweep: v,
-                  roundCaps: true,
+              Positioned.fromRect(
+                rect: ring,
+                child: CustomPaint(
+                  painter: AmalfiArcPainter(
+                    color: color,
+                    width: stroke,
+                    sweep: v,
+                    roundCaps: true,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -2,7 +2,7 @@
 // `Fields/Inline Button/*`): one line of editable text on `Surface/Raised` with a 1 pt
 // `Line/Border`; focused, a 1.5 pt `Accent/Amalfi` border and the focus halo; with an error, a
 // 1.5 pt `Palette/Terracotta` border, the same colour at 30 % as halo and the warning glyph;
-// disabled, `Surface/Sunken` and tertiary text.
+// disabled, the rest look with the whole field at 35 % (user decision 2026-10-16).
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -96,7 +96,6 @@ class _AmalfiTextFieldState extends State<AmalfiTextField>
     final enabled = widget.enabled;
     final error = widget.errorText != null;
     final isFocused = focused && enabled;
-    final glyphColor = enabled ? colors.textSecondary : colors.textTertiary;
     final leading = widget.leadingGlyph;
     final trailing = widget.trailing;
     return Semantics(
@@ -122,7 +121,11 @@ class _AmalfiTextFieldState extends State<AmalfiTextField>
                 child: Row(
                   children: [
                     if (leading != null) ...[
-                      AmalfiGlyph(leading, size: size.glyph, color: glyphColor),
+                      AmalfiGlyph(
+                        leading,
+                        size: size.glyph,
+                        color: colors.textSecondary,
+                      ),
                       const SizedBox(width: AmalfiFieldMetrics.gap),
                     ],
                     Expanded(
@@ -133,9 +136,7 @@ class _AmalfiTextFieldState extends State<AmalfiTextField>
                         autofocus: widget.autofocus,
                         obscureText: widget.obscureText,
                         placeholder: widget.placeholder,
-                        style: size.textStyle(
-                          enabled ? colors.textPrimary : colors.textTertiary,
-                        ),
+                        style: size.textStyle(colors.textPrimary),
                         placeholderStyle: size.textStyle(colors.textTertiary),
                         keyboardType: widget.keyboardType,
                         textInputAction: widget.textInputAction,
@@ -168,9 +169,10 @@ class _AmalfiTextFieldState extends State<AmalfiTextField>
 }
 
 /// The face of a rectangular field in its state: `Surface/Raised` with a 1 pt `Line/Border`
-/// at rest, `Surface/Sunken` when disabled, a 1.5 pt `Accent/Amalfi` border and the
-/// `Line/Focus` halo when [focused], a 1.5 pt `Palette/Terracotta` border and halo at 30 %
-/// with an [error].
+/// at rest, a 1.5 pt `Accent/Amalfi` border and the `Line/Focus` halo when [focused], a
+/// 1.5 pt `Palette/Terracotta` border and halo at 30 % with an [error]; not [enabled], the
+/// rest look with the whole field (its [child] included) at 35 %
+/// ([AmalfiFieldEnabledScope]).
 Widget amalfiFieldFace({
   required AmalfiColors colors,
   required double radius,
@@ -180,23 +182,25 @@ Widget amalfiFieldFace({
   required Widget child,
 }) {
   final strong = enabled && (error || focused);
-  return AmalfiFieldSurface(
-    radius: radius,
-    fill: enabled ? colors.surfaceRaised : colors.surfaceSunken,
-    border: !enabled
-        ? colors.lineBorder
-        : error
-        ? colors.paletteTerracotta
-        : focused
-        ? colors.accentAmalfi
-        : colors.lineBorder,
-    borderWidth: strong
-        ? AmalfiFieldMetrics.strongBorder
-        : AmalfiFieldMetrics.border,
-    halo: enabled && error ? colors.paletteTerracotta : colors.lineFocus,
-    haloVisible: strong,
-    haloOpacity: enabled && error ? AmalfiFieldMetrics.errorHaloOpacity : 1,
-    child: child,
+  final showError = enabled && error;
+  return AmalfiFieldEnabledScope(
+    enabled: enabled,
+    child: AmalfiFieldSurface(
+      radius: radius,
+      fill: colors.surfaceRaised,
+      border: !strong
+          ? colors.lineBorder
+          : showError
+          ? colors.paletteTerracotta
+          : colors.accentAmalfi,
+      borderWidth: strong
+          ? AmalfiFieldMetrics.strongBorder
+          : AmalfiFieldMetrics.border,
+      halo: showError ? colors.paletteTerracotta : colors.lineFocus,
+      haloVisible: strong,
+      haloOpacity: showError ? AmalfiFieldMetrics.errorHaloOpacity : 1,
+      child: child,
+    ),
   );
 }
 

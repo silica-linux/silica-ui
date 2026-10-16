@@ -4,6 +4,9 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../tokens.g.dart';
+import 'inline_button.dart';
+
 /// The parameters an Amalfi field shares with [AmalfiFieldStateMixin].
 abstract interface class AmalfiFieldWidget {
   /// The text; null: the field keeps its own.
@@ -114,4 +117,43 @@ mixin AmalfiFieldStateMixin<T extends StatefulWidget> on State<T> {
       controller.selection = TextSelection.collapsed(offset: end);
     }
   }
+}
+
+/// The disabled look of a field (user decision 2026-10-16): the whole field, drawn in its rest
+/// look, at `AmalfiStates.disabledOpacity` (35 %); [enabledOf] tells the controls nested in
+/// it (an [AmalfiInlineButton], a combo button) to keep their rest look, dimmed once with
+/// the field, and take no input.
+class AmalfiFieldEnabledScope extends StatelessWidget {
+  const AmalfiFieldEnabledScope({
+    super.key,
+    required this.enabled,
+    required this.child,
+  });
+
+  /// Whether the field takes input; false dims it.
+  final bool enabled;
+  final Widget child;
+
+  /// Whether the field around [context] is enabled; true outside a field.
+  static bool enabledOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_FieldEnabled>()?.enabled ??
+      true;
+
+  @override
+  Widget build(BuildContext context) => _FieldEnabled(
+    enabled: enabled,
+    child: Opacity(
+      opacity: enabled ? 1 : AmalfiStates.disabledOpacity,
+      child: child,
+    ),
+  );
+}
+
+class _FieldEnabled extends InheritedWidget {
+  const _FieldEnabled({required this.enabled, required super.child});
+
+  final bool enabled;
+
+  @override
+  bool updateShouldNotify(_FieldEnabled old) => old.enabled != enabled;
 }

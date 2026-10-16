@@ -31,6 +31,7 @@ class AmalfiScrollbar extends StatefulWidget {
     this.notificationDepth = 0,
     this.padding = EdgeInsets.zero,
     this.statesController,
+    this.enabled = true,
   });
 
   final Widget child;
@@ -43,6 +44,10 @@ class AmalfiScrollbar extends StatefulWidget {
   /// highlighted (legacy), [WidgetState.dragged] dragged; set states in it to show them
   /// without a pointer (an overlay bar with states stays visible). Null: its own.
   final WidgetStatesController? statesController;
+
+  /// Whether the bar responds to the pointer; disabled, it is dimmed whole (legacy: still
+  /// shown beside the content) and does not scroll.
+  final bool enabled;
 
   /// How long an overlay bar stays after the scrolling stops (assumption: unmeasured).
   static const Duration hideDelay = Duration(milliseconds: 1000);
@@ -259,7 +264,8 @@ class _AmalfiScrollbarState extends State<AmalfiScrollbar>
               ? constraints.maxHeight
               : constraints.maxWidth;
           final thumb = length.isFinite ? _thumb(length) : null;
-          final visible = !_overlay || _shown.value > 0 || _held;
+          final visible =
+              widget.enabled && (!_overlay || _shown.value > 0 || _held);
           final face = AmalfiScrollbarTrack(
             axis: widget.axis,
             style: widget.style,
@@ -268,17 +274,22 @@ class _AmalfiScrollbarState extends State<AmalfiScrollbar>
             dragging: _current.contains(WidgetState.dragged),
             thumbOffset: thumb?.$1 ?? 0,
             thumbExtent: thumb?.$2,
+            enabled: widget.enabled,
           );
           return MouseRegion(
             opaque: false,
-            onEnter: (_) => _set(WidgetState.hovered, true),
+            onEnter: widget.enabled
+                ? (_) => _set(WidgetState.hovered, true)
+                : null,
             onExit: (_) => _set(WidgetState.hovered, false),
             child: GestureDetector(
               behavior: visible
                   ? HitTestBehavior.opaque
                   : HitTestBehavior.translucent,
               onPanDown: visible ? (d) => _down(d.localPosition, length) : null,
-              onPanUpdate: (d) => _drag(d.localPosition, length),
+              onPanUpdate: visible
+                  ? (d) => _drag(d.localPosition, length)
+                  : null,
               onPanEnd: (_) => _up(),
               onPanCancel: _up,
               child: _overlay

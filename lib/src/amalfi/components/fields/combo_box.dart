@@ -1,14 +1,13 @@
 // The Amalfi combo box (kit `Fields/Combo Box/*`, `Fields/Combo Button/*`): a text field with
 // a round button at its end that opens the list of options under it (`Fields/Combo Box/Open`:
-// the list is `Menus/Menu/Simple`, 4 below the field and as wide).
-//
-// The list is drawn here (Glass/Thick, radius 12, 24 pt items with a check slot) as a
-// stand-in for the menus family; it should become that family's menu once it lands.
+// the list is `Menus/Menu/Simple`, 4 below the field and as wide): an `AmalfiMenu` of the
+// menus family, one item per option, the option equal to the text checked.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../glass.dart';
+import '../menus/menu.dart';
+import '../menus/menu_item.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -18,28 +17,10 @@ import '../../foundation/foundation.dart';
 import 'metrics.dart';
 import 'text_field.dart';
 
-/// The measures of the combo box list (`Menus/Menu/Simple`, `Menus/Item/Plain`).
+/// The measures of the combo box list (an [AmalfiMenu]; its items: [AmalfiMenuMetrics]).
 abstract final class AmalfiComboListMetrics {
   /// Between the field and the list.
   static const double gap = 4;
-
-  /// The list's padding around the items.
-  static const double padding = 4;
-
-  /// The list's corner radius (`menu`).
-  static const double radius = AmalfiRadii.menu;
-
-  /// An item's height.
-  static const double itemHeight = 24;
-
-  /// An item's padding on each side.
-  static const double itemPadding = 8;
-
-  /// The highlight's corner radius.
-  static const double highlightRadius = AmalfiRadii.smallControl;
-
-  /// The check slot before the label.
-  static const double check = 12;
 
   /// The most items shown before the list scrolls.
   static const int maxVisibleItems = 8;
@@ -48,7 +29,8 @@ abstract final class AmalfiComboListMetrics {
 /// The round button at the end of a combo box: a [AmalfiFieldSize.comboButton] disc of
 /// `Surface/Sunken` with a chevron, `Surface/Control Pressed` while pressed.
 ///
-/// [onPressed] null disables it (tertiary chevron).
+/// [onPressed] null disables it: the rest look at 35 % (user decision 2026-10-16). Inside a
+/// disabled combo box it keeps the rest look, dimmed once with the field.
 class AmalfiComboButton extends StatefulWidget {
   const AmalfiComboButton({
     super.key,
@@ -75,14 +57,15 @@ class _AmalfiComboButtonState extends State<AmalfiComboButton> {
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
-    final enabled = widget.onPressed != null;
+    final inField = !AmalfiFieldEnabledScope.enabledOf(context);
+    final enabled = widget.onPressed != null && !inField;
     final pressed = enabled && (_down || widget.pressed);
     final side = widget.size.comboButton;
-    return Semantics(
+    final button = Semantics(
       button: true,
       enabled: enabled,
       label: widget.semanticLabel,
-      onTap: widget.onPressed,
+      onTap: enabled ? widget.onPressed : null,
       child: ExcludeSemantics(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -107,13 +90,17 @@ class _AmalfiComboButtonState extends State<AmalfiComboButton> {
                 child: AmalfiGlyph(
                   AmalfiGlyphs.chevronDown,
                   size: widget.size.comboGlyph,
-                  color: enabled ? colors.textSecondary : colors.textTertiary,
+                  color: colors.textSecondary,
                 ),
               ),
             ),
           ),
         ),
       ),
+    );
+    return Opacity(
+      opacity: enabled || inField ? 1 : AmalfiStates.disabledOpacity,
+      child: button,
     );
   }
 }
@@ -327,9 +314,7 @@ class _AmalfiComboBoxState extends State<AmalfiComboBox>
                           enabled: enabled,
                           autofocus: widget.autofocus,
                           placeholder: widget.placeholder,
-                          style: size.textStyle(
-                            enabled ? colors.textPrimary : colors.textTertiary,
-                          ),
+                          style: size.textStyle(colors.textPrimary),
                           placeholderStyle: size.textStyle(colors.textTertiary),
                           onChanged: widget.onChanged,
                           onSubmitted: widget.onSubmitted,
@@ -369,6 +354,7 @@ class _AmalfiComboBoxState extends State<AmalfiComboBox>
     }
     final origin = box.localToGlobal(Offset.zero, ancestor: overlay);
     final theme = AmalfiTheme.of(context);
+    final checked = _indexOfText();
     return Positioned(
       left: origin.dx,
       top: origin.dy + box.size.height + AmalfiComboListMetrics.gap,
@@ -377,142 +363,29 @@ class _AmalfiComboBoxState extends State<AmalfiComboBox>
         brightness: theme.brightness,
         child: TapRegion(
           groupId: _tapGroup,
-          child: AmalfiComboList(
-            options: widget.options,
-            highlighted: _highlight,
-            checked: _indexOfText(),
-            onHighlight: (i) => setState(() => _highlight = i),
-            onPick: _pick,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// The list of a combo box (`Menus/Menu/Simple`): Glass/Thick, radius 12, 4 pt padding, one
-/// 24 pt item per option with a check slot; the [highlighted] item is filled with the
-/// accent, the [checked] one has a checkmark.
-class AmalfiComboList extends StatelessWidget {
-  const AmalfiComboList({
-    super.key,
-    required this.options,
-    this.highlighted,
-    this.checked,
-    this.onHighlight,
-    this.onPick,
-  });
-
-  final List<String> options;
-  final int? highlighted;
-  final int? checked;
-
-  /// Called when the pointer moves over an item.
-  final ValueChanged<int>? onHighlight;
-
-  /// Called when an item is clicked.
-  final ValueChanged<int>? onPick;
-
-  @override
-  Widget build(BuildContext context) {
-    final visible = options.length.clamp(
-      0,
-      AmalfiComboListMetrics.maxVisibleItems,
-    );
-    return AmalfiGlass(
-      material: AmalfiMaterials.thick,
-      radius: AmalfiComboListMetrics.radius,
-      child: SizedBox(
-        height:
-            visible * AmalfiComboListMetrics.itemHeight +
-            2 * AmalfiComboListMetrics.padding,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(AmalfiComboListMetrics.padding),
-          itemExtent: AmalfiComboListMetrics.itemHeight,
-          itemCount: options.length,
-          itemBuilder: (context, i) => _ComboItem(
-            label: options[i],
-            highlighted: i == highlighted,
-            checked: i == checked,
-            onHover: onHighlight == null ? null : () => onHighlight?.call(i),
-            onPick: onPick == null ? null : () => onPick?.call(i),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ComboItem extends StatelessWidget {
-  const _ComboItem({
-    required this.label,
-    required this.highlighted,
-    required this.checked,
-    this.onHover,
-    this.onPick,
-  });
-
-  final String label;
-  final bool highlighted;
-  final bool checked;
-  final VoidCallback? onHover;
-  final VoidCallback? onPick;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AmalfiTheme.of(context).colors;
-    final ink = highlighted ? colors.textOnAccent : colors.textPrimary;
-    final content = Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AmalfiComboListMetrics.itemPadding,
-      ),
-      child: Row(
-        children: [
-          SizedBox.square(
-            dimension: AmalfiComboListMetrics.check,
-            child: checked
-                ? AmalfiGlyph(
-                    AmalfiGlyphs.checkmark,
-                    size: AmalfiComboListMetrics.check,
-                    color: ink,
-                  )
-                : null,
-          ),
-          const SizedBox(width: AmalfiFieldMetrics.gap),
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 1,
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
-              style: AmalfiType.body(color: ink),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight:
+                  AmalfiComboListMetrics.maxVisibleItems *
+                      AmalfiMenuMetrics.itemHeight +
+                  2 * AmalfiMenuMetrics.padding,
             ),
-          ),
-        ],
-      ),
-    );
-    return Semantics(
-      button: true,
-      selected: checked,
-      label: label,
-      onTap: onPick,
-      child: ExcludeSemantics(
-        child: MouseRegion(
-          onEnter: (_) => onHover?.call(),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onPick,
-            child: highlighted
-                ? DecoratedBox(
-                    decoration: AmalfiShapeDecoration(
-                      color: colors.accentAmalfi,
-                      shape: const AmalfiSmoothBorder(
-                        radius: AmalfiComboListMetrics.highlightRadius,
-                      ),
-                    ),
-                    child: content,
-                  )
-                : content,
+            // The field keeps the keyboard focus (typing goes on while the list is open):
+            // the arrows move [_highlight] here and the menu is rebuilt highlighting it.
+            child: AmalfiMenu(
+              key: ValueKey(_highlight),
+              width: box.size.width,
+              initialHighlight: _highlight,
+              onDismiss: _close,
+              entries: [
+                for (var i = 0; i < widget.options.length; i++)
+                  AmalfiMenuAction(
+                    widget.options[i],
+                    checked: i == checked,
+                    onSelected: () => _pick(i),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

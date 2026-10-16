@@ -22,7 +22,7 @@ class _ScrollbarsPage extends StatelessWidget {
     double expansion = 0,
     bool hovered = false,
     bool dragging = false,
-    bool thumb = true,
+    bool enabled = true,
   }) {
     final vertical = axis == Axis.vertical;
     final legacy = style == AmalfiScrollbarStyle.legacy;
@@ -36,7 +36,8 @@ class _ScrollbarsPage extends StatelessWidget {
         hovered: hovered,
         dragging: dragging,
         thumbOffset: vertical ? 16 : 20,
-        thumbExtent: thumb ? (vertical ? 64 : 88) : null,
+        thumbExtent: vertical ? 64 : 88,
+        enabled: enabled,
       ),
     );
   }
@@ -80,7 +81,7 @@ class _ScrollbarsPage extends StatelessWidget {
               child: _bar(
                 axis,
                 style: AmalfiScrollbarStyle.legacy,
-                thumb: false,
+                enabled: false,
               ),
             ),
           ],

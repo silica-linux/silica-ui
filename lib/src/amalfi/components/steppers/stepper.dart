@@ -1,8 +1,8 @@
 // The stepper (kit `Steppers/Stepper/<Mini|Small|Regular|Large>/*`): a small
 // `Surface/Control` bezel split by a `Line/Separator` divider into an up and a down half,
 // each with a 12 pt chevron. Hovering a half lays `Accent/Amalfi Soft` on it, pressing it
-// `Surface/Control Pressed`; keyboard focus adds the halo; disabled is `Surface/Sunken`
-// with `Text/Tertiary` chevrons. Holding a half repeats it.
+// `Surface/Control Pressed`, clipped to the bezel; keyboard focus adds the halo; disabled,
+// the whole control is at `AmalfiStates.disabledOpacity`. Holding a half repeats it.
 
 import 'dart:async';
 
@@ -28,15 +28,15 @@ abstract final class AmalfiStepperMetrics {
     AmalfiControlSize.large => 10,
   };
 
-  /// Where the divider runs across a bezel of [size]: the middle on the 4 pt grid (12, 12,
-  /// 16, 16), so the up half is the taller one in mini and regular.
-  static double dividerOf(AmalfiControlSize size) =>
-      AmalfiGrid.snap(size.height / 2);
+  /// Where the divider runs across a bezel of [size]: the middle (10, 12, 14, 16), so the
+  /// two halves are equal.
+  static double dividerOf(AmalfiControlSize size) => size.height / 2;
 
   /// The divider is inset this much on each side.
   static const double dividerInset = 4;
 
-  /// The chevrons, centred in their halves.
+  /// The chevrons, centred in their halves at every size (the half of a mini bezel is
+  /// 10 tall: its chevrons overflow it by 1 above and below, as in the kit).
   static const double glyph = 12;
 
   /// The delay before a held half repeats, then the repeat interval (as `SilicaStepper`).
@@ -48,8 +48,8 @@ abstract final class AmalfiStepperMetrics {
 /// and [max] (or around them with [wraps]). Holding a half repeats it after
 /// [AmalfiStepperMetrics.repeatDelay]; with the keyboard focus, the up and down arrows step.
 ///
-/// [onChanged] null disables it. A half that cannot step (at a limit) shows a dimmed
-/// chevron and does not react.
+/// [onChanged] null disables it. A half that cannot step (at a limit) shows its chevron at
+/// [AmalfiStates.disabledOpacity] and does not react.
 class AmalfiStepper extends StatefulWidget {
   const AmalfiStepper({
     super.key,
@@ -247,15 +247,18 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
         top: (r.top + (r.height - glyph) / 2).roundToDouble(),
         width: glyph,
         height: glyph,
-        child: AmalfiGlyph(
-          h == _Half.up ? AmalfiGlyphs.chevronUp : AmalfiGlyphs.chevronDown,
-          size: glyph,
-          color: _can(h) ? colors.textPrimary : colors.textTertiary,
+        child: Opacity(
+          opacity: !enabled || _can(h) ? 1 : AmalfiStates.disabledOpacity,
+          child: AmalfiGlyph(
+            h == _Half.up ? AmalfiGlyphs.chevronUp : AmalfiGlyphs.chevronDown,
+            size: glyph,
+            color: colors.textPrimary,
+          ),
         ),
       );
     }
 
-    final face = SizedBox.fromSize(
+    Widget face = SizedBox.fromSize(
       size: box,
       child: Stack(
         clipBehavior: Clip.none,
@@ -263,17 +266,15 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
           Positioned.fill(
             child: DecoratedBox(
               decoration: AmalfiShapeDecoration(
-                color: enabled ? colors.surfaceControl : colors.surfaceSunken,
+                color: colors.surfaceControl,
                 shape: AmalfiSmoothBorder(
                   radius: radius,
-                  side: enabled
-                      ? BorderSide(
-                          color: colors.lineBorder,
-                          strokeAlign: BorderSide.strokeAlignInside,
-                        )
-                      : BorderSide.none,
+                  side: BorderSide(
+                    color: colors.lineBorder,
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
                 ),
-                shadows: enabled ? amalfiControlShadows(colors) : null,
+                shadows: amalfiControlShadows(theme.colors),
               ),
             ),
           ),
@@ -307,6 +308,9 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
         ],
       ),
     );
+    if (!enabled) {
+      face = Opacity(opacity: AmalfiStates.disabledOpacity, child: face);
+    }
 
     return Semantics(
       label: widget.semanticLabel,

@@ -11,11 +11,6 @@ import 'support/harness.dart';
 
 const List<String> appearances = ['Light', 'Dark'];
 
-/// Disabled content is dimmed to the tokens' 35 % (`AmalfiStates.disabledOpacity`); the kit
-/// draws 40 %.
-const String disabledOpacity =
-    'disabled content at the tokens\' 35 % (kit 40 %)';
-
 /// The dashes of an empty well: Sketch spaces them along the outline from another start
 /// than ours, so they land differently around the corners (phase does not fix it: measured
 /// mean 0.43–1.12 for every phase of the pattern).
@@ -218,8 +213,9 @@ void main() {
               master,
               scene,
               maskText: true,
-              // The Icon Kit's photo glyph in the kit is stroked thinner than the
-              // silica-icons glyph drawn here (see the report).
+              // The kit keeps the photo glyph's 24 pt stroke (1.5) at 20, 28 and 36; the
+              // control glyphs scale the stroke with the size (1.5 x size / 24): kit defect,
+              // user decisions 6-7 (2026-10-16).
               maskLayers: const ['Photo'],
               prepare: dragged ? dragOver : null,
               tolerance: dragged ? haloCorners : dashedBorder,
@@ -272,10 +268,6 @@ void main() {
               master,
               scene,
               prepare: prepare,
-              // Disabled, the kit dims each shape of its picture to 40 % (they compound
-              // where they overlap); the well dims the image as a whole to the tokens'
-              // 35 %: the picture is left out here and the opacity checked below.
-              maskLayers: [if (state == 'Disabled') 'Sky'],
               tolerance: pictureEdges,
             );
             if (state == 'Disabled') {
@@ -347,9 +339,8 @@ void main() {
               maskText: true,
               prepare: prepare,
               maskLayers: [
-                // Disabled: the colour at the tokens' 35 % (kit 40 %).
-                if (state == 'Disabled') 'Colour',
-                // The kit's eyedropper glyph is stroked thinner than silica-icons' one.
+                // The kit keeps the eyedropper's 24 pt stroke (1.5) at 16; the glyph here
+                // is stroked 1 (1.5 x 16 / 24): kit defect, user decisions 6-7.
                 if (style == 'Expanded') 'Eyedropper',
               ],
               tolerance: smoothCorners,

@@ -84,7 +84,8 @@ void main() {
               style: AmalfiScrollbarStyle.legacy,
               hovered: state == 'Hover',
               thumbOffset: vertical ? 16 : 20,
-              thumbExtent: state == 'Disabled' ? null : (vertical ? 64 : 88),
+              thumbExtent: vertical ? 64 : 88,
+              enabled: state != 'Disabled',
             );
             final scene = SizedBox(
               width: vertical ? null : master.size.width,
@@ -99,7 +100,7 @@ void main() {
               root: root,
               layers: {
                 'Track': decoratedIn(bar, 0),
-                if (state != 'Disabled') 'Thumb': decoratedIn(bar, 1),
+                'Thumb': decoratedIn(bar, 1),
               },
             );
             await expectKitPixels(

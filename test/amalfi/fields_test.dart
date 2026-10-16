@@ -9,20 +9,37 @@ import 'package:silica_ui/silica_ui.dart';
 import 'support/harness.dart';
 
 /// The shape tolerance of the fields: the mean of [KitPixelTolerance.shapes]; the largest
-/// single difference is on the antialiased edge of the 1 and 1.5 pt inside borders and the
-/// 3 pt halo, where Sketch and Skia cover the half pixels differently.
-const KitPixelTolerance fieldsShapes = KitPixelTolerance(mean: 1.25, max: 128);
+/// single difference (91 measured, kit 747ea80) is on the antialiased edge of the 1 and
+/// 1.5 pt inside borders and the 3 pt halo, where Sketch and Skia cover the half pixels
+/// differently.
+const KitPixelTolerance fieldsShapes = KitPixelTolerance(mean: 1, max: 96);
 
 /// The shape tolerance of the masters of 24 pt or less (clear button, combo buttons,
 /// tokens): a few hundred pixels compared, mostly the antialiased rim of the disc, so the
-/// same edge differences weigh more in the mean.
-const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 2.5, max: 128);
+/// same edge differences weigh more in the mean (1.25 and 88 measured, kit 747ea80).
+const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 1.5, max: 96);
 
 /// The text tolerance of the fields: CoreText draws Inter visibly heavier than Skia, which
-/// the text-dense masters (the text area's three lines) feel most.
+/// the text-dense masters (the text area's three lines: mean 2.76 measured) feel most.
 const KitPixelTolerance fieldsText = KitPixelTolerance(mean: 3, max: 255);
 
 /// The carets of the focused editable texts under [root], relative to it.
+/// The glyphs drawn directly in the field under [root] (not in nested buttons), relative
+/// to it.
+List<Rect> glyphRects(WidgetTester tester, Finder root) {
+  final rootBox = tester.renderObject<RenderBox>(root);
+  return [
+    for (final e
+        in find
+            .descendant(of: root, matching: find.byType(AmalfiGlyph))
+            .evaluate())
+      MatrixUtils.transformRect(
+        (e.renderObject! as RenderBox).getTransformTo(rootBox),
+        Offset.zero & (e.renderObject! as RenderBox).size,
+      ),
+  ];
+}
+
 List<Rect> caretRects(WidgetTester tester, Finder root) {
   final rootBox = tester.renderObject<RenderBox>(root);
   return [
@@ -43,30 +60,11 @@ List<Rect> caretRects(WidgetTester tester, Finder root) {
   ];
 }
 
-/// The Icon Kit glyphs of [master] (nested masters included) drawn at [side] points, in
-/// master coordinates.
-///
-/// Kit defect: the 12 pt glyphs keep the 24 pt stroke (1.5 instead of 0.75, README: the
-/// stroke scales with the glyph), so they are left out of the pixel comparison; their frames
-/// are checked by the geometry.
-List<Rect> glyphRects(KitMaster master, {double side = 12}) {
-  final out = <Rect>[];
-  void walk(KitLayer layer, Offset origin) {
-    for (final c in layer.children) {
-      final at = origin + c.frame.topLeft;
-      if (c.icon != null && c.frame.width == side) {
-        out.add(at & c.frame.size);
-      } else if (c.isKitInstance) {
-        walk(KitMaster.nested(c).root, at);
-      } else {
-        walk(c, at);
-      }
-    }
-  }
-
-  walk(master.root, Offset.zero);
-  return out;
-}
+/// Kit defect: the Small fields draw their glyphs at 12; control glyphs are 14 at Small (user
+/// decision 2026-10-16, `AmalfiControlSize.iconSize`), which leaves the text 2 less.
+const String smallGlyph = 'kit 12 pt glyph at Small; decision: 14';
+const String smallGlyphText =
+    'the 14 pt glyph (decision) leaves the text 2 less';
 
 Finder label(String text) => find
     .ancestor(of: find.text(text), matching: find.byType(AmalfiWholePoints))
@@ -90,6 +88,7 @@ class FieldCase {
     this.mask = const [],
     this.maskLayers = const [],
     this.tolerance = fieldsShapes,
+    this.maskGlyphs = false,
   });
 
   final String key;
@@ -105,6 +104,9 @@ class FieldCase {
 
   /// The shape tolerance.
   final KitPixelTolerance tolerance;
+
+  /// Leave our glyphs out of the pixels too (where they differ from the kit's by decision).
+  final bool maskGlyphs;
 }
 
 TextEditingController text(String value) => TextEditingController(text: value);
@@ -115,8 +117,6 @@ AmalfiFieldSize sizeOf(String name) => switch (name) {
   _ => AmalfiFieldSize.regular,
 };
 
-/// Kit defect: the Large caret is 12 tall at y 10 (16 at the text's centre in every other
-/// field); the caret is masked out of the pixels and checked by the behaviour tests.
 List<FieldCase> textFieldCases() => [
   for (final size in ['Small', 'Regular', 'Large'])
     for (final state in [
@@ -134,9 +134,7 @@ List<FieldCase> textFieldCases() => [
           placeholder: 'Name',
           enabled: state != 'Disabled',
           errorText: state == 'Error' ? 'Invalid' : null,
-          controller: text(
-            state == 'Placeholder' || state == 'Disabled' ? '' : 'Amalfi coast',
-          ),
+          controller: text(state == 'Placeholder' ? '' : 'Amalfi coast'),
         ),
         layers: {
           'Background': background,
@@ -145,6 +143,13 @@ List<FieldCase> textFieldCases() => [
           if (state == 'Error') 'Error icon': glyph(),
         },
         focus: state == 'Focused',
+        deviations: size == 'Small' && state == 'Error'
+            ? const {'Error icon': smallGlyph, 'Value': smallGlyphText}
+            : const {},
+        maskLayers: size == 'Small' && state == 'Error'
+            ? const ['Error icon']
+            : const [],
+        maskGlyphs: size == 'Small' && state == 'Error',
       ),
   for (final state in ['Placeholder', 'Filled', 'Focused', 'Disabled'])
     FieldCase(
@@ -153,9 +158,7 @@ List<FieldCase> textFieldCases() => [
         focusNode: focus,
         placeholder: 'Password',
         enabled: state != 'Disabled',
-        controller: text(
-          state == 'Placeholder' || state == 'Disabled' ? '' : 'positano',
-        ),
+        controller: text(state == 'Placeholder' ? '' : 'positano'),
       ),
       layers: {
         'Background': background,
@@ -229,6 +232,14 @@ List<FieldCase> searchCases() => [
           if (state == 'Typing') 'Clear button': find.byType(AmalfiClearButton),
         },
         focus: state == 'Focused',
+        deviations: size == 'Small'
+            ? const {'Search glyph': smallGlyph, 'Value': smallGlyphText}
+            : const {},
+        // The text moved 2 to the right by the 14 pt glyph is checked by the geometry.
+        maskLayers: size == 'Small'
+            ? const ['Search glyph', 'Value']
+            : const [],
+        maskGlyphs: size == 'Small',
       ),
   for (final state in ['Token', 'Token Focused'])
     FieldCase(
@@ -246,14 +257,13 @@ List<FieldCase> searchCases() => [
         'Search glyph': glyph(),
       },
       focus: state == 'Token Focused',
-      // Kit defect: the caret is drawn at x 96, inside the token (which ends at 100).
     ),
   FieldCase(
     'Fields/Clear Button/Rest',
     build: (_) => AmalfiClearButton(onPressed: () {}),
     layers: {'Disc': find.byType(DecoratedBox), 'Clear glyph': glyph()},
-    // 240 pixels compared once the cross is masked: the disc's rim alone.
-    tolerance: const KitPixelTolerance(mean: 3, max: 128),
+    // A 16 pt disc: its antialiased rim weighs most in the mean (1.39 and 47 measured).
+    tolerance: const KitPixelTolerance(mean: 1.5, max: 64),
   ),
 ];
 
@@ -284,7 +294,6 @@ List<FieldCase> tokenCases() => [
         'Token 1': find.byType(AmalfiToken).at(0),
         'Token 2': find.byType(AmalfiToken).at(1),
       },
-      deviations: const {'Token 2': coastToken, 'Value': coastToken},
       mask: const [Rect.fromLTWH(68, 0, 192, 28)],
       focus: state == 'Focused',
       // The kit's focused master shows the second token selected: Backspace selects it.
@@ -296,10 +305,6 @@ List<FieldCase> tokenCases() => [
           : null,
     ),
 ];
-
-/// Kit defect: the "Coast" token keeps the 64 pt frame of the master's "Travel" (the
-/// instance was not resized for its shorter label): ours is 60, the text 4 to the left.
-const String coastToken = 'kit token "Coast" keeps the 64 pt width of "Travel"';
 
 class _TokenFieldScene extends StatefulWidget {
   const _TokenFieldScene({required this.focus});
@@ -368,7 +373,7 @@ List<FieldCase> comboCases() => [
     'Fields/Combo Box/Open/Rest',
     build: (focus) => SizedBox(
       width: 200,
-      height: 148,
+      height: 136,
       child: Align(
         alignment: Alignment.topLeft,
         child: AmalfiComboBox(
@@ -380,28 +385,19 @@ List<FieldCase> comboCases() => [
     ),
     layers: {
       'Combo box': find.byType(AmalfiComboBox),
-      'List': find.byType(AmalfiComboList),
+      'List': find.byType(AmalfiMenu),
     },
+    // The kit checks the option equal to the text (Lemon) and highlights the next one
+    // (Olive): the button opens the list, ↓ moves the highlight.
     prepare: (tester) async {
       await tester.tap(find.byType(AmalfiComboButton));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.pump();
       await tester.pump(AmalfiFades.quick.duration);
       await tester.pump();
     },
-    // The list's glass shadow falls from a list 12 shorter than the kit's.
     tolerance: smallShapes,
-    deviations: {
-      'List':
-          'kit Menus/Menu/Simple is 116 tall for 4 items (4 + 4 × 24 + 4 = 104)',
-    },
-    // The kit checks Olive while the field holds Lemon; the list checks the option equal
-    // to the text (Lemon, highlighted): both check slots and the list's extra 12 pt at the
-    // bottom are left out of the pixels.
-    mask: const [
-      Rect.fromLTWH(4, 60, 24, 24),
-      Rect.fromLTWH(4, 84, 24, 24),
-      Rect.fromLTWH(-48, 120, 296, 88),
-    ],
   ),
 ];
 
@@ -448,9 +444,9 @@ void main() {
           final caret = master.maybeLayer('Caret');
           final mask = [
             ...c.mask,
-            ...glyphRects(master),
             if (caret != null) caret.rectInMaster.inflate(1),
             if (c.focus) ...caretRects(tester, root),
+            if (c.maskGlyphs) ...glyphRects(tester, root),
           ];
           await expectKitPixels(
             tester,
@@ -712,25 +708,28 @@ void behaviour() {
       );
       await tester.tap(find.byType(AmalfiComboButton));
       await tester.pump();
-      expect(find.byType(AmalfiComboList), findsOneWidget);
-      expect(tester.getTopLeft(find.byType(AmalfiComboList)).dy, 28 + 4);
+      expect(find.byType(AmalfiMenu), findsOneWidget);
+      expect(tester.getTopLeft(find.byType(AmalfiMenu)).dy, 28 + 4);
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
       expect(controller.text, 'Olive');
       expect(picked, ['Olive']);
-      expect(find.byType(AmalfiComboList), findsNothing);
+      expect(find.byType(AmalfiMenu), findsNothing);
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
       await tester.pump();
-      expect(find.byType(AmalfiComboList), findsOneWidget);
+      expect(find.byType(AmalfiMenu), findsOneWidget);
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await tester.pump();
-      expect(find.byType(AmalfiComboList), findsNothing);
+      expect(find.byType(AmalfiMenu), findsNothing);
       await tester.tap(find.byType(AmalfiComboButton));
       await tester.pump();
       await tester.tap(find.text('Fig'));
+      // The menu blinks the item, then closes.
+      await tester.pump(AmalfiMenuMetrics.chooseClose);
       await tester.pump();
       expect(controller.text, 'Fig');
+      expect(find.byType(AmalfiMenu), findsNothing);
     });
 
     testWidgets('the inline button runs on click', (tester) async {

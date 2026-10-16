@@ -8,12 +8,13 @@ import '../../tokens.g.dart';
 
 /// The three sizes of a field (`Fields/Text Field/Small|Regular|Large`).
 enum AmalfiFieldSize {
-  /// 24 pt, Callout text, 12 pt glyphs.
+  /// 24 pt, Callout text, 14 pt glyphs (`AmalfiControlSize.small.iconSize`, user decision
+  /// 2026-10-16; the kit draws 12).
   small(
     height: 24,
     radius: AmalfiRadii.smallControl,
     padding: 8,
-    glyph: 12,
+    glyph: 14,
     comboButton: 16,
     comboGlyph: 12,
   ),
@@ -57,7 +58,8 @@ enum AmalfiFieldSize {
   /// The space before the first and after the last item, horizontally.
   final double padding;
 
-  /// The side of a glyph inside the field (search magnifier, error mark).
+  /// The side of a glyph inside the field (search magnifier, error mark, lock): the icon
+  /// size of the control of the same height ([AmalfiControlSize.iconSize]).
   final double glyph;
 
   /// The side of the combo button disc.

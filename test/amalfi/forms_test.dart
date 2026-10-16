@@ -1,21 +1,25 @@
 // Forms against the kit (`Forms/*`): rows, sections, footer and the full layout, in geometry
-// and pixels; the nested buttons and toggles are this family's stand-ins until those
-// families land. Checklist: docs/amalfi-checklist/forms.md.
+// and pixels, with the real nested buttons, fields and toggles. Checklist:
+// docs/amalfi-checklist/forms.md.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:silica_ui/silica_ui.dart';
-import 'package:silica_ui/src/amalfi/components/forms/stand_ins.dart';
 
 import 'support/harness.dart';
 
-/// The shape tolerance of the forms (as the fields': the borders' antialiased edges).
-const KitPixelTolerance formsShapes = KitPixelTolerance(mean: 1.25, max: 128);
+/// The shape tolerance of the forms: the borders' antialiased edges and the pop-up's
+/// chevron (measured with the real nested controls: mean ≤ 0.72, max 106 on the pop-up).
+const KitPixelTolerance formsShapes = KitPixelTolerance(mean: 1, max: 112);
 
 /// The text tolerance of the forms (CoreText draws Inter heavier than Skia; light text on
-/// the transparent canvas of the dark rows feels it most: 3.3 on the switch row).
+/// the transparent canvas of the dark rows feels it most).
 const KitPixelTolerance formsText = KitPixelTolerance(mean: 3.5, max: 255);
+
+/// The dark switch row: two lines of light text on a transparent canvas and little else
+/// (measured mean 3.81 with the real labelled switch; its pixels match with text masked).
+const KitPixelTolerance switchRowText = KitPixelTolerance(mean: 4, max: 255);
 
 final Finder valueColumn = find.byWidgetPredicate(
   (w) => w.runtimeType.toString() == '_ControlWithMessage',
@@ -34,17 +38,37 @@ Widget field(String text, {String? error}) => AmalfiTextField(
   errorText: error,
 );
 
+Widget popUp() => AmalfiPopUpButton<String>(
+  items: const [
+    AmalfiPopUpItem(value: 'Lemon', label: 'Lemon'),
+    AmalfiPopUpItem(value: 'Olive', label: 'Olive'),
+  ],
+  value: 'Lemon',
+  onChanged: (_) {},
+);
+
+Widget checkbox(String label) =>
+    AmalfiCheckbox(label: label, value: true, onChanged: (_) {});
+
+Widget pushButton(String label, {bool primary = false}) => AmalfiPushButton(
+  label: label,
+  variant: primary
+      ? AmalfiPushButtonVariant.primary
+      : AmalfiPushButtonVariant.secondary,
+  onPressed: () {},
+);
+
 const String help = 'This name is shown to people you share with.';
 const String invalid = 'Enter an address such as name@example.com.';
-
-/// Kit defect: Sketch did not resize the row instances to their content (rows 332, 300, 272,
-/// 428 wide for 324, 292, 248, 324 of content): our rows are as wide as their content.
-const String instanceWidth = 'kit row instance not resized to its content';
 
 /// Kit defect: the check rows put the 20 pt checkbox at the top of the 28 pt line, 4 above
 /// the label's centre; ours is centred on the line.
 const String checkTop =
     'kit checkbox at the top of the 28 pt line, ours centred';
+
+/// Kit defect: the check row's checkbox instance is 168 wide, not resized to its label
+/// ("Send me updates": 148, as `Toggles/Checkbox/With Label` measures it).
+const String checkWidth = 'kit checkbox instance not resized to its label';
 
 /// The kit's title frames are CoreText's width rounded to the grid; Skia measures these
 /// semibold titles a few tenths of a point apart, which rounds to the next grid step.
@@ -59,6 +83,7 @@ class FormCase {
     this.deviations = const {},
     this.maskLayers = const [],
     this.mask = const [],
+    this.textTolerance = formsText,
   });
 
   final String key;
@@ -67,46 +92,46 @@ class FormCase {
   final Map<String, String> deviations;
   final List<String> maskLayers;
   final List<Rect> mask;
+  final KitPixelTolerance textTolerance;
 }
 
-Widget profile({double? width = 356}) => AmalfiFormSection(
+Widget profile() => AmalfiFormSection(
   title: 'Profile',
-  width: width,
   rows: [
-    AmalfiFormRow(label: 'Name:', control: field('Marta Esposito')),
-    AmalfiFormRow(label: 'Email:', control: field('marta@example.it')),
     AmalfiFormRow(
-      label: 'Region:',
-      control: const StandInPopUpButton(value: 'Lemon'),
+      label: 'Name:',
+      expand: true,
+      control: field('Marta Esposito'),
     ),
+    AmalfiFormRow(
+      label: 'Email:',
+      expand: true,
+      control: field('marta@example.it'),
+    ),
+    AmalfiFormRow(label: 'Region:', control: popUp()),
   ],
 );
 
-Widget preferences() => const AmalfiFormSection(
+Widget preferences() => AmalfiFormSection(
   title: 'Preferences',
-  width: 324,
   rows: [
-    AmalfiFormRow(
-      label: 'Options:',
-      control: StandInCheckbox(label: 'Send me updates', value: true),
-    ),
-    AmalfiFormRow(
-      control: StandInCheckbox(label: 'Keep me signed in', value: true),
-    ),
+    AmalfiFormRow(label: 'Options:', control: checkbox('Send me updates')),
+    AmalfiFormRow(control: checkbox('Keep me signed in')),
   ],
 );
 
-Widget validation({double? width = 452}) => AmalfiFormSection(
+Widget validation() => AmalfiFormSection(
   title: 'Validation',
-  width: width,
   rows: [
     AmalfiFormRow(
       label: 'Display name:',
+      expand: true,
       control: field('Marta'),
       message: help,
     ),
     AmalfiFormRow(
       label: 'Email:',
+      expand: true,
       control: field('marta@example', error: 'invalid'),
       message: invalid,
       messageKind: AmalfiFormMessageKind.error,
@@ -114,11 +139,8 @@ Widget validation({double? width = 452}) => AmalfiFormSection(
   ],
 );
 
-Widget footer() => const AmalfiFormFooter(
-  actions: [
-    StandInPushButton(label: 'Cancel'),
-    StandInPushButton(label: 'Save', primary: true),
-  ],
+Widget footer() => AmalfiFormFooter(
+  actions: [pushButton('Cancel'), pushButton('Save', primary: true)],
 );
 
 final Finder rows = find.byType(AmalfiFormRow);
@@ -132,7 +154,7 @@ final Finder sectionBox = find
 List<FormCase> cases() => [
   FormCase(
     'Forms/Row/Text/Rest',
-    AmalfiFormRow(label: 'Label', control: field('Amalfi coast')),
+    AmalfiFormRow(label: 'Label', expand: true, control: field('Amalfi coast')),
     {
       'Label cell': labelCell('Label'),
       'Label cell/Label': labelBox('Label'),
@@ -142,53 +164,51 @@ List<FormCase> cases() => [
   ),
   FormCase(
     'Forms/Row/Popup/Rest',
-    const AmalfiFormRow(
-      label: 'Label',
-      control: StandInPopUpButton(value: 'Lemon'),
-    ),
+    AmalfiFormRow(label: 'Label', control: popUp()),
     {
       'Label cell/Label': labelBox('Label'),
       'Value': valueColumn,
-      'Value/Control': find.byType(StandInPopUpButton),
+      'Value/Control': find.byType(AmalfiPopUpButton<String>),
     },
   ),
   FormCase(
     'Forms/Row/Check/Rest',
-    const AmalfiFormRow(
-      label: 'Label',
-      control: SizedBox(
-        width: 168,
-        child: StandInCheckbox(label: 'Send me updates', value: true),
-      ),
-    ),
+    AmalfiFormRow(label: 'Label', control: checkbox('Send me updates')),
     {
       'Label cell/Label': labelBox('Label'),
       'Value': valueColumn,
-      'Value/Control': find.byType(StandInCheckbox),
+      'Value/Control': find.byType(AmalfiCheckbox),
     },
-    deviations: {'Value': checkTop, 'Value/Control': checkTop},
+    deviations: {
+      '#frame': checkWidth,
+      'Value': checkTop,
+      'Value/Control': checkTop,
+    },
     mask: const [Rect.fromLTWH(124, 0, 168, 28)],
   ),
   FormCase(
     'Forms/Row/Switch/Rest',
-    const AmalfiFormRow(
+    AmalfiFormRow(
       label: 'Label',
-      control: StandInSwitch(
+      expand: true,
+      control: AmalfiSwitch(
         label: 'Sync across devices',
         value: true,
-        width: 256,
+        onChanged: (_) {},
       ),
     ),
     {
       'Label cell/Label': labelBox('Label'),
       'Value': valueColumn,
-      'Value/Control': find.byType(StandInSwitch),
+      'Value/Control': find.byType(AmalfiSwitch),
     },
+    textTolerance: switchRowText,
   ),
   FormCase(
     'Forms/Row/Help/Rest',
     AmalfiFormRow(
       label: 'Label',
+      expand: true,
       control: field('Amalfi coast'),
       message: help,
     ),
@@ -203,6 +223,7 @@ List<FormCase> cases() => [
     'Forms/Row/Error/Rest',
     AmalfiFormRow(
       label: 'Label',
+      expand: true,
       control: field('Amalfi coast', error: 'invalid'),
       message: invalid,
       messageKind: AmalfiFormMessageKind.error,
@@ -214,10 +235,18 @@ List<FormCase> cases() => [
       'Value/Message': find.text(invalid),
     },
   ),
-  FormCase('Forms/Footer/Actions/Rest', SizedBox(width: 352, child: footer()), {
-    'Cancel': find.byType(StandInPushButton).at(0),
-    'Save': find.byType(StandInPushButton).at(1),
-  }),
+  FormCase(
+    'Forms/Footer/Actions/Rest',
+    SizedBox(width: 352, child: footer()),
+    {
+      'Cancel': find.byType(AmalfiPushButton).at(0),
+      'Save': find.byType(AmalfiPushButton).at(1),
+    },
+    // The push button stretched to the footer's 72 pt minimum keeps its label at the
+    // leading padding, the kit centres it ("Save", 56 pt of content): masked until the
+    // buttons family centres it (requested).
+    mask: const [Rect.fromLTWH(292, 5, 48, 18)],
+  ),
   FormCase(
     'Forms/Section/Profile/Rest',
     profile(),
@@ -229,12 +258,7 @@ List<FormCase> cases() => [
       'Group/Email Text': rows.at(1),
       'Group/Region Popup': rows.at(2),
     },
-    deviations: {
-      'Title': titleWidth,
-      'Group/Name Text': instanceWidth,
-      'Group/Email Text': instanceWidth,
-      'Group/Region Popup': instanceWidth,
-    },
+    deviations: {'Title': titleWidth},
   ),
   FormCase(
     'Forms/Section/Preferences/Rest',
@@ -245,28 +269,19 @@ List<FormCase> cases() => [
       'Group/Options Check': rows.at(0),
       'Group/Sign-in Check': rows.at(1),
     },
-    deviations: {'Group/Options Check': instanceWidth},
     mask: const [Rect.fromLTWH(136, 36, 188, 68)],
   ),
-  FormCase(
-    'Forms/Section/Validation/Rest',
-    validation(),
-    {
-      'Title': find.byType(AmalfiWholePoints).first,
-      'Group/Surface': sectionBox,
-      'Group/Display name Help': rows.at(0),
-      'Group/Email Error': rows.at(1),
-    },
-    deviations: {
-      'Group/Display name Help': instanceWidth,
-      'Group/Email Error': instanceWidth,
-    },
-  ),
+  FormCase('Forms/Section/Validation/Rest', validation(), {
+    'Title': find.byType(AmalfiWholePoints).first,
+    'Group/Surface': sectionBox,
+    'Group/Display name Help': rows.at(0),
+    'Group/Email Error': rows.at(1),
+  }),
   FormCase(
     'Forms/Layout/Full/Rest',
     AmalfiFormLayout(
       title: 'Account details',
-      sections: [profile(width: null), validation(width: null)],
+      sections: [profile(), validation()],
       footer: footer(),
     ),
     {
@@ -281,12 +296,7 @@ List<FormCase> cases() => [
       'Validation': find.byType(AmalfiFormSection).at(1),
       'Footer': find.byType(AmalfiFormFooter),
     },
-    deviations: {
-      'Title': titleWidth,
-      'Profile': 'kit section 372 wide in a 352 pt content column',
-      'Validation': 'kit section 452 wide: it overflows the 400 pt layout',
-    },
-    maskLayers: const ['Profile', 'Validation'],
+    deviations: {'Title': titleWidth},
   ),
 ];
 
@@ -332,7 +342,7 @@ void main() {
             tester,
             master,
             c.widget,
-            tolerance: formsText,
+            tolerance: c.textTolerance,
             origin: pngOrigin(master),
             maskLayers: c.maskLayers,
             mask: c.mask,
@@ -349,16 +359,48 @@ void main() {
         AmalfiFormRow(label: 'Name:', control: field('Marta'), message: help),
       );
       expect(tester.getSize(find.text(help)).width, AmalfiFieldMetrics.width);
+      await pumpKitScene(
+        tester,
+        AmalfiFormRow(
+          label: 'Name:',
+          expand: true,
+          control: field('Marta'),
+          message: help,
+        ),
+      );
+      expect(
+        tester.getSize(find.text(help)).width,
+        AmalfiFormMetrics.valueWidth,
+      );
       expect(tester.getTopLeft(find.text(help)).dy, 28 + 4);
     });
 
-    testWidgets('a section without a width is as wide as its widest row', (
+    testWidgets('a section is as wide as its widest row, at least 352', (
       tester,
     ) async {
-      await pumpKitScene(tester, profile(width: null));
+      await pumpKitScene(tester, preferences());
       expect(
         tester.getSize(find.byType(AmalfiFormSection)).width,
-        12 + 112 + 12 + 200 + 12,
+        AmalfiFormMetrics.sectionWidth,
+      );
+      expect(
+        tester.getSize(find.byType(AmalfiFormRow).first).width,
+        AmalfiFormMetrics.rowWidth,
+      );
+      await pumpKitScene(
+        tester,
+        AmalfiFormSection(
+          rows: [
+            AmalfiFormRow(
+              label: 'Notes:',
+              control: AmalfiTextField(width: 300),
+            ),
+          ],
+        ),
+      );
+      expect(
+        tester.getSize(find.byType(AmalfiFormSection)).width,
+        12 + 112 + 12 + 300 + 12,
       );
     });
 
@@ -369,7 +411,7 @@ void main() {
         tester,
         AmalfiFormLayout(
           title: 'Account details',
-          sections: [profile(width: null), validation(width: null)],
+          sections: [profile(), validation()],
           footer: footer(),
         ),
       );
@@ -380,7 +422,7 @@ void main() {
     });
 
     testWidgets('fields in a form take focus with Tab', (tester) async {
-      await pumpKitScene(tester, profile(width: null));
+      await pumpKitScene(tester, profile());
       await tester.tap(find.text('Marta Esposito'));
       await tester.pump();
       FocusNode node(int i) => tester

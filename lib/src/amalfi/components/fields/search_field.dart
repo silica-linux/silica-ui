@@ -1,6 +1,6 @@
 // The Amalfi search field (kit `Fields/Search Field/*`): a Glass/Regular capsule with the
 // magnifier, optional tokens, the text and, while there is text, the clear button. Focused,
-// it shows the focus halo (no accent border); disabled, tertiary glyph and text.
+// it shows the focus halo (no accent border); disabled, the rest look at 35 %.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -149,57 +149,58 @@ class _AmalfiSearchFieldState extends State<AmalfiSearchField>
           child: SizedBox(
             width: widget.width,
             height: size.height,
-            child: AmalfiFieldSurface(
-              radius: AmalfiRadii.capsule(size.height),
-              glass: AmalfiMaterials.regular,
-              halo: colors.lineFocus,
-              haloVisible: focused && enabled,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.padding),
-                child: Row(
-                  children: [
-                    AmalfiGlyph(
-                      AmalfiGlyphs.search,
-                      size: size.glyph,
-                      color: enabled
-                          ? colors.textSecondary
-                          : colors.textTertiary,
-                    ),
-                    const SizedBox(width: AmalfiFieldMetrics.gap),
-                    for (final token in buildTokens(enabled: enabled)) ...[
-                      token,
+            child: AmalfiFieldEnabledScope(
+              enabled: enabled,
+              child: AmalfiFieldSurface(
+                radius: AmalfiRadii.capsule(size.height),
+                glass: AmalfiMaterials.regular,
+                halo: colors.lineFocus,
+                haloVisible: focused && enabled,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: size.padding),
+                  child: Row(
+                    children: [
+                      AmalfiGlyph(
+                        AmalfiGlyphs.search,
+                        size: size.glyph,
+                        color: colors.textSecondary,
+                      ),
                       const SizedBox(width: AmalfiFieldMetrics.gap),
-                    ],
-                    Expanded(
-                      child: Focus(
-                        canRequestFocus: false,
-                        skipTraversal: true,
-                        onKeyEvent: _key,
-                        child: AmalfiEditable(
-                          controller: controller,
-                          focusNode: focusNode,
-                          enabled: enabled,
-                          autofocus: widget.autofocus,
-                          placeholder: hasTokens ? null : widget.placeholder,
-                          style: size.textStyle(
-                            enabled ? colors.textPrimary : colors.textTertiary,
+                      for (final token in buildTokens(enabled: enabled)) ...[
+                        token,
+                        const SizedBox(width: AmalfiFieldMetrics.gap),
+                      ],
+                      Expanded(
+                        child: Focus(
+                          canRequestFocus: false,
+                          skipTraversal: true,
+                          onKeyEvent: _key,
+                          child: AmalfiEditable(
+                            controller: controller,
+                            focusNode: focusNode,
+                            enabled: enabled,
+                            autofocus: widget.autofocus,
+                            placeholder: hasTokens ? null : widget.placeholder,
+                            style: size.textStyle(colors.textPrimary),
+                            placeholderStyle: size.textStyle(
+                              colors.textTertiary,
+                            ),
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.search,
+                            onChanged: widget.onChanged,
+                            onSubmitted: widget.onSubmitted,
                           ),
-                          placeholderStyle: size.textStyle(colors.textTertiary),
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.search,
-                          onChanged: widget.onChanged,
-                          onSubmitted: widget.onSubmitted,
                         ),
                       ),
-                    ),
-                    if (_hasText && enabled) ...[
-                      const SizedBox(width: AmalfiFieldMetrics.gap),
-                      AmalfiClearButton(
-                        onPressed: _clear,
-                        semanticLabel: widget.clearLabel,
-                      ),
+                      if (_hasText && enabled) ...[
+                        const SizedBox(width: AmalfiFieldMetrics.gap),
+                        AmalfiClearButton(
+                          onPressed: _clear,
+                          semanticLabel: widget.clearLabel,
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),

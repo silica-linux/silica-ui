@@ -6,7 +6,8 @@
 // `Line/Separator` rim and an 8 pt `Text/Secondary` thumb; dragged, the thumb turns
 // `Text/Primary`. Legacy bars sit beside the content, 16 pt: a square `Surface/Sunken` track
 // with a `Line/Separator` rim and an 8 pt thumb, `Text/Tertiary` at rest, `Text/Secondary`
-// under the pointer; without a thumb when everything is visible.
+// under the pointer; without a thumb when everything is visible. Disabled (a scroll view that
+// does not scroll now), the whole bar at `States/disabledOpacity` (35 %).
 
 import 'dart:ui' show lerpDouble;
 
@@ -15,6 +16,7 @@ import 'package:flutter/widgets.dart';
 import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
+import '../../tokens.g.dart';
 
 /// The two kinds of scroll bar.
 enum AmalfiScrollbarStyle {
@@ -49,6 +51,7 @@ abstract final class AmalfiScrollbarMetrics {
 ///
 /// For an overlay bar, [expansion] goes from 0 (thin) to 1 (expanded), in between while it
 /// animates; [hovered] shows a legacy thumb under the pointer and [dragging] a dragged thumb.
+/// A disabled bar ([enabled] false) is drawn whole at [AmalfiStates.disabledOpacity].
 /// `AmalfiScrollbar` draws it over or beside a scroll view; use it directly only to build a
 /// custom scroller.
 class AmalfiScrollbarTrack extends StatelessWidget {
@@ -61,6 +64,7 @@ class AmalfiScrollbarTrack extends StatelessWidget {
     this.dragging = false,
     this.thumbOffset = 0,
     this.thumbExtent,
+    this.enabled = true,
   });
 
   final Axis axis;
@@ -80,6 +84,9 @@ class AmalfiScrollbarTrack extends StatelessWidget {
 
   /// The thumb's length along the bar, in points; null: no thumb.
   final double? thumbExtent;
+
+  /// Whether the bar is enabled; disabled, it is dimmed whole.
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +130,7 @@ class AmalfiScrollbarTrack extends StatelessWidget {
     );
     if (overlay) track = Opacity(opacity: t, child: track);
 
-    return SizedBox(
+    final Widget bar = SizedBox(
       width: vertical ? thickness : null,
       height: vertical ? null : thickness,
       child: Stack(
@@ -146,6 +153,9 @@ class AmalfiScrollbarTrack extends StatelessWidget {
         ],
       ),
     );
+    return enabled
+        ? bar
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: bar);
   }
 }
 

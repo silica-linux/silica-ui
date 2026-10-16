@@ -13,7 +13,9 @@ import 'form_row.dart';
 /// A titled group of form rows: [title] in `Headline` `Text/Secondary`, then the [rows] in a
 /// `Surface/Raised` box with a 1 pt `Line/Border`, radius 12, padding 12, 12 between rows.
 ///
-/// The section is as wide as its widest row plus the padding, or [width] when given.
+/// The section is as wide as its widest row plus the padding, at least
+/// [AmalfiFormMetrics.sectionWidth] (rows on the 328 pt grid), or [width] when given; every
+/// row takes the section's inner width.
 class AmalfiFormSection extends StatelessWidget {
   const AmalfiFormSection({
     super.key,
@@ -46,7 +48,7 @@ class AmalfiFormSection extends StatelessWidget {
         padding: const EdgeInsets.all(pad),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (var i = 0; i < rows.length; i++) ...[
               if (i > 0) const SizedBox(height: AmalfiFormMetrics.rowGap),
@@ -85,14 +87,20 @@ class AmalfiFormSection extends StatelessWidget {
       label: title,
       explicitChildNodes: true,
       child: width == null
-          ? IntrinsicWidth(child: section)
+          ? ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: AmalfiFormMetrics.sectionWidth,
+              ),
+              child: IntrinsicWidth(child: section),
+            )
           : SizedBox(width: width, child: section),
     );
   }
 }
 
 /// The buttons at the end of a form ([actions], usually Cancel then the default button),
-/// aligned to the trailing edge, 8 apart.
+/// aligned to the trailing edge, 8 apart, each at least
+/// [AmalfiFormMetrics.buttonMinWidth] wide.
 class AmalfiFormFooter extends StatelessWidget {
   const AmalfiFormFooter({super.key, required this.actions});
 
@@ -104,7 +112,12 @@ class AmalfiFormFooter extends StatelessWidget {
     children: [
       for (var i = 0; i < actions.length; i++) ...[
         if (i > 0) const SizedBox(width: AmalfiFormMetrics.footerGap),
-        actions[i],
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: AmalfiFormMetrics.buttonMinWidth,
+          ),
+          child: actions[i],
+        ),
       ],
     ],
   );

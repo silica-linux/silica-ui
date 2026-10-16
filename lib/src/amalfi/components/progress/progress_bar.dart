@@ -1,7 +1,10 @@
 // The progress bar (kit `Progress/Bar/Determinate|Indeterminate/<Small|Regular|Large>/*`): a
 // `Surface/Sunken` track with a `Line/Separator` rim; determinate, the done part is
 // `Accent/Amalfi` (`Palette/Ulivo` once complete); indeterminate, a 72 pt segment sweeps
-// across the track. Disabled, the fill is `Text/Tertiary` and nothing moves.
+// across the track. Disabled, the whole bar is at `AmalfiStates.disabledOpacity` and nothing
+// moves (an indeterminate segment rests at the start of the track).
+
+import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
@@ -63,9 +66,9 @@ abstract final class AmalfiProgressBarMetrics {
 /// [value] null is indeterminate, a segment sweeping across the track over and over.
 ///
 /// It is as long as the width it is given (200 when unbounded). The sweep runs only while
-/// tickers are enabled (`TickerMode`: off in hidden routes), not when [enabled] is false and
-/// not with reduced motion, where the segment rests in the middle. [phase] freezes the
-/// segment at that point of its sweep (0–1).
+/// tickers are enabled (`TickerMode`: off in hidden routes), not when [enabled] is false
+/// (the segment rests at the start, as in the kit) and not with reduced motion (it rests in
+/// the middle). [phase] freezes the segment at that point of its sweep (0–1).
 class AmalfiProgressBar extends StatefulWidget {
   const AmalfiProgressBar({
     super.key,
@@ -81,7 +84,7 @@ class AmalfiProgressBar extends StatefulWidget {
 
   final AmalfiProgressSize size;
 
-  /// Whether the task is active; disabled bars are grey and still.
+  /// Whether the task is active; a disabled bar is dimmed as a whole and still.
   final bool enabled;
 
   /// Where an indeterminate segment stands in its sweep, 0–1; null: it sweeps.
@@ -174,20 +177,22 @@ class _AmalfiProgressBarState extends State<AmalfiProgressBar>
           (_animates
               ? AmalfiProgressBarMetrics.sweepCurve.transform(_sweep.value)
               : 0.5);
-      part = AmalfiProgressBarMetrics.segmentAt(enabled ? phase : 0.5, length);
-      color = enabled ? colors.accentAmalfi : colors.textTertiary;
+      // Disabled, the segment rests at the start of the track (the kit's Disabled masters).
+      part = enabled
+          ? AmalfiProgressBarMetrics.segmentAt(phase, length)
+          : (
+              start: 0.0,
+              end: math.min(AmalfiProgressBarMetrics.segment, length),
+            );
+      color = colors.accentAmalfi;
     } else {
       final v = value.isFinite ? value.clamp(0.0, 1.0) : 0.0;
       final end = AmalfiGrid.snap(v * length).clamp(0.0, length);
       part = end > 0 ? (start: 0.0, end: end) : null;
-      color = !enabled
-          ? colors.textTertiary
-          : v >= 1
-          ? colors.paletteUlivo
-          : colors.accentAmalfi;
+      color = v >= 1 ? colors.paletteUlivo : colors.accentAmalfi;
     }
     final fill = part;
-    return SizedBox(
+    final bar = SizedBox(
       width: length,
       height: thickness,
       child: Stack(
@@ -222,5 +227,8 @@ class _AmalfiProgressBarState extends State<AmalfiProgressBar>
         ],
       ),
     );
+    return enabled
+        ? bar
+        : Opacity(opacity: AmalfiStates.disabledOpacity, child: bar);
   }
 }

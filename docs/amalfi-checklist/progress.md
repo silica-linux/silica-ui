@@ -92,7 +92,7 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 - [x] Progress/Spinner/Regular/Disabled/Light
 - [x] Progress/Spinner/Regular/Rest/Dark
 - [x] Progress/Spinner/Regular/Rest/Light
-- [ ] Progress/Spinner/Small/Disabled/Dark
-- [ ] Progress/Spinner/Small/Disabled/Light
-- [ ] Progress/Spinner/Small/Rest/Dark
-- [ ] Progress/Spinner/Small/Rest/Light
+- [x] Progress/Spinner/Small/Disabled/Dark
+- [x] Progress/Spinner/Small/Disabled/Light
+- [x] Progress/Spinner/Small/Rest/Dark
+- [x] Progress/Spinner/Small/Rest/Light

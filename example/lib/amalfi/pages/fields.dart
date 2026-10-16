@@ -94,9 +94,7 @@ class _FieldsPageState extends State<_FieldsPage> {
                   ),
                   controller: text(
                     'tf$size$state',
-                    state == 'Placeholder' || state == 'Disabled'
-                        ? ''
-                        : 'Amalfi coast',
+                    state == 'Placeholder' ? '' : 'Amalfi coast',
                   ),
                 ),
               ),
@@ -114,7 +112,7 @@ class _FieldsPageState extends State<_FieldsPage> {
                 statesController: focusedIf('sf$state', state == 'Focused'),
                 controller: text(
                   'sf$state',
-                  state == 'Filled' || state == 'Focused' ? 'positano' : '',
+                  state == 'Placeholder' ? '' : 'positano',
                 ),
               ),
             ),

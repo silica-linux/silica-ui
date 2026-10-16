@@ -22,8 +22,9 @@ double phaseAt(double x) =>
 
 const phases = {'Phase 1': 0.0, 'Phase 2': 64.0, 'Phase 3': 132.0};
 
-/// Thin round strokes: Sketch antialiases arcs and spokes a little differently.
-const KitPixelTolerance roundTolerance = KitPixelTolerance(mean: 2.5, max: 96);
+/// Thin round strokes: Sketch antialiases arcs and spokes a little differently (measured
+/// against 747ea80: mean up to 1.78, single pixels up to 77 on the complete large ring).
+const KitPixelTolerance roundTolerance = KitPixelTolerance(mean: 2, max: 80);
 
 /// Where the master's origin is in its PNG: the kit exports some masters at their frame (a
 /// ring's outer half-stroke and rotated spokes are not added), others at their render bounds
@@ -38,13 +39,16 @@ Offset? pngOrigin(KitMaster master) {
   return -Offset(b.left.floorToDouble(), b.top.floorToDouble());
 }
 
-/// The bars' round ends: Sketch antialiases them differently (up to 81 on single pixels).
-const KitPixelTolerance barTolerance = KitPixelTolerance(mean: 1, max: 96);
+/// The bars' round ends: Sketch antialiases them differently (measured against 747ea80: up
+/// to 60 on single pixels, mean up to 0.39).
+const KitPixelTolerance barTolerance = KitPixelTolerance(mean: 1, max: 64);
 
 /// The regular bar (8 tall, radius 3: smooth corners, not capsule ends). Its outline matches
 /// the kit's SVG and is symmetric, but the test rasteriser under-covers the bottom row of
 /// pixels at the corners (alpha 64 where the top row has 197, also with the outline flipped
-/// upside down): single pixels differ by up to 118. The mean stays at 0.06–0.18.
+/// upside down): single pixels differ by up to 118. The mean stays at 0.06–0.18. This is
+/// the documented rasteriser under-coverage of short smooth shapes (test/amalfi/README.md,
+/// Notes), not a licence for other shapes.
 const KitPixelTolerance regularBarTolerance = KitPixelTolerance(
   mean: 1,
   max: 128,
@@ -217,9 +221,6 @@ void main() {
               AmalfiSpinnerMetrics.spokeOf(size).size,
               master.layer('Spoke 1/Tick').frame.size,
             );
-            // Kit defect: the small spinner's spokes are 1.5 wide at x 8, 0.75 pt off the
-            // centre, so the kit's wheel is lopsided; ours is centred. No pixel test.
-            if (size == AmalfiProgressSize.small) return;
             await expectKitPixels(
               tester,
               master,
@@ -271,7 +272,7 @@ void main() {
       expect(seen.length, greaterThan(5));
       setting.value = (enabled: false, ticking: true);
       await tester.pump();
-      expect(left(), 64);
+      expect(left(), 0);
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.binding.hasScheduledFrame, isFalse);
       setting.value = (enabled: true, ticking: false);

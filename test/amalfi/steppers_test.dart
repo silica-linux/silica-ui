@@ -8,28 +8,20 @@ import 'package:silica_ui/silica_ui.dart';
 
 import 'support/harness.dart';
 
-/// The kit rounds the hover and press overlay of a half on all four corners, leaving notches
-/// at the divider; ours fills the half, clipped to the bezel.
-const String halfCorners = 'kit overlay rounded at the divider; ours clipped';
-
-/// Kit inconsistency: at rest the chevrons are centred on the true halves (or, in mini,
-/// shrunk to 8 pt when the down half is hovered); hovered and pressed, on the halves split by
-/// the divider. Ours always sits in its half between the edge and the divider.
-const String glyphHalf = 'kit chevron off its half (true half / 8 pt in mini)';
+/// The kit draws the hover and press overlay of a half as the bezel's outline cut at the
+/// divider (radii 9, 9, 0, 0 on a 14 pt half, more than half its height); ours is the same
+/// outline as a fill clipped to the bezel, so it carries no radii of its own (the pixels
+/// compare the outline).
+const String halfCorners = 'kit half = bezel outline cut; ours clipped fill';
 
 /// Small bezels: Sketch's smoothing of radii 7–10 on 16–28 pt shapes (and of the halo
-/// outside them) differs from AmalfiSmoothBorder's on the edge pixels.
-const KitPixelTolerance stepperTolerance = KitPixelTolerance(
-  mean: 2.5,
-  max: 96,
-);
+/// outside them) differs from AmalfiSmoothBorder's on the edge pixels (measured mean 1.7,
+/// max 76 against 747ea80).
+const KitPixelTolerance stepperTolerance = KitPixelTolerance(mean: 2, max: 80);
 
-/// The 16 × 20 mini bezel is mostly corner: the smoothing difference weighs more.
-const KitPixelTolerance miniTolerance = KitPixelTolerance(mean: 4, max: 96);
-
-/// Kit defect: the hover and press overlay of a half spills over the bezel's rim and rounded
-/// corners (it is drawn rounded on its own); ours stays inside the bezel.
-const KitPixelTolerance overlayTolerance = KitPixelTolerance(mean: 8, max: 255);
+/// The 16 × 20 mini bezel is mostly corner: the smoothing difference weighs more (measured
+/// mean 1.3, max 93 against 747ea80).
+const KitPixelTolerance miniTolerance = KitPixelTolerance(mean: 1.5, max: 96);
 
 /// Where the master's origin is in its PNG: the kit exports some masters at their frame,
 /// clipping what overflows it (a mini chevron 1 pt above the bezel), so the harness's
@@ -203,15 +195,7 @@ void main() {
                 'Glyph Chevron Up': chevrons.at(0),
                 'Glyph Chevron Down': chevrons.at(1),
               },
-              deviations: {
-                if (hasState) 'State#corners': halfCorners,
-                for (final (i, name) in [
-                  (0, 'Glyph Chevron Up'),
-                  (1, 'Glyph Chevron Down'),
-                ])
-                  if (master.layer(name).rectInMaster != mine(i))
-                    name: glyphHalf,
-              },
+              deviations: {if (hasState) 'State#corners': halfCorners},
             );
             await mouse.release();
             await expectKitPixels(
@@ -219,22 +203,13 @@ void main() {
               master,
               scene,
               origin: pngOrigin(master),
-              tolerance:
-                  state.startsWith('Hover') || state.startsWith('Pressed')
-                  ? overlayTolerance
-                  : size == AmalfiControlSize.mini
+              tolerance: size == AmalfiControlSize.mini
                   ? miniTolerance
                   : stepperTolerance,
-              // The kit's chevrons carry the 24 pt stroke (1.5) at 12 pt; ours the 12 pt
-              // stroke (0.75, README "How to read the kit"): compared by geometry.
-              mask: [
-                for (final (i, name) in [
-                  (0, 'Glyph Chevron Up'),
-                  (1, 'Glyph Chevron Down'),
-                ])
-                  for (final r in [master.layer(name).rectInMaster, mine(i)])
-                    chevronStroke(r),
-              ],
+              // Kit defect (747ea80): the up chevron keeps the 24 pt stroke (1.5) at 12 pt
+              // in every stepper master (the down chevron has the 12 pt stroke, 0.75, as
+              // ours): the up chevron is compared by geometry.
+              mask: [chevronStroke(mine(0))],
               prepare: (tester) => bringTo(
                 tester,
                 mouse,
@@ -327,11 +302,8 @@ void main() {
             maskText: true,
             tolerance: stepperTolerance,
             mask: [
-              // The stepper's chevrons (see the stepper tests).
+              // The stepper's up chevron (kit 24 pt stroke, see the stepper tests).
               chevronStroke(const Rect.fromLTWH(70, 1, 12, 12)),
-              chevronStroke(const Rect.fromLTWH(70, 2, 12, 12)),
-              chevronStroke(const Rect.fromLTWH(70, 15, 12, 12)),
-              chevronStroke(const Rect.fromLTWH(70, 16, 12, 12)),
             ],
             prepare: (tester) async {
               if (state == 'Focused') await focusWithKeyboard(tester, focus);

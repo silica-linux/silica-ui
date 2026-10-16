@@ -1,6 +1,6 @@
 // The Amalfi colour well (kit `Wells/Color Well/Minimal|Default|Expanded/*`): the colour in a
 // `Surface/Raised` frame with a 1 pt `Line/Border`; hovered, an `Accent/Amalfi Soft` overlay;
-// focused, the focus halo; disabled, `Surface/Sunken` and the colour dimmed. Default adds the
+// focused, the focus halo; disabled, the whole well at `States/disabledOpacity`. Default adds the
 // picker chevron, Expanded the colour's name and the eyedropper.
 
 import 'package:flutter/services.dart';
@@ -195,25 +195,22 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
     final hovered = on && has(WidgetState.hovered);
     final focused = on && has(WidgetState.focused);
     final colourHeight = style.size.height - style.padding.vertical;
-    final ink = on ? colors.textSecondary : colors.textTertiary;
+    final ink = colors.textSecondary;
     final eyedropper = widget.onPickFromScreen;
 
-    final colour = Opacity(
-      opacity: on ? 1 : AmalfiStates.disabledOpacity,
-      child: DecoratedBox(
-        key: AmalfiColorWell.colourKey,
-        decoration: AmalfiShapeDecoration(
-          color: widget.color,
-          shape: AmalfiSmoothBorder(
-            radius: style.colourRadius,
-            side: BorderSide(
-              color: colors.lineBorder,
-              strokeAlign: BorderSide.strokeAlignInside,
-            ),
+    final colour = DecoratedBox(
+      key: AmalfiColorWell.colourKey,
+      decoration: AmalfiShapeDecoration(
+        color: widget.color,
+        shape: AmalfiSmoothBorder(
+          radius: style.colourRadius,
+          side: BorderSide(
+            color: colors.lineBorder,
+            strokeAlign: BorderSide.strokeAlignInside,
           ),
         ),
-        child: SizedBox(width: style.colourWidth, height: colourHeight),
       ),
+      child: SizedBox(width: style.colourWidth, height: colourHeight),
     );
 
     final content = Padding(
@@ -242,9 +239,7 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
                   maxLines: 1,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
-                  style: AmalfiType.body(
-                    color: on ? colors.textPrimary : colors.textTertiary,
-                  ),
+                  style: AmalfiType.body(color: colors.textPrimary),
                 ),
               ),
             ),
@@ -273,14 +268,14 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
       ),
     );
 
-    final well = SizedBox.fromSize(
+    final Widget well = SizedBox.fromSize(
       size: style.size,
       child: Stack(
         fit: StackFit.expand,
         children: [
           AmalfiFieldSurface(
             radius: style.radius,
-            fill: on ? colors.surfaceRaised : colors.surfaceSunken,
+            fill: colors.surfaceRaised,
             border: colors.lineBorder,
             halo: colors.lineFocus,
             haloVisible: focused,
@@ -339,7 +334,9 @@ class _AmalfiColorWellState extends State<AmalfiColorWell>
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: on ? _toggle : null,
-              child: well,
+              child: on
+                  ? well
+                  : Opacity(opacity: AmalfiStates.disabledOpacity, child: well),
             ),
           ),
         ),

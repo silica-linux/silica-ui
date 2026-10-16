@@ -1,11 +1,8 @@
 // Gallery page: forms (kit `Forms/*`): every row, the three sections, the footer and the full
-// layout, all live. The pop-up, checkboxes, switch and push buttons are the forms family's
-// stand-ins until the buttons and toggles families land.
+// layout, all live, with the real pop-up button, checkboxes, switch and push buttons.
 
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
-// ignore: implementation_imports
-import 'package:silica_ui/src/amalfi/components/forms/stand_ins.dart';
 
 import '../specimen.dart';
 
@@ -50,10 +47,30 @@ class _FormsPageState extends State<_FormsPage> {
   bool get _emailValid =>
       RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_email.text);
 
-  Widget get _regionPopUp => StandInPopUpButton(
+  Widget get _regionPopUp => AmalfiPopUpButton<String>(
+    items: [
+      for (final region in _regions)
+        AmalfiPopUpItem(value: region, label: region),
+    ],
     value: _region,
-    options: _regions,
     onChanged: (v) => setState(() => _region = v),
+  );
+
+  Widget _checkbox(String label, bool value, ValueChanged<bool> onChanged) =>
+      AmalfiCheckbox(label: label, value: value, onChanged: onChanged);
+
+  Widget _footer(VoidCallback onSave) => AmalfiFormFooter(
+    actions: [
+      AmalfiPushButton(
+        label: 'Cancel',
+        onPressed: () => setState(() => _saved = 'Cancelled'),
+      ),
+      AmalfiPushButton(
+        label: 'Save',
+        variant: AmalfiPushButtonVariant.primary,
+        onPressed: onSave,
+      ),
+    ],
   );
 
   Widget _profile() => AmalfiFormSection(
@@ -61,10 +78,12 @@ class _FormsPageState extends State<_FormsPage> {
     rows: [
       AmalfiFormRow(
         label: 'Name:',
+        expand: true,
         control: AmalfiTextField(controller: _name),
       ),
       AmalfiFormRow(
         label: 'Email:',
+        expand: true,
         control: AmalfiTextField(
           controller: _email,
           errorText: _emailValid ? null : 'Invalid address',
@@ -84,17 +103,17 @@ class _FormsPageState extends State<_FormsPage> {
     rows: [
       AmalfiFormRow(
         label: 'Options:',
-        control: StandInCheckbox(
-          label: 'Send me updates',
-          value: _updates,
-          onChanged: (v) => setState(() => _updates = v),
+        control: _checkbox(
+          'Send me updates',
+          _updates,
+          (v) => setState(() => _updates = v),
         ),
       ),
       AmalfiFormRow(
-        control: StandInCheckbox(
-          label: 'Keep me signed in',
-          value: _signedIn,
-          onChanged: (v) => setState(() => _signedIn = v),
+        control: _checkbox(
+          'Keep me signed in',
+          _signedIn,
+          (v) => setState(() => _signedIn = v),
         ),
       ),
     ],
@@ -105,6 +124,7 @@ class _FormsPageState extends State<_FormsPage> {
     rows: [
       AmalfiFormRow(
         label: 'Display name:',
+        expand: true,
         control: AmalfiTextField(controller: _display),
         message: 'This name is shown to people you share with.',
       ),
@@ -120,7 +140,11 @@ class _FormsPageState extends State<_FormsPage> {
         children: [
           const Specimen(
             label: 'Text',
-            child: AmalfiFormRow(label: 'Label', control: AmalfiTextField()),
+            child: AmalfiFormRow(
+              label: 'Label',
+              expand: true,
+              control: AmalfiTextField(),
+            ),
           ),
           Specimen(
             label: 'Popup',
@@ -130,10 +154,10 @@ class _FormsPageState extends State<_FormsPage> {
             label: 'Check',
             child: AmalfiFormRow(
               label: 'Label',
-              control: StandInCheckbox(
-                label: 'Send me updates',
-                value: _updates,
-                onChanged: (v) => setState(() => _updates = v),
+              control: _checkbox(
+                'Send me updates',
+                _updates,
+                (v) => setState(() => _updates = v),
               ),
             ),
           ),
@@ -141,7 +165,8 @@ class _FormsPageState extends State<_FormsPage> {
             label: 'Switch',
             child: AmalfiFormRow(
               label: 'Label',
-              control: StandInSwitch(
+              expand: true,
+              control: AmalfiSwitch(
                 label: 'Sync across devices',
                 value: _sync,
                 onChanged: (v) => setState(() => _sync = v),
@@ -152,6 +177,7 @@ class _FormsPageState extends State<_FormsPage> {
             label: 'Help',
             child: AmalfiFormRow(
               label: 'Label',
+              expand: true,
               control: AmalfiTextField(),
               message: 'This name is shown to people you share with.',
             ),
@@ -160,6 +186,7 @@ class _FormsPageState extends State<_FormsPage> {
             label: 'Error',
             child: AmalfiFormRow(
               label: 'Label',
+              expand: true,
               control: AmalfiTextField(errorText: 'Invalid address'),
               message: 'Enter an address such as name@example.com.',
               messageKind: AmalfiFormMessageKind.error,
@@ -177,19 +204,7 @@ class _FormsPageState extends State<_FormsPage> {
             label: 'Footer',
             child: SizedBox(
               width: 352,
-              child: AmalfiFormFooter(
-                actions: [
-                  StandInPushButton(
-                    label: 'Cancel',
-                    onPressed: () => setState(() => _saved = 'Cancelled'),
-                  ),
-                  StandInPushButton(
-                    label: 'Save',
-                    primary: true,
-                    onPressed: () => setState(() => _saved = 'Saved'),
-                  ),
-                ],
-              ),
+              child: _footer(() => setState(() => _saved = 'Saved')),
             ),
           ),
         ],
@@ -203,22 +218,12 @@ class _FormsPageState extends State<_FormsPage> {
             child: AmalfiFormLayout(
               title: 'Account details',
               sections: [_profile(), _preferences()],
-              footer: AmalfiFormFooter(
-                actions: [
-                  StandInPushButton(
-                    label: 'Cancel',
-                    onPressed: () => setState(() => _saved = 'Cancelled'),
-                  ),
-                  StandInPushButton(
-                    label: 'Save',
-                    primary: true,
-                    onPressed: () => setState(
-                      () => _saved = _emailValid
-                          ? 'Saved'
-                          : 'Fix the email address first',
-                    ),
-                  ),
-                ],
+              footer: _footer(
+                () => setState(
+                  () => _saved = _emailValid
+                      ? 'Saved'
+                      : 'Fix the email address first',
+                ),
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 // The spinner (kit `Progress/Spinner/<Small|Regular|Large>/Rest|Disabled`): twelve spokes of
 // `Text/Secondary` around the centre, the one at the top opaque and each next one
-// counter-clockwise 7.5 % fainter; the bright spoke steps clockwise. Disabled: every spoke
-// `Text/Tertiary` at 50 %, still.
+// counter-clockwise 7.5 % fainter; the bright spoke steps clockwise. Disabled: the whole
+// spinner at `AmalfiStates.disabledOpacity`, still.
 
 import 'dart:math' as math;
 
@@ -24,13 +24,13 @@ abstract final class AmalfiSpinnerMetrics {
   /// The spoke at the top of the spinner of [size], centred across, from the top edge.
   static Rect spokeOf(AmalfiProgressSize size) {
     final side = sideOf(size);
-    final (w, h) = size == AmalfiProgressSize.small ? (1.5, 4.0) : (4.0, 8.0);
+    final (w, h) = size == AmalfiProgressSize.small ? (2.0, 4.0) : (4.0, 8.0);
     return Rect.fromLTWH((side - w) / 2, 0, w, h);
   }
 
   /// The corner radius of a spoke of [size].
   static double spokeRadiusOf(AmalfiProgressSize size) => switch (size) {
-    AmalfiProgressSize.small => 0.75,
+    AmalfiProgressSize.small => 1,
     AmalfiProgressSize.regular => 1.02,
     AmalfiProgressSize.large => 1.36,
   };
@@ -40,9 +40,6 @@ abstract final class AmalfiSpinnerMetrics {
 
   /// How much fainter each spoke is than the one before it.
   static const double fade = 0.075;
-
-  /// The opacity of every spoke of a disabled spinner.
-  static const double disabledOpacity = 0.5;
 
   /// One turn of the bright spoke. The reference is unmeasured: an assumption, twelve steps
   /// of about 83 ms (the key repeat of `docs/spec/hud.md`).
@@ -61,7 +58,7 @@ class AmalfiSpinner extends StatefulWidget {
 
   final AmalfiProgressSize size;
 
-  /// Whether the task is active; disabled spinners are grey and still.
+  /// Whether the task is active; a disabled spinner is dimmed as a whole and still.
   final bool enabled;
 
   /// What is in progress, for screen readers.
@@ -116,20 +113,20 @@ class _AmalfiSpinnerState extends State<AmalfiSpinner>
     return Semantics(
       label: widget.semanticLabel,
       enabled: widget.enabled,
-      child: SizedBox.square(
-        dimension: side,
-        child: AnimatedBuilder(
-          animation: _turn,
-          builder: (context, _) => CustomPaint(
-            painter: AmalfiSpinnerPainter(
-              size: widget.size,
-              color: widget.enabled
-                  ? colors.textSecondary
-                  : colors.textTertiary,
-              head:
-                  (_turn.value * AmalfiSpinnerMetrics.spokes).floor() %
-                  AmalfiSpinnerMetrics.spokes,
-              enabled: widget.enabled,
+      child: Opacity(
+        opacity: widget.enabled ? 1 : AmalfiStates.disabledOpacity,
+        child: SizedBox.square(
+          dimension: side,
+          child: AnimatedBuilder(
+            animation: _turn,
+            builder: (context, _) => CustomPaint(
+              painter: AmalfiSpinnerPainter(
+                size: widget.size,
+                color: colors.textSecondary,
+                head:
+                    (_turn.value * AmalfiSpinnerMetrics.spokes).floor() %
+                    AmalfiSpinnerMetrics.spokes,
+              ),
             ),
           ),
         ),
@@ -145,13 +142,11 @@ class AmalfiSpinnerPainter extends CustomPainter {
     required this.size,
     required this.color,
     this.head = 0,
-    this.enabled = true,
   });
 
   final AmalfiProgressSize size;
   final Color color;
   final int head;
-  final bool enabled;
 
   @override
   void paint(Canvas canvas, Size box) {
@@ -166,9 +161,7 @@ class AmalfiSpinnerPainter extends CustomPainter {
     for (var i = 0; i < n; i++) {
       // Spoke i stands i steps clockwise from the top; its age counts back from the head.
       final age = (head - i) % n;
-      final opacity = enabled
-          ? 1 - AmalfiSpinnerMetrics.fade * age
-          : AmalfiSpinnerMetrics.disabledOpacity;
+      final opacity = 1 - AmalfiSpinnerMetrics.fade * age;
       canvas
         ..save()
         ..translate(side / 2, side / 2)
@@ -184,8 +177,5 @@ class AmalfiSpinnerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(AmalfiSpinnerPainter old) =>
-      old.size != size ||
-      old.color != color ||
-      old.head != head ||
-      old.enabled != enabled;
+      old.size != size || old.color != color || old.head != head;
 }
