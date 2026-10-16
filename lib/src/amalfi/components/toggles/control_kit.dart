@@ -150,6 +150,9 @@ abstract final class AmalfiLayerKeys {
   /// The label of a labelled control (`Label`, `Title`, `Heading`).
   static const Key label = ValueKey('amalfi.layer.label');
 
+  /// The content of a group or box (`Content`).
+  static const Key content = ValueKey('amalfi.layer.content');
+
   /// The control inside a labelled row (`Checkbox box`, `Radio box`, `Switch`, `Triangle`).
   static const Key control = ValueKey('amalfi.layer.control');
 }
