@@ -166,8 +166,9 @@ void main() {
             ),
           ),
         );
-        double turns() =>
-            tester.widget<AmalfiGlyphIcon>(find.byType(AmalfiGlyphIcon)).turns;
+        double turns() => tester
+            .widget<AmalfiToggleGlyphIcon>(find.byType(AmalfiToggleGlyphIcon))
+            .turns;
         await tester.tap(find.byType(AmalfiDisclosure));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 50));

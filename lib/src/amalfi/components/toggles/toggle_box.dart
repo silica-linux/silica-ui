@@ -156,7 +156,7 @@ class AmalfiToggleBox extends StatelessWidget {
             ),
           if (state.focused && enabled)
             Positioned.fill(
-              child: AmalfiFocusHalo(radius: radius, colors: colors),
+              child: AmalfiToggleFocusHalo(radius: radius, colors: colors),
             ),
           if (on)
             Positioned(

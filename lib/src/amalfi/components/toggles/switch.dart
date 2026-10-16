@@ -187,7 +187,10 @@ class AmalfiSwitchFace extends StatelessWidget {
             ),
           if (state.focused && enabled)
             Positioned.fill(
-              child: AmalfiFocusHalo(radius: m.trackRadius, colors: colors),
+              child: AmalfiToggleFocusHalo(
+                radius: m.trackRadius,
+                colors: colors,
+              ),
             ),
           if (!dragging)
             Positioned(

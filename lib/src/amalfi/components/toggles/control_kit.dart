@@ -159,8 +159,8 @@ abstract final class AmalfiLayerKeys {
 
 /// The keyboard focus halo: [AmalfiFocus.halo] points of `Line/Focus` outside a shape of
 /// [radius], the size of its parent (place it with `Positioned.fill`).
-class AmalfiFocusHalo extends StatelessWidget {
-  const AmalfiFocusHalo({
+class AmalfiToggleFocusHalo extends StatelessWidget {
+  const AmalfiToggleFocusHalo({
     super.key,
     required this.radius,
     required this.colors,
@@ -190,7 +190,7 @@ class AmalfiFocusHalo extends StatelessWidget {
 
 /// The Icon Kit glyphs the controls draw, as their 24 pt outlines (`symbols/regular/*.svg` in
 /// silica-icons), stroked with round caps and joins.
-enum AmalfiGlyph {
+enum AmalfiToggleGlyph {
   /// `checkmark`.
   checkmark([Offset(4.6, 12.6), Offset(9.4, 17.6), Offset(19.4, 6.4)]),
 
@@ -206,7 +206,7 @@ enum AmalfiGlyph {
   /// `chevron-up`.
   chevronUp([Offset(5.4, 14.59), Offset(12, 9.41), Offset(18.6, 14.59)]);
 
-  const AmalfiGlyph(this.points);
+  const AmalfiToggleGlyph(this.points);
 
   /// The polyline on the 24 pt canvas.
   final List<Offset> points;
@@ -218,14 +218,14 @@ enum AmalfiGlyph {
 
 /// Paints [glyph] in [color], filling its size (a square), optionally turned by [turns]
 /// around its centre.
-class AmalfiGlyphPainter extends CustomPainter {
-  const AmalfiGlyphPainter({
+class AmalfiToggleGlyphPainter extends CustomPainter {
+  const AmalfiToggleGlyphPainter({
     required this.glyph,
     required this.color,
     this.turns = 0,
   });
 
-  final AmalfiGlyph glyph;
+  final AmalfiToggleGlyph glyph;
   final Color color;
 
   /// Clockwise turns (0.25 = 90°).
@@ -254,7 +254,7 @@ class AmalfiGlyphPainter extends CustomPainter {
       path,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = AmalfiGlyph.strokeWidth(side)
+        ..strokeWidth = AmalfiToggleGlyph.strokeWidth(side)
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round
         ..color = color,
@@ -263,13 +263,13 @@ class AmalfiGlyphPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(AmalfiGlyphPainter old) =>
+  bool shouldRepaint(AmalfiToggleGlyphPainter old) =>
       old.glyph != glyph || old.color != color || old.turns != turns;
 }
 
-/// A glyph of [size] points (see [AmalfiGlyphPainter]).
-class AmalfiGlyphIcon extends StatelessWidget {
-  const AmalfiGlyphIcon({
+/// A glyph of [size] points (see [AmalfiToggleGlyphPainter]).
+class AmalfiToggleGlyphIcon extends StatelessWidget {
+  const AmalfiToggleGlyphIcon({
     super.key,
     required this.glyph,
     required this.size,
@@ -277,7 +277,7 @@ class AmalfiGlyphIcon extends StatelessWidget {
     this.turns = 0,
   });
 
-  final AmalfiGlyph glyph;
+  final AmalfiToggleGlyph glyph;
   final double size;
   final Color color;
   final double turns;
@@ -286,7 +286,11 @@ class AmalfiGlyphIcon extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox.square(
     dimension: size,
     child: CustomPaint(
-      painter: AmalfiGlyphPainter(glyph: glyph, color: color, turns: turns),
+      painter: AmalfiToggleGlyphPainter(
+        glyph: glyph,
+        color: color,
+        turns: turns,
+      ),
     ),
   );
 }

@@ -35,8 +35,10 @@ class AmalfiCheckboxFace extends StatelessWidget {
       metrics: metrics,
       on: value != false,
       state: state,
-      mark: (color) => AmalfiGlyphIcon(
-        glyph: value == null ? AmalfiGlyph.minus : AmalfiGlyph.checkmark,
+      mark: (color) => AmalfiToggleGlyphIcon(
+        glyph: value == null
+            ? AmalfiToggleGlyph.minus
+            : AmalfiToggleGlyph.checkmark,
         size: metrics.markSize,
         color: color,
       ),

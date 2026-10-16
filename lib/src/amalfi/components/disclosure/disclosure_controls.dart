@@ -121,16 +121,16 @@ class AmalfiDisclosureFace extends StatelessWidget {
             ),
           if (state.focused && enabled)
             Positioned.fill(
-              child: AmalfiFocusHalo(radius: radius, colors: colors),
+              child: AmalfiToggleFocusHalo(radius: radius, colors: colors),
             ),
           Positioned(
             left: inset,
             top: inset,
-            child: AmalfiGlyphIcon(
+            child: AmalfiToggleGlyphIcon(
               key: AmalfiLayerKeys.mark,
               glyph: button
-                  ? AmalfiGlyph.chevronDown
-                  : AmalfiGlyph.chevronRight,
+                  ? AmalfiToggleGlyph.chevronDown
+                  : AmalfiToggleGlyph.chevronRight,
               size: AmalfiDisclosureMetrics.glyph,
               color: glyphColor,
               // Right → down is a quarter turn; down → up a half turn.

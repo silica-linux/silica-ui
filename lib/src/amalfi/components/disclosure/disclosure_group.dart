@@ -73,7 +73,7 @@ class AmalfiDisclosureHeaderFace extends StatelessWidget {
             ),
           if (enabled && state.focused)
             Positioned.fill(
-              child: AmalfiFocusHalo(radius: radius, colors: colors),
+              child: AmalfiToggleFocusHalo(radius: radius, colors: colors),
             ),
           Positioned.fill(
             child: Padding(
