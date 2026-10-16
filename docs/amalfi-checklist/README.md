@@ -15,18 +15,18 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Steppers](steppers.md) | `Steppers` | 68 | 68 |
 | [Progress](progress.md) | `Progress` | 84 | 80 |
 | [Scrollbars](scrollbars.md) | `Scrollbars` | 34 | 34 |
-| [Sidebars](sidebars.md) | `Sidebars` | 32 | 0 |
+| [Sidebars](sidebars.md) | `Sidebars` | 32 | 28 |
 | [Lists](lists.md) | — | 0 | 0 |
 | [Disclosure](disclosure.md) | `Disclosure` | 44 | 44 |
 | [Group Boxes](group_boxes.md) | `Group Boxes` | 8 | 2 |
 | [Forms](forms.md) | `Forms` | 22 | 22 |
-| [Titlebars](titlebars.md) | `Titlebars` | 199 | 0 |
-| [Windows](windows.md) | `Windows` | 38 | 0 |
+| [Titlebars](titlebars.md) | `Titlebars` | 199 | 181 |
+| [Windows](windows.md) | `Windows` | 38 | 38 |
 | [Alerts](alerts.md) | `Alerts` | 12 | 0 |
 | [Dialogs](dialogs.md) | `Dialogs` | 12 | 12 |
 | [Sheets](sheets.md) | `Windows/Window/Sheet Attached` | 2 | 0 |
 | [Wells](wells.md) | `Wells` | 74 | 74 |
-| **Total** | | **2165** | **1692** |
+| **Total** | | **2165** | **1939** |
 
 ## Out of scope of the component milestone (M3)
 
