@@ -6,56 +6,56 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Disclosure/Button
 
-- [ ] Disclosure/Button/Collapsed/Disabled/Dark
-- [ ] Disclosure/Button/Collapsed/Disabled/Light
-- [ ] Disclosure/Button/Collapsed/Hover/Dark
-- [ ] Disclosure/Button/Collapsed/Hover/Light
-- [ ] Disclosure/Button/Collapsed/Pressed/Dark
-- [ ] Disclosure/Button/Collapsed/Pressed/Light
-- [ ] Disclosure/Button/Collapsed/Rest/Dark
-- [ ] Disclosure/Button/Collapsed/Rest/Light
-- [ ] Disclosure/Button/Expanded/Disabled/Dark
-- [ ] Disclosure/Button/Expanded/Disabled/Light
-- [ ] Disclosure/Button/Expanded/Hover/Dark
-- [ ] Disclosure/Button/Expanded/Hover/Light
-- [ ] Disclosure/Button/Expanded/Pressed/Dark
-- [ ] Disclosure/Button/Expanded/Pressed/Light
-- [ ] Disclosure/Button/Expanded/Rest/Dark
-- [ ] Disclosure/Button/Expanded/Rest/Light
+- [x] Disclosure/Button/Collapsed/Disabled/Dark
+- [x] Disclosure/Button/Collapsed/Disabled/Light
+- [x] Disclosure/Button/Collapsed/Hover/Dark
+- [x] Disclosure/Button/Collapsed/Hover/Light
+- [x] Disclosure/Button/Collapsed/Pressed/Dark
+- [x] Disclosure/Button/Collapsed/Pressed/Light
+- [x] Disclosure/Button/Collapsed/Rest/Dark
+- [x] Disclosure/Button/Collapsed/Rest/Light
+- [x] Disclosure/Button/Expanded/Disabled/Dark
+- [x] Disclosure/Button/Expanded/Disabled/Light
+- [x] Disclosure/Button/Expanded/Hover/Dark
+- [x] Disclosure/Button/Expanded/Hover/Light
+- [x] Disclosure/Button/Expanded/Pressed/Dark
+- [x] Disclosure/Button/Expanded/Pressed/Light
+- [x] Disclosure/Button/Expanded/Rest/Dark
+- [x] Disclosure/Button/Expanded/Rest/Light
 
 ## Disclosure/Group Header
 
-- [ ] Disclosure/Group Header/Closed/Hover/Dark
-- [ ] Disclosure/Group Header/Closed/Hover/Light
-- [ ] Disclosure/Group Header/Closed/Rest/Dark
-- [ ] Disclosure/Group Header/Closed/Rest/Light
-- [ ] Disclosure/Group Header/Open/Hover/Dark
-- [ ] Disclosure/Group Header/Open/Hover/Light
-- [ ] Disclosure/Group Header/Open/Rest/Dark
-- [ ] Disclosure/Group Header/Open/Rest/Light
+- [x] Disclosure/Group Header/Closed/Hover/Dark
+- [x] Disclosure/Group Header/Closed/Hover/Light
+- [x] Disclosure/Group Header/Closed/Rest/Dark
+- [x] Disclosure/Group Header/Closed/Rest/Light
+- [x] Disclosure/Group Header/Open/Hover/Dark
+- [x] Disclosure/Group Header/Open/Hover/Light
+- [x] Disclosure/Group Header/Open/Rest/Dark
+- [x] Disclosure/Group Header/Open/Rest/Light
 
 ## Disclosure/Group
 
-- [ ] Disclosure/Group/Closed/Rest/Dark
-- [ ] Disclosure/Group/Closed/Rest/Light
-- [ ] Disclosure/Group/Open/Rest/Dark
-- [ ] Disclosure/Group/Open/Rest/Light
+- [x] Disclosure/Group/Closed/Rest/Dark
+- [x] Disclosure/Group/Closed/Rest/Light
+- [x] Disclosure/Group/Open/Rest/Dark
+- [x] Disclosure/Group/Open/Rest/Light
 
 ## Disclosure/Triangle
 
-- [ ] Disclosure/Triangle/Collapsed/Disabled/Dark
-- [ ] Disclosure/Triangle/Collapsed/Disabled/Light
-- [ ] Disclosure/Triangle/Collapsed/Hover/Dark
-- [ ] Disclosure/Triangle/Collapsed/Hover/Light
-- [ ] Disclosure/Triangle/Collapsed/Pressed/Dark
-- [ ] Disclosure/Triangle/Collapsed/Pressed/Light
-- [ ] Disclosure/Triangle/Collapsed/Rest/Dark
-- [ ] Disclosure/Triangle/Collapsed/Rest/Light
-- [ ] Disclosure/Triangle/Expanded/Disabled/Dark
-- [ ] Disclosure/Triangle/Expanded/Disabled/Light
-- [ ] Disclosure/Triangle/Expanded/Hover/Dark
-- [ ] Disclosure/Triangle/Expanded/Hover/Light
-- [ ] Disclosure/Triangle/Expanded/Pressed/Dark
-- [ ] Disclosure/Triangle/Expanded/Pressed/Light
-- [ ] Disclosure/Triangle/Expanded/Rest/Dark
-- [ ] Disclosure/Triangle/Expanded/Rest/Light
+- [x] Disclosure/Triangle/Collapsed/Disabled/Dark
+- [x] Disclosure/Triangle/Collapsed/Disabled/Light
+- [x] Disclosure/Triangle/Collapsed/Hover/Dark
+- [x] Disclosure/Triangle/Collapsed/Hover/Light
+- [x] Disclosure/Triangle/Collapsed/Pressed/Dark
+- [x] Disclosure/Triangle/Collapsed/Pressed/Light
+- [x] Disclosure/Triangle/Collapsed/Rest/Dark
+- [x] Disclosure/Triangle/Collapsed/Rest/Light
+- [x] Disclosure/Triangle/Expanded/Disabled/Dark
+- [x] Disclosure/Triangle/Expanded/Disabled/Light
+- [x] Disclosure/Triangle/Expanded/Hover/Dark
+- [x] Disclosure/Triangle/Expanded/Hover/Light
+- [x] Disclosure/Triangle/Expanded/Pressed/Dark
+- [x] Disclosure/Triangle/Expanded/Pressed/Light
+- [x] Disclosure/Triangle/Expanded/Rest/Dark
+- [x] Disclosure/Triangle/Expanded/Rest/Light

@@ -3,4 +3,5 @@
 // Checklist: `docs/amalfi-checklist/disclosure.md`. Gallery: `example/lib/amalfi/pages/disclosure.dart`.
 // The widgets live under `disclosure/` and are exported from here.
 
-// Nothing yet.
+export 'disclosure/disclosure_controls.dart';
+export 'disclosure/disclosure_group.dart';

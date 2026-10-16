@@ -11,126 +11,126 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Toggles/Checkbox
 
-- [ ] Toggles/Checkbox/Mixed/Large/Disabled/Dark
-- [ ] Toggles/Checkbox/Mixed/Large/Disabled/Light
-- [ ] Toggles/Checkbox/Mixed/Large/Focused/Dark
-- [ ] Toggles/Checkbox/Mixed/Large/Focused/Light
-- [ ] Toggles/Checkbox/Mixed/Large/Hover/Dark
-- [ ] Toggles/Checkbox/Mixed/Large/Hover/Light
-- [ ] Toggles/Checkbox/Mixed/Large/Pressed/Dark
-- [ ] Toggles/Checkbox/Mixed/Large/Pressed/Light
-- [ ] Toggles/Checkbox/Mixed/Large/Rest/Dark
-- [ ] Toggles/Checkbox/Mixed/Large/Rest/Light
-- [ ] Toggles/Checkbox/Mixed/Regular/Disabled/Dark
-- [ ] Toggles/Checkbox/Mixed/Regular/Disabled/Light
-- [ ] Toggles/Checkbox/Mixed/Regular/Focused/Dark
-- [ ] Toggles/Checkbox/Mixed/Regular/Focused/Light
-- [ ] Toggles/Checkbox/Mixed/Regular/Hover/Dark
-- [ ] Toggles/Checkbox/Mixed/Regular/Hover/Light
-- [ ] Toggles/Checkbox/Mixed/Regular/Pressed/Dark
-- [ ] Toggles/Checkbox/Mixed/Regular/Pressed/Light
-- [ ] Toggles/Checkbox/Mixed/Regular/Rest/Dark
-- [ ] Toggles/Checkbox/Mixed/Regular/Rest/Light
-- [ ] Toggles/Checkbox/Mixed/Small/Disabled/Dark
-- [ ] Toggles/Checkbox/Mixed/Small/Disabled/Light
-- [ ] Toggles/Checkbox/Mixed/Small/Focused/Dark
-- [ ] Toggles/Checkbox/Mixed/Small/Focused/Light
-- [ ] Toggles/Checkbox/Mixed/Small/Hover/Dark
-- [ ] Toggles/Checkbox/Mixed/Small/Hover/Light
-- [ ] Toggles/Checkbox/Mixed/Small/Pressed/Dark
-- [ ] Toggles/Checkbox/Mixed/Small/Pressed/Light
-- [ ] Toggles/Checkbox/Mixed/Small/Rest/Dark
-- [ ] Toggles/Checkbox/Mixed/Small/Rest/Light
-- [ ] Toggles/Checkbox/Off/Large/Disabled/Dark
-- [ ] Toggles/Checkbox/Off/Large/Disabled/Light
-- [ ] Toggles/Checkbox/Off/Large/Focused/Dark
-- [ ] Toggles/Checkbox/Off/Large/Focused/Light
-- [ ] Toggles/Checkbox/Off/Large/Hover/Dark
-- [ ] Toggles/Checkbox/Off/Large/Hover/Light
-- [ ] Toggles/Checkbox/Off/Large/Pressed/Dark
-- [ ] Toggles/Checkbox/Off/Large/Pressed/Light
-- [ ] Toggles/Checkbox/Off/Large/Rest/Dark
-- [ ] Toggles/Checkbox/Off/Large/Rest/Light
-- [ ] Toggles/Checkbox/Off/Regular/Disabled/Dark
-- [ ] Toggles/Checkbox/Off/Regular/Disabled/Light
-- [ ] Toggles/Checkbox/Off/Regular/Focused/Dark
-- [ ] Toggles/Checkbox/Off/Regular/Focused/Light
-- [ ] Toggles/Checkbox/Off/Regular/Hover/Dark
-- [ ] Toggles/Checkbox/Off/Regular/Hover/Light
-- [ ] Toggles/Checkbox/Off/Regular/Pressed/Dark
-- [ ] Toggles/Checkbox/Off/Regular/Pressed/Light
-- [ ] Toggles/Checkbox/Off/Regular/Rest/Dark
-- [ ] Toggles/Checkbox/Off/Regular/Rest/Light
-- [ ] Toggles/Checkbox/Off/Small/Disabled/Dark
-- [ ] Toggles/Checkbox/Off/Small/Disabled/Light
-- [ ] Toggles/Checkbox/Off/Small/Focused/Dark
-- [ ] Toggles/Checkbox/Off/Small/Focused/Light
-- [ ] Toggles/Checkbox/Off/Small/Hover/Dark
-- [ ] Toggles/Checkbox/Off/Small/Hover/Light
-- [ ] Toggles/Checkbox/Off/Small/Pressed/Dark
-- [ ] Toggles/Checkbox/Off/Small/Pressed/Light
-- [ ] Toggles/Checkbox/Off/Small/Rest/Dark
-- [ ] Toggles/Checkbox/Off/Small/Rest/Light
-- [ ] Toggles/Checkbox/On/Large/Disabled/Dark
-- [ ] Toggles/Checkbox/On/Large/Disabled/Light
-- [ ] Toggles/Checkbox/On/Large/Focused/Dark
-- [ ] Toggles/Checkbox/On/Large/Focused/Light
-- [ ] Toggles/Checkbox/On/Large/Hover/Dark
-- [ ] Toggles/Checkbox/On/Large/Hover/Light
-- [ ] Toggles/Checkbox/On/Large/Pressed/Dark
-- [ ] Toggles/Checkbox/On/Large/Pressed/Light
-- [ ] Toggles/Checkbox/On/Large/Rest/Dark
-- [ ] Toggles/Checkbox/On/Large/Rest/Light
-- [ ] Toggles/Checkbox/On/Regular/Disabled/Dark
-- [ ] Toggles/Checkbox/On/Regular/Disabled/Light
-- [ ] Toggles/Checkbox/On/Regular/Focused/Dark
-- [ ] Toggles/Checkbox/On/Regular/Focused/Light
-- [ ] Toggles/Checkbox/On/Regular/Hover/Dark
-- [ ] Toggles/Checkbox/On/Regular/Hover/Light
-- [ ] Toggles/Checkbox/On/Regular/Pressed/Dark
-- [ ] Toggles/Checkbox/On/Regular/Pressed/Light
-- [ ] Toggles/Checkbox/On/Regular/Rest/Dark
-- [ ] Toggles/Checkbox/On/Regular/Rest/Light
-- [ ] Toggles/Checkbox/On/Small/Disabled/Dark
-- [ ] Toggles/Checkbox/On/Small/Disabled/Light
-- [ ] Toggles/Checkbox/On/Small/Focused/Dark
-- [ ] Toggles/Checkbox/On/Small/Focused/Light
-- [ ] Toggles/Checkbox/On/Small/Hover/Dark
-- [ ] Toggles/Checkbox/On/Small/Hover/Light
-- [ ] Toggles/Checkbox/On/Small/Pressed/Dark
-- [ ] Toggles/Checkbox/On/Small/Pressed/Light
-- [ ] Toggles/Checkbox/On/Small/Rest/Dark
-- [ ] Toggles/Checkbox/On/Small/Rest/Light
-- [ ] Toggles/Checkbox/With Label/Mixed/Disabled/Dark
-- [ ] Toggles/Checkbox/With Label/Mixed/Disabled/Light
-- [ ] Toggles/Checkbox/With Label/Mixed/Focused/Dark
-- [ ] Toggles/Checkbox/With Label/Mixed/Focused/Light
-- [ ] Toggles/Checkbox/With Label/Mixed/Hover/Dark
-- [ ] Toggles/Checkbox/With Label/Mixed/Hover/Light
-- [ ] Toggles/Checkbox/With Label/Mixed/Pressed/Dark
-- [ ] Toggles/Checkbox/With Label/Mixed/Pressed/Light
-- [ ] Toggles/Checkbox/With Label/Mixed/Rest/Dark
-- [ ] Toggles/Checkbox/With Label/Mixed/Rest/Light
-- [ ] Toggles/Checkbox/With Label/Off/Disabled/Dark
-- [ ] Toggles/Checkbox/With Label/Off/Disabled/Light
-- [ ] Toggles/Checkbox/With Label/Off/Focused/Dark
-- [ ] Toggles/Checkbox/With Label/Off/Focused/Light
-- [ ] Toggles/Checkbox/With Label/Off/Hover/Dark
-- [ ] Toggles/Checkbox/With Label/Off/Hover/Light
-- [ ] Toggles/Checkbox/With Label/Off/Pressed/Dark
-- [ ] Toggles/Checkbox/With Label/Off/Pressed/Light
-- [ ] Toggles/Checkbox/With Label/Off/Rest/Dark
-- [ ] Toggles/Checkbox/With Label/Off/Rest/Light
-- [ ] Toggles/Checkbox/With Label/On/Disabled/Dark
-- [ ] Toggles/Checkbox/With Label/On/Disabled/Light
-- [ ] Toggles/Checkbox/With Label/On/Focused/Dark
-- [ ] Toggles/Checkbox/With Label/On/Focused/Light
-- [ ] Toggles/Checkbox/With Label/On/Hover/Dark
-- [ ] Toggles/Checkbox/With Label/On/Hover/Light
-- [ ] Toggles/Checkbox/With Label/On/Pressed/Dark
-- [ ] Toggles/Checkbox/With Label/On/Pressed/Light
-- [ ] Toggles/Checkbox/With Label/On/Rest/Dark
-- [ ] Toggles/Checkbox/With Label/On/Rest/Light
+- [x] Toggles/Checkbox/Mixed/Large/Disabled/Dark
+- [x] Toggles/Checkbox/Mixed/Large/Disabled/Light
+- [x] Toggles/Checkbox/Mixed/Large/Focused/Dark
+- [x] Toggles/Checkbox/Mixed/Large/Focused/Light
+- [x] Toggles/Checkbox/Mixed/Large/Hover/Dark
+- [x] Toggles/Checkbox/Mixed/Large/Hover/Light
+- [x] Toggles/Checkbox/Mixed/Large/Pressed/Dark
+- [x] Toggles/Checkbox/Mixed/Large/Pressed/Light
+- [x] Toggles/Checkbox/Mixed/Large/Rest/Dark
+- [x] Toggles/Checkbox/Mixed/Large/Rest/Light
+- [x] Toggles/Checkbox/Mixed/Regular/Disabled/Dark
+- [x] Toggles/Checkbox/Mixed/Regular/Disabled/Light
+- [x] Toggles/Checkbox/Mixed/Regular/Focused/Dark
+- [x] Toggles/Checkbox/Mixed/Regular/Focused/Light
+- [x] Toggles/Checkbox/Mixed/Regular/Hover/Dark
+- [x] Toggles/Checkbox/Mixed/Regular/Hover/Light
+- [x] Toggles/Checkbox/Mixed/Regular/Pressed/Dark
+- [x] Toggles/Checkbox/Mixed/Regular/Pressed/Light
+- [x] Toggles/Checkbox/Mixed/Regular/Rest/Dark
+- [x] Toggles/Checkbox/Mixed/Regular/Rest/Light
+- [x] Toggles/Checkbox/Mixed/Small/Disabled/Dark
+- [x] Toggles/Checkbox/Mixed/Small/Disabled/Light
+- [x] Toggles/Checkbox/Mixed/Small/Focused/Dark
+- [x] Toggles/Checkbox/Mixed/Small/Focused/Light
+- [x] Toggles/Checkbox/Mixed/Small/Hover/Dark
+- [x] Toggles/Checkbox/Mixed/Small/Hover/Light
+- [x] Toggles/Checkbox/Mixed/Small/Pressed/Dark
+- [x] Toggles/Checkbox/Mixed/Small/Pressed/Light
+- [x] Toggles/Checkbox/Mixed/Small/Rest/Dark
+- [x] Toggles/Checkbox/Mixed/Small/Rest/Light
+- [x] Toggles/Checkbox/Off/Large/Disabled/Dark
+- [x] Toggles/Checkbox/Off/Large/Disabled/Light
+- [x] Toggles/Checkbox/Off/Large/Focused/Dark
+- [x] Toggles/Checkbox/Off/Large/Focused/Light
+- [x] Toggles/Checkbox/Off/Large/Hover/Dark
+- [x] Toggles/Checkbox/Off/Large/Hover/Light
+- [x] Toggles/Checkbox/Off/Large/Pressed/Dark
+- [x] Toggles/Checkbox/Off/Large/Pressed/Light
+- [x] Toggles/Checkbox/Off/Large/Rest/Dark
+- [x] Toggles/Checkbox/Off/Large/Rest/Light
+- [x] Toggles/Checkbox/Off/Regular/Disabled/Dark
+- [x] Toggles/Checkbox/Off/Regular/Disabled/Light
+- [x] Toggles/Checkbox/Off/Regular/Focused/Dark
+- [x] Toggles/Checkbox/Off/Regular/Focused/Light
+- [x] Toggles/Checkbox/Off/Regular/Hover/Dark
+- [x] Toggles/Checkbox/Off/Regular/Hover/Light
+- [x] Toggles/Checkbox/Off/Regular/Pressed/Dark
+- [x] Toggles/Checkbox/Off/Regular/Pressed/Light
+- [x] Toggles/Checkbox/Off/Regular/Rest/Dark
+- [x] Toggles/Checkbox/Off/Regular/Rest/Light
+- [x] Toggles/Checkbox/Off/Small/Disabled/Dark
+- [x] Toggles/Checkbox/Off/Small/Disabled/Light
+- [x] Toggles/Checkbox/Off/Small/Focused/Dark
+- [x] Toggles/Checkbox/Off/Small/Focused/Light
+- [x] Toggles/Checkbox/Off/Small/Hover/Dark
+- [x] Toggles/Checkbox/Off/Small/Hover/Light
+- [x] Toggles/Checkbox/Off/Small/Pressed/Dark
+- [x] Toggles/Checkbox/Off/Small/Pressed/Light
+- [x] Toggles/Checkbox/Off/Small/Rest/Dark
+- [x] Toggles/Checkbox/Off/Small/Rest/Light
+- [x] Toggles/Checkbox/On/Large/Disabled/Dark
+- [x] Toggles/Checkbox/On/Large/Disabled/Light
+- [x] Toggles/Checkbox/On/Large/Focused/Dark
+- [x] Toggles/Checkbox/On/Large/Focused/Light
+- [x] Toggles/Checkbox/On/Large/Hover/Dark
+- [x] Toggles/Checkbox/On/Large/Hover/Light
+- [x] Toggles/Checkbox/On/Large/Pressed/Dark
+- [x] Toggles/Checkbox/On/Large/Pressed/Light
+- [x] Toggles/Checkbox/On/Large/Rest/Dark
+- [x] Toggles/Checkbox/On/Large/Rest/Light
+- [x] Toggles/Checkbox/On/Regular/Disabled/Dark
+- [x] Toggles/Checkbox/On/Regular/Disabled/Light
+- [x] Toggles/Checkbox/On/Regular/Focused/Dark
+- [x] Toggles/Checkbox/On/Regular/Focused/Light
+- [x] Toggles/Checkbox/On/Regular/Hover/Dark
+- [x] Toggles/Checkbox/On/Regular/Hover/Light
+- [x] Toggles/Checkbox/On/Regular/Pressed/Dark
+- [x] Toggles/Checkbox/On/Regular/Pressed/Light
+- [x] Toggles/Checkbox/On/Regular/Rest/Dark
+- [x] Toggles/Checkbox/On/Regular/Rest/Light
+- [x] Toggles/Checkbox/On/Small/Disabled/Dark
+- [x] Toggles/Checkbox/On/Small/Disabled/Light
+- [x] Toggles/Checkbox/On/Small/Focused/Dark
+- [x] Toggles/Checkbox/On/Small/Focused/Light
+- [x] Toggles/Checkbox/On/Small/Hover/Dark
+- [x] Toggles/Checkbox/On/Small/Hover/Light
+- [x] Toggles/Checkbox/On/Small/Pressed/Dark
+- [x] Toggles/Checkbox/On/Small/Pressed/Light
+- [x] Toggles/Checkbox/On/Small/Rest/Dark
+- [x] Toggles/Checkbox/On/Small/Rest/Light
+- [x] Toggles/Checkbox/With Label/Mixed/Disabled/Dark
+- [x] Toggles/Checkbox/With Label/Mixed/Disabled/Light
+- [x] Toggles/Checkbox/With Label/Mixed/Focused/Dark
+- [x] Toggles/Checkbox/With Label/Mixed/Focused/Light
+- [x] Toggles/Checkbox/With Label/Mixed/Hover/Dark
+- [x] Toggles/Checkbox/With Label/Mixed/Hover/Light
+- [x] Toggles/Checkbox/With Label/Mixed/Pressed/Dark
+- [x] Toggles/Checkbox/With Label/Mixed/Pressed/Light
+- [x] Toggles/Checkbox/With Label/Mixed/Rest/Dark
+- [x] Toggles/Checkbox/With Label/Mixed/Rest/Light
+- [x] Toggles/Checkbox/With Label/Off/Disabled/Dark
+- [x] Toggles/Checkbox/With Label/Off/Disabled/Light
+- [x] Toggles/Checkbox/With Label/Off/Focused/Dark
+- [x] Toggles/Checkbox/With Label/Off/Focused/Light
+- [x] Toggles/Checkbox/With Label/Off/Hover/Dark
+- [x] Toggles/Checkbox/With Label/Off/Hover/Light
+- [x] Toggles/Checkbox/With Label/Off/Pressed/Dark
+- [x] Toggles/Checkbox/With Label/Off/Pressed/Light
+- [x] Toggles/Checkbox/With Label/Off/Rest/Dark
+- [x] Toggles/Checkbox/With Label/Off/Rest/Light
+- [x] Toggles/Checkbox/With Label/On/Disabled/Dark
+- [x] Toggles/Checkbox/With Label/On/Disabled/Light
+- [x] Toggles/Checkbox/With Label/On/Focused/Dark
+- [x] Toggles/Checkbox/With Label/On/Focused/Light
+- [x] Toggles/Checkbox/With Label/On/Hover/Dark
+- [x] Toggles/Checkbox/With Label/On/Hover/Light
+- [x] Toggles/Checkbox/With Label/On/Pressed/Dark
+- [x] Toggles/Checkbox/With Label/On/Pressed/Light
+- [x] Toggles/Checkbox/With Label/On/Rest/Dark
+- [x] Toggles/Checkbox/With Label/On/Rest/Light
 
 ## Toggles/Radio Group
 
@@ -139,86 +139,86 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Toggles/Radio
 
-- [ ] Toggles/Radio/Off/Large/Disabled/Dark
-- [ ] Toggles/Radio/Off/Large/Disabled/Light
-- [ ] Toggles/Radio/Off/Large/Focused/Dark
-- [ ] Toggles/Radio/Off/Large/Focused/Light
-- [ ] Toggles/Radio/Off/Large/Hover/Dark
-- [ ] Toggles/Radio/Off/Large/Hover/Light
-- [ ] Toggles/Radio/Off/Large/Pressed/Dark
-- [ ] Toggles/Radio/Off/Large/Pressed/Light
-- [ ] Toggles/Radio/Off/Large/Rest/Dark
-- [ ] Toggles/Radio/Off/Large/Rest/Light
-- [ ] Toggles/Radio/Off/Regular/Disabled/Dark
-- [ ] Toggles/Radio/Off/Regular/Disabled/Light
-- [ ] Toggles/Radio/Off/Regular/Focused/Dark
-- [ ] Toggles/Radio/Off/Regular/Focused/Light
-- [ ] Toggles/Radio/Off/Regular/Hover/Dark
-- [ ] Toggles/Radio/Off/Regular/Hover/Light
-- [ ] Toggles/Radio/Off/Regular/Pressed/Dark
-- [ ] Toggles/Radio/Off/Regular/Pressed/Light
-- [ ] Toggles/Radio/Off/Regular/Rest/Dark
-- [ ] Toggles/Radio/Off/Regular/Rest/Light
-- [ ] Toggles/Radio/Off/Small/Disabled/Dark
-- [ ] Toggles/Radio/Off/Small/Disabled/Light
-- [ ] Toggles/Radio/Off/Small/Focused/Dark
-- [ ] Toggles/Radio/Off/Small/Focused/Light
-- [ ] Toggles/Radio/Off/Small/Hover/Dark
-- [ ] Toggles/Radio/Off/Small/Hover/Light
-- [ ] Toggles/Radio/Off/Small/Pressed/Dark
-- [ ] Toggles/Radio/Off/Small/Pressed/Light
-- [ ] Toggles/Radio/Off/Small/Rest/Dark
-- [ ] Toggles/Radio/Off/Small/Rest/Light
-- [ ] Toggles/Radio/On/Large/Disabled/Dark
-- [ ] Toggles/Radio/On/Large/Disabled/Light
-- [ ] Toggles/Radio/On/Large/Focused/Dark
-- [ ] Toggles/Radio/On/Large/Focused/Light
-- [ ] Toggles/Radio/On/Large/Hover/Dark
-- [ ] Toggles/Radio/On/Large/Hover/Light
-- [ ] Toggles/Radio/On/Large/Pressed/Dark
-- [ ] Toggles/Radio/On/Large/Pressed/Light
-- [ ] Toggles/Radio/On/Large/Rest/Dark
-- [ ] Toggles/Radio/On/Large/Rest/Light
-- [ ] Toggles/Radio/On/Regular/Disabled/Dark
-- [ ] Toggles/Radio/On/Regular/Disabled/Light
-- [ ] Toggles/Radio/On/Regular/Focused/Dark
-- [ ] Toggles/Radio/On/Regular/Focused/Light
-- [ ] Toggles/Radio/On/Regular/Hover/Dark
-- [ ] Toggles/Radio/On/Regular/Hover/Light
-- [ ] Toggles/Radio/On/Regular/Pressed/Dark
-- [ ] Toggles/Radio/On/Regular/Pressed/Light
-- [ ] Toggles/Radio/On/Regular/Rest/Dark
-- [ ] Toggles/Radio/On/Regular/Rest/Light
-- [ ] Toggles/Radio/On/Small/Disabled/Dark
-- [ ] Toggles/Radio/On/Small/Disabled/Light
-- [ ] Toggles/Radio/On/Small/Focused/Dark
-- [ ] Toggles/Radio/On/Small/Focused/Light
-- [ ] Toggles/Radio/On/Small/Hover/Dark
-- [ ] Toggles/Radio/On/Small/Hover/Light
-- [ ] Toggles/Radio/On/Small/Pressed/Dark
-- [ ] Toggles/Radio/On/Small/Pressed/Light
-- [ ] Toggles/Radio/On/Small/Rest/Dark
-- [ ] Toggles/Radio/On/Small/Rest/Light
-- [ ] Toggles/Radio/With Label/Off/Disabled/Dark
-- [ ] Toggles/Radio/With Label/Off/Disabled/Light
-- [ ] Toggles/Radio/With Label/Off/Focused/Dark
-- [ ] Toggles/Radio/With Label/Off/Focused/Light
-- [ ] Toggles/Radio/With Label/Off/Hover/Dark
-- [ ] Toggles/Radio/With Label/Off/Hover/Light
-- [ ] Toggles/Radio/With Label/Off/Pressed/Dark
-- [ ] Toggles/Radio/With Label/Off/Pressed/Light
-- [ ] Toggles/Radio/With Label/Off/Rest/Dark
-- [ ] Toggles/Radio/With Label/Off/Rest/Light
-- [ ] Toggles/Radio/With Label/On/Disabled/Dark
-- [ ] Toggles/Radio/With Label/On/Disabled/Light
-- [ ] Toggles/Radio/With Label/On/Focused/Dark
-- [ ] Toggles/Radio/With Label/On/Focused/Light
-- [ ] Toggles/Radio/With Label/On/Hover/Dark
-- [ ] Toggles/Radio/With Label/On/Hover/Light
-- [ ] Toggles/Radio/With Label/On/Pressed/Dark
-- [ ] Toggles/Radio/With Label/On/Pressed/Light
-- [ ] Toggles/Radio/With Label/On/Rest/Dark
-- [ ] Toggles/Radio/With Label/On/Rest/Light
+- [x] Toggles/Radio/Off/Large/Disabled/Dark
+- [x] Toggles/Radio/Off/Large/Disabled/Light
+- [x] Toggles/Radio/Off/Large/Focused/Dark
+- [x] Toggles/Radio/Off/Large/Focused/Light
+- [x] Toggles/Radio/Off/Large/Hover/Dark
+- [x] Toggles/Radio/Off/Large/Hover/Light
+- [x] Toggles/Radio/Off/Large/Pressed/Dark
+- [x] Toggles/Radio/Off/Large/Pressed/Light
+- [x] Toggles/Radio/Off/Large/Rest/Dark
+- [x] Toggles/Radio/Off/Large/Rest/Light
+- [x] Toggles/Radio/Off/Regular/Disabled/Dark
+- [x] Toggles/Radio/Off/Regular/Disabled/Light
+- [x] Toggles/Radio/Off/Regular/Focused/Dark
+- [x] Toggles/Radio/Off/Regular/Focused/Light
+- [x] Toggles/Radio/Off/Regular/Hover/Dark
+- [x] Toggles/Radio/Off/Regular/Hover/Light
+- [x] Toggles/Radio/Off/Regular/Pressed/Dark
+- [x] Toggles/Radio/Off/Regular/Pressed/Light
+- [x] Toggles/Radio/Off/Regular/Rest/Dark
+- [x] Toggles/Radio/Off/Regular/Rest/Light
+- [x] Toggles/Radio/Off/Small/Disabled/Dark
+- [x] Toggles/Radio/Off/Small/Disabled/Light
+- [x] Toggles/Radio/Off/Small/Focused/Dark
+- [x] Toggles/Radio/Off/Small/Focused/Light
+- [x] Toggles/Radio/Off/Small/Hover/Dark
+- [x] Toggles/Radio/Off/Small/Hover/Light
+- [x] Toggles/Radio/Off/Small/Pressed/Dark
+- [x] Toggles/Radio/Off/Small/Pressed/Light
+- [x] Toggles/Radio/Off/Small/Rest/Dark
+- [x] Toggles/Radio/Off/Small/Rest/Light
+- [x] Toggles/Radio/On/Large/Disabled/Dark
+- [x] Toggles/Radio/On/Large/Disabled/Light
+- [x] Toggles/Radio/On/Large/Focused/Dark
+- [x] Toggles/Radio/On/Large/Focused/Light
+- [x] Toggles/Radio/On/Large/Hover/Dark
+- [x] Toggles/Radio/On/Large/Hover/Light
+- [x] Toggles/Radio/On/Large/Pressed/Dark
+- [x] Toggles/Radio/On/Large/Pressed/Light
+- [x] Toggles/Radio/On/Large/Rest/Dark
+- [x] Toggles/Radio/On/Large/Rest/Light
+- [x] Toggles/Radio/On/Regular/Disabled/Dark
+- [x] Toggles/Radio/On/Regular/Disabled/Light
+- [x] Toggles/Radio/On/Regular/Focused/Dark
+- [x] Toggles/Radio/On/Regular/Focused/Light
+- [x] Toggles/Radio/On/Regular/Hover/Dark
+- [x] Toggles/Radio/On/Regular/Hover/Light
+- [x] Toggles/Radio/On/Regular/Pressed/Dark
+- [x] Toggles/Radio/On/Regular/Pressed/Light
+- [x] Toggles/Radio/On/Regular/Rest/Dark
+- [x] Toggles/Radio/On/Regular/Rest/Light
+- [x] Toggles/Radio/On/Small/Disabled/Dark
+- [x] Toggles/Radio/On/Small/Disabled/Light
+- [x] Toggles/Radio/On/Small/Focused/Dark
+- [x] Toggles/Radio/On/Small/Focused/Light
+- [x] Toggles/Radio/On/Small/Hover/Dark
+- [x] Toggles/Radio/On/Small/Hover/Light
+- [x] Toggles/Radio/On/Small/Pressed/Dark
+- [x] Toggles/Radio/On/Small/Pressed/Light
+- [x] Toggles/Radio/On/Small/Rest/Dark
+- [x] Toggles/Radio/On/Small/Rest/Light
+- [x] Toggles/Radio/With Label/Off/Disabled/Dark
+- [x] Toggles/Radio/With Label/Off/Disabled/Light
+- [x] Toggles/Radio/With Label/Off/Focused/Dark
+- [x] Toggles/Radio/With Label/Off/Focused/Light
+- [x] Toggles/Radio/With Label/Off/Hover/Dark
+- [x] Toggles/Radio/With Label/Off/Hover/Light
+- [x] Toggles/Radio/With Label/Off/Pressed/Dark
+- [x] Toggles/Radio/With Label/Off/Pressed/Light
+- [x] Toggles/Radio/With Label/Off/Rest/Dark
+- [x] Toggles/Radio/With Label/Off/Rest/Light
+- [x] Toggles/Radio/With Label/On/Disabled/Dark
+- [x] Toggles/Radio/With Label/On/Disabled/Light
+- [x] Toggles/Radio/With Label/On/Focused/Dark
+- [x] Toggles/Radio/With Label/On/Focused/Light
+- [x] Toggles/Radio/With Label/On/Hover/Dark
+- [x] Toggles/Radio/With Label/On/Hover/Light
+- [x] Toggles/Radio/With Label/On/Pressed/Dark
+- [x] Toggles/Radio/With Label/On/Pressed/Light
+- [x] Toggles/Radio/With Label/On/Rest/Dark
+- [x] Toggles/Radio/With Label/On/Rest/Light
 
 ## Toggles/Switch
 
