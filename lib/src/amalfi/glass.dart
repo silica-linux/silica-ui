@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import '../glass.dart' as compositor;
 import 'components/popovers/popover_surface.dart';
 import 'foundation/shadow.dart';
+import 'glass_refraction.dart';
 import 'smooth_border.dart';
 import 'theme.dart';
 import 'token_types.dart';
@@ -78,14 +79,18 @@ class AmalfiGlassBackendScope extends InheritedWidget {
 ///
 /// The appearance comes from [AmalfiTheme.of]. With [opaque] (no blur available, or reduced
 /// transparency) the backdrop is replaced by `Surface/Window` under the tint, as
-/// `materials.md` asks; rims and shadow stay. A lens material ([AmalfiMaterials.clear]) is
-/// drawn without its refraction: the lens itself is a separate, animated effect.
+/// `materials.md` asks; rims and shadow stay. Regular and Thick are real glass: where
+/// the engine runs shader image filters (Impeller) the blurred backdrop is bent at the rim over
+/// a band of `depth` x half the shorter side, with a small chromatic split and a specular
+/// highlight (`shaders/glass_edge.frag`); elsewhere only blur, saturation and brightness. A lens
+/// material ([AmalfiMaterials.clear]) is drawn without its refraction: the lens itself is a
+/// separate, animated effect.
 ///
 /// The [AmalfiGlassBackend] in effect ([AmalfiGlassBackendScope]) decides who draws it. With
 /// [AmalfiGlassBackend.compositor] the widget declares a compositor region of [kind] (default
 /// from the material: thick menu, regular control, clear control) with the [outline]'s radius
 /// (a popover's arrow becomes the region's tip) and paints only [child]; [opaque] is ignored.
-class AmalfiGlass extends StatelessWidget {
+class AmalfiGlass extends StatefulWidget {
   const AmalfiGlass({
     super.key,
     this.material = AmalfiMaterials.thick,
@@ -214,14 +219,37 @@ class AmalfiGlass extends StatelessWidget {
     return AmalfiShadows.of(brightness).level(level) ?? const [];
   }
 
+  /// Whether [material] refracts at its edge (Regular and Thick; a lens is a separate effect).
+  bool get refracts => !material.lens && material.refraction != null;
+
+  @override
+  State<AmalfiGlass> createState() => _AmalfiGlassState();
+}
+
+class _AmalfiGlassState extends State<AmalfiGlass>
+    with AmalfiGlassShaderState<AmalfiGlass> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.refracts) loadGlassShader();
+  }
+
+  @override
+  void didUpdateWidget(AmalfiGlass old) {
+    super.didUpdateWidget(old);
+    if (widget.refracts) loadGlassShader();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (AmalfiGlassBackendScope.of(context) == AmalfiGlassBackend.compositor) {
-      return _buildCompositor();
+      return widget._buildCompositor();
     }
+    final material = widget.material;
+    final opaque = widget.opaque;
     final theme = AmalfiTheme.of(context);
     final brightness = theme.brightness;
-    final shape = outline;
+    final shape = widget.outline;
     final face = CustomPaint(
       painter: _GlassFacePainter(
         shape: shape,
@@ -233,15 +261,31 @@ class AmalfiGlass extends StatelessWidget {
         rimLightOffset: material.rimLightOffset,
         rimLightBlur: material.rimLightBlur,
       ),
-      child: child,
+      child: widget.child,
     );
-    final saturation = material.saturation;
+    final gain = brightness == Brightness.dark
+        ? material.brightnessDark
+        : material.brightnessLight;
+    // With the edge-refraction shader (Impeller) the backdrop is blurred first, then the shader
+    // bends it at the rim and applies saturation and brightness; without it, the blur and the
+    // colour matrix alone.
+    final shader = glassShader;
+    final refract =
+        widget.refracts &&
+        shader != null &&
+        AmalfiGlassRefraction.supported &&
+        AmalfiGlassRefraction.geometry(shape, const Size(1, 1)) != null;
+    final blur = ui.ImageFilter.blur(
+      sigmaX: material.backgroundBlur,
+      sigmaY: material.backgroundBlur,
+      tileMode: TileMode.clamp,
+    );
     // The backdrop blur is clipped to the shape; the face is drawn unclipped with its own
     // antialiased outline, so that the edge pixels are not antialiased twice.
     return CustomPaint(
       painter: _OutsideShadowPainter(
         shape: shape,
-        shadows: shadowsOf(material, brightness),
+        shadows: AmalfiGlass.shadowsOf(material, brightness),
       ),
       child: Stack(
         children: [
@@ -250,16 +294,26 @@ class AmalfiGlass extends StatelessWidget {
               child: ClipPath(
                 clipper: ShapeBorderClipper(shape: shape),
                 child: BackdropFilter(
-                  filter: ui.ImageFilter.compose(
-                    outer: ColorFilter.matrix(_saturationMatrix(saturation)),
-                    inner: ui.ImageFilter.blur(
-                      sigmaX: material.backgroundBlur,
-                      sigmaY: material.backgroundBlur,
-                      tileMode: TileMode.clamp,
-                    ),
-                  ),
+                  filter: refract
+                      ? blur
+                      : ui.ImageFilter.compose(
+                          outer: ColorFilter.matrix(
+                            _toneMatrix(material.saturation, gain),
+                          ),
+                          inner: blur,
+                        ),
                   child: const SizedBox.expand(),
                 ),
+              ),
+            ),
+          if (!opaque && refract)
+            Positioned.fill(
+              child: AmalfiGlassRefractionLayer(
+                key: const ValueKey('amalfi glass refraction'),
+                shader: shader,
+                shape: shape,
+                material: material,
+                brightness: brightness,
               ),
             ),
           face,
@@ -269,14 +323,15 @@ class AmalfiGlass extends StatelessWidget {
   }
 }
 
-/// The colour matrix that multiplies the saturation by [s] (Rec. 709 luma weights).
-List<double> _saturationMatrix(double s) {
+/// The colour matrix that multiplies the saturation by [s] (Rec. 709 luma weights) and then
+/// the brightness by [gain].
+List<double> _toneMatrix(double s, double gain) {
   const r = 0.2126, g = 0.7152, b = 0.0722;
   final t = 1 - s;
   return [
-    r * t + s, g * t, b * t, 0, 0, //
-    r * t, g * t + s, b * t, 0, 0, //
-    r * t, g * t, b * t + s, 0, 0, //
+    (r * t + s) * gain, g * t * gain, b * t * gain, 0, 0, //
+    r * t * gain, (g * t + s) * gain, b * t * gain, 0, 0, //
+    r * t * gain, g * t * gain, (b * t + s) * gain, 0, 0, //
     0, 0, 0, 1, 0, //
   ];
 }

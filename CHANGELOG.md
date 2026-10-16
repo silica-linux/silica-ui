@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **Changed:** `Glass/Regular` and `Glass/Thick` are real glass (silica-desktop 6c4105a): the
+  Flutter backend of `AmalfiGlass` bends the blurred backdrop at the rim with
+  `shaders/glass_edge.frag` (distortion / depth / chromatic split from the tokens, saturation,
+  brightness, specular highlight) where shader image filters are available (Impeller), and
+  otherwise blurs and applies saturation and brightness only. Thick blur 16 -> 10, tint alpha
+  76 % -> 58 %, saturation 1.5 -> 1.1. `AmalfiMaterials.regular/thick` now carry `refraction`
+  (magnification 1), `specularHighlights` and `brightness*`. The compositor backend is unchanged.
 - **Added:** `AmalfiSlider.indicator`: a read-only slider with no thumb, at full strength
   (the shell's Control Center Display/Sound modules and volume/brightness HUD).
 - **Added:** `AmalfiPullDownButton.entries`: a pull-down whose menu takes `AmalfiMenuEntry`

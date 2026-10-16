@@ -20,6 +20,7 @@ dev_dependencies:
 flutter:
   shaders:
     - shaders/glass_lens.frag
+    - shaders/glass_edge.frag
   fonts:
     - family: Inter
       fonts:
