@@ -108,6 +108,7 @@ abstract class AmalfiSliderBaseState<T extends AmalfiSliderBase>
   @override
   void didUpdateWidget(T old) {
     super.didUpdateWidget(old);
+    _keyed = null;
     if (old.statesController != widget.statesController) {
       (old.statesController ?? _ownStates)?.removeListener(_repaint);
       if (widget.statesController != null) {
@@ -252,11 +253,19 @@ abstract class AmalfiSliderBaseState<T extends AmalfiSliderBase>
     return d != null ? 1 / d : 0.05;
   }
 
+  /// The fraction last sent by a key, until the widget brings the new value (keys can
+  /// repeat between two frames).
+  double? _keyed;
+
   void _key(double Function(double fraction) next) {
     if (!widget.enabled) return;
+    final from = _keyed ?? fraction;
+    final span = widget.max - widget.min;
+    final to = valueOf(next(from));
     widget.onChangeStart?.call(widget.value);
-    _emit(next(fraction));
-    widget.onChangeEnd?.call(valueOf(next(fraction)));
+    if (to != widget.value) widget.onChanged?.call(to);
+    _keyed = span > 0 && span.isFinite ? (to - widget.min) / span : 0;
+    widget.onChangeEnd?.call(to);
   }
 
   /// Increases the value by one step (an arrow key).
