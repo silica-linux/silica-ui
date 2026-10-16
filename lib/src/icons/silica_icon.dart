@@ -834,7 +834,9 @@ class _DropPainter extends CustomPainter {
   bool shouldRepaint(_DropPainter old) => old.body != body;
 }
 
-/// The bright edge of the body: lighter at the top, fading at the bottom.
+/// The bright edge of the body: lighter at the top, fading at the bottom. Its alpha is half of
+/// the first version's (light 0x80 -> 0x1A became 0x40 -> 0x0D, dark 0x40 -> 0x0F became
+/// 0x20 -> 0x08), the width unchanged (silica-desktop#213).
 class _RimPainter extends CustomPainter {
   const _RimPainter(this.body, this.side, this.dark);
   final Rect body;
@@ -853,8 +855,8 @@ class _RimPainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: dark
-              ? const [Color(0x40FFFFFF), Color(0x0FFFFFFF)]
-              : const [Color(0x80FFFFFF), Color(0x1AFFFFFF)],
+              ? const [Color(0x20FFFFFF), Color(0x08FFFFFF)]
+              : const [Color(0x40FFFFFF), Color(0x0DFFFFFF)],
         ).createShader(body),
     );
   }
