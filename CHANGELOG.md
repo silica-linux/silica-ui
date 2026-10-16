@@ -24,6 +24,25 @@ Silica 1.0 "Amalfi", step 1: the design tokens in code. Existing widgets are unc
 - **Added:** fonts Inter Medium (500) and Bold (700), JetBrains Mono Regular (OFL). Text in
   weight 500 or 700 in the `Inter` family now uses the real weight instead of the nearest one.
 
+Step 3.0: the harness for the components (tests against the kit, checklist, gallery) and the
+tooltips as the worked example.
+
+- **Added:** `AmalfiGlass`: a Glass/Regular, Glass/Thick or (static) Glass/Clear surface with
+  smooth corners, drawn as `materials.md` says (blur, saturation, tint, inside rim, rim light,
+  drop shadow outside the shape only), with an `opaque` fallback; `amalfiShadowSigma` (the
+  kit's shadow blur is CSS-like, σ = blur / 2).
+- **Added:** `AmalfiWholePoints` and `ceilToWholePoints`: round a box (text) up to whole points
+  or to the 4 pt grid.
+- **Added:** tooltips (`Tooltips/*` of the kit): `AmalfiTooltip` (one or more lines, optional
+  shortcut, Glass/Thick, radius 8), `AmalfiTooltipRegion` (shown `delay.tooltip` after the
+  pointer rests, at once while moving between items, `fade.quick` in and out, hidden on leave
+  and press), `AmalfiTooltipPlacement` and `amalfiTooltipOffset` (8 from the target, centred
+  across on the 4 pt grid, flipped when there is no room), `AmalfiTooltipMetrics`.
+- **Added:** one barrel per component family in `lib/src/amalfi/components/`, exported.
+- **Tools:** `tool/sync_kit.dart` (kit fixtures from silica-design into `test/amalfi/kit/`),
+  `tool/gen_checklist.dart` (`docs/amalfi-checklist/`), the kit harness in
+  `test/amalfi/support/` (`test/amalfi/README.md`), the Amalfi gallery in the example app.
+
 ## 0.38.0 · 2026-10-15
 
 Windows close at once from their close button (silica-desktop#192).

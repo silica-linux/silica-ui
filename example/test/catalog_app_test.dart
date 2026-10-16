@@ -43,6 +43,17 @@ void main() {
       ),
       Brightness.dark,
     );
+
+    // The Amalfi gallery opens in the catalog's appearance.
+    await tester.tap(find.text('Amalfi gallery').first);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Amalfi · Tooltips'), findsOneWidget);
+    expect(
+      AmalfiTheme.of(
+        tester.element(find.byType(AmalfiTooltip).first),
+      ).brightness,
+      Brightness.dark,
+    );
   });
 
   testWidgets('the window state can be forced inactive', (tester) async {

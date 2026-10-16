@@ -1,10 +1,12 @@
 // The silica_ui catalog: every control group in one window, with a source list on the left
 // and the glass toolbar over the scrolling page. The toolbar switches the appearance and the
-// window state (following the real window, or forced active or inactive).
+// window state (following the real window, or forced active or inactive). The Amalfi gallery
+// (Silica 1.0) has its own family picker and light/dark switch.
 
 import 'package:flutter/widgets.dart';
 import 'package:silica_ui/silica_ui.dart';
 
+import 'amalfi/gallery.dart';
 import 'catalog/buttons.dart';
 import 'catalog/containers.dart';
 import 'catalog/inputs.dart';
@@ -48,6 +50,7 @@ class _CatalogWindowState extends State<_CatalogWindow> {
     'inputs': 'Inputs',
     'containers': 'Containers',
     'glass': 'Glass lab',
+    'amalfi': 'Amalfi gallery',
   };
 
   @override
@@ -92,6 +95,9 @@ class _CatalogWindowState extends State<_CatalogWindow> {
               SourceListSection('Lab', [
                 SourceListItem(id: 'glass', label: _pages['glass']!),
               ]),
+              SourceListSection('Silica 1.0', [
+                SourceListItem(id: 'amalfi', label: _pages['amalfi']!),
+              ]),
             ],
           ),
           trailing: ScrollUnderToolbar(
@@ -102,6 +108,10 @@ class _CatalogWindowState extends State<_CatalogWindow> {
                 'inputs' => inputsCatalog(inset: padding),
                 'containers' => containersCatalog(inset: padding),
                 'glass' => Padding(padding: padding, child: const GlassLab()),
+                'amalfi' => AmalfiGallery(
+                  inset: padding,
+                  initialBrightness: dark ? Brightness.dark : Brightness.light,
+                ),
                 _ => buttonsCatalog(inset: padding),
               },
             ),
