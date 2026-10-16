@@ -3,4 +3,4 @@
 // Checklist: `docs/amalfi-checklist/group_boxes.md`. Gallery: `example/lib/amalfi/pages/group_boxes.dart`.
 // The widgets live under `group_boxes/` and are exported from here.
 
-// Nothing yet.
+export 'group_boxes/group_box.dart';
