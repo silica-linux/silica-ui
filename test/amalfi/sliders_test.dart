@@ -144,9 +144,21 @@ const KitPixelTolerance sliderTolerance = KitPixelTolerance(mean: 1.5, max: 80);
 /// highlight), which AmalfiGlass does not.
 const KitPixelTolerance lensTolerance = KitPixelTolerance(mean: 10, max: 212);
 
-/// The dial: the kit's value arc is a hand-drawn path that is not concentric with the ring
-/// (up to 2 pt wider on the right), so the arc's outer edge differs.
-const KitPixelTolerance dialTolerance = KitPixelTolerance(mean: 14, max: 255);
+/// The quarters of [ring] (stroke [stroke]) an arc from the top over [sweep] of a turn
+/// passes through, with its round ends.
+List<Rect> arcMask(Rect ring, double stroke, double sweep) {
+  final c = ring.center;
+  final quarters = [
+    Rect.fromLTRB(c.dx, ring.top, ring.right, c.dy),
+    Rect.fromLTRB(c.dx, c.dy, ring.right, ring.bottom),
+    Rect.fromLTRB(ring.left, c.dy, c.dx, ring.bottom),
+    Rect.fromLTRB(ring.left, ring.top, c.dx, c.dy),
+  ];
+  return [
+    for (var i = 0; i < 4 && i < (sweep * 4).ceil(); i++)
+      quarters[i].inflate(stroke),
+  ];
+}
 
 void main() {
   setUpAll(loadAmalfiFonts);
@@ -462,8 +474,12 @@ void main() {
             tester,
             master,
             scene,
-            tolerance: dialTolerance,
+            tolerance: sliderTolerance,
             origin: Offset.zero,
+            // Kit defect: the value arc is a hand-drawn path, not concentric with the ring
+            // (up to 2 pt off on the right): compared by geometry, the rest by pixels.
+            maskLayers: const ['Progress'],
+            mask: arcMask(const Rect.fromLTWH(6, 6, 44, 44), 4, 0.625),
             prepare: (tester) =>
                 bringTo(tester, mouse, state, find.byType(AmalfiSliderThumb)),
           );
