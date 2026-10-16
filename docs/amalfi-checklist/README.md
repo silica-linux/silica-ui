@@ -20,13 +20,13 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Disclosure](disclosure.md) | `Disclosure` | 44 | 44 |
 | [Group Boxes](group_boxes.md) | `Group Boxes` | 8 | 2 |
 | [Forms](forms.md) | `Forms` | 22 | 22 |
-| [Titlebars](titlebars.md) | `Titlebars` | 199 | 181 |
+| [Titlebars](titlebars.md) | `Titlebars` | 181 | 177 |
 | [Windows](windows.md) | `Windows` | 38 | 38 |
 | [Alerts](alerts.md) | `Alerts` | 12 | 0 |
 | [Dialogs](dialogs.md) | `Dialogs` | 12 | 12 |
 | [Sheets](sheets.md) | `Windows/Window/Sheet Attached` | 2 | 0 |
 | [Wells](wells.md) | `Wells` | 74 | 74 |
-| **Total** | | **2165** | **1939** |
+| **Total** | | **2147** | **1935** |
 
 ## Out of scope of the component milestone (M3)
 
