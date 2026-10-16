@@ -329,6 +329,7 @@ String generate({
     'materials',
     'states',
     'windowControls',
+    'switch',
   }, tokensPath);
   final schema = _string(_field(root, r'$schema', tokensPath), r'$schema');
   if (schema != 'silica-amalfi-tokens/1') {
@@ -397,6 +398,7 @@ String generate({
     o,
     _object(_field(root, 'windowControls', tokensPath), 'windowControls'),
   );
+  _writeSwitch(o, _object(_field(root, 'switch', tokensPath), 'switch'));
   _writeMotion(o, motionMarkdown);
   return o.toString();
 }
@@ -957,10 +959,15 @@ void _writeControls(
     }
   }
   if (sizes.isEmpty) throw TokenError('controlHeights: no sizes');
-  final iconSizes = <String, double>{
-    for (final MapEntry(:key, :value) in icons.entries)
-      key: _number(value, 'controlIcons.$key'),
-  };
+  String? iconNote;
+  final iconSizes = <String, double>{};
+  for (final MapEntry(:key, :value) in icons.entries) {
+    if (key == 'note') {
+      iconNote = _string(value, 'controlIcons.note');
+    } else {
+      iconSizes[key] = _number(value, 'controlIcons.$key');
+    }
+  }
   for (final size in sizes.keys) {
     if (!iconSizes.containsKey(size)) {
       throw TokenError(
@@ -974,6 +981,14 @@ void _writeControls(
   if (note != null) {
     o.writeln('///');
     _doc(o, '${note[0].toUpperCase()}${note.substring(1)}.', indent: '');
+  }
+  if (iconNote != null) {
+    o.writeln('///');
+    _doc(
+      o,
+      'Icon sizes: ${iconNote[0].toLowerCase()}${iconNote.substring(1)}.',
+      indent: '',
+    );
   }
   o.writeln('enum AmalfiControlSize {');
   for (final MapEntry(key: name, value: height) in sizes.entries) {
@@ -1169,6 +1184,33 @@ Set<int> _writeShadows(
   return sorted.toSet();
 }
 
+void _writeSwitch(StringBuffer o, Map<String, Object?> sw) {
+  _onlyKeys(sw, {'thumbInset', 'pressedStretch', 'note'}, 'switch');
+  final inset = _number(
+    _field(sw, 'thumbInset', 'switch'),
+    'switch.thumbInset',
+  );
+  final stretch = _number(
+    _field(sw, 'pressedStretch', 'switch'),
+    'switch.pressedStretch',
+  );
+  final note = sw['note'];
+  o.writeln('/// The switch thumb (`switch`).');
+  if (note != null) {
+    final text = _string(note, 'switch.note');
+    o.writeln('///');
+    _doc(o, '${text[0].toUpperCase()}${text.substring(1)}.', indent: '');
+  }
+  o.writeln('abstract final class AmalfiSwitchTokens {');
+  _doc(o, 'The inset of the thumb from the track on every side, in points.');
+  o.writeln('  static const double thumbInset = ${_num(inset)};');
+  o.writeln();
+  _doc(o, 'How far a pressed thumb stretches toward the middle, in points.');
+  o.writeln('  static const double pressedStretch = ${_num(stretch)};');
+  o.writeln('}');
+  o.writeln();
+}
+
 void _writeFocus(StringBuffer o, Map<String, Object?> focus, _Colors colors) {
   _onlyKeys(focus, {'halo', 'color', 'follows'}, 'focus');
   final halo = _number(_field(focus, 'halo', 'focus'), 'focus.halo');
@@ -1204,12 +1246,14 @@ void _writeStates(StringBuffer o, Map<String, Object?> states, _Colors colors) {
     if (!first) o.writeln();
     first = false;
     if (value is String) {
-      final m = RegExp(r'^content at ([0-9.]+) ?% opacity').firstMatch(value);
+      final m = RegExp(
+        r'^(?:content|whole control) at ([0-9.]+) ?% opacity',
+      ).firstMatch(value);
       final pct = m == null ? null : double.tryParse(m.group(1)!);
       if (key != 'disabled' || pct == null) {
         throw TokenError('$path: cannot read "$value"');
       }
-      _doc(o, 'The opacity of disabled content: $value.');
+      _doc(o, 'The opacity of a disabled control: $value.');
       o.writeln('  static const double disabledOpacity = ${_num(pct / 100)};');
       continue;
     }

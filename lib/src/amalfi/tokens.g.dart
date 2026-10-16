@@ -1457,6 +1457,9 @@ abstract final class AmalfiSpacing {
 ///
 /// One scale for every control; Large = toolbar; never resize a control inside
 /// a bar.
+///
+/// Icon sizes: user decision 2026-10-16: one scale for all controls, the kit's
+/// 16/12 small glyphs are defects.
 enum AmalfiControlSize {
   /// `mini`: 20 pt high, 12 pt icons.
   mini(height: 20, iconSize: 12),
@@ -1623,7 +1626,9 @@ abstract final class AmalfiStates {
     Brightness.dark => Color(0x40000000),
   };
 
-  /// The opacity of disabled content: content at 35 % opacity, no hover/press.
+  /// The opacity of a disabled control: whole control at 35 % opacity, no
+  /// hover/press; a select-one segmented control keeps its selection visible
+  /// (dimmed with the rest).
   static const double disabledOpacity = 0.35;
 }
 
@@ -1750,6 +1755,18 @@ abstract final class AmalfiWindowControls {
     rim: Color(0xFF519E32),
     rimWidth: 0.5,
   );
+}
+
+/// The switch thumb (`switch`).
+///
+/// Thumb inset 2 pt on every side at every size; pressed thumb stretches 4 pt
+/// toward the middle (user decision 2026-10-16).
+abstract final class AmalfiSwitchTokens {
+  /// The inset of the thumb from the track on every side, in points.
+  static const double thumbInset = 2;
+
+  /// How far a pressed thumb stretches toward the middle, in points.
+  static const double pressedStretch = 4;
 }
 
 /// The easing curves of the fade tokens (`motion.md`).
