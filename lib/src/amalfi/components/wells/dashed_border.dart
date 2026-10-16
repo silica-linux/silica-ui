@@ -18,6 +18,8 @@ class AmalfiDashedSmoothBorder extends AmalfiSmoothBorder {
     this.dash = 6,
     this.gap = 4,
     this.phase = 0,
+    this.cap = StrokeCap.butt,
+    this.join = StrokeJoin.miter,
   });
 
   /// The length of a dash.
@@ -29,6 +31,10 @@ class AmalfiDashedSmoothBorder extends AmalfiSmoothBorder {
   /// How far into the pattern the outline starts (it starts at the top edge, where the
   /// top-left corner ends).
   final double phase;
+
+  /// The dash ends (the kit's line end: Butt) and the corner join (Miter).
+  final StrokeCap cap;
+  final StrokeJoin join;
 
   @override
   void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
@@ -51,7 +57,12 @@ class AmalfiDashedSmoothBorder extends AmalfiSmoothBorder {
         );
       }
     }
-    canvas.drawPath(dashes, side.toPaint());
+    canvas.drawPath(
+      dashes,
+      side.toPaint()
+        ..strokeCap = cap
+        ..strokeJoin = join,
+    );
   }
 
   @override
@@ -60,8 +71,10 @@ class AmalfiDashedSmoothBorder extends AmalfiSmoothBorder {
       super == other &&
       other.dash == dash &&
       other.gap == gap &&
-      other.phase == phase;
+      other.phase == phase &&
+      other.cap == cap &&
+      other.join == join;
 
   @override
-  int get hashCode => Object.hash(super.hashCode, dash, gap, phase);
+  int get hashCode => Object.hash(super.hashCode, dash, gap, phase, cap, join);
 }

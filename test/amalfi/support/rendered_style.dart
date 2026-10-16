@@ -17,6 +17,8 @@ class RenderedBorder {
     this.width,
     this.strokeAlign, {
     this.dashPattern,
+    this.lineEnd = 'Butt',
+    this.lineJoin = 'Miter',
   });
 
   final Color color;
@@ -27,6 +29,10 @@ class RenderedBorder {
 
   /// The dash pattern (on, off) of a dashed border; null: solid.
   final List<double>? dashPattern;
+
+  /// The line end and join of a dashed border, as the kit names them.
+  final String lineEnd;
+  final String lineJoin;
 
   @override
   String toString() =>
@@ -158,6 +164,12 @@ class RenderedStyle {
               dashPattern: shape is AmalfiDashedSmoothBorder
                   ? [shape.dash, shape.gap]
                   : null,
+              lineEnd: shape is AmalfiDashedSmoothBorder
+                  ? _kitLineEnd(shape.cap)
+                  : 'Butt',
+              lineJoin: shape is AmalfiDashedSmoothBorder
+                  ? _kitLineJoin(shape.join)
+                  : 'Miter',
             ),
         ],
         shadows: d.shadows ?? const [],
@@ -219,3 +231,15 @@ class RenderedStyle {
         _ => (const <double>[], 0.0, null),
       };
 }
+
+String _kitLineEnd(StrokeCap cap) => switch (cap) {
+  StrokeCap.butt => 'Butt',
+  StrokeCap.round => 'Round',
+  StrokeCap.square => 'Projecting',
+};
+
+String _kitLineJoin(StrokeJoin join) => switch (join) {
+  StrokeJoin.miter => 'Miter',
+  StrokeJoin.round => 'Round',
+  StrokeJoin.bevel => 'Bevel',
+};

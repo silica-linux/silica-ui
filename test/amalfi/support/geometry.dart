@@ -254,14 +254,21 @@ void _checkStyle(
               'kit ${_hex(want)} ${b.thickness} ${b.position.name}',
         );
       }
-      // Dashes: compared when the fixture has the kit's pattern (the export may not carry
-      // border options; a dashed border then checks colour, width and position only).
+      // Dashes (pattern, line end, join): compared when the kit's border has a non-empty
+      // dash pattern; a solid border checks colour, width and position only.
       final kitDashes = b.dashPattern;
       if (kitDashes != null &&
           !listEquals(_pattern(rb.dashPattern), _pattern(kitDashes))) {
         add(
           'borders',
           '$what: border $i dashes ${rb.dashPattern ?? 'none (solid)'}, kit $kitDashes',
+        );
+      } else if (kitDashes != null &&
+          (rb.lineEnd != b.lineEnd || rb.lineJoin != b.lineJoin)) {
+        add(
+          'borders',
+          '$what: border $i line end ${rb.lineEnd} join ${rb.lineJoin}, '
+              'kit ${b.lineEnd} ${b.lineJoin}',
         );
       }
     }

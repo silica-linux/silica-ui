@@ -46,7 +46,7 @@ What every family draws with, exported from `silica_ui.dart`:
   or a fallback when it is missing; tests set `AmalfiSymbols.debugEnvironment` to a folder of
   their own.
 - `AmalfiLens`: the lens rule (8 beyond the control on each side, 12 above and below, radius
-  half the height minus 1; the switch's thumb + 12), for the segmented, slider and switch lenses.
+  half the height minus 1; the switch's thumb + 8 at Mini and Small, + 12 at Regular, from `AmalfiSwitchTokens.lens*`), for the segmented, slider and switch lenses.
 - `AmalfiLayerKeys`: the kit's layer names (`Box`, `State`, `Focus Halo`, …) as keys.
 
 ## API (`support/harness.dart`)
@@ -121,9 +121,8 @@ with `prepare:`), deviations for kit defects, and behaviour tests.
   out up to ~128 levels lighter than Sketch's while the shape is right (the geometry check is
   exact). Families with such shapes keep a wider `max` for them, with the reason next to the
   tolerance; it is not a licence for larger shapes.
-- The kit export (silica-design) does not carry Sketch's border options yet: a dashed border
-  is checked for colour, width and position, and its dashes only when a fixture has a
-  `dashPattern` (`sync_kit` copies it once the export has it).
+- Border options: the export carries `style.borderOptions` (dash pattern, line end, join) on every
+  layer; a border with a non-empty `dashPattern` is also checked for its dashes, line end and join.
 - Inside `testWidgets`, font loading needs the real clock: the helpers use
   `ensureAmalfiFonts(tester)`; prefer `setUpAll(loadAmalfiFonts)`.
 - A master that nests other masters needs their fixtures too (`sync_kit` copies them); Icon

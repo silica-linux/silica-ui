@@ -123,6 +123,8 @@ class KitBorder {
     required this.position,
     this.swatch,
     this.dashPattern,
+    this.lineEnd = 'Butt',
+    this.lineJoin = 'Miter',
   });
 
   final Color color;
@@ -134,6 +136,11 @@ class KitBorder {
   /// the style's `borderOptions`; null when the fixture does not say (solid, or an export
   /// without border options).
   final List<double>? dashPattern;
+
+  /// The line end (`Butt`, `Round`, `Projecting`) and join (`Miter`, `Round`, `Bevel`) of
+  /// the style's `borderOptions`; they matter for a dashed border.
+  final String lineEnd;
+  final String lineJoin;
 }
 
 /// A drop or inner shadow, with the kit's (CSS) blur: σ = blur / 2.
@@ -755,6 +762,8 @@ KitStyle? _parseStyle(Map<String, Object?>? s, String where) {
           },
           swatch: swatch(b),
           dashPattern: dashes(b['dashPattern'] ?? options?['dashPattern']),
+          lineEnd: '${b['lineEnd'] ?? options?['lineEnd'] ?? 'Butt'}',
+          lineJoin: '${b['lineJoin'] ?? options?['lineJoin'] ?? 'Miter'}',
         ),
     ],
     shadows: [for (final x in list('shadows')) shadow(x)],
