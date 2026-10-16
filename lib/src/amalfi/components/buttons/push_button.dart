@@ -147,6 +147,9 @@ class AmalfiPushButton extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                // A button wider than its content (stretched by its parent) keeps the
+                // label centred (#90).
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
                     AmalfiButtonIconTheme(

@@ -605,6 +605,24 @@ void main() {
       expect(presses, 3);
     });
 
+    testWidgets('a stretched push button keeps its label (and icon) centred', (
+      tester,
+    ) async {
+      await pumpKitScene(
+        tester,
+        const SizedBox(
+          width: 300,
+          child: AmalfiPushButton(label: 'Button', onPressed: _noop),
+        ),
+      );
+      expect(tester.getSize(find.byType(AmalfiPushButton)).width, 300);
+      final label = tester.getRect(find.text('Button'));
+      final button = tester.getRect(find.byType(AmalfiPushButton));
+      // The text frame is the label rounded up to the 8 pt grid, centred in the button.
+      expect(label.center.dx, closeTo(button.center.dx, 0.5));
+      expect(label.center.dy, closeTo(button.center.dy, 0.5));
+    });
+
     testWidgets('the halo shows for keyboard focus only', (tester) async {
       final node = FocusNode();
       addTearDown(node.dispose);
