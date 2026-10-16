@@ -48,10 +48,12 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - The export carries `style.borderOptions` (dash pattern, line end, join, arrowheads) on every layer; the harness checks the dashes, line end and join of a dashed border.
 - Design decisions (silica-desktop `09c50a0`): glyphs inside small discs or accessory buttons stay 12 at every control size (`controlIcons.accessory`); the switch lens is thumb + 8 at Mini and Small, + 12 at Regular (`switch.lens`).
 
-## Still open (silica-design `5f5f187`)
+## Fixed in silica-design `4dde030`
 
-- `Windows/Window/Sheet Attached`: the `Sheet` instance of `Alerts/Alert/Two Buttons` is 266 tall, its master 268 (it was 268 in `747ea80`); the code builds the alert as its master.
-- `Fields/Combo Button/Large` and `Combo Box/Large` draw the chevron at 16; the accessory rule makes it 12 (the Large masters are not updated).
+- `Windows/Window/Sheet Attached` (Light, Dark): the nested `Alerts/Alert/Two Buttons` is 268 tall like its master.
+- `Fields/Combo Button/Large` (6 masters) draws its chevron at 12 x 12 with the Regular/12 stroke; `Combo Box/Large` (6 masters) nests it. The tests no longer list the deviation or mask the glyphs.
+
+## Still open (silica-design `4dde030`)
 
 - Text frames are drawn wider than the text, to whole points or to the 4 pt grid inconsistently
   ("Add to favourites" 97.03 -> 100; "Fri 16 Oct 09:41" 99.18 -> 104): each family decides how its
