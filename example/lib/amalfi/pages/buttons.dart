@@ -206,6 +206,19 @@ class _ButtonsPage extends StatelessWidget {
               ],
             ),
           ),
+          Specimen(
+            label: 'Pull-down · sections',
+            child: AmalfiPullDownButton.entries(
+              label: 'Options',
+              entries: [
+                AmalfiMenuSection('Save to'),
+                AmalfiMenuAction('Desktop', checked: true, onSelected: _noop),
+                AmalfiMenuAction('Documents', onSelected: _noop),
+                AmalfiMenuDivider(),
+                AmalfiMenuAction('Show pointer', onSelected: _noop),
+              ],
+            ),
+          ),
         ],
       ),
     ],

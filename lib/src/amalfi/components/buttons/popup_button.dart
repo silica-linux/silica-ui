@@ -131,61 +131,83 @@ class AmalfiPopUpButton<T> extends StatelessWidget {
       focusNode: focusNode,
       entries: [
         for (final item in items)
-          _MenuEntry(
-            label: item.label,
+          AmalfiMenuAction(
+            item.label,
             checked: item.value == value,
-            enabled: item.enabled,
+            enabled: item.enabled && onChanged != null,
+            onSelected: onChanged == null ? null : () => onChanged(item.value),
           ),
       ],
       highlighted: selected,
-      onSelected: onChanged == null || items.isEmpty
-          ? null
-          : (i) {
-              if (i >= 0 && i < items.length) onChanged(items[i].value);
-            },
     );
   }
 }
 
 /// A pull-down button: [label] and a chevron; pressed, a menu of [items] (commands) opens
 /// below it. [items] all disabled (or none) disables it.
+///
+/// [AmalfiPullDownButton.entries] opens a menu of [AmalfiMenuEntry] instead, with section
+/// headers, separators and checked items.
 class AmalfiPullDownButton extends StatelessWidget {
   const AmalfiPullDownButton({
     super.key,
     required this.label,
-    required this.items,
+    required List<AmalfiPullDownItem> this.items,
     this.size = AmalfiControlSize.regular,
     this.width,
     this.semanticLabel,
     this.focusNode,
-  });
+  }) : menuEntries = null;
+
+  /// A pull-down button whose menu is [entries]: [AmalfiMenuAction] (with `checked`),
+  /// [AmalfiMenuSection] and [AmalfiMenuDivider]. It is disabled when no action is
+  /// selectable. Actions run their own `onSelected`.
+  const AmalfiPullDownButton.entries({
+    super.key,
+    required this.label,
+    required List<AmalfiMenuEntry> entries,
+    this.size = AmalfiControlSize.regular,
+    this.width,
+    this.semanticLabel,
+    this.focusNode,
+  }) : menuEntries = entries,
+       items = null;
 
   final String label;
-  final List<AmalfiPullDownItem> items;
+
+  /// The commands ([AmalfiPullDownButton.new]); null with [menuEntries].
+  final List<AmalfiPullDownItem>? items;
+
+  /// The menu entries ([AmalfiPullDownButton.entries]); null with [items].
+  final List<AmalfiMenuEntry>? menuEntries;
   final AmalfiControlSize size;
   final double? width;
   final String? semanticLabel;
   final FocusNode? focusNode;
 
   @override
-  Widget build(BuildContext context) => _MenuButton(
-    label: label,
-    chevron: AmalfiGlyphs.chevronDown,
-    size: size,
-    width: width,
-    semanticLabel: semanticLabel,
-    focusNode: focusNode,
-    entries: [
-      for (final item in items)
-        _MenuEntry(label: item.label, enabled: item.onSelected != null),
-    ],
-    highlighted: -1,
-    onSelected: items.any((i) => i.onSelected != null)
-        ? (i) {
-            if (i >= 0 && i < items.length) items[i].onSelected?.call();
-          }
-        : null,
-  );
+  Widget build(BuildContext context) {
+    final entries = menuEntries ?? _commands(items!);
+    return _MenuButton(
+      label: label,
+      chevron: AmalfiGlyphs.chevronDown,
+      size: size,
+      width: width,
+      semanticLabel: semanticLabel,
+      focusNode: focusNode,
+      entries: entries,
+      highlighted: -1,
+    );
+  }
+
+  static List<AmalfiMenuEntry> _commands(List<AmalfiPullDownItem> items) => [
+    for (final item in items)
+      AmalfiMenuAction(
+        item.label,
+        enabled: item.onSelected != null,
+        onSelected: item.onSelected,
+      ),
+  ];
 }
 
 class _MenuButton extends StatefulWidget {
@@ -198,7 +220,6 @@ class _MenuButton extends StatefulWidget {
     required this.focusNode,
     required this.entries,
     required this.highlighted,
-    required this.onSelected,
   });
 
   final String label;
@@ -207,9 +228,13 @@ class _MenuButton extends StatefulWidget {
   final double? width;
   final String? semanticLabel;
   final FocusNode? focusNode;
-  final List<_MenuEntry> entries;
+  final List<AmalfiMenuEntry> entries;
+
+  /// The index in [entries] highlighted when the menu opens; -1: none.
   final int highlighted;
-  final ValueChanged<int>? onSelected;
+
+  /// Whether some action can be chosen.
+  bool get enabled => entries.any((e) => e is AmalfiMenuAction && e.selectable);
 
   @override
   State<_MenuButton> createState() => _MenuButtonState();
@@ -238,7 +263,7 @@ class _MenuButtonState extends State<_MenuButton>
   @override
   void didUpdateWidget(_MenuButton old) {
     super.didUpdateWidget(old);
-    if (widget.onSelected == null && _portal.isShowing) _closeNow();
+    if (!widget.enabled && _portal.isShowing) _closeNow();
   }
 
   @override
@@ -257,7 +282,7 @@ class _MenuButtonState extends State<_MenuButton>
   }
 
   void _show() {
-    if (widget.onSelected == null || widget.entries.isEmpty) return;
+    if (!widget.enabled) return;
     _returnFocus = FocusManager.instance.primaryFocus;
     setState(_portal.show);
     _fade.forward();
@@ -298,7 +323,7 @@ class _MenuButtonState extends State<_MenuButton>
     final size = widget.size;
     final height = size.height;
     final shape = AmalfiSmoothBorder(radius: AmalfiRadii.capsule(height));
-    final enabled = widget.onSelected != null && widget.entries.isNotEmpty;
+    final enabled = widget.enabled;
     return OverlayPortal(
       controller: _portal,
       overlayChildBuilder: _menu,
@@ -399,15 +424,7 @@ class _MenuButtonState extends State<_MenuButton>
           child: FadeTransition(
             opacity: _opacity,
             child: AmalfiMenu(
-              entries: [
-                for (final (i, e) in widget.entries.indexed)
-                  AmalfiMenuAction(
-                    e.label,
-                    checked: e.checked,
-                    enabled: e.enabled,
-                    onSelected: () => widget.onSelected?.call(i),
-                  ),
-              ],
+              entries: widget.entries,
               initialHighlight: widget.highlighted < 0
                   ? null
                   : widget.highlighted,
@@ -449,18 +466,4 @@ class _MenuLayout extends SingleChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_MenuLayout old) => old.target != target;
-}
-
-/// One item of the menu a pop-up or pull-down button opens.
-@immutable
-class _MenuEntry {
-  const _MenuEntry({
-    required this.label,
-    this.checked = false,
-    this.enabled = true,
-  });
-
-  final String label;
-  final bool checked;
-  final bool enabled;
 }

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Added:** `AmalfiSlider.indicator`: a read-only slider with no thumb, at full strength
+  (the shell's Control Center Display/Sound modules and volume/brightness HUD).
+- **Added:** `AmalfiPullDownButton.entries`: a pull-down whose menu takes `AmalfiMenuEntry`
+  (`AmalfiMenuAction` with `checked`, `AmalfiMenuSection`, `AmalfiMenuDivider`). Pop-up and
+  pull-down menus now share one entry model and, being `AmalfiMenu`s, follow
+  `AmalfiGlassBackendScope`.
 - **Added:** `AmalfiGlassBackend` (`flutter`, the default, and `compositor`), set for a subtree
   with `AmalfiGlassBackendScope`, and `AmalfiGlassKind` (menu, popover, panel, module, control,
   dock, tooltip, sheet, banner: the profile of the region). With `compositor`, `AmalfiGlass`

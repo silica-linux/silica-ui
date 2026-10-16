@@ -907,5 +907,96 @@ void main() {
         expect(tester.takeException(), isNull);
       }
     });
+
+    testWidgets('pull-down entries: sections, dividers and checked items', (
+      tester,
+    ) async {
+      var chosen = '';
+      await pumpKitScene(
+        tester,
+        Padding(
+          padding: const EdgeInsets.all(40),
+          child: AmalfiPullDownButton.entries(
+            label: 'Options',
+            entries: [
+              const AmalfiMenuSection('Save to'),
+              AmalfiMenuAction(
+                'Desktop',
+                checked: true,
+                onSelected: () => chosen = 'Desktop',
+              ),
+              const AmalfiMenuDivider(),
+              AmalfiMenuAction('Clipboard', onSelected: () => chosen = 'Clip'),
+            ],
+          ),
+        ),
+      );
+      await tester.tap(find.byType(AmalfiPullDownButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Save to'), findsOneWidget);
+      final menu = tester.widget<AmalfiMenu>(find.byType(AmalfiMenu));
+      expect(menu.entries.whereType<AmalfiMenuDivider>(), hasLength(1));
+      expect(menu.entries.whereType<AmalfiMenuAction>().first.checked, isTrue);
+      await tester.tap(find.text('Clipboard'));
+      await tester.pump(AmalfiMenuMetrics.chooseClose);
+      await tester.pumpAndSettle();
+      expect(chosen, 'Clip');
+      expect(find.byType(AmalfiMenu), findsNothing);
+    });
+
+    testWidgets('pull-down entries without a selectable action is disabled', (
+      tester,
+    ) async {
+      await pumpKitScene(
+        tester,
+        const AmalfiPullDownButton.entries(
+          label: 'Options',
+          entries: [AmalfiMenuSection('Only a header')],
+        ),
+      );
+      await tester.tap(find.byType(AmalfiPullDownButton));
+      await tester.pumpAndSettle();
+      expect(find.byType(AmalfiMenu), findsNothing);
+    });
+
+    for (final popUp in [true, false]) {
+      testWidgets(
+        '${popUp ? 'pop-up' : 'pull-down'} menu follows the compositor backend',
+        (tester) async {
+          GlassRegistry.instance.regions; // touched to fail early if unexported
+          await pumpKitScene(
+            tester,
+            AmalfiGlassBackendScope(
+              backend: AmalfiGlassBackend.compositor,
+              child: Padding(
+                padding: const EdgeInsets.all(40),
+                child: popUp
+                    ? AmalfiPopUpButton<int>(
+                        items: const [AmalfiPopUpItem(value: 1, label: 'One')],
+                        value: 1,
+                        onChanged: (_) {},
+                      )
+                    : AmalfiPullDownButton(
+                        label: 'Go',
+                        items: [
+                          AmalfiPullDownItem(label: 'One', onSelected: () {}),
+                        ],
+                      ),
+              ),
+            ),
+          );
+          await tester.tap(
+            find.byType(AmalfiPopUpButton<int>).evaluate().isEmpty
+                ? find.byType(AmalfiPullDownButton)
+                : find.byType(AmalfiPopUpButton<int>),
+          );
+          await tester.pumpAndSettle();
+          expect(
+            GlassRegistry.instance.regions.map((r) => r['profile']),
+            contains('menu'),
+          );
+        },
+      );
+    }
   });
 }

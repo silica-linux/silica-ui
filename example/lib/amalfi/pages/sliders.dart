@@ -185,6 +185,27 @@ class _SlidersPage extends StatelessWidget {
           Specimen(label: 'Circular', child: _LiveSlider(circular: true)),
         ],
       ),
+      const SpecimenSection(
+        title: 'Indicator',
+        note:
+            'AmalfiSlider.indicator: read-only, only the filled track (shell modules, HUD).',
+        children: [
+          Specimen(
+            label: 'Horizontal',
+            child: SizedBox(
+              width: 200,
+              child: AmalfiSlider.indicator(value: 0.6),
+            ),
+          ),
+          Specimen(
+            label: 'Vertical',
+            child: SizedBox(
+              height: 120,
+              child: AmalfiSlider.indicator(value: 0.3, axis: Axis.vertical),
+            ),
+          ),
+        ],
+      ),
     ],
   );
 }

@@ -43,7 +43,27 @@ class AmalfiSlider extends AmalfiSliderBase {
     super.autofocus,
     super.statesController,
     super.semanticLabel,
-  });
+  }) : indicator = false;
+
+  /// A read-only indicator: the track and its fill, no thumb, at full strength (not dimmed
+  /// like a disabled slider). It ignores the pointer and the keyboard and takes no focus. The
+  /// shell's Control Center Display and Sound modules and its volume and brightness HUD draw
+  /// their level like this.
+  const AmalfiSlider.indicator({
+    super.key,
+    required super.value,
+    super.min,
+    super.max,
+    this.axis = Axis.horizontal,
+    super.semanticLabel,
+  }) : tickMarks = false,
+       minimumGlyph = null,
+       maximumGlyph = null,
+       indicator = true,
+       super(onChanged: null);
+
+  /// Whether this is a read-only indicator without a thumb ([AmalfiSlider.indicator]).
+  final bool indicator;
 
   /// Whether to draw a tick mark under the track at each of the [divisions] stops (needs
   /// [divisions]).
@@ -223,7 +243,7 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
   }
 
   /// [child] at 35 % when the slider is disabled.
-  Widget _dimmed(Widget child) => widget.enabled
+  Widget _dimmed(Widget child) => widget.enabled || widget.indicator
       ? child
       : Opacity(opacity: AmalfiStates.disabledOpacity, child: child);
 
@@ -276,7 +296,7 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
         clipBehavior: Clip.none,
         children: [
           ..._bed(colors, layout),
-          if (!dragged)
+          if (!dragged && !widget.indicator)
             Positioned.fromRect(
               rect: layout.thumb,
               // Disabled, the whole slider dims: the thumb rests.

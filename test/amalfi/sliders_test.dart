@@ -620,5 +620,28 @@ void main() {
       );
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('indicator: no thumb, not dimmed, ignores input', (
+      tester,
+    ) async {
+      await pumpKitScene(
+        tester,
+        const SizedBox(width: 200, child: AmalfiSlider.indicator(value: 0.5)),
+      );
+      expect(find.byType(AmalfiSliderThumb), findsNothing);
+      expect(find.byType(Opacity), findsNothing);
+      await tester.tapAt(tester.getCenter(find.byType(AmalfiSlider)));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      // The regular slider still draws its thumb.
+      await pumpKitScene(
+        tester,
+        SizedBox(
+          width: 200,
+          child: AmalfiSlider(value: 0.5, onChanged: (_) {}),
+        ),
+      );
+      expect(find.byType(AmalfiSliderThumb), findsOneWidget);
+    });
   });
 }
