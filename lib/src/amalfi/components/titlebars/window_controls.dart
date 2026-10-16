@@ -5,7 +5,8 @@
 // `docs/spec/windows.md`, not the kit's 16 pt discs on a 24 pt pitch: 14 pt discs in a 16 pt
 // cell, 23 pt pitch, vertically centred on the bar, with the first disc edge 9 pt from the
 // window edge on a 32 pt bar and 19 pt on a 52 pt bar (a linear blend between, rounded to a
-// whole point). The colours at rest and on hover, light and dark, and the inactive greys are
+// whole point). The colours at rest and on hover, light and dark (dark hover keeps the rest gradient), and
+// the inactive greys are
 // the kit's (they equal the measured ones; light rest is `tokens.windowControls`); the pressed
 // colours, the "symbols on all three while the pointer is over the group" rule and the symbol
 // timing come from `docs/spec/windows.md`.
@@ -99,7 +100,7 @@ class AmalfiWindowDotStyle {
   /// The vertical gradient, top and bottom (equal for a flat disc).
   final Color top, bottom;
 
-  /// The side outline (light appearance), inside the disc; null: none.
+  /// The side outline, inside the disc; null: none.
   final Color? rim;
 
   /// The width of [rim].
@@ -156,8 +157,11 @@ class AmalfiWindowDotStyle {
     };
     return dark
         ? AmalfiWindowDotStyle(
-            top: top,
-            bottom: bottom,
+            top: state == AmalfiWindowControlState.hover ? p.darkRest.$1 : top,
+            bottom: state == AmalfiWindowControlState.hover
+                ? p.darkRest.$2
+                : bottom,
+            rim: p.darkRim,
             edgeTop: p.darkEdges.$1,
             edgeBottom: p.darkEdges.$2,
             glyph: glyph,
@@ -176,8 +180,9 @@ class AmalfiWindowDotStyle {
     rim: Color(0xFFC3C3C7),
   );
   static const _inactiveDark = AmalfiWindowDotStyle(
-    top: Color(0xFF555555),
-    bottom: Color(0xFF4D4D4D),
+    top: Color(0xFF4D4D4D),
+    bottom: Color(0xFF555555),
+    rim: Color(0xB3999999),
     edgeTop: Color(0xFF999999),
     edgeBottom: Color(0xCC909091),
   );
@@ -193,6 +198,7 @@ class AmalfiWindowDotStyle {
     lightPressed: const Color(0xFFFF9F8E),
     lightPressedGlyph: const Color(0xFFDA0000),
     darkRest: (const Color(0xFFF8635A), const Color(0xFFEE6660)),
+    darkRim: const Color(0xFFEE5549),
     darkEdges: (const Color(0xFFFAB1A7), const Color(0xCCFBADA5)),
     darkHover: const Color(0xFFF1564D),
     darkHoverGlyph: const Color(0xFF8C0000),
@@ -210,6 +216,7 @@ class AmalfiWindowDotStyle {
     lightPressed: const Color(0xFFFFFC5D),
     lightPressedGlyph: const Color(0xFFFF5A00),
     darkRest: (const Color(0xFFFAB500), const Color(0xFFFDCD29)),
+    darkRim: const Color(0xFFF8B904),
     darkEdges: (const Color(0xFFFBEE5A), const Color(0xCCFBF869)),
     darkHover: const Color(0xFFFDC905),
     darkHoverGlyph: const Color(0xFFA53A00),
@@ -227,6 +234,7 @@ class AmalfiWindowDotStyle {
     lightPressed: const Color(0xFF8EDF60),
     lightPressedGlyph: const Color(0xFF3B9600),
     darkRest: (const Color(0xFF01BC00), const Color(0xFF4BC133)),
+    darkRim: const Color(0xFF09B901),
     darkEdges: (const Color(0xFF96FB78), const Color(0xCC8BFB76)),
     darkHover: const Color(0xFF36C002),
     darkHoverGlyph: const Color(0xFF2D7201),
@@ -244,6 +252,7 @@ class _Palette {
     required this.lightPressed,
     required this.lightPressedGlyph,
     required this.darkRest,
+    required this.darkRim,
     required this.darkEdges,
     required this.darkHover,
     required this.darkHoverGlyph,
@@ -252,7 +261,7 @@ class _Palette {
   });
 
   final (Color, Color) lightRest, darkRest, darkEdges;
-  final Color lightRim, lightHover, lightHoverGlyph, lightPressed;
+  final Color darkRim, lightRim, lightHover, lightHoverGlyph, lightPressed;
   final Color lightPressedGlyph, darkHover, darkHoverGlyph, darkPressed;
   final Color darkPressedGlyph;
 }

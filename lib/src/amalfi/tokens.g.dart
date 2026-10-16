@@ -642,6 +642,7 @@ final class AmalfiColors {
     required this.shadow1,
     required this.shadow2,
     required this.shadow3,
+    required this.menuBarSelection,
     required this.terminal,
     required this.mail,
     required this.faro,
@@ -750,6 +751,9 @@ final class AmalfiColors {
   /// `Shadow/3`: light `#0000002E`, dark `#0000005C`.
   final Color shadow3;
 
+  /// `Menu Bar/Selection`: light `#FFFFFF66`, dark `#FFFFFF33`.
+  final Color menuBarSelection;
+
   /// The palette of Terminal (`App/Terminal/*`).
   final AmalfiTerminalColors terminal;
 
@@ -806,6 +810,7 @@ final class AmalfiColors {
     shadow1: Color(0x1A000000),
     shadow2: Color(0x1F000000),
     shadow3: Color(0x2E000000),
+    menuBarSelection: Color(0x66FFFFFF),
     terminal: AmalfiTerminalColors.light,
     mail: AmalfiMailColors.light,
     faro: AmalfiFaroColors.light,
@@ -850,6 +855,7 @@ final class AmalfiColors {
     shadow1: Color(0x33000000),
     shadow2: Color(0x52000000),
     shadow3: Color(0x5C000000),
+    menuBarSelection: Color(0x33FFFFFF),
     terminal: AmalfiTerminalColors.dark,
     mail: AmalfiMailColors.dark,
     faro: AmalfiFaroColors.dark,
@@ -899,6 +905,7 @@ final class AmalfiColors {
     'Shadow/1',
     'Shadow/2',
     'Shadow/3',
+    'Menu Bar/Selection',
     'App/Terminal/Selection',
     'App/Terminal/Cursor',
     'App/Terminal/Find Match',
@@ -994,6 +1001,7 @@ final class AmalfiColors {
     'Shadow/1' => shadow1,
     'Shadow/2' => shadow2,
     'Shadow/3' => shadow3,
+    'Menu Bar/Selection' => menuBarSelection,
     'App/Terminal/Selection' => terminal.selection,
     'App/Terminal/Cursor' => terminal.cursor,
     'App/Terminal/Find Match' => terminal.findMatch,
