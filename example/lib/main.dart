@@ -12,13 +12,30 @@ import 'catalog/containers.dart';
 import 'catalog/inputs.dart';
 import 'glass_lab.dart';
 
-void main() => runApp(const Catalog());
+/// Arguments (`--dart-arg` of the embedder): `--amalfi=<family>` opens the Amalfi gallery on
+/// that family's page, `--dark` or `--light` forces the appearance.
+void main(List<String> args) {
+  String? family;
+  bool? dark;
+  for (final arg in args) {
+    if (arg.startsWith('--amalfi=')) family = arg.substring('--amalfi='.length);
+    if (arg == '--dark') dark = true;
+    if (arg == '--light') dark = false;
+  }
+  runApp(Catalog(amalfiFamily: family, dark: dark));
+}
 
 /// Which window state the catalog shows.
 enum WindowMode { follow, active, inactive }
 
 class Catalog extends StatelessWidget {
-  const Catalog({super.key});
+  const Catalog({super.key, this.amalfiFamily, this.dark});
+
+  /// The Amalfi gallery page to open at start; null: the catalog's first page.
+  final String? amalfiFamily;
+
+  /// The appearance to force at start; null: follow the system.
+  final bool? dark;
 
   // WidgetsApp gives the overlay (menus, popovers, sheets) and the text editing shortcuts.
   @override
@@ -29,20 +46,23 @@ class Catalog extends StatelessWidget {
       settings: settings,
       pageBuilder: (context, _, _) => builder(context),
     ),
-    home: const _CatalogWindow(),
+    home: _CatalogWindow(amalfiFamily: amalfiFamily, dark: dark),
   );
 }
 
 class _CatalogWindow extends StatefulWidget {
-  const _CatalogWindow();
+  const _CatalogWindow({this.amalfiFamily, this.dark});
+
+  final String? amalfiFamily;
+  final bool? dark;
 
   @override
   State<_CatalogWindow> createState() => _CatalogWindowState();
 }
 
 class _CatalogWindowState extends State<_CatalogWindow> {
-  String _page = 'buttons';
-  bool? _dark;
+  late String _page = widget.amalfiFamily == null ? 'buttons' : 'amalfi';
+  late bool? _dark = widget.dark;
   WindowMode _window = WindowMode.follow;
 
   static const _pages = {
@@ -110,6 +130,7 @@ class _CatalogWindowState extends State<_CatalogWindow> {
                 'glass' => Padding(padding: padding, child: const GlassLab()),
                 'amalfi' => AmalfiGallery(
                   inset: padding,
+                  initialFamily: widget.amalfiFamily ?? 'tooltips',
                   initialBrightness: dark ? Brightness.dark : Brightness.light,
                 ),
                 _ => buttonsCatalog(inset: padding),
