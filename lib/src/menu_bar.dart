@@ -26,8 +26,8 @@ enum SilicaMenuRole {
   /// The app menu: the bar titles it with the app's name, in bold.
   app('app'),
 
-  /// The Window menu: the bar adds Minimize, Fill, Move & Resize, Full screen, Bring All to
-  /// Front and the list of the app's windows after the app's items.
+  /// The Window menu: the bar shows Minimize, Fill, Move & Resize and Full screen first, then
+  /// the app's items, then Bring All to Front and the list of the app's windows.
   window('window'),
 
   /// The Help menu: without items the bar shows Silica Help.
@@ -302,8 +302,8 @@ abstract final class SilicaMenus {
     );
   }
 
-  /// The Window menu: the app's [items] (with Close first when [close]); the bar adds the
-  /// system part. [label] is the title in the app's language.
+  /// The Window menu: the app's [items] (with Close first when [close]); the bar puts its system
+  /// items before them and the window list after. [label] is the title in the app's language.
   static SilicaMenu window(
     String label, {
     bool close = false,

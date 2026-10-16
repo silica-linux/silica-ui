@@ -57,8 +57,9 @@ SilicaMenuBar(
   Settings…, Undo, Redo, Cut, Copy, Paste, Delete, Select All, the app's Help, the system
   items) takes the bar's label and default shortcut. The app's own labels are the app's to
   translate.
-- **Window menu**: after the app's items the bar adds Minimize, Fill, Move & Resize, Full
-  screen, Bring All to Front and the list of the app's windows (the active one checked).
+- **Window menu**: the bar puts its system items first (Minimize, Fill, Move & Resize, Full
+  screen), then the app's items, then Bring All to Front and the list of the app's windows (the
+  active one checked).
   Without a Window menu in the model the bar adds one before Help. `SilicaMenus.window(close:
   true)` puts Close (⌘W) first, for apps without a File menu.
 - **Help menu**: the app's help item, or Silica Help when the app has none.
