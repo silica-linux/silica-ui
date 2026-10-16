@@ -128,6 +128,31 @@ final class AmalfiRefraction {
   final double magnification;
 }
 
+/// A blur strip (`Blur/*` in tokens.json): the background blurred and saturated under a tint,
+/// with no refraction, rim, shadow or specular: the title bar section over a sidebar.
+@immutable
+final class AmalfiBlurStrip {
+  const AmalfiBlurStrip({
+    required this.name,
+    required this.backgroundBlur,
+    required this.saturation,
+    required this.tintLight,
+    required this.tintDark,
+  });
+
+  final String name;
+
+  /// The blur sigma, in points.
+  final double backgroundBlur;
+  final double saturation;
+  final Color tintLight;
+  final Color tintDark;
+
+  /// The tint in [brightness].
+  Color tint(Brightness brightness) =>
+      brightness == Brightness.dark ? tintDark : tintLight;
+}
+
 /// The parameters of a glass material (`Glass/Regular`, `Glass/Thick`, `Glass/Clear`), as
 /// plain data. How to render them: `docs/design/amalfi/materials.md` in silica-desktop.
 @immutable

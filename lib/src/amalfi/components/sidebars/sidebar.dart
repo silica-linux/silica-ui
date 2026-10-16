@@ -418,6 +418,7 @@ class AmalfiSidebarPanel extends StatelessWidget {
     this.padding = const EdgeInsets.fromLTRB(12, 8, 12, 0),
     this.edge = true,
     this.width = AmalfiSidebarMetrics.width,
+    this.topInset = 0,
   });
 
   final List<Widget> children;
@@ -427,6 +428,11 @@ class AmalfiSidebarPanel extends StatelessWidget {
 
   /// The width; null: as wide as the constraints.
   final double? width;
+
+  /// The height of a glass toolbar section over the top of the panel
+  /// (`AmalfiToolbar.sidebarSection` with `AmalfiToolbarSurface.glass`): the rows start below
+  /// it and scroll under it. 0: the panel starts under an opaque bar.
+  final double topInset;
 
   static bool _isHeader(Widget w) =>
       w is AmalfiSidebarHeader || w is AmalfiSidebarGroup;
@@ -455,7 +461,7 @@ class AmalfiSidebarPanel extends StatelessWidget {
           fit: StackFit.passthrough,
           children: [
             Padding(
-              padding: padding,
+              padding: topInset > 0 ? padding.copyWith(top: 0) : padding,
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final content = Column(
@@ -475,7 +481,13 @@ class AmalfiSidebarPanel extends StatelessWidget {
                     children: [
                       Expanded(
                         child: ClipRect(
-                          child: SingleChildScrollView(child: content),
+                          child: SingleChildScrollView(
+                            // Under a glass bar the rows scroll beneath it.
+                            padding: topInset > 0
+                                ? EdgeInsets.only(top: topInset + padding.top)
+                                : EdgeInsets.zero,
+                            child: content,
+                          ),
                         ),
                       ),
                       if (footer != null) footer,

@@ -1740,6 +1740,18 @@ abstract final class AmalfiMaterials {
   };
 }
 
+/// The blur strips: a background blur and a tint, no glass.
+abstract final class AmalfiBlurs {
+  /// `Blur/Sidebar Title Bar`.
+  static const AmalfiBlurStrip sidebarTitleBar = AmalfiBlurStrip(
+    name: 'Blur/Sidebar Title Bar',
+    backgroundBlur: 10,
+    saturation: 1,
+    tintLight: Color(0xCCF5F6F8),
+    tintDark: Color(0xCC232428),
+  );
+}
+
 /// The window controls (close, minimise, zoom) at rest in an active light
 /// window.
 ///

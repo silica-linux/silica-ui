@@ -1,6 +1,8 @@
 // Title bars and toolbars (kit `Titlebars/Bar/*`, `Titlebars/Section/*`,
 // `Titlebars/Title Bar/*`): flat bars on the window surface built from pieces.
 
+import 'dart:ui' as ui;
+
 import 'package:flutter/widgets.dart';
 
 import '../../../controls/control_base.dart' show WindowActiveScope;
@@ -19,6 +21,11 @@ enum AmalfiToolbarSurface {
 
   /// `Surface/Sidebar`: the sidebar and inspector sections of a split toolbar.
   sidebar,
+
+  /// The blur strip `Blur/Sidebar Title Bar` (background blur 10, `Surface/Sidebar` at 80 %,
+  /// no glass, rim, shadow or line under it): the sidebar section of a split title bar, over a
+  /// sidebar that scrolls under it (`AmalfiSidebarPanel.topInset`).
+  blur,
 
   /// None: the bar is drawn over the regions under it (a sidebar and an inspector that run
   /// to the top of the window, kit `Windows/Window/Sidebar Inspector`).
@@ -43,7 +50,8 @@ class AmalfiToolbar extends StatelessWidget {
     this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
-  }) : spacing = 0;
+  }) : spacing = 0,
+       edge = false;
 
   /// The compact toolbar: 40 tall, its children 8 apart between paddings of 20 and 16. Its
   /// children are bare controls: `AmalfiControlsPiece(width: AmalfiToolbarMetrics
@@ -57,7 +65,8 @@ class AmalfiToolbar extends StatelessWidget {
     this.active,
   }) : height = AmalfiToolbarMetrics.compactHeight,
        padding = AmalfiToolbarMetrics.compactPadding,
-       spacing = AmalfiToolbarMetrics.compactGap;
+       spacing = AmalfiToolbarMetrics.compactGap,
+       edge = false;
 
   /// A section of a split toolbar (kit `Titlebars/Section/Content|List|Inspector`): 52 tall,
   /// 12 before the first piece and 8 after the last.
@@ -69,18 +78,24 @@ class AmalfiToolbar extends StatelessWidget {
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight,
-       spacing = 0;
+       spacing = 0,
+       edge = false;
 
   /// The sidebar section of a split toolbar (kit `Titlebars/Section/Sidebar`): on
   /// `Surface/Sidebar`, starting with the controls piece, 8 after the last piece.
+  ///
+  /// With [AmalfiToolbarSurface.blur] the section is a blur strip over the sidebar, which scrolls
+  /// under it; [edge] draws the sidebar's trailing separator across the bar, so the divider
+  /// runs up to the top edge of the window.
   const AmalfiToolbar.sidebarSection({
     super.key,
     required this.children,
     this.padding = AmalfiToolbarMetrics.sidebarSectionPadding,
+    this.surface = AmalfiToolbarSurface.sidebar,
+    this.edge = false,
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight,
-       surface = AmalfiToolbarSurface.sidebar,
        spacing = 0;
 
   final List<Widget> children;
@@ -95,6 +110,10 @@ class AmalfiToolbar extends StatelessWidget {
   final double spacing;
 
   final AmalfiToolbarSurface surface;
+
+  /// Whether to draw a 1 pt `Line/Separator` along the trailing edge, inside the bar (the
+  /// sidebar section's share of the sidebar divider).
+  final bool edge;
 
   /// Whether to draw a 1 pt `Line/Separator` along the bottom, inside the bar.
   final bool separator;
@@ -123,30 +142,55 @@ class AmalfiToolbar extends StatelessWidget {
         );
       },
     );
-    bar = ColoredBox(
-      color: switch (surface) {
-        AmalfiToolbarSurface.window => colors.surfaceWindow,
-        AmalfiToolbarSurface.sidebar => colors.surfaceSidebar,
-        AmalfiToolbarSurface.none => const Color(0x00000000),
-      },
-      child: SizedBox(
-        height: height,
-        child: Stack(
-          fit: StackFit.passthrough,
-          children: [
-            Padding(padding: padding, child: bar),
-            if (separator)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: 1,
-                child: ColoredBox(color: colors.lineSeparator),
-              ),
-          ],
-        ),
+    final content = SizedBox(
+      height: height,
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Padding(padding: padding, child: bar),
+          if (separator)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 1,
+              child: ColoredBox(color: colors.lineSeparator),
+            ),
+          if (edge)
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: 1,
+              child: ColoredBox(color: colors.lineSeparator),
+            ),
+        ],
       ),
     );
+    bar = surface == AmalfiToolbarSurface.blur
+        ? ClipRect(
+            child: BackdropFilter(
+              filter: ui.ImageFilter.blur(
+                sigmaX: AmalfiBlurs.sidebarTitleBar.backgroundBlur,
+                sigmaY: AmalfiBlurs.sidebarTitleBar.backgroundBlur,
+                tileMode: TileMode.clamp,
+              ),
+              child: ColoredBox(
+                color: AmalfiBlurs.sidebarTitleBar.tint(
+                  AmalfiTheme.of(context).brightness,
+                ),
+                child: content,
+              ),
+            ),
+          )
+        : ColoredBox(
+            color: switch (surface) {
+              AmalfiToolbarSurface.window => colors.surfaceWindow,
+              AmalfiToolbarSurface.sidebar => colors.surfaceSidebar,
+              _ => const Color(0x00000000),
+            },
+            child: content,
+          );
     return Semantics(
       container: true,
       explicitChildNodes: true,

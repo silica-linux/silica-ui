@@ -1325,10 +1325,53 @@ void _writeMaterials(
     '/// The glass materials as plain data (`docs/design/amalfi/materials.md`).',
   );
   o.writeln('abstract final class AmalfiMaterials {');
+  final strips = <(String, String, double, double, String, String)>[];
   for (final MapEntry(key: name, value: raw) in materials.entries) {
     final path = 'materials["$name"]';
     final m = _object(raw, path);
+    if (name.startsWith('Blur/')) {
+      // A blur strip: background blur and a tint, no glass (refraction, rim, shadow).
+      _onlyKeys(m, {
+        'backgroundBlur',
+        'saturation',
+        'tint',
+        'refraction',
+        'specularHighlights',
+        'rimInside',
+        'rimLight',
+        'shadow',
+        'use',
+      }, path);
+      for (final none in const [
+        'refraction',
+        'rimInside',
+        'rimLight',
+        'shadow',
+      ]) {
+        if (m[none] != null) {
+          throw TokenError('$path.$none: a blur strip has none');
+        }
+      }
+      if (m['specularHighlights'] != false &&
+          m.containsKey('specularHighlights')) {
+        throw TokenError('$path.specularHighlights: a blur strip has none');
+      }
+      final tint = _object(_field(m, 'tint', path), '$path.tint');
+      _onlyKeys(tint, {'light', 'dark'}, '$path.tint');
+      strips.add((
+        name,
+        _camel(name.substring(5), path),
+        _number(_field(m, 'backgroundBlur', path), '$path.backgroundBlur'),
+        m.containsKey('saturation')
+            ? _number(m['saturation'], '$path.saturation')
+            : 1.0,
+        _colorLiteral(_color(_field(tint, 'light', path), '$path.tint.light')),
+        _colorLiteral(_color(_field(tint, 'dark', path), '$path.tint.dark')),
+      ));
+      continue;
+    }
     _onlyKeys(m, {
+      'use',
       'backgroundBlur',
       'blur',
       'saturation',
@@ -1523,6 +1566,23 @@ void _writeMaterials(
   o.writeln('  };');
   o.writeln('}');
   o.writeln();
+  if (strips.isNotEmpty) {
+    o.writeln('/// The blur strips: a background blur and a tint, no glass.');
+    o.writeln('abstract final class AmalfiBlurs {');
+    for (final (name, id, blur, saturation, light, dark) in strips) {
+      o.writeln();
+      _doc(o, '`$name`.');
+      o.writeln('  static const AmalfiBlurStrip $id = AmalfiBlurStrip(');
+      o.writeln('    name: ${_dartString(name)},');
+      o.writeln('    backgroundBlur: ${_num(blur)},');
+      o.writeln('    saturation: ${_num(saturation)},');
+      o.writeln('    tintLight: $light,');
+      o.writeln('    tintDark: $dark,');
+      o.writeln('  );');
+    }
+    o.writeln('}');
+    o.writeln();
+  }
 }
 
 // Window controls ----------------------------------------------------------------------------

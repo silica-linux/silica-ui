@@ -326,7 +326,16 @@ void main() {
 
   test('materials', () {
     final materials = _obj(_tokens['materials']);
-    expect(AmalfiMaterials.all.map((m) => m.name), materials.keys);
+    expect(
+      AmalfiMaterials.all.map((m) => m.name),
+      materials.keys.where((k) => k.startsWith('Glass/')),
+    );
+    // The blur strip over a sidebar: no glass, just blur and a tint.
+    final strip = _obj(materials['Blur/Sidebar Title Bar']);
+    expect(AmalfiBlurs.sidebarTitleBar.backgroundBlur, strip['backgroundBlur']);
+    expect(AmalfiBlurs.sidebarTitleBar.saturation, strip['saturation']);
+    expect(AmalfiBlurs.sidebarTitleBar.tintLight, const Color(0xCCF5F6F8));
+    expect(AmalfiBlurs.sidebarTitleBar.tintDark, const Color(0xCC232428));
     final regular = _obj(materials['Glass/Regular']);
     expect(
       AmalfiMaterials.regular.backgroundBlur,
