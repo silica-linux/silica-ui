@@ -6,438 +6,438 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Buttons/Gradient
 
-- [ ] Buttons/Gradient/Add Remove/Disabled/Dark
-- [ ] Buttons/Gradient/Add Remove/Disabled/Light
-- [ ] Buttons/Gradient/Add Remove/Focused/Dark
-- [ ] Buttons/Gradient/Add Remove/Focused/Light
-- [ ] Buttons/Gradient/Add Remove/Hover/Dark
-- [ ] Buttons/Gradient/Add Remove/Hover/Light
-- [ ] Buttons/Gradient/Add Remove/Pressed/Dark
-- [ ] Buttons/Gradient/Add Remove/Pressed/Light
-- [ ] Buttons/Gradient/Add Remove/Rest/Dark
-- [ ] Buttons/Gradient/Add Remove/Rest/Light
+- [x] Buttons/Gradient/Add Remove/Disabled/Dark
+- [x] Buttons/Gradient/Add Remove/Disabled/Light
+- [x] Buttons/Gradient/Add Remove/Focused/Dark
+- [x] Buttons/Gradient/Add Remove/Focused/Light
+- [x] Buttons/Gradient/Add Remove/Hover/Dark
+- [x] Buttons/Gradient/Add Remove/Hover/Light
+- [x] Buttons/Gradient/Add Remove/Pressed/Dark
+- [x] Buttons/Gradient/Add Remove/Pressed/Light
+- [x] Buttons/Gradient/Add Remove/Rest/Dark
+- [x] Buttons/Gradient/Add Remove/Rest/Light
 
 ## Buttons/Help
 
-- [ ] Buttons/Help/Disabled/Dark
-- [ ] Buttons/Help/Disabled/Light
-- [ ] Buttons/Help/Focused/Dark
-- [ ] Buttons/Help/Focused/Light
-- [ ] Buttons/Help/Hover/Dark
-- [ ] Buttons/Help/Hover/Light
-- [ ] Buttons/Help/Pressed/Dark
-- [ ] Buttons/Help/Pressed/Light
-- [ ] Buttons/Help/Rest/Dark
-- [ ] Buttons/Help/Rest/Light
+- [x] Buttons/Help/Disabled/Dark
+- [x] Buttons/Help/Disabled/Light
+- [x] Buttons/Help/Focused/Dark
+- [x] Buttons/Help/Focused/Light
+- [x] Buttons/Help/Hover/Dark
+- [x] Buttons/Help/Hover/Light
+- [x] Buttons/Help/Pressed/Dark
+- [x] Buttons/Help/Pressed/Light
+- [x] Buttons/Help/Rest/Dark
+- [x] Buttons/Help/Rest/Light
 
 ## Buttons/Icon
 
-- [ ] Buttons/Icon/Round/Large/Disabled/Dark
-- [ ] Buttons/Icon/Round/Large/Disabled/Light
-- [ ] Buttons/Icon/Round/Large/Focused/Dark
-- [ ] Buttons/Icon/Round/Large/Focused/Light
-- [ ] Buttons/Icon/Round/Large/Hover/Dark
-- [ ] Buttons/Icon/Round/Large/Hover/Light
-- [ ] Buttons/Icon/Round/Large/Pressed/Dark
-- [ ] Buttons/Icon/Round/Large/Pressed/Light
-- [ ] Buttons/Icon/Round/Large/Rest/Dark
-- [ ] Buttons/Icon/Round/Large/Rest/Light
-- [ ] Buttons/Icon/Round/Mini/Disabled/Dark
-- [ ] Buttons/Icon/Round/Mini/Disabled/Light
-- [ ] Buttons/Icon/Round/Mini/Focused/Dark
-- [ ] Buttons/Icon/Round/Mini/Focused/Light
-- [ ] Buttons/Icon/Round/Mini/Hover/Dark
-- [ ] Buttons/Icon/Round/Mini/Hover/Light
-- [ ] Buttons/Icon/Round/Mini/Pressed/Dark
-- [ ] Buttons/Icon/Round/Mini/Pressed/Light
-- [ ] Buttons/Icon/Round/Mini/Rest/Dark
-- [ ] Buttons/Icon/Round/Mini/Rest/Light
-- [ ] Buttons/Icon/Round/Regular/Disabled/Dark
-- [ ] Buttons/Icon/Round/Regular/Disabled/Light
-- [ ] Buttons/Icon/Round/Regular/Focused/Dark
-- [ ] Buttons/Icon/Round/Regular/Focused/Light
-- [ ] Buttons/Icon/Round/Regular/Hover/Dark
-- [ ] Buttons/Icon/Round/Regular/Hover/Light
-- [ ] Buttons/Icon/Round/Regular/Pressed/Dark
-- [ ] Buttons/Icon/Round/Regular/Pressed/Light
-- [ ] Buttons/Icon/Round/Regular/Rest/Dark
-- [ ] Buttons/Icon/Round/Regular/Rest/Light
-- [ ] Buttons/Icon/Round/Small/Disabled/Dark
-- [ ] Buttons/Icon/Round/Small/Disabled/Light
-- [ ] Buttons/Icon/Round/Small/Focused/Dark
-- [ ] Buttons/Icon/Round/Small/Focused/Light
-- [ ] Buttons/Icon/Round/Small/Hover/Dark
-- [ ] Buttons/Icon/Round/Small/Hover/Light
-- [ ] Buttons/Icon/Round/Small/Pressed/Dark
-- [ ] Buttons/Icon/Round/Small/Pressed/Light
-- [ ] Buttons/Icon/Round/Small/Rest/Dark
-- [ ] Buttons/Icon/Round/Small/Rest/Light
-- [ ] Buttons/Icon/Square/Large/Disabled/Dark
-- [ ] Buttons/Icon/Square/Large/Disabled/Light
-- [ ] Buttons/Icon/Square/Large/Focused/Dark
-- [ ] Buttons/Icon/Square/Large/Focused/Light
-- [ ] Buttons/Icon/Square/Large/Hover/Dark
-- [ ] Buttons/Icon/Square/Large/Hover/Light
-- [ ] Buttons/Icon/Square/Large/Pressed/Dark
-- [ ] Buttons/Icon/Square/Large/Pressed/Light
-- [ ] Buttons/Icon/Square/Large/Rest/Dark
-- [ ] Buttons/Icon/Square/Large/Rest/Light
-- [ ] Buttons/Icon/Square/Mini/Disabled/Dark
-- [ ] Buttons/Icon/Square/Mini/Disabled/Light
-- [ ] Buttons/Icon/Square/Mini/Focused/Dark
-- [ ] Buttons/Icon/Square/Mini/Focused/Light
-- [ ] Buttons/Icon/Square/Mini/Hover/Dark
-- [ ] Buttons/Icon/Square/Mini/Hover/Light
-- [ ] Buttons/Icon/Square/Mini/Pressed/Dark
-- [ ] Buttons/Icon/Square/Mini/Pressed/Light
-- [ ] Buttons/Icon/Square/Mini/Rest/Dark
-- [ ] Buttons/Icon/Square/Mini/Rest/Light
-- [ ] Buttons/Icon/Square/Regular/Disabled/Dark
-- [ ] Buttons/Icon/Square/Regular/Disabled/Light
-- [ ] Buttons/Icon/Square/Regular/Focused/Dark
-- [ ] Buttons/Icon/Square/Regular/Focused/Light
-- [ ] Buttons/Icon/Square/Regular/Hover/Dark
-- [ ] Buttons/Icon/Square/Regular/Hover/Light
-- [ ] Buttons/Icon/Square/Regular/Pressed/Dark
-- [ ] Buttons/Icon/Square/Regular/Pressed/Light
-- [ ] Buttons/Icon/Square/Regular/Rest/Dark
-- [ ] Buttons/Icon/Square/Regular/Rest/Light
-- [ ] Buttons/Icon/Square/Small/Disabled/Dark
-- [ ] Buttons/Icon/Square/Small/Disabled/Light
-- [ ] Buttons/Icon/Square/Small/Focused/Dark
-- [ ] Buttons/Icon/Square/Small/Focused/Light
-- [ ] Buttons/Icon/Square/Small/Hover/Dark
-- [ ] Buttons/Icon/Square/Small/Hover/Light
-- [ ] Buttons/Icon/Square/Small/Pressed/Dark
-- [ ] Buttons/Icon/Square/Small/Pressed/Light
-- [ ] Buttons/Icon/Square/Small/Rest/Dark
-- [ ] Buttons/Icon/Square/Small/Rest/Light
+- [x] Buttons/Icon/Round/Large/Disabled/Dark
+- [x] Buttons/Icon/Round/Large/Disabled/Light
+- [x] Buttons/Icon/Round/Large/Focused/Dark
+- [x] Buttons/Icon/Round/Large/Focused/Light
+- [x] Buttons/Icon/Round/Large/Hover/Dark
+- [x] Buttons/Icon/Round/Large/Hover/Light
+- [x] Buttons/Icon/Round/Large/Pressed/Dark
+- [x] Buttons/Icon/Round/Large/Pressed/Light
+- [x] Buttons/Icon/Round/Large/Rest/Dark
+- [x] Buttons/Icon/Round/Large/Rest/Light
+- [x] Buttons/Icon/Round/Mini/Disabled/Dark
+- [x] Buttons/Icon/Round/Mini/Disabled/Light
+- [x] Buttons/Icon/Round/Mini/Focused/Dark
+- [x] Buttons/Icon/Round/Mini/Focused/Light
+- [x] Buttons/Icon/Round/Mini/Hover/Dark
+- [x] Buttons/Icon/Round/Mini/Hover/Light
+- [x] Buttons/Icon/Round/Mini/Pressed/Dark
+- [x] Buttons/Icon/Round/Mini/Pressed/Light
+- [x] Buttons/Icon/Round/Mini/Rest/Dark
+- [x] Buttons/Icon/Round/Mini/Rest/Light
+- [x] Buttons/Icon/Round/Regular/Disabled/Dark
+- [x] Buttons/Icon/Round/Regular/Disabled/Light
+- [x] Buttons/Icon/Round/Regular/Focused/Dark
+- [x] Buttons/Icon/Round/Regular/Focused/Light
+- [x] Buttons/Icon/Round/Regular/Hover/Dark
+- [x] Buttons/Icon/Round/Regular/Hover/Light
+- [x] Buttons/Icon/Round/Regular/Pressed/Dark
+- [x] Buttons/Icon/Round/Regular/Pressed/Light
+- [x] Buttons/Icon/Round/Regular/Rest/Dark
+- [x] Buttons/Icon/Round/Regular/Rest/Light
+- [x] Buttons/Icon/Round/Small/Disabled/Dark
+- [x] Buttons/Icon/Round/Small/Disabled/Light
+- [x] Buttons/Icon/Round/Small/Focused/Dark
+- [x] Buttons/Icon/Round/Small/Focused/Light
+- [x] Buttons/Icon/Round/Small/Hover/Dark
+- [x] Buttons/Icon/Round/Small/Hover/Light
+- [x] Buttons/Icon/Round/Small/Pressed/Dark
+- [x] Buttons/Icon/Round/Small/Pressed/Light
+- [x] Buttons/Icon/Round/Small/Rest/Dark
+- [x] Buttons/Icon/Round/Small/Rest/Light
+- [x] Buttons/Icon/Square/Large/Disabled/Dark
+- [x] Buttons/Icon/Square/Large/Disabled/Light
+- [x] Buttons/Icon/Square/Large/Focused/Dark
+- [x] Buttons/Icon/Square/Large/Focused/Light
+- [x] Buttons/Icon/Square/Large/Hover/Dark
+- [x] Buttons/Icon/Square/Large/Hover/Light
+- [x] Buttons/Icon/Square/Large/Pressed/Dark
+- [x] Buttons/Icon/Square/Large/Pressed/Light
+- [x] Buttons/Icon/Square/Large/Rest/Dark
+- [x] Buttons/Icon/Square/Large/Rest/Light
+- [x] Buttons/Icon/Square/Mini/Disabled/Dark
+- [x] Buttons/Icon/Square/Mini/Disabled/Light
+- [x] Buttons/Icon/Square/Mini/Focused/Dark
+- [x] Buttons/Icon/Square/Mini/Focused/Light
+- [x] Buttons/Icon/Square/Mini/Hover/Dark
+- [x] Buttons/Icon/Square/Mini/Hover/Light
+- [x] Buttons/Icon/Square/Mini/Pressed/Dark
+- [x] Buttons/Icon/Square/Mini/Pressed/Light
+- [x] Buttons/Icon/Square/Mini/Rest/Dark
+- [x] Buttons/Icon/Square/Mini/Rest/Light
+- [x] Buttons/Icon/Square/Regular/Disabled/Dark
+- [x] Buttons/Icon/Square/Regular/Disabled/Light
+- [x] Buttons/Icon/Square/Regular/Focused/Dark
+- [x] Buttons/Icon/Square/Regular/Focused/Light
+- [x] Buttons/Icon/Square/Regular/Hover/Dark
+- [x] Buttons/Icon/Square/Regular/Hover/Light
+- [x] Buttons/Icon/Square/Regular/Pressed/Dark
+- [x] Buttons/Icon/Square/Regular/Pressed/Light
+- [x] Buttons/Icon/Square/Regular/Rest/Dark
+- [x] Buttons/Icon/Square/Regular/Rest/Light
+- [x] Buttons/Icon/Square/Small/Disabled/Dark
+- [x] Buttons/Icon/Square/Small/Disabled/Light
+- [x] Buttons/Icon/Square/Small/Focused/Dark
+- [x] Buttons/Icon/Square/Small/Focused/Light
+- [x] Buttons/Icon/Square/Small/Hover/Dark
+- [x] Buttons/Icon/Square/Small/Hover/Light
+- [x] Buttons/Icon/Square/Small/Pressed/Dark
+- [x] Buttons/Icon/Square/Small/Pressed/Light
+- [x] Buttons/Icon/Square/Small/Rest/Dark
+- [x] Buttons/Icon/Square/Small/Rest/Light
 
 ## Buttons/Link
 
-- [ ] Buttons/Link/Link/Disabled/Dark
-- [ ] Buttons/Link/Link/Disabled/Light
-- [ ] Buttons/Link/Link/Focused/Dark
-- [ ] Buttons/Link/Link/Focused/Light
-- [ ] Buttons/Link/Link/Hover/Dark
-- [ ] Buttons/Link/Link/Hover/Light
-- [ ] Buttons/Link/Link/Pressed/Dark
-- [ ] Buttons/Link/Link/Pressed/Light
-- [ ] Buttons/Link/Link/Rest/Dark
-- [ ] Buttons/Link/Link/Rest/Light
+- [x] Buttons/Link/Link/Disabled/Dark
+- [x] Buttons/Link/Link/Disabled/Light
+- [x] Buttons/Link/Link/Focused/Dark
+- [x] Buttons/Link/Link/Focused/Light
+- [x] Buttons/Link/Link/Hover/Dark
+- [x] Buttons/Link/Link/Hover/Light
+- [x] Buttons/Link/Link/Pressed/Dark
+- [x] Buttons/Link/Link/Pressed/Light
+- [x] Buttons/Link/Link/Rest/Dark
+- [x] Buttons/Link/Link/Rest/Light
 
 ## Buttons/Pop-up
 
-- [ ] Buttons/Pop-up/Large/Disabled/Dark
-- [ ] Buttons/Pop-up/Large/Disabled/Light
-- [ ] Buttons/Pop-up/Large/Focused/Dark
-- [ ] Buttons/Pop-up/Large/Focused/Light
-- [ ] Buttons/Pop-up/Large/Hover/Dark
-- [ ] Buttons/Pop-up/Large/Hover/Light
-- [ ] Buttons/Pop-up/Large/Pressed/Dark
-- [ ] Buttons/Pop-up/Large/Pressed/Light
-- [ ] Buttons/Pop-up/Large/Rest/Dark
-- [ ] Buttons/Pop-up/Large/Rest/Light
-- [ ] Buttons/Pop-up/Mini/Disabled/Dark
-- [ ] Buttons/Pop-up/Mini/Disabled/Light
-- [ ] Buttons/Pop-up/Mini/Focused/Dark
-- [ ] Buttons/Pop-up/Mini/Focused/Light
-- [ ] Buttons/Pop-up/Mini/Hover/Dark
-- [ ] Buttons/Pop-up/Mini/Hover/Light
-- [ ] Buttons/Pop-up/Mini/Pressed/Dark
-- [ ] Buttons/Pop-up/Mini/Pressed/Light
-- [ ] Buttons/Pop-up/Mini/Rest/Dark
-- [ ] Buttons/Pop-up/Mini/Rest/Light
-- [ ] Buttons/Pop-up/Open/Rest/Dark
-- [ ] Buttons/Pop-up/Open/Rest/Light
-- [ ] Buttons/Pop-up/Regular/Disabled/Dark
-- [ ] Buttons/Pop-up/Regular/Disabled/Light
-- [ ] Buttons/Pop-up/Regular/Focused/Dark
-- [ ] Buttons/Pop-up/Regular/Focused/Light
-- [ ] Buttons/Pop-up/Regular/Hover/Dark
-- [ ] Buttons/Pop-up/Regular/Hover/Light
-- [ ] Buttons/Pop-up/Regular/Pressed/Dark
-- [ ] Buttons/Pop-up/Regular/Pressed/Light
-- [ ] Buttons/Pop-up/Regular/Rest/Dark
-- [ ] Buttons/Pop-up/Regular/Rest/Light
-- [ ] Buttons/Pop-up/Small/Disabled/Dark
-- [ ] Buttons/Pop-up/Small/Disabled/Light
-- [ ] Buttons/Pop-up/Small/Focused/Dark
-- [ ] Buttons/Pop-up/Small/Focused/Light
-- [ ] Buttons/Pop-up/Small/Hover/Dark
-- [ ] Buttons/Pop-up/Small/Hover/Light
-- [ ] Buttons/Pop-up/Small/Pressed/Dark
-- [ ] Buttons/Pop-up/Small/Pressed/Light
-- [ ] Buttons/Pop-up/Small/Rest/Dark
-- [ ] Buttons/Pop-up/Small/Rest/Light
+- [x] Buttons/Pop-up/Large/Disabled/Dark
+- [x] Buttons/Pop-up/Large/Disabled/Light
+- [x] Buttons/Pop-up/Large/Focused/Dark
+- [x] Buttons/Pop-up/Large/Focused/Light
+- [x] Buttons/Pop-up/Large/Hover/Dark
+- [x] Buttons/Pop-up/Large/Hover/Light
+- [x] Buttons/Pop-up/Large/Pressed/Dark
+- [x] Buttons/Pop-up/Large/Pressed/Light
+- [x] Buttons/Pop-up/Large/Rest/Dark
+- [x] Buttons/Pop-up/Large/Rest/Light
+- [x] Buttons/Pop-up/Mini/Disabled/Dark
+- [x] Buttons/Pop-up/Mini/Disabled/Light
+- [x] Buttons/Pop-up/Mini/Focused/Dark
+- [x] Buttons/Pop-up/Mini/Focused/Light
+- [x] Buttons/Pop-up/Mini/Hover/Dark
+- [x] Buttons/Pop-up/Mini/Hover/Light
+- [x] Buttons/Pop-up/Mini/Pressed/Dark
+- [x] Buttons/Pop-up/Mini/Pressed/Light
+- [x] Buttons/Pop-up/Mini/Rest/Dark
+- [x] Buttons/Pop-up/Mini/Rest/Light
+- [x] Buttons/Pop-up/Open/Rest/Dark
+- [x] Buttons/Pop-up/Open/Rest/Light
+- [x] Buttons/Pop-up/Regular/Disabled/Dark
+- [x] Buttons/Pop-up/Regular/Disabled/Light
+- [x] Buttons/Pop-up/Regular/Focused/Dark
+- [x] Buttons/Pop-up/Regular/Focused/Light
+- [x] Buttons/Pop-up/Regular/Hover/Dark
+- [x] Buttons/Pop-up/Regular/Hover/Light
+- [x] Buttons/Pop-up/Regular/Pressed/Dark
+- [x] Buttons/Pop-up/Regular/Pressed/Light
+- [x] Buttons/Pop-up/Regular/Rest/Dark
+- [x] Buttons/Pop-up/Regular/Rest/Light
+- [x] Buttons/Pop-up/Small/Disabled/Dark
+- [x] Buttons/Pop-up/Small/Disabled/Light
+- [x] Buttons/Pop-up/Small/Focused/Dark
+- [x] Buttons/Pop-up/Small/Focused/Light
+- [x] Buttons/Pop-up/Small/Hover/Dark
+- [x] Buttons/Pop-up/Small/Hover/Light
+- [x] Buttons/Pop-up/Small/Pressed/Dark
+- [x] Buttons/Pop-up/Small/Pressed/Light
+- [x] Buttons/Pop-up/Small/Rest/Dark
+- [x] Buttons/Pop-up/Small/Rest/Light
 
 ## Buttons/Pull-down
 
-- [ ] Buttons/Pull-down/Large/Disabled/Dark
-- [ ] Buttons/Pull-down/Large/Disabled/Light
-- [ ] Buttons/Pull-down/Large/Focused/Dark
-- [ ] Buttons/Pull-down/Large/Focused/Light
-- [ ] Buttons/Pull-down/Large/Hover/Dark
-- [ ] Buttons/Pull-down/Large/Hover/Light
-- [ ] Buttons/Pull-down/Large/Pressed/Dark
-- [ ] Buttons/Pull-down/Large/Pressed/Light
-- [ ] Buttons/Pull-down/Large/Rest/Dark
-- [ ] Buttons/Pull-down/Large/Rest/Light
-- [ ] Buttons/Pull-down/Mini/Disabled/Dark
-- [ ] Buttons/Pull-down/Mini/Disabled/Light
-- [ ] Buttons/Pull-down/Mini/Focused/Dark
-- [ ] Buttons/Pull-down/Mini/Focused/Light
-- [ ] Buttons/Pull-down/Mini/Hover/Dark
-- [ ] Buttons/Pull-down/Mini/Hover/Light
-- [ ] Buttons/Pull-down/Mini/Pressed/Dark
-- [ ] Buttons/Pull-down/Mini/Pressed/Light
-- [ ] Buttons/Pull-down/Mini/Rest/Dark
-- [ ] Buttons/Pull-down/Mini/Rest/Light
-- [ ] Buttons/Pull-down/Open/Rest/Dark
-- [ ] Buttons/Pull-down/Open/Rest/Light
-- [ ] Buttons/Pull-down/Regular/Disabled/Dark
-- [ ] Buttons/Pull-down/Regular/Disabled/Light
-- [ ] Buttons/Pull-down/Regular/Focused/Dark
-- [ ] Buttons/Pull-down/Regular/Focused/Light
-- [ ] Buttons/Pull-down/Regular/Hover/Dark
-- [ ] Buttons/Pull-down/Regular/Hover/Light
-- [ ] Buttons/Pull-down/Regular/Pressed/Dark
-- [ ] Buttons/Pull-down/Regular/Pressed/Light
-- [ ] Buttons/Pull-down/Regular/Rest/Dark
-- [ ] Buttons/Pull-down/Regular/Rest/Light
-- [ ] Buttons/Pull-down/Small/Disabled/Dark
-- [ ] Buttons/Pull-down/Small/Disabled/Light
-- [ ] Buttons/Pull-down/Small/Focused/Dark
-- [ ] Buttons/Pull-down/Small/Focused/Light
-- [ ] Buttons/Pull-down/Small/Hover/Dark
-- [ ] Buttons/Pull-down/Small/Hover/Light
-- [ ] Buttons/Pull-down/Small/Pressed/Dark
-- [ ] Buttons/Pull-down/Small/Pressed/Light
-- [ ] Buttons/Pull-down/Small/Rest/Dark
-- [ ] Buttons/Pull-down/Small/Rest/Light
+- [x] Buttons/Pull-down/Large/Disabled/Dark
+- [x] Buttons/Pull-down/Large/Disabled/Light
+- [x] Buttons/Pull-down/Large/Focused/Dark
+- [x] Buttons/Pull-down/Large/Focused/Light
+- [x] Buttons/Pull-down/Large/Hover/Dark
+- [x] Buttons/Pull-down/Large/Hover/Light
+- [x] Buttons/Pull-down/Large/Pressed/Dark
+- [x] Buttons/Pull-down/Large/Pressed/Light
+- [x] Buttons/Pull-down/Large/Rest/Dark
+- [x] Buttons/Pull-down/Large/Rest/Light
+- [x] Buttons/Pull-down/Mini/Disabled/Dark
+- [x] Buttons/Pull-down/Mini/Disabled/Light
+- [x] Buttons/Pull-down/Mini/Focused/Dark
+- [x] Buttons/Pull-down/Mini/Focused/Light
+- [x] Buttons/Pull-down/Mini/Hover/Dark
+- [x] Buttons/Pull-down/Mini/Hover/Light
+- [x] Buttons/Pull-down/Mini/Pressed/Dark
+- [x] Buttons/Pull-down/Mini/Pressed/Light
+- [x] Buttons/Pull-down/Mini/Rest/Dark
+- [x] Buttons/Pull-down/Mini/Rest/Light
+- [x] Buttons/Pull-down/Open/Rest/Dark
+- [x] Buttons/Pull-down/Open/Rest/Light
+- [x] Buttons/Pull-down/Regular/Disabled/Dark
+- [x] Buttons/Pull-down/Regular/Disabled/Light
+- [x] Buttons/Pull-down/Regular/Focused/Dark
+- [x] Buttons/Pull-down/Regular/Focused/Light
+- [x] Buttons/Pull-down/Regular/Hover/Dark
+- [x] Buttons/Pull-down/Regular/Hover/Light
+- [x] Buttons/Pull-down/Regular/Pressed/Dark
+- [x] Buttons/Pull-down/Regular/Pressed/Light
+- [x] Buttons/Pull-down/Regular/Rest/Dark
+- [x] Buttons/Pull-down/Regular/Rest/Light
+- [x] Buttons/Pull-down/Small/Disabled/Dark
+- [x] Buttons/Pull-down/Small/Disabled/Light
+- [x] Buttons/Pull-down/Small/Focused/Dark
+- [x] Buttons/Pull-down/Small/Focused/Light
+- [x] Buttons/Pull-down/Small/Hover/Dark
+- [x] Buttons/Pull-down/Small/Hover/Light
+- [x] Buttons/Pull-down/Small/Pressed/Dark
+- [x] Buttons/Pull-down/Small/Pressed/Light
+- [x] Buttons/Pull-down/Small/Rest/Dark
+- [x] Buttons/Pull-down/Small/Rest/Light
 
 ## Buttons/Push
 
-- [ ] Buttons/Push/Borderless/Large/Disabled/Dark
-- [ ] Buttons/Push/Borderless/Large/Disabled/Light
-- [ ] Buttons/Push/Borderless/Large/Focused/Dark
-- [ ] Buttons/Push/Borderless/Large/Focused/Light
-- [ ] Buttons/Push/Borderless/Large/Hover/Dark
-- [ ] Buttons/Push/Borderless/Large/Hover/Light
-- [ ] Buttons/Push/Borderless/Large/Pressed/Dark
-- [ ] Buttons/Push/Borderless/Large/Pressed/Light
-- [ ] Buttons/Push/Borderless/Large/Rest/Dark
-- [ ] Buttons/Push/Borderless/Large/Rest/Light
-- [ ] Buttons/Push/Borderless/Mini/Disabled/Dark
-- [ ] Buttons/Push/Borderless/Mini/Disabled/Light
-- [ ] Buttons/Push/Borderless/Mini/Focused/Dark
-- [ ] Buttons/Push/Borderless/Mini/Focused/Light
-- [ ] Buttons/Push/Borderless/Mini/Hover/Dark
-- [ ] Buttons/Push/Borderless/Mini/Hover/Light
-- [ ] Buttons/Push/Borderless/Mini/Pressed/Dark
-- [ ] Buttons/Push/Borderless/Mini/Pressed/Light
-- [ ] Buttons/Push/Borderless/Mini/Rest/Dark
-- [ ] Buttons/Push/Borderless/Mini/Rest/Light
-- [ ] Buttons/Push/Borderless/Regular/Disabled/Dark
-- [ ] Buttons/Push/Borderless/Regular/Disabled/Light
-- [ ] Buttons/Push/Borderless/Regular/Focused/Dark
-- [ ] Buttons/Push/Borderless/Regular/Focused/Light
-- [ ] Buttons/Push/Borderless/Regular/Hover/Dark
-- [ ] Buttons/Push/Borderless/Regular/Hover/Light
-- [ ] Buttons/Push/Borderless/Regular/Pressed/Dark
-- [ ] Buttons/Push/Borderless/Regular/Pressed/Light
-- [ ] Buttons/Push/Borderless/Regular/Rest/Dark
-- [ ] Buttons/Push/Borderless/Regular/Rest/Light
-- [ ] Buttons/Push/Borderless/Small/Disabled/Dark
-- [ ] Buttons/Push/Borderless/Small/Disabled/Light
-- [ ] Buttons/Push/Borderless/Small/Focused/Dark
-- [ ] Buttons/Push/Borderless/Small/Focused/Light
-- [ ] Buttons/Push/Borderless/Small/Hover/Dark
-- [ ] Buttons/Push/Borderless/Small/Hover/Light
-- [ ] Buttons/Push/Borderless/Small/Pressed/Dark
-- [ ] Buttons/Push/Borderless/Small/Pressed/Light
-- [ ] Buttons/Push/Borderless/Small/Rest/Dark
-- [ ] Buttons/Push/Borderless/Small/Rest/Light
-- [ ] Buttons/Push/Destructive/Large/Disabled/Dark
-- [ ] Buttons/Push/Destructive/Large/Disabled/Light
-- [ ] Buttons/Push/Destructive/Large/Focused/Dark
-- [ ] Buttons/Push/Destructive/Large/Focused/Light
-- [ ] Buttons/Push/Destructive/Large/Hover/Dark
-- [ ] Buttons/Push/Destructive/Large/Hover/Light
-- [ ] Buttons/Push/Destructive/Large/Pressed/Dark
-- [ ] Buttons/Push/Destructive/Large/Pressed/Light
-- [ ] Buttons/Push/Destructive/Large/Rest/Dark
-- [ ] Buttons/Push/Destructive/Large/Rest/Light
-- [ ] Buttons/Push/Destructive/Mini/Disabled/Dark
-- [ ] Buttons/Push/Destructive/Mini/Disabled/Light
-- [ ] Buttons/Push/Destructive/Mini/Focused/Dark
-- [ ] Buttons/Push/Destructive/Mini/Focused/Light
-- [ ] Buttons/Push/Destructive/Mini/Hover/Dark
-- [ ] Buttons/Push/Destructive/Mini/Hover/Light
-- [ ] Buttons/Push/Destructive/Mini/Pressed/Dark
-- [ ] Buttons/Push/Destructive/Mini/Pressed/Light
-- [ ] Buttons/Push/Destructive/Mini/Rest/Dark
-- [ ] Buttons/Push/Destructive/Mini/Rest/Light
-- [ ] Buttons/Push/Destructive/Regular/Disabled/Dark
-- [ ] Buttons/Push/Destructive/Regular/Disabled/Light
-- [ ] Buttons/Push/Destructive/Regular/Focused/Dark
-- [ ] Buttons/Push/Destructive/Regular/Focused/Light
-- [ ] Buttons/Push/Destructive/Regular/Hover/Dark
-- [ ] Buttons/Push/Destructive/Regular/Hover/Light
-- [ ] Buttons/Push/Destructive/Regular/Pressed/Dark
-- [ ] Buttons/Push/Destructive/Regular/Pressed/Light
-- [ ] Buttons/Push/Destructive/Regular/Rest/Dark
-- [ ] Buttons/Push/Destructive/Regular/Rest/Light
-- [ ] Buttons/Push/Destructive/Small/Disabled/Dark
-- [ ] Buttons/Push/Destructive/Small/Disabled/Light
-- [ ] Buttons/Push/Destructive/Small/Focused/Dark
-- [ ] Buttons/Push/Destructive/Small/Focused/Light
-- [ ] Buttons/Push/Destructive/Small/Hover/Dark
-- [ ] Buttons/Push/Destructive/Small/Hover/Light
-- [ ] Buttons/Push/Destructive/Small/Pressed/Dark
-- [ ] Buttons/Push/Destructive/Small/Pressed/Light
-- [ ] Buttons/Push/Destructive/Small/Rest/Dark
-- [ ] Buttons/Push/Destructive/Small/Rest/Light
-- [ ] Buttons/Push/Glass/Large/Disabled/Dark
-- [ ] Buttons/Push/Glass/Large/Disabled/Light
-- [ ] Buttons/Push/Glass/Large/Focused/Dark
-- [ ] Buttons/Push/Glass/Large/Focused/Light
-- [ ] Buttons/Push/Glass/Large/Hover/Dark
-- [ ] Buttons/Push/Glass/Large/Hover/Light
-- [ ] Buttons/Push/Glass/Large/Pressed/Dark
-- [ ] Buttons/Push/Glass/Large/Pressed/Light
-- [ ] Buttons/Push/Glass/Large/Rest/Dark
-- [ ] Buttons/Push/Glass/Large/Rest/Light
-- [ ] Buttons/Push/Glass/Mini/Disabled/Dark
-- [ ] Buttons/Push/Glass/Mini/Disabled/Light
-- [ ] Buttons/Push/Glass/Mini/Focused/Dark
-- [ ] Buttons/Push/Glass/Mini/Focused/Light
-- [ ] Buttons/Push/Glass/Mini/Hover/Dark
-- [ ] Buttons/Push/Glass/Mini/Hover/Light
-- [ ] Buttons/Push/Glass/Mini/Pressed/Dark
-- [ ] Buttons/Push/Glass/Mini/Pressed/Light
-- [ ] Buttons/Push/Glass/Mini/Rest/Dark
-- [ ] Buttons/Push/Glass/Mini/Rest/Light
-- [ ] Buttons/Push/Glass/Regular/Disabled/Dark
-- [ ] Buttons/Push/Glass/Regular/Disabled/Light
-- [ ] Buttons/Push/Glass/Regular/Focused/Dark
-- [ ] Buttons/Push/Glass/Regular/Focused/Light
-- [ ] Buttons/Push/Glass/Regular/Hover/Dark
-- [ ] Buttons/Push/Glass/Regular/Hover/Light
-- [ ] Buttons/Push/Glass/Regular/Pressed/Dark
-- [ ] Buttons/Push/Glass/Regular/Pressed/Light
-- [ ] Buttons/Push/Glass/Regular/Rest/Dark
-- [ ] Buttons/Push/Glass/Regular/Rest/Light
-- [ ] Buttons/Push/Glass/Small/Disabled/Dark
-- [ ] Buttons/Push/Glass/Small/Disabled/Light
-- [ ] Buttons/Push/Glass/Small/Focused/Dark
-- [ ] Buttons/Push/Glass/Small/Focused/Light
-- [ ] Buttons/Push/Glass/Small/Hover/Dark
-- [ ] Buttons/Push/Glass/Small/Hover/Light
-- [ ] Buttons/Push/Glass/Small/Pressed/Dark
-- [ ] Buttons/Push/Glass/Small/Pressed/Light
-- [ ] Buttons/Push/Glass/Small/Rest/Dark
-- [ ] Buttons/Push/Glass/Small/Rest/Light
-- [ ] Buttons/Push/Primary/Large/Disabled/Dark
-- [ ] Buttons/Push/Primary/Large/Disabled/Light
-- [ ] Buttons/Push/Primary/Large/Focused/Dark
-- [ ] Buttons/Push/Primary/Large/Focused/Light
-- [ ] Buttons/Push/Primary/Large/Hover/Dark
-- [ ] Buttons/Push/Primary/Large/Hover/Light
-- [ ] Buttons/Push/Primary/Large/Pressed/Dark
-- [ ] Buttons/Push/Primary/Large/Pressed/Light
-- [ ] Buttons/Push/Primary/Large/Rest/Dark
-- [ ] Buttons/Push/Primary/Large/Rest/Light
-- [ ] Buttons/Push/Primary/Mini/Disabled/Dark
-- [ ] Buttons/Push/Primary/Mini/Disabled/Light
-- [ ] Buttons/Push/Primary/Mini/Focused/Dark
-- [ ] Buttons/Push/Primary/Mini/Focused/Light
-- [ ] Buttons/Push/Primary/Mini/Hover/Dark
-- [ ] Buttons/Push/Primary/Mini/Hover/Light
-- [ ] Buttons/Push/Primary/Mini/Pressed/Dark
-- [ ] Buttons/Push/Primary/Mini/Pressed/Light
-- [ ] Buttons/Push/Primary/Mini/Rest/Dark
-- [ ] Buttons/Push/Primary/Mini/Rest/Light
-- [ ] Buttons/Push/Primary/Regular/Disabled/Dark
-- [ ] Buttons/Push/Primary/Regular/Disabled/Light
-- [ ] Buttons/Push/Primary/Regular/Focused/Dark
-- [ ] Buttons/Push/Primary/Regular/Focused/Light
-- [ ] Buttons/Push/Primary/Regular/Hover/Dark
-- [ ] Buttons/Push/Primary/Regular/Hover/Light
-- [ ] Buttons/Push/Primary/Regular/Pressed/Dark
-- [ ] Buttons/Push/Primary/Regular/Pressed/Light
-- [ ] Buttons/Push/Primary/Regular/Rest/Dark
-- [ ] Buttons/Push/Primary/Regular/Rest/Light
-- [ ] Buttons/Push/Primary/Small/Disabled/Dark
-- [ ] Buttons/Push/Primary/Small/Disabled/Light
-- [ ] Buttons/Push/Primary/Small/Focused/Dark
-- [ ] Buttons/Push/Primary/Small/Focused/Light
-- [ ] Buttons/Push/Primary/Small/Hover/Dark
-- [ ] Buttons/Push/Primary/Small/Hover/Light
-- [ ] Buttons/Push/Primary/Small/Pressed/Dark
-- [ ] Buttons/Push/Primary/Small/Pressed/Light
-- [ ] Buttons/Push/Primary/Small/Rest/Dark
-- [ ] Buttons/Push/Primary/Small/Rest/Light
-- [ ] Buttons/Push/Secondary/Large/Disabled/Dark
-- [ ] Buttons/Push/Secondary/Large/Disabled/Light
-- [ ] Buttons/Push/Secondary/Large/Focused/Dark
-- [ ] Buttons/Push/Secondary/Large/Focused/Light
-- [ ] Buttons/Push/Secondary/Large/Hover/Dark
-- [ ] Buttons/Push/Secondary/Large/Hover/Light
-- [ ] Buttons/Push/Secondary/Large/Pressed/Dark
-- [ ] Buttons/Push/Secondary/Large/Pressed/Light
-- [ ] Buttons/Push/Secondary/Large/Rest/Dark
-- [ ] Buttons/Push/Secondary/Large/Rest/Light
-- [ ] Buttons/Push/Secondary/Mini/Disabled/Dark
-- [ ] Buttons/Push/Secondary/Mini/Disabled/Light
-- [ ] Buttons/Push/Secondary/Mini/Focused/Dark
-- [ ] Buttons/Push/Secondary/Mini/Focused/Light
-- [ ] Buttons/Push/Secondary/Mini/Hover/Dark
-- [ ] Buttons/Push/Secondary/Mini/Hover/Light
-- [ ] Buttons/Push/Secondary/Mini/Pressed/Dark
-- [ ] Buttons/Push/Secondary/Mini/Pressed/Light
-- [ ] Buttons/Push/Secondary/Mini/Rest/Dark
-- [ ] Buttons/Push/Secondary/Mini/Rest/Light
-- [ ] Buttons/Push/Secondary/Regular/Disabled/Dark
-- [ ] Buttons/Push/Secondary/Regular/Disabled/Light
-- [ ] Buttons/Push/Secondary/Regular/Focused/Dark
-- [ ] Buttons/Push/Secondary/Regular/Focused/Light
-- [ ] Buttons/Push/Secondary/Regular/Hover/Dark
-- [ ] Buttons/Push/Secondary/Regular/Hover/Light
-- [ ] Buttons/Push/Secondary/Regular/Pressed/Dark
-- [ ] Buttons/Push/Secondary/Regular/Pressed/Light
-- [ ] Buttons/Push/Secondary/Regular/Rest/Dark
-- [ ] Buttons/Push/Secondary/Regular/Rest/Light
-- [ ] Buttons/Push/Secondary/Small/Disabled/Dark
-- [ ] Buttons/Push/Secondary/Small/Disabled/Light
-- [ ] Buttons/Push/Secondary/Small/Focused/Dark
-- [ ] Buttons/Push/Secondary/Small/Focused/Light
-- [ ] Buttons/Push/Secondary/Small/Hover/Dark
-- [ ] Buttons/Push/Secondary/Small/Hover/Light
-- [ ] Buttons/Push/Secondary/Small/Pressed/Dark
-- [ ] Buttons/Push/Secondary/Small/Pressed/Light
-- [ ] Buttons/Push/Secondary/Small/Rest/Dark
-- [ ] Buttons/Push/Secondary/Small/Rest/Light
+- [x] Buttons/Push/Borderless/Large/Disabled/Dark
+- [x] Buttons/Push/Borderless/Large/Disabled/Light
+- [x] Buttons/Push/Borderless/Large/Focused/Dark
+- [x] Buttons/Push/Borderless/Large/Focused/Light
+- [x] Buttons/Push/Borderless/Large/Hover/Dark
+- [x] Buttons/Push/Borderless/Large/Hover/Light
+- [x] Buttons/Push/Borderless/Large/Pressed/Dark
+- [x] Buttons/Push/Borderless/Large/Pressed/Light
+- [x] Buttons/Push/Borderless/Large/Rest/Dark
+- [x] Buttons/Push/Borderless/Large/Rest/Light
+- [x] Buttons/Push/Borderless/Mini/Disabled/Dark
+- [x] Buttons/Push/Borderless/Mini/Disabled/Light
+- [x] Buttons/Push/Borderless/Mini/Focused/Dark
+- [x] Buttons/Push/Borderless/Mini/Focused/Light
+- [x] Buttons/Push/Borderless/Mini/Hover/Dark
+- [x] Buttons/Push/Borderless/Mini/Hover/Light
+- [x] Buttons/Push/Borderless/Mini/Pressed/Dark
+- [x] Buttons/Push/Borderless/Mini/Pressed/Light
+- [x] Buttons/Push/Borderless/Mini/Rest/Dark
+- [x] Buttons/Push/Borderless/Mini/Rest/Light
+- [x] Buttons/Push/Borderless/Regular/Disabled/Dark
+- [x] Buttons/Push/Borderless/Regular/Disabled/Light
+- [x] Buttons/Push/Borderless/Regular/Focused/Dark
+- [x] Buttons/Push/Borderless/Regular/Focused/Light
+- [x] Buttons/Push/Borderless/Regular/Hover/Dark
+- [x] Buttons/Push/Borderless/Regular/Hover/Light
+- [x] Buttons/Push/Borderless/Regular/Pressed/Dark
+- [x] Buttons/Push/Borderless/Regular/Pressed/Light
+- [x] Buttons/Push/Borderless/Regular/Rest/Dark
+- [x] Buttons/Push/Borderless/Regular/Rest/Light
+- [x] Buttons/Push/Borderless/Small/Disabled/Dark
+- [x] Buttons/Push/Borderless/Small/Disabled/Light
+- [x] Buttons/Push/Borderless/Small/Focused/Dark
+- [x] Buttons/Push/Borderless/Small/Focused/Light
+- [x] Buttons/Push/Borderless/Small/Hover/Dark
+- [x] Buttons/Push/Borderless/Small/Hover/Light
+- [x] Buttons/Push/Borderless/Small/Pressed/Dark
+- [x] Buttons/Push/Borderless/Small/Pressed/Light
+- [x] Buttons/Push/Borderless/Small/Rest/Dark
+- [x] Buttons/Push/Borderless/Small/Rest/Light
+- [x] Buttons/Push/Destructive/Large/Disabled/Dark
+- [x] Buttons/Push/Destructive/Large/Disabled/Light
+- [x] Buttons/Push/Destructive/Large/Focused/Dark
+- [x] Buttons/Push/Destructive/Large/Focused/Light
+- [x] Buttons/Push/Destructive/Large/Hover/Dark
+- [x] Buttons/Push/Destructive/Large/Hover/Light
+- [x] Buttons/Push/Destructive/Large/Pressed/Dark
+- [x] Buttons/Push/Destructive/Large/Pressed/Light
+- [x] Buttons/Push/Destructive/Large/Rest/Dark
+- [x] Buttons/Push/Destructive/Large/Rest/Light
+- [x] Buttons/Push/Destructive/Mini/Disabled/Dark
+- [x] Buttons/Push/Destructive/Mini/Disabled/Light
+- [x] Buttons/Push/Destructive/Mini/Focused/Dark
+- [x] Buttons/Push/Destructive/Mini/Focused/Light
+- [x] Buttons/Push/Destructive/Mini/Hover/Dark
+- [x] Buttons/Push/Destructive/Mini/Hover/Light
+- [x] Buttons/Push/Destructive/Mini/Pressed/Dark
+- [x] Buttons/Push/Destructive/Mini/Pressed/Light
+- [x] Buttons/Push/Destructive/Mini/Rest/Dark
+- [x] Buttons/Push/Destructive/Mini/Rest/Light
+- [x] Buttons/Push/Destructive/Regular/Disabled/Dark
+- [x] Buttons/Push/Destructive/Regular/Disabled/Light
+- [x] Buttons/Push/Destructive/Regular/Focused/Dark
+- [x] Buttons/Push/Destructive/Regular/Focused/Light
+- [x] Buttons/Push/Destructive/Regular/Hover/Dark
+- [x] Buttons/Push/Destructive/Regular/Hover/Light
+- [x] Buttons/Push/Destructive/Regular/Pressed/Dark
+- [x] Buttons/Push/Destructive/Regular/Pressed/Light
+- [x] Buttons/Push/Destructive/Regular/Rest/Dark
+- [x] Buttons/Push/Destructive/Regular/Rest/Light
+- [x] Buttons/Push/Destructive/Small/Disabled/Dark
+- [x] Buttons/Push/Destructive/Small/Disabled/Light
+- [x] Buttons/Push/Destructive/Small/Focused/Dark
+- [x] Buttons/Push/Destructive/Small/Focused/Light
+- [x] Buttons/Push/Destructive/Small/Hover/Dark
+- [x] Buttons/Push/Destructive/Small/Hover/Light
+- [x] Buttons/Push/Destructive/Small/Pressed/Dark
+- [x] Buttons/Push/Destructive/Small/Pressed/Light
+- [x] Buttons/Push/Destructive/Small/Rest/Dark
+- [x] Buttons/Push/Destructive/Small/Rest/Light
+- [x] Buttons/Push/Glass/Large/Disabled/Dark
+- [x] Buttons/Push/Glass/Large/Disabled/Light
+- [x] Buttons/Push/Glass/Large/Focused/Dark
+- [x] Buttons/Push/Glass/Large/Focused/Light
+- [x] Buttons/Push/Glass/Large/Hover/Dark
+- [x] Buttons/Push/Glass/Large/Hover/Light
+- [x] Buttons/Push/Glass/Large/Pressed/Dark
+- [x] Buttons/Push/Glass/Large/Pressed/Light
+- [x] Buttons/Push/Glass/Large/Rest/Dark
+- [x] Buttons/Push/Glass/Large/Rest/Light
+- [x] Buttons/Push/Glass/Mini/Disabled/Dark
+- [x] Buttons/Push/Glass/Mini/Disabled/Light
+- [x] Buttons/Push/Glass/Mini/Focused/Dark
+- [x] Buttons/Push/Glass/Mini/Focused/Light
+- [x] Buttons/Push/Glass/Mini/Hover/Dark
+- [x] Buttons/Push/Glass/Mini/Hover/Light
+- [x] Buttons/Push/Glass/Mini/Pressed/Dark
+- [x] Buttons/Push/Glass/Mini/Pressed/Light
+- [x] Buttons/Push/Glass/Mini/Rest/Dark
+- [x] Buttons/Push/Glass/Mini/Rest/Light
+- [x] Buttons/Push/Glass/Regular/Disabled/Dark
+- [x] Buttons/Push/Glass/Regular/Disabled/Light
+- [x] Buttons/Push/Glass/Regular/Focused/Dark
+- [x] Buttons/Push/Glass/Regular/Focused/Light
+- [x] Buttons/Push/Glass/Regular/Hover/Dark
+- [x] Buttons/Push/Glass/Regular/Hover/Light
+- [x] Buttons/Push/Glass/Regular/Pressed/Dark
+- [x] Buttons/Push/Glass/Regular/Pressed/Light
+- [x] Buttons/Push/Glass/Regular/Rest/Dark
+- [x] Buttons/Push/Glass/Regular/Rest/Light
+- [x] Buttons/Push/Glass/Small/Disabled/Dark
+- [x] Buttons/Push/Glass/Small/Disabled/Light
+- [x] Buttons/Push/Glass/Small/Focused/Dark
+- [x] Buttons/Push/Glass/Small/Focused/Light
+- [x] Buttons/Push/Glass/Small/Hover/Dark
+- [x] Buttons/Push/Glass/Small/Hover/Light
+- [x] Buttons/Push/Glass/Small/Pressed/Dark
+- [x] Buttons/Push/Glass/Small/Pressed/Light
+- [x] Buttons/Push/Glass/Small/Rest/Dark
+- [x] Buttons/Push/Glass/Small/Rest/Light
+- [x] Buttons/Push/Primary/Large/Disabled/Dark
+- [x] Buttons/Push/Primary/Large/Disabled/Light
+- [x] Buttons/Push/Primary/Large/Focused/Dark
+- [x] Buttons/Push/Primary/Large/Focused/Light
+- [x] Buttons/Push/Primary/Large/Hover/Dark
+- [x] Buttons/Push/Primary/Large/Hover/Light
+- [x] Buttons/Push/Primary/Large/Pressed/Dark
+- [x] Buttons/Push/Primary/Large/Pressed/Light
+- [x] Buttons/Push/Primary/Large/Rest/Dark
+- [x] Buttons/Push/Primary/Large/Rest/Light
+- [x] Buttons/Push/Primary/Mini/Disabled/Dark
+- [x] Buttons/Push/Primary/Mini/Disabled/Light
+- [x] Buttons/Push/Primary/Mini/Focused/Dark
+- [x] Buttons/Push/Primary/Mini/Focused/Light
+- [x] Buttons/Push/Primary/Mini/Hover/Dark
+- [x] Buttons/Push/Primary/Mini/Hover/Light
+- [x] Buttons/Push/Primary/Mini/Pressed/Dark
+- [x] Buttons/Push/Primary/Mini/Pressed/Light
+- [x] Buttons/Push/Primary/Mini/Rest/Dark
+- [x] Buttons/Push/Primary/Mini/Rest/Light
+- [x] Buttons/Push/Primary/Regular/Disabled/Dark
+- [x] Buttons/Push/Primary/Regular/Disabled/Light
+- [x] Buttons/Push/Primary/Regular/Focused/Dark
+- [x] Buttons/Push/Primary/Regular/Focused/Light
+- [x] Buttons/Push/Primary/Regular/Hover/Dark
+- [x] Buttons/Push/Primary/Regular/Hover/Light
+- [x] Buttons/Push/Primary/Regular/Pressed/Dark
+- [x] Buttons/Push/Primary/Regular/Pressed/Light
+- [x] Buttons/Push/Primary/Regular/Rest/Dark
+- [x] Buttons/Push/Primary/Regular/Rest/Light
+- [x] Buttons/Push/Primary/Small/Disabled/Dark
+- [x] Buttons/Push/Primary/Small/Disabled/Light
+- [x] Buttons/Push/Primary/Small/Focused/Dark
+- [x] Buttons/Push/Primary/Small/Focused/Light
+- [x] Buttons/Push/Primary/Small/Hover/Dark
+- [x] Buttons/Push/Primary/Small/Hover/Light
+- [x] Buttons/Push/Primary/Small/Pressed/Dark
+- [x] Buttons/Push/Primary/Small/Pressed/Light
+- [x] Buttons/Push/Primary/Small/Rest/Dark
+- [x] Buttons/Push/Primary/Small/Rest/Light
+- [x] Buttons/Push/Secondary/Large/Disabled/Dark
+- [x] Buttons/Push/Secondary/Large/Disabled/Light
+- [x] Buttons/Push/Secondary/Large/Focused/Dark
+- [x] Buttons/Push/Secondary/Large/Focused/Light
+- [x] Buttons/Push/Secondary/Large/Hover/Dark
+- [x] Buttons/Push/Secondary/Large/Hover/Light
+- [x] Buttons/Push/Secondary/Large/Pressed/Dark
+- [x] Buttons/Push/Secondary/Large/Pressed/Light
+- [x] Buttons/Push/Secondary/Large/Rest/Dark
+- [x] Buttons/Push/Secondary/Large/Rest/Light
+- [x] Buttons/Push/Secondary/Mini/Disabled/Dark
+- [x] Buttons/Push/Secondary/Mini/Disabled/Light
+- [x] Buttons/Push/Secondary/Mini/Focused/Dark
+- [x] Buttons/Push/Secondary/Mini/Focused/Light
+- [x] Buttons/Push/Secondary/Mini/Hover/Dark
+- [x] Buttons/Push/Secondary/Mini/Hover/Light
+- [x] Buttons/Push/Secondary/Mini/Pressed/Dark
+- [x] Buttons/Push/Secondary/Mini/Pressed/Light
+- [x] Buttons/Push/Secondary/Mini/Rest/Dark
+- [x] Buttons/Push/Secondary/Mini/Rest/Light
+- [x] Buttons/Push/Secondary/Regular/Disabled/Dark
+- [x] Buttons/Push/Secondary/Regular/Disabled/Light
+- [x] Buttons/Push/Secondary/Regular/Focused/Dark
+- [x] Buttons/Push/Secondary/Regular/Focused/Light
+- [x] Buttons/Push/Secondary/Regular/Hover/Dark
+- [x] Buttons/Push/Secondary/Regular/Hover/Light
+- [x] Buttons/Push/Secondary/Regular/Pressed/Dark
+- [x] Buttons/Push/Secondary/Regular/Pressed/Light
+- [x] Buttons/Push/Secondary/Regular/Rest/Dark
+- [x] Buttons/Push/Secondary/Regular/Rest/Light
+- [x] Buttons/Push/Secondary/Small/Disabled/Dark
+- [x] Buttons/Push/Secondary/Small/Disabled/Light
+- [x] Buttons/Push/Secondary/Small/Focused/Dark
+- [x] Buttons/Push/Secondary/Small/Focused/Light
+- [x] Buttons/Push/Secondary/Small/Hover/Dark
+- [x] Buttons/Push/Secondary/Small/Hover/Light
+- [x] Buttons/Push/Secondary/Small/Pressed/Dark
+- [x] Buttons/Push/Secondary/Small/Pressed/Light
+- [x] Buttons/Push/Secondary/Small/Rest/Dark
+- [x] Buttons/Push/Secondary/Small/Rest/Light
 
 ## Buttons/Toolbar
 
-- [ ] Buttons/Toolbar/Icon + Label/Disabled/Dark
-- [ ] Buttons/Toolbar/Icon + Label/Disabled/Light
+- [x] Buttons/Toolbar/Icon + Label/Disabled/Dark
+- [x] Buttons/Toolbar/Icon + Label/Disabled/Light
 - [ ] Buttons/Toolbar/Icon + Label/Focused/Dark
 - [ ] Buttons/Toolbar/Icon + Label/Focused/Light
-- [ ] Buttons/Toolbar/Icon + Label/Hover/Dark
-- [ ] Buttons/Toolbar/Icon + Label/Hover/Light
-- [ ] Buttons/Toolbar/Icon + Label/Pressed/Dark
-- [ ] Buttons/Toolbar/Icon + Label/Pressed/Light
-- [ ] Buttons/Toolbar/Icon + Label/Rest/Dark
-- [ ] Buttons/Toolbar/Icon + Label/Rest/Light
-- [ ] Buttons/Toolbar/Icon/Disabled/Dark
-- [ ] Buttons/Toolbar/Icon/Disabled/Light
+- [x] Buttons/Toolbar/Icon + Label/Hover/Dark
+- [x] Buttons/Toolbar/Icon + Label/Hover/Light
+- [x] Buttons/Toolbar/Icon + Label/Pressed/Dark
+- [x] Buttons/Toolbar/Icon + Label/Pressed/Light
+- [x] Buttons/Toolbar/Icon + Label/Rest/Dark
+- [x] Buttons/Toolbar/Icon + Label/Rest/Light
+- [x] Buttons/Toolbar/Icon/Disabled/Dark
+- [x] Buttons/Toolbar/Icon/Disabled/Light
 - [ ] Buttons/Toolbar/Icon/Focused/Dark
 - [ ] Buttons/Toolbar/Icon/Focused/Light
-- [ ] Buttons/Toolbar/Icon/Hover/Dark
-- [ ] Buttons/Toolbar/Icon/Hover/Light
-- [ ] Buttons/Toolbar/Icon/Pressed/Dark
-- [ ] Buttons/Toolbar/Icon/Pressed/Light
-- [ ] Buttons/Toolbar/Icon/Rest/Dark
-- [ ] Buttons/Toolbar/Icon/Rest/Light
+- [x] Buttons/Toolbar/Icon/Hover/Dark
+- [x] Buttons/Toolbar/Icon/Hover/Light
+- [x] Buttons/Toolbar/Icon/Pressed/Dark
+- [x] Buttons/Toolbar/Icon/Pressed/Light
+- [x] Buttons/Toolbar/Icon/Rest/Dark
+- [x] Buttons/Toolbar/Icon/Rest/Light

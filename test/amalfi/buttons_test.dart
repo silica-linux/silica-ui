@@ -1,0 +1,928 @@
+// Buttons against the kit (`Buttons/*`): every master's geometry, the pixels of every master
+// (text masked), and the behaviour. Checklist: docs/amalfi-checklist/buttons.md.
+
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:silica_ui/silica_ui.dart';
+import 'package:silica_ui/src/amalfi/components/buttons/button_base.dart';
+import 'package:silica_ui/src/amalfi/components/buttons/button_menu.dart';
+import 'package:silica_ui/src/amalfi/components/buttons/button_surface.dart';
+
+import 'support/harness.dart';
+
+const states = ['Rest', 'Hover', 'Pressed', 'Disabled', 'Focused'];
+const appearances = ['Light', 'Dark'];
+const sizes = {
+  'Mini': AmalfiControlSize.mini,
+  'Small': AmalfiControlSize.small,
+  'Regular': AmalfiControlSize.regular,
+  'Large': AmalfiControlSize.large,
+};
+
+void _noop() {}
+
+// ---------------------------------------------------------------------------------------------
+// Pointer and focus.
+
+TestGesture? _mouse;
+bool _down = false;
+
+Future<TestGesture> _pointer(WidgetTester tester) async {
+  final existing = _mouse;
+  if (existing != null) return existing;
+  final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+  _mouse = mouse;
+  addTearDown(() async {
+    if (_down) await _mouse?.up();
+    _down = false;
+    await _mouse?.removePointer();
+    _mouse = null;
+  });
+  await mouse.addPointer(location: const Offset(-100, -100));
+  return mouse;
+}
+
+/// Releases the mouse and moves it away from everything.
+Future<void> releasePointer(WidgetTester tester) async {
+  final mouse = _mouse;
+  if (mouse == null) return;
+  if (_down) {
+    await mouse.up();
+    _down = false;
+  }
+  await mouse.moveTo(const Offset(-100, -100));
+  await tester.pump(const Duration(milliseconds: 200));
+}
+
+/// Brings the widget at [target] into the kit [state] with real input.
+Future<void> enterState(
+  WidgetTester tester,
+  String state,
+  Finder target,
+) async {
+  switch (state) {
+    case 'Hover':
+      final mouse = await _pointer(tester);
+      await mouse.moveTo(tester.getCenter(target));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+    case 'Pressed':
+      final mouse = await _pointer(tester);
+      await mouse.moveTo(tester.getCenter(target));
+      await tester.pump();
+      await mouse.down(tester.getCenter(target));
+      _down = true;
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+    case 'Focused':
+      final detector = find
+          .descendant(of: target, matching: find.byType(GestureDetector))
+          .first;
+      Focus.of(tester.element(detector)).requestFocus();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Finders.
+
+Finder byKey(Key key, [Finder? within]) => within == null
+    ? find.byKey(key)
+    : find.descendant(of: within, matching: find.byKey(key));
+
+/// The label box: the grid-width box around [text], or the text itself.
+Finder labelOf(String text, [Finder? within]) {
+  final t = within == null
+      ? find.text(text)
+      : find.descendant(of: within, matching: find.text(text));
+  final box = find.ancestor(of: t, matching: find.byType(AmalfiGridWidth));
+  return box.evaluate().isEmpty ? t : box.first;
+}
+
+/// Maps the layers of a simple button master to finders of the widget.
+Map<String, Finder> layersOf(KitMaster master, String state, Finder within) {
+  final map = <String, Finder>{};
+  for (final layer in master.root.children) {
+    final finder = switch (layer.name) {
+      'Background' => byKey(AmalfiButtonLayers.background, within),
+      'State' || 'Highlight' => byKey(
+        state == 'Hover' ? AmalfiButtonLayers.hover : AmalfiButtonLayers.press,
+        within,
+      ),
+      'Focus Halo' => byKey(AmalfiButtonLayers.halo, within),
+      'Label' || 'Help' => labelOf(layer.text ?? '', within),
+      _ when layer.type == KitLayerType.symbolInstance => find.descendant(
+        of: within,
+        matching: find.byType(AmalfiGlyph),
+      ),
+      _ => null,
+    };
+    if (finder != null) map[layer.name] = finder;
+  }
+  return map;
+}
+
+/// Turns on the traditional (keyboard) focus highlight for the test.
+void keyboardHighlight() {
+  FocusManager.instance.highlightStrategy =
+      FocusHighlightStrategy.alwaysTraditional;
+  addTearDown(
+    () => FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.automatic,
+  );
+}
+
+/// Geometry and pixels of [master] for [widget] in [state].
+Future<void> checkMaster(
+  WidgetTester tester,
+  String key,
+  String state,
+  Widget widget, {
+  Map<String, String> deviations = const {},
+  List<String> maskLayers = const [],
+  List<Rect> mask = const [],
+  bool pixels = true,
+}) async {
+  final master = KitMaster.load(key);
+  keyboardHighlight();
+  final root = await pumpKitScene(tester, widget, master: master);
+  await enterState(tester, state, root);
+  expectKitGeometry(
+    tester,
+    master,
+    root: root,
+    layers: layersOf(master, state, root),
+    deviations: deviations,
+  );
+  await releasePointer(tester);
+  if (!pixels) return;
+  await kitPixels(
+    tester,
+    master,
+    widget,
+    maskText: true,
+    maskLayers: maskLayers,
+    mask: mask,
+    prepare: (tester) => enterState(
+      tester,
+      state,
+      find.byKey(const ValueKey('button-under-test')),
+    ),
+  );
+  await releasePointer(tester);
+}
+
+/// The pixel tolerance of the buttons (text masked). Sketch antialiases the edges of the
+/// small controls about a quarter point wider than Skia: on the 20 and 24 pt capsules, where
+/// the edge is a large share of the pixels, the mean reaches 1.82 and single edge pixels 83
+/// (the shapes match exactly: the outlines are the kit's, see `smooth_border.dart`).
+const KitPixelTolerance buttonsTolerance = KitPixelTolerance(mean: 2, max: 88);
+
+/// [expectKitPixels] with real shadows: flutter_test draws BoxShadows solid
+/// (`debugDisableShadows`), the kit blurs them.
+Future<KitPixelResult> kitPixels(
+  WidgetTester tester,
+  KitMaster master,
+  Widget widget, {
+  bool maskText = false,
+  List<String> maskLayers = const [],
+  List<Rect> mask = const [],
+  Future<void> Function(WidgetTester tester)? prepare,
+}) async {
+  debugDisableShadows = false;
+  try {
+    return await expectKitPixels(
+      tester,
+      master,
+      widget,
+      tolerance: buttonsTolerance,
+      maskText: maskText,
+      maskLayers: maskLayers,
+      mask: mask,
+      prepare: prepare,
+    );
+  } finally {
+    debugDisableShadows = true;
+  }
+}
+
+/// [child] keyed so that [checkMaster] finds it in the pixel scene.
+Widget keyed(Widget child) =>
+    KeyedSubtree(key: const ValueKey('button-under-test'), child: child);
+
+// ---------------------------------------------------------------------------------------------
+
+void main() {
+  setUpAll(loadAmalfiFonts);
+
+  group('kit Push', () {
+    const variants = {
+      'Primary': AmalfiPushButtonVariant.primary,
+      'Secondary': AmalfiPushButtonVariant.secondary,
+      'Destructive': AmalfiPushButtonVariant.destructive,
+      'Borderless': AmalfiPushButtonVariant.borderless,
+      'Glass': AmalfiPushButtonVariant.glass,
+    };
+    for (final MapEntry(key: v, value: variant) in variants.entries) {
+      for (final MapEntry(key: s, value: size) in sizes.entries) {
+        for (final state in states) {
+          for (final a in appearances) {
+            testWidgets('$v $s $state $a', (tester) async {
+              await checkMaster(
+                tester,
+                'Buttons/Push/$v/$s/$state/$a',
+                state,
+                keyed(
+                  AmalfiPushButton(
+                    label: 'Button',
+                    variant: variant,
+                    size: size,
+                    onPressed: state == 'Disabled' ? null : _noop,
+                  ),
+                ),
+              );
+            });
+          }
+        }
+      }
+    }
+  });
+
+  group('kit Icon', () {
+    const shapes = {
+      'Round': AmalfiIconButtonShape.round,
+      'Square': AmalfiIconButtonShape.square,
+    };
+    for (final MapEntry(key: sh, value: shape) in shapes.entries) {
+      for (final MapEntry(key: s, value: size) in sizes.entries) {
+        for (final state in states) {
+          for (final a in appearances) {
+            testWidgets('$sh $s $state $a', (tester) async {
+              await checkMaster(
+                tester,
+                'Buttons/Icon/$sh/$s/$state/$a',
+                state,
+                keyed(
+                  AmalfiIconButton(
+                    icon: const AmalfiGlyph(AmalfiGlyphShape.plus),
+                    semanticLabel: 'Add',
+                    shape: shape,
+                    size: size,
+                    onPressed: state == 'Disabled' ? null : _noop,
+                  ),
+                ),
+              );
+            });
+          }
+        }
+      }
+    }
+  });
+
+  group('kit Help and Link', () {
+    for (final state in states) {
+      for (final a in appearances) {
+        testWidgets('Help $state $a', (tester) async {
+          await checkMaster(
+            tester,
+            'Buttons/Help/$state/$a',
+            state,
+            keyed(
+              AmalfiHelpButton(onPressed: state == 'Disabled' ? null : _noop),
+            ),
+          );
+        });
+        testWidgets('Link $state $a', (tester) async {
+          await checkMaster(
+            tester,
+            'Buttons/Link/Link/$state/$a',
+            state,
+            keyed(
+              AmalfiLinkButton(
+                label: 'Learn more',
+                onPressed: state == 'Disabled' ? null : _noop,
+              ),
+            ),
+          );
+        });
+      }
+    }
+  });
+
+  group('kit Toolbar', () {
+    // Kit defect: the toolbar halo is 3 inside with radius 19; every other halo, and the
+    // focus token, is 3 outside following the control's radius.
+    const halo = {
+      'Focus Halo#borders': 'kit halo inside; tokens: outside the control',
+    };
+    // On the 44 tall button the kit's radius 19 is not clamped away.
+    const haloLabeled = {
+      ...halo,
+      'Focus Halo#corners': 'kit halo radius 19; tokens: the control radius',
+    };
+    for (final state in states) {
+      for (final a in appearances) {
+        for (final (name, label) in [
+          ('Icon', null),
+          ('Icon + Label', 'Label'),
+        ]) {
+          testWidgets('$name $state $a', (tester) async {
+            await checkMaster(
+              tester,
+              'Buttons/Toolbar/$name/$state/$a',
+              state,
+              keyed(
+                AmalfiToolbarButton(
+                  // A stand-in for the kit's gear glyph (pixels: masked).
+                  icon: const AmalfiGlyph(AmalfiGlyphShape.plus),
+                  label: label,
+                  semanticLabel: 'Settings',
+                  onPressed: state == 'Disabled' ? null : _noop,
+                ),
+              ),
+              deviations: state != 'Focused'
+                  ? const {}
+                  : label == null
+                  ? halo
+                  : haloLabeled,
+              maskLayers: const ['Glyph Gear'],
+              pixels: state != 'Focused',
+            );
+          });
+        }
+      }
+    }
+  });
+
+  group('kit Gradient', () {
+    for (final state in states) {
+      for (final a in appearances) {
+        testWidgets('Add Remove $state $a', (tester) async {
+          final master = KitMaster.load(
+            'Buttons/Gradient/Add Remove/$state/$a',
+          );
+          keyboardHighlight();
+          final enabled = state != 'Disabled';
+          final widget = keyed(
+            AmalfiGradientButtons(
+              onAdd: enabled ? _noop : null,
+              onRemove: enabled ? _noop : null,
+            ),
+          );
+          final root = await pumpKitScene(tester, widget, master: master);
+          final add = find.byKey(AmalfiGradientButtons.addKey);
+          final remove = find.byKey(AmalfiGradientButtons.removeKey);
+          await enterState(tester, state, add);
+          // Each half is a button of its own: the hover overlay, the pressed fill and the
+          // focus halo cover the "+" half (28 × 24, outer corners rounded), where the kit
+          // draws them over the whole control.
+          const half = 'per-half state (each half is its own button)';
+          expectKitGeometry(
+            tester,
+            master,
+            root: root,
+            layers: {
+              'Background': find.byKey(AmalfiButtonLayers.background).first,
+              'Divider': find.byKey(AmalfiGradientButtons.dividerKey),
+              'Glyph Plus': find.descendant(
+                of: add,
+                matching: find.byType(AmalfiGlyph),
+              ),
+              'Glyph Minus': find.descendant(
+                of: remove,
+                matching: find.byType(AmalfiGlyph),
+              ),
+              if (state == 'Hover')
+                'State': byKey(AmalfiButtonLayers.hover, add),
+              if (state == 'Focused')
+                'Focus Halo': byKey(AmalfiButtonLayers.halo, add),
+            },
+            deviations: switch (state) {
+              'Hover' => {'State': half},
+              'Pressed' => {'Background#fills': half},
+              'Focused' => {'Focus Halo': half},
+              _ => const {},
+            },
+          );
+          if (state == 'Pressed') {
+            expect(
+              tester.getRect(byKey(AmalfiButtonLayers.press, add)),
+              const Rect.fromLTWH(1, 1, 26, 22),
+            );
+          }
+          await releasePointer(tester);
+          // Pixels: the "+" half matches the kit; the "−" half shows the rest look.
+          await kitPixels(
+            tester,
+            master,
+            widget,
+            mask: [
+              if (state != 'Rest' && state != 'Disabled')
+                const Rect.fromLTWH(28, -4, 32, 32),
+            ],
+            prepare: (tester) => enterState(
+              tester,
+              state,
+              find.byKey(AmalfiGradientButtons.addKey),
+            ),
+          );
+          await releasePointer(tester);
+        });
+      }
+    }
+  });
+
+  group('kit Pop-up and Pull-down', () {
+    for (final (kind, label) in [
+      ('Pop-up', 'Lemon'),
+      ('Pull-down', 'Actions'),
+    ]) {
+      for (final MapEntry(key: s, value: size) in sizes.entries) {
+        for (final state in states) {
+          for (final a in appearances) {
+            testWidgets('$kind $s $state $a', (tester) async {
+              final enabled = state != 'Disabled';
+              final Widget button = kind == 'Pop-up'
+                  ? AmalfiPopUpButton<String>(
+                      items: const [
+                        AmalfiPopUpItem(value: 'Lemon', label: 'Lemon'),
+                        AmalfiPopUpItem(value: 'Orange', label: 'Orange'),
+                      ],
+                      value: 'Lemon',
+                      size: size,
+                      onChanged: enabled ? (_) {} : null,
+                    )
+                  : AmalfiPullDownButton(
+                      label: label,
+                      size: size,
+                      items: [
+                        AmalfiPullDownItem(
+                          label: 'New window',
+                          onSelected: enabled ? _noop : null,
+                        ),
+                      ],
+                    );
+              // Pressing opens the menu; the kit's Pressed master is the button alone.
+              // Kit defect: the 12 pt chevrons (Mini, Small) keep the 24 pt stroke (1.5);
+              // the Icon Kit rule scales it (0.75 at 12, 1 at 16), as the 12 pt plus of
+              // the icon buttons.
+              // The pop-up chevron keeps it at every size.
+              final small =
+                  kind == 'Pop-up' ||
+                  size == AmalfiControlSize.mini ||
+                  size == AmalfiControlSize.small;
+              await checkMaster(
+                tester,
+                'Buttons/$kind/$s/$state/$a',
+                state,
+                keyed(button),
+                maskLayers: small ? const ['Chevron'] : const [],
+              );
+            });
+          }
+        }
+      }
+      for (final a in appearances) {
+        testWidgets('$kind Open $a', (tester) async {
+          final master = KitMaster.load('Buttons/$kind/Open/Rest/$a');
+          final popUp = kind == 'Pop-up';
+          final button = popUp
+              ? AmalfiPopUpButton<String>(
+                  items: const [
+                    AmalfiPopUpItem(value: 'Orange', label: 'Orange'),
+                    AmalfiPopUpItem(value: 'Lemon', label: 'Lemon'),
+                    AmalfiPopUpItem(value: 'Olive', label: 'Olive'),
+                    AmalfiPopUpItem(value: 'Fig', label: 'Fig'),
+                  ],
+                  value: 'Lemon',
+                  onChanged: (_) {},
+                )
+              : AmalfiPullDownButton(
+                  label: 'Actions',
+                  items: [
+                    for (final l in [
+                      'New window',
+                      'Duplicate',
+                      'Rename',
+                      'Delete',
+                    ])
+                      AmalfiPullDownItem(label: l, onSelected: _noop),
+                  ],
+                );
+          final widget = keyed(
+            SizedBox(
+              width: 200,
+              height: 136,
+              child: Align(alignment: Alignment.topLeft, child: button),
+            ),
+          );
+          Future<void> open(WidgetTester tester) async {
+            final mouse = await _pointer(tester);
+            final target = find.byType(
+              popUp ? AmalfiPopUpButton<String> : AmalfiPullDownButton,
+            );
+            await mouse.moveTo(tester.getCenter(target));
+            await mouse.down(tester.getCenter(target));
+            await mouse.up();
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 200));
+            if (!popUp) {
+              // The kit highlights "Duplicate", under the pointer.
+              await mouse.moveTo(
+                tester.getTopLeft(find.byType(AmalfiButtonMenu)) +
+                    const Offset(100, 4 + 24 + 12),
+              );
+              await tester.pump();
+            }
+          }
+
+          final root = await pumpKitScene(tester, widget, master: master);
+          await open(tester);
+          // Kit defect: the menu is 116 tall for four items; 4 + 4 × 24 + 4 = 104.
+          const tall = 'kit menu 116 tall for 4 items of 24 + padding 4 (104)';
+          expectKitGeometry(
+            tester,
+            master,
+            root: root,
+            layers: {
+              'Button': find.byType(
+                popUp ? AmalfiPopUpButton<String> : AmalfiPullDownButton,
+              ),
+              'Menu': find.byType(AmalfiButtonMenu),
+            },
+            deviations: const {'#frame': tall, 'Menu': tall},
+          );
+          await kitPixels(
+            tester,
+            master,
+            widget,
+            maskText: true,
+            mask: [
+              // The menu's bottom (kit 12 taller) and its shadow.
+              const Rect.fromLTWH(-40, 120, 280, 80),
+              // Kit defect (pop-up): the checkmark is on "Olive", not on the value.
+              if (popUp) const Rect.fromLTWH(8, 56, 20, 48),
+              // Kit defect: the pop-up chevron keeps the 24 pt stroke.
+              if (popUp) const Rect.fromLTWH(100, 6, 16, 16),
+            ],
+            prepare: open,
+          );
+          await releasePointer(tester);
+        });
+      }
+    }
+  });
+
+  group('behaviour', () {
+    testWidgets('a click and Space / Return activate; disabled does nothing', (
+      tester,
+    ) async {
+      var presses = 0;
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await pumpKitScene(
+        tester,
+        AmalfiPushButton(
+          label: 'OK',
+          variant: AmalfiPushButtonVariant.primary,
+          focusNode: node,
+          onPressed: () => presses++,
+        ),
+      );
+      await tester.tap(find.byType(AmalfiPushButton));
+      expect(presses, 1);
+      // A click does not take the keyboard focus.
+      expect(node.hasFocus, isFalse);
+      node.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      expect(presses, 3);
+
+      // pumpKitScene's Overlay keeps its first entry: start a new scene.
+      await tester.pumpWidget(const SizedBox());
+      await pumpKitScene(
+        tester,
+        const AmalfiPushButton(label: 'OK', onPressed: null),
+      );
+      await tester.tap(find.byType(AmalfiPushButton), warnIfMissed: false);
+      expect(presses, 3);
+    });
+
+    testWidgets('the halo shows for keyboard focus only', (tester) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await pumpKitScene(
+        tester,
+        AmalfiIconButton(
+          icon: const AmalfiGlyph(AmalfiGlyphShape.plus),
+          semanticLabel: 'Add',
+          focusNode: node,
+          onPressed: _noop,
+        ),
+      );
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTouch;
+      node.requestFocus();
+      await tester.pump();
+      expect(find.byKey(AmalfiButtonLayers.halo), findsNothing);
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      await tester.pump();
+      expect(find.byKey(AmalfiButtonLayers.halo), findsOneWidget);
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic;
+    });
+
+    testWidgets('hover fades in with fade.quick and out in 60 ms', (
+      tester,
+    ) async {
+      await pumpKitScene(
+        tester,
+        const AmalfiPushButton(label: 'Button', onPressed: _noop),
+      );
+      final mouse = await _pointer(tester);
+      await mouse.moveTo(tester.getCenter(find.byType(AmalfiPushButton)));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 75));
+      final half = tester.widget<Opacity>(
+        find.ancestor(
+          of: find.byKey(AmalfiButtonLayers.hover),
+          matching: find.byType(Opacity),
+        ),
+      );
+      expect(half.opacity, inExclusiveRange(0, 1));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(
+        find.ancestor(
+          of: find.byKey(AmalfiButtonLayers.hover),
+          matching: find.byType(Opacity),
+        ),
+        findsNothing,
+      );
+      await mouse.moveTo(const Offset(-100, -100));
+      await tester.pump();
+      await tester.pump(amalfiButtonFadeOut);
+      await tester.pump();
+      expect(find.byKey(AmalfiButtonLayers.hover), findsNothing);
+    });
+
+    testWidgets('semantics: a button with its label, enabled or not', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpKitScene(
+        tester,
+        const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AmalfiPushButton(label: 'Save', onPressed: _noop),
+            AmalfiLinkButton(label: 'Learn more', onPressed: null),
+            AmalfiIconButton(
+              icon: AmalfiGlyph(AmalfiGlyphShape.plus),
+              semanticLabel: 'Add',
+              onPressed: _noop,
+            ),
+          ],
+        ),
+      );
+      expect(
+        tester.getSemantics(find.byType(AmalfiPushButton)),
+        isSemantics(
+          label: 'Save',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          isFocusable: true,
+          hasTapAction: true,
+          hasFocusAction: true,
+        ),
+      );
+      expect(
+        tester.getSemantics(find.byType(AmalfiLinkButton)),
+        isSemantics(label: 'Learn more', isButton: true, hasEnabledState: true),
+      );
+      expect(
+        tester.getSemantics(find.byType(AmalfiIconButton)),
+        isSemantics(
+          label: 'Add',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          isFocusable: true,
+          hasTapAction: true,
+          hasFocusAction: true,
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('gradient halves act on their own', (tester) async {
+      var added = 0, removed = 0;
+      await pumpKitScene(
+        tester,
+        AmalfiGradientButtons(onAdd: () => added++, onRemove: () => removed++),
+      );
+      await tester.tap(find.byKey(AmalfiGradientButtons.addKey));
+      await tester.tap(find.byKey(AmalfiGradientButtons.removeKey));
+      await tester.tap(find.byKey(AmalfiGradientButtons.removeKey));
+      expect((added, removed), (1, 2));
+      await tester.pumpWidget(const SizedBox());
+      await pumpKitScene(
+        tester,
+        AmalfiGradientButtons(onAdd: () => added++, onRemove: null),
+      );
+      await tester.tap(
+        find.byKey(AmalfiGradientButtons.removeKey),
+        warnIfMissed: false,
+      );
+      expect(removed, 2);
+    });
+
+    testWidgets('pop-up: click opens, click on an item chooses and closes', (
+      tester,
+    ) async {
+      String? chosen;
+      await pumpKitScene(
+        tester,
+        AmalfiPopUpButton<int>(
+          items: const [
+            AmalfiPopUpItem(value: 1, label: 'One'),
+            AmalfiPopUpItem(value: 2, label: 'Two'),
+            AmalfiPopUpItem(value: 3, label: 'Three', enabled: false),
+          ],
+          value: 1,
+          onChanged: (v) => chosen = '$v',
+        ),
+      );
+      expect(find.text('One'), findsOneWidget);
+      await tester.tap(find.byType(AmalfiPopUpButton<int>));
+      await tester.pumpAndSettle();
+      expect(find.byType(AmalfiButtonMenu), findsOneWidget);
+      // The current value is checked.
+      expect(find.byType(AmalfiGlyph), findsNWidgets(2));
+      await tester.tap(find.text('Three'));
+      await tester.pumpAndSettle();
+      expect(chosen, isNull);
+      await tester.tap(find.text('Two'));
+      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(chosen, '2');
+      expect(find.byType(AmalfiButtonMenu), findsNothing);
+    });
+
+    testWidgets(
+      'pop-up: keyboard opens, arrows move, Return chooses, Escape closes',
+      (tester) async {
+        int? chosen;
+        final node = FocusNode();
+        addTearDown(node.dispose);
+        await pumpKitScene(
+          tester,
+          AmalfiPopUpButton<int>(
+            items: const [
+              AmalfiPopUpItem(value: 1, label: 'One'),
+              AmalfiPopUpItem(value: 2, label: 'Two'),
+            ],
+            value: 1,
+            focusNode: node,
+            onChanged: (v) => chosen = v,
+          ),
+        );
+        node.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.space);
+        await tester.pumpAndSettle();
+        expect(find.byType(AmalfiButtonMenu), findsOneWidget);
+        await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        await tester.pumpAndSettle();
+        await tester.pump();
+        expect(find.byType(AmalfiButtonMenu), findsNothing);
+        expect(chosen, isNull);
+        node.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        await tester.pump();
+        expect(chosen, 2);
+        expect(find.byType(AmalfiButtonMenu), findsNothing);
+      },
+    );
+
+    testWidgets('pull-down: an item runs its command; a click outside closes', (
+      tester,
+    ) async {
+      var duplicated = 0;
+      // The app's TapRegionSurface (WidgetsApp, above the Overlay) reports clicks outside
+      // the menu.
+      await ensureAmalfiFonts(tester);
+      await tester.pumpWidget(
+        TapRegionSurface(
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Overlay(
+              initialEntries: [
+                OverlayEntry(
+                  builder: (_) => ColoredBox(
+                    color: const Color(0xFFFFFFFF),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: AmalfiPullDownButton(
+                          label: 'Actions',
+                          items: [
+                            AmalfiPullDownItem(
+                              label: 'Duplicate',
+                              onSelected: () => duplicated++,
+                            ),
+                            const AmalfiPullDownItem(label: 'Delete'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(AmalfiPullDownButton));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(700, 500));
+      await tester.pumpAndSettle();
+      expect(find.byType(AmalfiButtonMenu), findsNothing);
+      await tester.tap(find.byType(AmalfiPullDownButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Duplicate'));
+      await tester.pumpAndSettle();
+      expect(duplicated, 1);
+    });
+
+    testWidgets('AmalfiButtonPreview forces a look without input', (
+      tester,
+    ) async {
+      for (final (state, key) in [
+        (AmalfiButtonPreviewState.hover, AmalfiButtonLayers.hover),
+        (AmalfiButtonPreviewState.pressed, AmalfiButtonLayers.press),
+        (AmalfiButtonPreviewState.focused, AmalfiButtonLayers.halo),
+      ]) {
+        await tester.pumpWidget(const SizedBox());
+        await pumpKitScene(
+          tester,
+          AmalfiButtonPreview(
+            state: state,
+            child: const AmalfiPushButton(
+              label: 'Button',
+              variant: AmalfiPushButtonVariant.destructive,
+              onPressed: _noop,
+            ),
+          ),
+        );
+        expect(find.byKey(key), findsOneWidget, reason: '$state');
+      }
+      // A disabled button keeps its disabled look.
+      await tester.pumpWidget(const SizedBox());
+      await pumpKitScene(
+        tester,
+        const AmalfiButtonPreview(
+          state: AmalfiButtonPreviewState.focused,
+          child: AmalfiPushButton(label: 'Button', onPressed: null),
+        ),
+      );
+      expect(find.byKey(AmalfiButtonLayers.halo), findsNothing);
+    });
+
+    testWidgets('odd constraints do not throw', (tester) async {
+      for (final w in <Widget>[
+        const AmalfiPushButton(
+          label: 'A very long label indeed',
+          onPressed: _noop,
+        ),
+        AmalfiPopUpButton<int>(
+          items: const [AmalfiPopUpItem(value: 1, label: 'A long, long label')],
+          value: 1,
+          onChanged: (_) {},
+        ),
+        const AmalfiToolbarButton(
+          icon: AmalfiGlyph(AmalfiGlyphShape.plus),
+          label: 'A long label',
+          onPressed: _noop,
+        ),
+      ]) {
+        await pumpKitScene(tester, SizedBox(width: 30, height: 10, child: w));
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+        await pumpKitScene(tester, SizedBox.shrink(child: w));
+        expect(tester.takeException(), isNull);
+      }
+    });
+  });
+}
