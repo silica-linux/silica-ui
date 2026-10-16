@@ -132,8 +132,8 @@ class _AmalfiTabState extends State<AmalfiTab> {
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: widget.onClose,
-                      child: AmalfiChromeGlyph(
-                        AmalfiChromeGlyphs.xmark,
+                      child: AmalfiTitlebarGlyph(
+                        AmalfiTitlebarGlyphs.xmark,
                         size: AmalfiTabMetrics.slot,
                         color: colors.textSecondary,
                       ),
@@ -153,7 +153,7 @@ class _AmalfiTabState extends State<AmalfiTab> {
       label: widget.label,
       onTap: widget.onSelect,
       child: FocusableActionDetector(
-        shortcuts: amalfiActivateShortcuts,
+        shortcuts: amalfiTitlebarActivateShortcuts,
         enabled: widget.onSelect != null,
         mouseCursor: SystemMouseCursors.basic,
         actions: {
@@ -258,7 +258,7 @@ class AmalfiTabBar extends StatelessWidget {
                     behavior: HitTestBehavior.opaque,
                     onTap: onNewTab,
                     child: const AmalfiToolbarPlaceholder.square(
-                      AmalfiChromeGlyphs.plus,
+                      AmalfiTitlebarGlyphs.plus,
                     ),
                   ),
                 ),

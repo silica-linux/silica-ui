@@ -90,7 +90,7 @@ class AmalfiSidebarBadge extends StatelessWidget {
                     AmalfiSidebarMetrics.badgeMinWidth -
                     2 * AmalfiSidebarMetrics.badgePadding,
               ),
-              child: AmalfiChromeTextBox(
+              child: AmalfiTitlebarTextBox(
                 child: Text(
                   label,
                   maxLines: 1,
@@ -127,7 +127,7 @@ class AmalfiSidebarRow extends StatefulWidget {
   final String label;
 
   /// The Icon Kit glyph; null: an empty 16 pt slot.
-  final AmalfiChromeGlyphData? icon;
+  final AmalfiTitlebarGlyphData? icon;
 
   /// The count shown in a badge; null: none.
   final String? badge;
@@ -173,7 +173,7 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
             dimension: AmalfiSidebarMetrics.icon,
             child: icon == null
                 ? null
-                : AmalfiChromeGlyph(
+                : AmalfiTitlebarGlyph(
                     icon,
                     size: AmalfiSidebarMetrics.icon,
                     color: iconColor,
@@ -214,7 +214,7 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
       onTap: enabled ? widget.onTap : null,
       excludeSemantics: true,
       child: FocusableActionDetector(
-        shortcuts: amalfiActivateShortcuts,
+        shortcuts: amalfiTitlebarActivateShortcuts,
         enabled: enabled && widget.onTap != null,
         actions: {
           ActivateIntent: CallbackAction<ActivateIntent>(
@@ -285,10 +285,10 @@ class AmalfiSidebarHeader extends StatelessWidget {
             ),
             if (expanded != null) ...[
               const SizedBox(width: 4),
-              AmalfiChromeGlyph(
+              AmalfiTitlebarGlyph(
                 expanded
-                    ? AmalfiChromeGlyphs.chevronDown
-                    : AmalfiChromeGlyphs.chevronRight,
+                    ? AmalfiTitlebarGlyphs.chevronDown
+                    : AmalfiTitlebarGlyphs.chevronRight,
                 size: AmalfiSidebarMetrics.chevron,
                 color: colors.textTertiary,
               ),
@@ -313,7 +313,7 @@ class AmalfiSidebarHeader extends StatelessWidget {
       onTap: onToggle,
       excludeSemantics: true,
       child: FocusableActionDetector(
-        shortcuts: amalfiActivateShortcuts,
+        shortcuts: amalfiTitlebarActivateShortcuts,
         enabled: onToggle != null,
         actions: {
           ActivateIntent: CallbackAction<ActivateIntent>(

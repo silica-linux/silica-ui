@@ -10,6 +10,8 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../../controls/control_base.dart' show WindowActiveScope;
+
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'text_box.dart';
@@ -83,7 +85,7 @@ class AmalfiControlsPiece extends StatelessWidget {
 
   final VoidCallback? onClose, onMinimise, onZoom;
 
-  /// Whether the window is active; null: from [AmalfiWindowScope].
+  /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
   /// The width of the piece.
@@ -145,12 +147,12 @@ class AmalfiTitlePiece extends StatelessWidget {
   /// Runs when a document title is clicked; null: not clickable.
   final VoidCallback? onDocumentMenu;
 
-  /// Whether the window is active; null: from [AmalfiWindowScope].
+  /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
   @override
   Widget build(BuildContext context) {
-    final active = amalfiResolveActive(context, this.active);
+    final active = amalfiTitlebarResolveActive(context, this.active);
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AmalfiToolbarPieceMetrics.titlePadding,
@@ -187,7 +189,7 @@ class AmalfiTitleBlock extends StatelessWidget {
   final bool document;
   final VoidCallback? onDocumentMenu;
 
-  /// Whether the window is active; null: from [AmalfiWindowScope].
+  /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
   /// The lines of the title (1: ellipsis).
@@ -196,8 +198,8 @@ class AmalfiTitleBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
-    final active = amalfiResolveActive(context, this.active);
-    final titleText = AmalfiChromeTextBox(
+    final active = amalfiTitlebarResolveActive(context, this.active);
+    final titleText = AmalfiTitlebarTextBox(
       child: Text(
         title,
         maxLines: maxLines,
@@ -215,7 +217,7 @@ class AmalfiTitleBlock extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           titleText,
-          AmalfiChromeTextBox(
+          AmalfiTitlebarTextBox(
             child: Text(
               subtitle,
               maxLines: 1,
@@ -230,16 +232,16 @@ class AmalfiTitleBlock extends StatelessWidget {
       block = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AmalfiChromeGlyph(
-            AmalfiChromeGlyphs.doc,
+          AmalfiTitlebarGlyph(
+            AmalfiTitlebarGlyphs.doc,
             size: AmalfiToolbarPieceMetrics.documentIcon,
             color: active ? colors.textSecondary : colors.textTertiary,
           ),
           const SizedBox(width: AmalfiToolbarPieceMetrics.titleGap),
           Flexible(child: titleText),
           const SizedBox(width: AmalfiToolbarPieceMetrics.titleGap),
-          AmalfiChromeGlyph(
-            AmalfiChromeGlyphs.chevronDown,
+          AmalfiTitlebarGlyph(
+            AmalfiTitlebarGlyphs.chevronDown,
             size: AmalfiToolbarPieceMetrics.chevron,
             color: colors.textTertiary,
           ),

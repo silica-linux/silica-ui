@@ -15,6 +15,8 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/widgets.dart';
 
+import '../../../controls/control_base.dart' show WindowActiveScope;
+
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -256,12 +258,13 @@ class _Palette {
 }
 
 /// The symbol of [kind] (kit: `xmark`, `minus`, `plus`).
-AmalfiChromeGlyphData amalfiWindowControlGlyph(AmalfiWindowControlKind kind) =>
-    switch (kind) {
-      AmalfiWindowControlKind.close => AmalfiChromeGlyphs.xmark,
-      AmalfiWindowControlKind.minimise => AmalfiChromeGlyphs.minus,
-      AmalfiWindowControlKind.zoom => AmalfiChromeGlyphs.plus,
-    };
+AmalfiTitlebarGlyphData amalfiWindowControlGlyph(
+  AmalfiWindowControlKind kind,
+) => switch (kind) {
+  AmalfiWindowControlKind.close => AmalfiTitlebarGlyphs.xmark,
+  AmalfiWindowControlKind.minimise => AmalfiTitlebarGlyphs.minus,
+  AmalfiWindowControlKind.zoom => AmalfiTitlebarGlyphs.plus,
+};
 
 /// One window control disc, drawn in [state]: a 14 pt disc centred in a 16 pt cell, with its
 /// symbol at [symbolOpacity] when the state has one.
@@ -313,7 +316,7 @@ class AmalfiWindowDot extends StatelessWidget {
               top: glyphInset,
               child: Opacity(
                 opacity: symbolOpacity.clamp(0.0, 1.0),
-                child: AmalfiChromeGlyph(
+                child: AmalfiTitlebarGlyph(
                   amalfiWindowControlGlyph(kind),
                   size: AmalfiWindowControlsMetrics.glyph,
                   color: glyph,
@@ -396,7 +399,7 @@ class _EdgePainter extends CustomPainter {
 /// every enabled control shows its symbol, also in an inactive window (whose discs then take
 /// their active colours); pressing one lightens only that one, and the action runs on release
 /// over it (moving off before releasing cancels). [active] null follows the
-/// [AmalfiWindowScope].
+/// [WindowActiveScope].
 ///
 /// The group is [AmalfiWindowControlsMetrics.groupWidth] × 16; place it with
 /// [AmalfiWindowControlsMetrics.leadingFor] and [AmalfiWindowControlsMetrics.topFor] (the
@@ -415,7 +418,7 @@ class AmalfiWindowControlGroup extends StatefulWidget {
 
   final VoidCallback? onClose, onMinimise, onZoom;
 
-  /// Whether the window is active; null: from [AmalfiWindowScope].
+  /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
   /// The screen reader labels (pass localised strings).
@@ -533,7 +536,7 @@ class _AmalfiWindowControlGroupState extends State<AmalfiWindowControlGroup>
 
   @override
   Widget build(BuildContext context) {
-    final active = amalfiResolveActive(context, widget.active);
+    final active = amalfiTitlebarResolveActive(context, widget.active);
     const gap =
         AmalfiWindowControlsMetrics.pitch - AmalfiWindowControlsMetrics.cell;
     return MouseRegion(

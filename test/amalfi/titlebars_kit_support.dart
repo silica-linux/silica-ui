@@ -125,7 +125,7 @@ Future<void> hover(WidgetTester tester, Finder finder) async {
 
 /// The whole-points box around [text] (the frame the kit gives a text layer).
 Finder textBox(String text) => find
-    .ancestor(of: find.text(text), matching: find.byType(AmalfiChromeTextBox))
+    .ancestor(of: find.text(text), matching: find.byType(AmalfiTitlebarTextBox))
     .first;
 
 /// [piece] in a 52 pt bar slot (pieces take the bar's height).
@@ -139,8 +139,8 @@ Widget bar52(Widget piece) => SizedBox(
 );
 
 /// The chrome glyph [glyph] (one on screen).
-Finder glyphOf(AmalfiChromeGlyphData glyph) =>
-    find.byWidgetPredicate((w) => w is AmalfiChromeGlyph && w.glyph == glyph);
+Finder glyphOf(AmalfiTitlebarGlyphData glyph) =>
+    find.byWidgetPredicate((w) => w is AmalfiTitlebarGlyph && w.glyph == glyph);
 
 /// The states (`Active`, `Inactive`) the kit has for [prefix] in [appearance].
 List<String> availableStates(String prefix, String appearance) => [
@@ -153,8 +153,8 @@ final List<(String, String, Widget)> itemPieces = [
   (
     'Sidebar Toggle',
     'Toolbar button',
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
     ),
   ),
   ('Nav', 'Back and forward', navPiece()),
@@ -163,62 +163,52 @@ final List<(String, String, Widget)> itemPieces = [
       'Item Group $n',
       'Item group',
       AmalfiToolbarPiece(
-        child: AmalfiToolbarPlaceholder.group([
-          for (var i = 0; i < n; i++) AmalfiChromeGlyphs.plus,
+        child: toolbarActions([
+          for (var i = 0; i < n; i++) AmalfiTitlebarGlyphs.plus,
         ]),
       ),
     ),
   (
     'Segmented',
     'View switcher',
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.segmented([
-        AmalfiChromeGlyphs.listBullet,
-        AmalfiChromeGlyphs.squareGrid2x2,
+    AmalfiToolbarPiece(
+      child: viewSwitcher([
+        AmalfiTitlebarGlyphs.listBullet,
+        AmalfiTitlebarGlyphs.squareGrid2x2,
       ]),
     ),
   ),
   (
     'Segmented 4',
     'View switcher',
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.segmented([
-        AmalfiChromeGlyphs.listBullet,
-        AmalfiChromeGlyphs.squareGrid2x2,
-        AmalfiChromeGlyphs.photo,
-        AmalfiChromeGlyphs.clock,
+    AmalfiToolbarPiece(
+      child: viewSwitcher([
+        AmalfiTitlebarGlyphs.listBullet,
+        AmalfiTitlebarGlyphs.squareGrid2x2,
+        AmalfiTitlebarGlyphs.photo,
+        AmalfiTitlebarGlyphs.clock,
       ]),
     ),
   ),
   (
     'Segmented Text',
     'Section switcher',
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.text(['All', 'Mine', 'Shared', 'Recent']),
+    AmalfiToolbarPiece(
+      child: textSwitcher(['All', 'Mine', 'Shared', 'Recent']),
     ),
   ),
-  (
-    'Search',
-    'Search',
-    const AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.search()),
-  ),
-  (
-    'Search Token',
-    'Search',
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.search(width: 240, height: 28),
-    ),
-  ),
+  ('Search', 'Search', AmalfiToolbarPiece(child: toolbarSearch())),
+  ('Search Token', 'Search', AmalfiToolbarPiece(child: searchToken())),
   for (final (name, glyph) in [
-    ('Share', AmalfiChromeGlyphs.share),
-    ('More', AmalfiChromeGlyphs.ellipsisCircle),
-    ('Doc Info', AmalfiChromeGlyphs.doc),
-    ('Doc Share', AmalfiChromeGlyphs.share),
-    ('Mail Compose', AmalfiChromeGlyphs.compose),
-    ('Notes New', AmalfiChromeGlyphs.compose),
-    ('Preview Inspector', AmalfiChromeGlyphs.sidebar),
-    ('Preview Markup', AmalfiChromeGlyphs.compose),
-    ('Preview Rotate', AmalfiChromeGlyphs.plus),
+    ('Share', AmalfiTitlebarGlyphs.share),
+    ('More', AmalfiTitlebarGlyphs.ellipsisCircle),
+    ('Doc Info', AmalfiTitlebarGlyphs.doc),
+    ('Doc Share', AmalfiTitlebarGlyphs.share),
+    ('Mail Compose', AmalfiTitlebarGlyphs.compose),
+    ('Notes New', AmalfiTitlebarGlyphs.compose),
+    ('Preview Inspector', AmalfiTitlebarGlyphs.sidebar),
+    ('Preview Markup', AmalfiTitlebarGlyphs.compose),
+    ('Preview Rotate', AmalfiTitlebarGlyphs.plus),
   ])
     (
       name,
@@ -228,16 +218,16 @@ final List<(String, String, Widget)> itemPieces = [
   (
     'Add',
     'Toolbar button',
-    const AmalfiToolbarPiece.add(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.plus),
+    AmalfiToolbarPiece.add(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.plus),
     ),
   ),
   (
     'Mail Send',
     'Send',
-    const AmalfiToolbarPiece(
+    AmalfiToolbarPiece(
       trailing: 16,
-      child: AmalfiToolbarPlaceholder.round(AmalfiChromeGlyphs.plus),
+      child: AmalfiToolbarPlaceholder.round(AmalfiTitlebarGlyphs.plus),
     ),
   ),
   for (final (name, layer, n) in [
@@ -257,29 +247,75 @@ final List<(String, String, Widget)> itemPieces = [
       name,
       layer,
       AmalfiToolbarPiece(
-        child: AmalfiToolbarPlaceholder.group([
-          for (var i = 0; i < n; i++) AmalfiChromeGlyphs.plus,
+        child: toolbarActions([
+          for (var i = 0; i < n; i++) AmalfiTitlebarGlyphs.plus,
         ]),
       ),
     ),
   (
     'Notes View',
     'List or gallery',
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.segmented([
-        AmalfiChromeGlyphs.listBullet,
-        AmalfiChromeGlyphs.squareGrid2x2,
+    AmalfiToolbarPiece(
+      child: viewSwitcher([
+        AmalfiTitlebarGlyphs.listBullet,
+        AmalfiTitlebarGlyphs.squareGrid2x2,
       ]),
     ),
   ),
 ];
 
+/// Icon segments of [glyphs] (the segmented family takes any widget as icon).
+List<AmalfiSegment> iconSegments(List<AmalfiTitlebarGlyphData> glyphs) => [
+  for (final g in glyphs)
+    AmalfiSegment.icon(AmalfiTitlebarGlyph(g), semanticLabel: g.name),
+];
+
+/// A toolbar action group (kit `Segments/Action/Icon N/Large`).
+Widget toolbarActions(List<AmalfiTitlebarGlyphData> glyphs) =>
+    AmalfiActionSegments(segments: iconSegments(glyphs), onPressed: (_) {});
+
+/// A select-one control of icons (kit `Segments/Control/One N Icon/Large`).
+Widget viewSwitcher(List<AmalfiTitlebarGlyphData> glyphs) =>
+    AmalfiSegmentedControl(
+      segments: iconSegments(glyphs),
+      selected: const {0},
+      onChanged: (_) {},
+      size: AmalfiControlSize.large,
+    );
+
+/// A select-one control of labels (kit `Segments/Control/One 4 Text/Large`).
+Widget textSwitcher(List<String> labels) => AmalfiSegmentedControl(
+  segments: [for (final l in labels) AmalfiSegment.text(l)],
+  selected: const {0},
+  onChanged: (_) {},
+  size: AmalfiControlSize.large,
+);
+
+/// The toolbar search field (kit `Fields/Search Field/Large/Empty`, 200 wide).
+Widget toolbarSearch() =>
+    const AmalfiSearchField(size: AmalfiFieldSize.large, width: 200);
+
+/// The search field with a token (kit `Fields/Search Field/Regular/Token`, 240 wide).
+Widget searchToken() =>
+    const AmalfiSearchField(width: 240, tokens: ['Recipes']);
+
+/// The control in an item piece: one of the merged families' widgets or a stand-in.
+Finder pieceControl() => find
+    .byWidgetPredicate(
+      (w) =>
+          w is AmalfiToolbarPlaceholder ||
+          w is AmalfiActionSegments ||
+          w is AmalfiSegmentedControl ||
+          w is AmalfiSearchField,
+    )
+    .first;
+
 /// Back and forward.
 Widget navPiece({Key? key}) => AmalfiToolbarPiece(
   key: key,
-  child: const AmalfiToolbarPlaceholder.group([
-    AmalfiChromeGlyphs.chevronLeft,
-    AmalfiChromeGlyphs.chevronRight,
+  child: toolbarActions([
+    AmalfiTitlebarGlyphs.chevronLeft,
+    AmalfiTitlebarGlyphs.chevronRight,
   ]),
 );
 
@@ -308,13 +344,7 @@ const List<String> unifiedNames = [
   'Search',
 ];
 
-const List<String> unifiedMasked = [
-  'Controls',
-  'Sidebar Toggle',
-  'Nav',
-  'Segmented',
-  'Search',
-];
+const List<String> unifiedMasked = ['Controls', 'Sidebar Toggle'];
 
 /// The unified bar of the kit (`Bar/Unified/Full Inset 8|16`).
 Widget unifiedBar({
@@ -331,24 +361,21 @@ Widget unifiedBar({
       onMinimise: () {},
       onZoom: () {},
     ),
-    const AmalfiToolbarPiece(
+    AmalfiToolbarPiece(
       key: ValueKey('Sidebar Toggle'),
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
     ),
     navPiece(key: const ValueKey('Nav')),
-    const AmalfiTitlePiece(key: ValueKey('Title'), title: 'Lemon cake'),
-    const AmalfiSpacerPiece(key: ValueKey('Spacer')),
-    const AmalfiToolbarPiece(
+    AmalfiTitlePiece(key: ValueKey('Title'), title: 'Lemon cake'),
+    AmalfiSpacerPiece(key: ValueKey('Spacer')),
+    AmalfiToolbarPiece(
       key: ValueKey('Segmented'),
-      child: AmalfiToolbarPlaceholder.segmented([
-        AmalfiChromeGlyphs.listBullet,
-        AmalfiChromeGlyphs.squareGrid2x2,
+      child: viewSwitcher([
+        AmalfiTitlebarGlyphs.listBullet,
+        AmalfiTitlebarGlyphs.squareGrid2x2,
       ]),
     ),
-    const AmalfiToolbarPiece(
-      key: ValueKey('Search'),
-      child: AmalfiToolbarPlaceholder.search(),
-    ),
+    AmalfiToolbarPiece(key: ValueKey('Search'), child: toolbarSearch()),
   ],
 );
 
@@ -365,10 +392,10 @@ List<Widget> sidebarSectionPieces() => [
     onMinimise: () {},
     onZoom: () {},
   ),
-  const AmalfiSpacerPiece(key: ValueKey('Spacer')),
-  const AmalfiToolbarPiece(
+  AmalfiSpacerPiece(key: ValueKey('Spacer')),
+  AmalfiToolbarPiece(
     key: ValueKey('Sidebar Toggle'),
-    child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
+    child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
   ),
 ];
 
@@ -383,52 +410,49 @@ const List<String> contentSectionNames = [
 
 List<Widget> contentSectionPieces() => [
   navPiece(key: const ValueKey('Nav')),
-  const AmalfiTitlePiece(key: ValueKey('Title'), title: 'Lemon cake'),
-  const AmalfiSpacerPiece(key: ValueKey('Spacer')),
-  const AmalfiToolbarPiece(
-    key: ValueKey('Item Group 2'),
-    child: AmalfiToolbarPlaceholder.group([
-      AmalfiChromeGlyphs.plus,
-      AmalfiChromeGlyphs.tag,
-    ]),
-  ),
-  const AmalfiToolbarPiece(
-    key: ValueKey('Segmented'),
-    child: AmalfiToolbarPlaceholder.segmented([
-      AmalfiChromeGlyphs.listBullet,
-      AmalfiChromeGlyphs.squareGrid2x2,
-    ]),
-  ),
-  const AmalfiToolbarPiece(
-    key: ValueKey('Search'),
-    child: AmalfiToolbarPlaceholder.search(),
-  ),
-];
-
-const List<String> listSectionNames = ['Title', 'Spacer', 'Item Group 2'];
-
-List<Widget> listSectionPieces() => const [
   AmalfiTitlePiece(key: ValueKey('Title'), title: 'Lemon cake'),
   AmalfiSpacerPiece(key: ValueKey('Spacer')),
   AmalfiToolbarPiece(
     key: ValueKey('Item Group 2'),
-    child: AmalfiToolbarPlaceholder.group([
-      AmalfiChromeGlyphs.plus,
-      AmalfiChromeGlyphs.tag,
+    child: toolbarActions([
+      AmalfiTitlebarGlyphs.plus,
+      AmalfiTitlebarGlyphs.tag,
+    ]),
+  ),
+  AmalfiToolbarPiece(
+    key: ValueKey('Segmented'),
+    child: viewSwitcher([
+      AmalfiTitlebarGlyphs.listBullet,
+      AmalfiTitlebarGlyphs.squareGrid2x2,
+    ]),
+  ),
+  AmalfiToolbarPiece(key: ValueKey('Search'), child: toolbarSearch()),
+];
+
+const List<String> listSectionNames = ['Title', 'Spacer', 'Item Group 2'];
+
+List<Widget> listSectionPieces() => [
+  AmalfiTitlePiece(key: ValueKey('Title'), title: 'Lemon cake'),
+  AmalfiSpacerPiece(key: ValueKey('Spacer')),
+  AmalfiToolbarPiece(
+    key: ValueKey('Item Group 2'),
+    child: toolbarActions([
+      AmalfiTitlebarGlyphs.plus,
+      AmalfiTitlebarGlyphs.tag,
     ]),
   ),
 ];
 
 const List<String> inspectorSectionNames = ['Spacer', 'Item Group 3'];
 
-List<Widget> inspectorSectionPieces() => const [
+List<Widget> inspectorSectionPieces() => [
   AmalfiSpacerPiece(key: ValueKey('Spacer')),
   AmalfiToolbarPiece(
     key: ValueKey('Item Group 3'),
-    child: AmalfiToolbarPlaceholder.group([
-      AmalfiChromeGlyphs.plus,
-      AmalfiChromeGlyphs.tag,
-      AmalfiChromeGlyphs.star,
+    child: toolbarActions([
+      AmalfiTitlebarGlyphs.plus,
+      AmalfiTitlebarGlyphs.tag,
+      AmalfiTitlebarGlyphs.star,
     ]),
   ),
 ];
@@ -443,19 +467,19 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
   active: active,
   children: [
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.chevronLeft),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.chevronLeft),
     ),
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.chevronRight),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.chevronRight),
     ),
-    const AmalfiTitlePiece(title: 'Lemon cake'),
-    const AmalfiSpacerPiece(),
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.share),
+    AmalfiTitlePiece(title: 'Lemon cake'),
+    AmalfiSpacerPiece(),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.share),
     ),
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.ellipsisCircle),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.ellipsisCircle),
     ),
   ],
 );
@@ -501,7 +525,7 @@ Finder tabTrack() => find
 /// The new-tab button.
 Finder newTabButton() => find
     .ancestor(
-      of: glyphOf(AmalfiChromeGlyphs.plus),
+      of: glyphOf(AmalfiTitlebarGlyphs.plus),
       matching: find.byWidgetPredicate(
         (w) => w is SizedBox && w.width == AmalfiTabMetrics.newTabButton,
       ),

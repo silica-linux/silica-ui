@@ -10,8 +10,8 @@ import '../../whole_points.dart';
 
 /// Sizes [child] (a single-line text) as it wants, then rounds its width up to a multiple of
 /// [step] points and its height up to a whole point; the child sits at the top left.
-class AmalfiChromeTextBox extends SingleChildRenderObjectWidget {
-  const AmalfiChromeTextBox({
+class AmalfiTitlebarTextBox extends SingleChildRenderObjectWidget {
+  const AmalfiTitlebarTextBox({
     super.key,
     this.step = AmalfiGrid.base,
     super.child,

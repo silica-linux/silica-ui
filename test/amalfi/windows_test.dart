@@ -98,25 +98,25 @@ Widget sidebarBody({required bool full, bool edge = false}) =>
 /// The pieces of the kit's unified window bar.
 Widget windowBar({
   bool? active,
-  AmalfiBarSurface surface = AmalfiBarSurface.window,
+  AmalfiToolbarSurface surface = AmalfiToolbarSurface.window,
 }) => AmalfiToolbar(
   active: active,
   surface: surface,
   children: [
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
     ),
     navPiece(),
-    const AmalfiTitlePiece(title: 'Lemon cake'),
-    const AmalfiSpacerPiece(),
-    const AmalfiToolbarPiece(
-      child: AmalfiToolbarPlaceholder.segmented([
-        AmalfiChromeGlyphs.listBullet,
-        AmalfiChromeGlyphs.squareGrid2x2,
+    AmalfiTitlePiece(title: 'Lemon cake'),
+    AmalfiSpacerPiece(),
+    AmalfiToolbarPiece(
+      child: viewSwitcher([
+        AmalfiTitlebarGlyphs.listBullet,
+        AmalfiTitlebarGlyphs.squareGrid2x2,
       ]),
     ),
-    const AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.search()),
+    AmalfiToolbarPiece(child: toolbarSearch()),
   ],
 );
 
@@ -184,7 +184,7 @@ void main() {
             ),
           ),
           layers: {'Title bar': find.byType(AmalfiTitleBar)},
-          masks: const ['Title bar', 'Options', 'Done'],
+          masks: ['Title bar', 'Options', 'Done'],
         );
       });
 
@@ -204,7 +204,7 @@ void main() {
               AmalfiWindow(
                 active: active,
                 child: AmalfiWindowLayout(
-                  bar: windowBar(surface: AmalfiBarSurface.none),
+                  bar: windowBar(surface: AmalfiToolbarSurface.none),
                   barSeparator: inspector,
                   sidesUnderBar: true,
                   sidebar: Padding(
@@ -212,7 +212,7 @@ void main() {
                     child: sidebarBody(full: false),
                   ),
                   inspector: inspector
-                      ? const SizedBox.expand(key: ValueKey('Inspector'))
+                      ? SizedBox.expand(key: ValueKey('Inspector'))
                       : null,
                   inspectorWidth: 220,
                   content: sampleContent(
@@ -266,7 +266,7 @@ void main() {
                 onZoom: () {},
               ),
               barHeight: AmalfiToolbarMetrics.titleBarHeight,
-              content: const SizedBox.expand(),
+              content: SizedBox.expand(),
             ),
           ),
           layers: {
@@ -282,7 +282,7 @@ void main() {
                 'kit panel separator under the 48 pt bar (y 48); the title bar draws it '
                 'inside its 48 pt (y 47), as Titlebars/Title Bar does',
           },
-          masks: const [
+          masks: [
             'Window controls',
             'Panel title',
             'Separator',
@@ -309,7 +309,7 @@ void main() {
                 onZoom: () {},
               ),
               barHeight: AmalfiToolbarMetrics.compactHeight,
-              content: const SizedBox.expand(),
+              content: SizedBox.expand(),
             ),
           ),
           layers: {
@@ -321,7 +321,7 @@ void main() {
             'Utility title':
                 'kit title frame 54 wide (the text); ours rounded to the grid (56)',
           },
-          masks: const [
+          masks: [
             'Window controls',
             'Search',
             'Match case',
@@ -337,7 +337,7 @@ void main() {
           'Windows/Window/Full Screen Strip/Active/$appearance',
           const Size(1000, 112),
           AmalfiFullScreenStrip(
-            menuBar: const SizedBox.expand(key: ValueKey('Menu bar')),
+            menuBar: SizedBox.expand(key: ValueKey('Menu bar')),
             toolbar: windowBar(),
           ),
           frame: false,
@@ -347,7 +347,7 @@ void main() {
             'Toolbar': find.byType(AmalfiToolbar),
             'Separator': find.byType(AmalfiWindowSeparator),
           },
-          masks: const ['Menu bar', 'Toolbar'],
+          masks: ['Menu bar', 'Toolbar'],
         );
       });
 
@@ -370,7 +370,7 @@ void main() {
             'Toolbar': find.byType(AmalfiToolbar),
             'Separator': find.byType(AmalfiWindowSeparator),
           },
-          masks: const ['Toolbar'],
+          masks: ['Toolbar'],
         );
       });
 
@@ -395,7 +395,7 @@ void main() {
             ),
           ),
           layers: {'Title bar': find.byType(AmalfiTitleBar)},
-          masks: const ['Title bar', 'Done'],
+          masks: ['Title bar', 'Done'],
         );
       });
 
@@ -451,7 +451,7 @@ void main() {
                   )
                   .first,
             },
-            masks: const ['Toolbar'],
+            masks: ['Toolbar'],
           );
         });
 
@@ -484,7 +484,7 @@ void main() {
               'Content toolbar': find.byKey(const ValueKey('Content toolbar')),
               'Separator': find.byType(AmalfiWindowSeparator),
             },
-            masks: const ['Sidebar toolbar', 'Content toolbar'],
+            masks: ['Sidebar toolbar', 'Content toolbar'],
           );
         });
 
@@ -525,7 +525,7 @@ void main() {
               'List toolbar': find.byKey(const ValueKey('List toolbar')),
               'Content toolbar': find.byKey(const ValueKey('Content toolbar')),
             },
-            masks: const ['Sidebar toolbar', 'List toolbar', 'Content toolbar'],
+            masks: ['Sidebar toolbar', 'List toolbar', 'Content toolbar'],
           );
         });
       }
@@ -553,7 +553,7 @@ void main() {
                   toolbarOverChild: true,
                   toolbar: AmalfiToolbar.section(
                     key: const ValueKey('Inspector toolbar'),
-                    surface: AmalfiBarSurface.sidebar,
+                    surface: AmalfiToolbarSurface.sidebar,
                     children: inspectorSectionPieces(),
                   ),
                   child: Builder(
@@ -575,7 +575,7 @@ void main() {
               const ValueKey('Inspector toolbar'),
             ),
           },
-          masks: const [
+          masks: [
             'Sidebar toolbar',
             'Content toolbar',
             'Inspector toolbar',
@@ -650,7 +650,7 @@ Widget sampleList({bool active = true}) => Builder(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(title, style: AmalfiType.headline(color: ink)),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         'Whisk the eggs with sugar until pale.',
                         style: AmalfiType.callout(color: secondary),

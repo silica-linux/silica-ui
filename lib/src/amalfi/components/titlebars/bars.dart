@@ -3,6 +3,8 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../../controls/control_base.dart' show WindowActiveScope;
+
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'pieces.dart';
@@ -11,7 +13,7 @@ import 'window_controls.dart';
 import 'window_scope.dart';
 
 /// The surface a bar is drawn on.
-enum AmalfiBarSurface {
+enum AmalfiToolbarSurface {
   /// `Surface/Window`: the unified toolbar and the content and list sections.
   window,
 
@@ -29,7 +31,7 @@ enum AmalfiBarSurface {
 /// [children] are pieces ([AmalfiControlsPiece], [AmalfiTitlePiece], [AmalfiToolbarPiece],
 /// [AmalfiSpacerPiece]) laid out in a row as tall as the bar; each [AmalfiSpacerPiece] takes
 /// a share of the free width. The bar is flat (`materials.md`): only the controls in it are
-/// glass. [active] null follows the [AmalfiWindowScope]; a non-null value also sets it for the
+/// glass. [active] null follows the [WindowActiveScope]; a non-null value also sets it for the
 /// pieces below.
 class AmalfiToolbar extends StatelessWidget {
   /// The unified toolbar: 52 tall, ending with [AmalfiToolbarMetrics.unifiedPadding].
@@ -38,7 +40,7 @@ class AmalfiToolbar extends StatelessWidget {
     required this.children,
     this.height = AmalfiToolbarMetrics.toolbarHeight,
     this.padding = AmalfiToolbarMetrics.unifiedPadding,
-    this.surface = AmalfiBarSurface.window,
+    this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
   });
@@ -48,7 +50,7 @@ class AmalfiToolbar extends StatelessWidget {
     super.key,
     required this.children,
     this.padding = AmalfiToolbarMetrics.unifiedPadding,
-    this.surface = AmalfiBarSurface.window,
+    this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.compactHeight;
@@ -59,7 +61,7 @@ class AmalfiToolbar extends StatelessWidget {
     super.key,
     required this.children,
     this.padding = AmalfiToolbarMetrics.sectionPadding,
-    this.surface = AmalfiBarSurface.window,
+    this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight;
@@ -73,7 +75,7 @@ class AmalfiToolbar extends StatelessWidget {
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight,
-       surface = AmalfiBarSurface.sidebar;
+       surface = AmalfiToolbarSurface.sidebar;
 
   final List<Widget> children;
 
@@ -83,12 +85,12 @@ class AmalfiToolbar extends StatelessWidget {
   /// The padding before the first and after the last piece.
   final EdgeInsets padding;
 
-  final AmalfiBarSurface surface;
+  final AmalfiToolbarSurface surface;
 
   /// Whether to draw a 1 pt `Line/Separator` along the bottom, inside the bar.
   final bool separator;
 
-  /// Whether the window is active; null: from [AmalfiWindowScope].
+  /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
   @override
@@ -113,9 +115,9 @@ class AmalfiToolbar extends StatelessWidget {
     );
     bar = ColoredBox(
       color: switch (surface) {
-        AmalfiBarSurface.window => colors.surfaceWindow,
-        AmalfiBarSurface.sidebar => colors.surfaceSidebar,
-        AmalfiBarSurface.none => const Color(0x00000000),
+        AmalfiToolbarSurface.window => colors.surfaceWindow,
+        AmalfiToolbarSurface.sidebar => colors.surfaceSidebar,
+        AmalfiToolbarSurface.none => const Color(0x00000000),
       },
       child: SizedBox(
         height: height,
@@ -140,7 +142,7 @@ class AmalfiToolbar extends StatelessWidget {
       explicitChildNodes: true,
       child: active == null
           ? bar
-          : AmalfiWindowScope(active: active, child: bar),
+          : WindowActiveScope(active: active, child: bar),
     );
   }
 }
@@ -186,7 +188,7 @@ class AmalfiTitleBar extends StatelessWidget {
   final AmalfiTitleBarStyle style;
   final VoidCallback? onClose, onMinimise, onZoom;
 
-  /// Whether the window is active; null: from [AmalfiWindowScope].
+  /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
   /// The height of [style].
@@ -206,7 +208,7 @@ class AmalfiTitleBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
-    final active = amalfiResolveActive(context, this.active);
+    final active = amalfiTitlebarResolveActive(context, this.active);
     final height = heightOf(style);
     final titleOnly = style == AmalfiTitleBarStyle.titleOnly;
     final Widget title = switch (style) {
@@ -236,7 +238,7 @@ class AmalfiTitleBar extends StatelessWidget {
           header: true,
           child: Align(
             alignment: AlignmentDirectional.centerStart,
-            child: AmalfiChromeTextBox(
+            child: AmalfiTitlebarTextBox(
               child: Text(
                 this.title,
                 maxLines: 1,
@@ -264,7 +266,7 @@ class AmalfiTitleBar extends StatelessWidget {
         ),
       ),
     };
-    return AmalfiWindowScope(
+    return WindowActiveScope(
       active: active,
       child: ColoredBox(
         color: titleOnly ? colors.surfaceWindow : const Color(0x00000000),

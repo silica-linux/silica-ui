@@ -36,7 +36,7 @@ void main() {
               layers: {
                 'Dot': find.byType(AmalfiWindowDot),
                 if (state == AmalfiWindowControlState.hover)
-                  'Glyph': find.byType(AmalfiChromeGlyph),
+                  'Glyph': find.byType(AmalfiTitlebarGlyph),
               },
               deviations: const {'Dot#corners': measuredDisc},
             );
@@ -178,9 +178,9 @@ void main() {
             master,
             root: root,
             layers: {
-              'Document': glyphOf(AmalfiChromeGlyphs.doc),
+              'Document': glyphOf(AmalfiTitlebarGlyphs.doc),
               'Title': textBox('Lemon cake.recipe'),
-              'Chevron': glyphOf(AmalfiChromeGlyphs.chevronDown),
+              'Chevron': glyphOf(AmalfiTitlebarGlyphs.chevronDown),
             },
           );
           await expectKitPixels(tester, master, piece, tolerance: chromeText);
@@ -190,15 +190,16 @@ void main() {
           final master = KitMaster.load(
             'Titlebars/Piece/Spacer/$state/$appearance',
           );
-          final piece = bar52(const AmalfiSpacerPiece());
+          final piece = bar52(AmalfiSpacerPiece());
           final root = await pumpKitScene(tester, piece, master: master);
           expectKitGeometry(tester, master, root: root);
           await expectKitPixels(tester, master, piece);
         });
       }
 
-      // Item pieces: the slot around a control of another family, shown here by a stand-in
-      // (AmalfiToolbarPlaceholder) that the pixel tests mask out.
+      // Item pieces: the slot around a control of another family (the merged segmented and
+      // fields widgets, or a stand-in for the buttons family). The pixel tests mask the
+      // control: its glyphs are the app's choice and the control has its own kit tests.
       for (final (piece, child, widget) in itemPieces) {
         for (final state in availableStates(
           'Titlebars/Piece/$piece',
@@ -208,7 +209,7 @@ void main() {
             final master = KitMaster.load(
               'Titlebars/Piece/$piece/$state/$appearance',
             );
-            final scene = AmalfiWindowScope(
+            final scene = WindowActiveScope(
               active: state == 'Active',
               child: bar52(widget),
             );
@@ -217,7 +218,7 @@ void main() {
               tester,
               master,
               root: root,
-              layers: {child: find.byType(AmalfiToolbarPlaceholder)},
+              layers: {child: pieceControl()},
             );
             await expectKitPixels(tester, master, scene, maskLayers: [child]);
           });
@@ -279,7 +280,7 @@ void main() {
             tester,
             master,
             bar,
-            maskLayers: const ['Controls', 'Sidebar Toggle'],
+            maskLayers: ['Controls', 'Sidebar Toggle'],
           );
         });
 
@@ -305,7 +306,7 @@ void main() {
             tester,
             master,
             bar,
-            maskLayers: const ['Nav', 'Item Group 2', 'Segmented', 'Search'],
+            maskLayers: ['Nav', 'Item Group 2', 'Segmented', 'Search'],
             tolerance: chromeText,
           );
         });
@@ -332,7 +333,7 @@ void main() {
             tester,
             master,
             bar,
-            maskLayers: const ['Item Group 2'],
+            maskLayers: ['Item Group 2'],
             tolerance: chromeText,
           );
         });
@@ -345,7 +346,7 @@ void main() {
             width: 260,
             child: AmalfiToolbar.section(
               active: active,
-              surface: AmalfiBarSurface.sidebar,
+              surface: AmalfiToolbarSurface.sidebar,
               children: inspectorSectionPieces(),
             ),
           );
@@ -360,7 +361,7 @@ void main() {
             tester,
             master,
             bar,
-            maskLayers: const ['Item Group 3'],
+            maskLayers: ['Item Group 3'],
           );
         });
 
@@ -395,7 +396,7 @@ void main() {
             tester,
             master,
             bar,
-            maskLayers: const ['Window controls'],
+            maskLayers: ['Window controls'],
             tolerance: chromeText,
           );
         });
@@ -459,11 +460,11 @@ void main() {
                   },
                   'Document' => {
                     'Title block/Document proxy': glyphOf(
-                      AmalfiChromeGlyphs.doc,
+                      AmalfiTitlebarGlyphs.doc,
                     ),
                     'Title block/Title': textBox('Lemon cake.recipe'),
                     'Title block/Chevron': glyphOf(
-                      AmalfiChromeGlyphs.chevronDown,
+                      AmalfiTitlebarGlyphs.chevronDown,
                     ),
                   },
                   _ => {'Title block/Title': textBox('Lemon cake')},
@@ -493,7 +494,7 @@ void main() {
               master,
               bar,
               maskText: true,
-              maskLayers: const ['Window controls', 'Title block'],
+              maskLayers: ['Window controls', 'Title block'],
             );
           });
         }
@@ -521,7 +522,7 @@ void main() {
             layers: {
               if (state != 'Rest') 'Surface': tabSurface(),
               'Label': find.text('Lemon cake'),
-              if (state != 'Rest') 'Close': glyphOf(AmalfiChromeGlyphs.xmark),
+              if (state != 'Rest') 'Close': glyphOf(AmalfiTitlebarGlyphs.xmark),
             },
             deviations: {if (state == 'Selected') 'Surface#shadows': tabShadow},
           );
@@ -543,7 +544,7 @@ void main() {
           final bar = SizedBox(
             width: 560,
             child: AmalfiTabBar(
-              tabs: const [
+              tabs: [
                 AmalfiTabData('Lemon cake'),
                 AmalfiTabData('Fig jam'),
                 AmalfiTabData('Olive oil'),
@@ -577,7 +578,7 @@ void main() {
             tester,
             master,
             bar,
-            maskLayers: const ['New tab'],
+            maskLayers: ['New tab'],
             tolerance: chromeText,
             prepare: prepare,
           );
@@ -769,7 +770,7 @@ void main() {
     testWidgets('inactive: titles turn Text/Tertiary', (tester) async {
       await pumpKitScene(
         tester,
-        const AmalfiWindowScope(
+        const WindowActiveScope(
           active: false,
           child: AmalfiTitlePiece(title: 'Lemon cake'),
         ),
@@ -807,18 +808,18 @@ void main() {
         SizedBox(
           width: 560,
           child: AmalfiTabBar(
-            tabs: const [AmalfiTabData('A'), AmalfiTabData('B')],
+            tabs: [AmalfiTabData('A'), AmalfiTabData('B')],
             onSelect: (i) => log.add('select $i'),
             onClose: (i) => log.add('close $i'),
             onNewTab: () => log.add('new'),
           ),
         ),
       );
-      expect(glyphOf(AmalfiChromeGlyphs.xmark), findsOneWidget);
+      expect(glyphOf(AmalfiTitlebarGlyphs.xmark), findsOneWidget);
       await tester.tap(find.text('B'));
       await hover(tester, find.text('B'));
-      expect(glyphOf(AmalfiChromeGlyphs.xmark), findsNWidgets(2));
-      await tester.tap(glyphOf(AmalfiChromeGlyphs.xmark).last);
+      expect(glyphOf(AmalfiTitlebarGlyphs.xmark), findsNWidgets(2));
+      await tester.tap(glyphOf(AmalfiTitlebarGlyphs.xmark).last);
       await tester.tap(newTabButton());
       expect(log, ['select 1', 'close 1', 'new']);
       // Equal widths: (560 − 8 − 24 − 2 × 4) / 2.

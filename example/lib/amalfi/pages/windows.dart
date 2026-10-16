@@ -3,6 +3,7 @@
 // until the buttons, segmented and fields families land.
 
 import 'package:flutter/widgets.dart';
+
 import 'package:silica_ui/silica_ui.dart';
 
 import '../specimen.dart';
@@ -17,6 +18,15 @@ final AmalfiGalleryPage windowsPage = AmalfiGalleryPage(
 const String _body =
     'Whisk the eggs with sugar until pale, fold in the flour, then the lemon zest and juice.';
 
+List<AmalfiSegment> _icons(List<AmalfiTitlebarGlyphData> glyphs) => [
+  for (final g in glyphs)
+    AmalfiSegment.icon(AmalfiTitlebarGlyph(g), semanticLabel: g.name),
+];
+
+/// An action group (segmented family).
+Widget _actions(List<AmalfiTitlebarGlyphData> glyphs) =>
+    AmalfiActionSegments(segments: _icons(glyphs), onPressed: (_) {});
+
 class _Content extends StatelessWidget {
   const _Content({this.padding = 24});
 
@@ -25,7 +35,7 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
-    final active = AmalfiWindowScope.isActive(context);
+    final active = WindowActiveScope.of(context);
     return Padding(
       padding: EdgeInsets.all(padding),
       child: Column(
@@ -69,9 +79,9 @@ class _SidebarState extends State<_Sidebar> {
     children: [
       const AmalfiSidebarHeader(title: 'Favourites'),
       for (final (label, icon) in [
-        ('Recents', AmalfiChromeGlyphs.clock),
-        ('Documents', AmalfiChromeGlyphs.doc),
-        ('Downloads', AmalfiChromeGlyphs.download),
+        ('Recents', AmalfiTitlebarGlyphs.clock),
+        ('Documents', AmalfiTitlebarGlyphs.doc),
+        ('Downloads', AmalfiTitlebarGlyphs.download),
       ])
         AmalfiSidebarRow(
           label: label,
@@ -83,32 +93,35 @@ class _SidebarState extends State<_Sidebar> {
   );
 }
 
-const _nav = AmalfiToolbarPiece(
-  child: AmalfiToolbarPlaceholder.group([
-    AmalfiChromeGlyphs.chevronLeft,
-    AmalfiChromeGlyphs.chevronRight,
+final _nav = AmalfiToolbarPiece(
+  child: _actions([
+    AmalfiTitlebarGlyphs.chevronLeft,
+    AmalfiTitlebarGlyphs.chevronRight,
   ]),
 );
 
-const _search = AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.search());
+final _search = AmalfiToolbarPiece(
+  child: AmalfiSearchField(size: AmalfiFieldSize.large, width: 200),
+);
 
 Widget _controls() =>
     AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {});
 
-Widget _unifiedBar({AmalfiBarSurface surface = AmalfiBarSurface.window}) =>
-    AmalfiToolbar(
-      surface: surface,
-      children: [
-        _controls(),
-        const AmalfiToolbarPiece(
-          child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
-        ),
-        _nav,
-        const AmalfiTitlePiece(title: 'Lemon cake'),
-        const AmalfiSpacerPiece(),
-        _search,
-      ],
-    );
+Widget _unifiedBar({
+  AmalfiToolbarSurface surface = AmalfiToolbarSurface.window,
+}) => AmalfiToolbar(
+  surface: surface,
+  children: [
+    _controls(),
+    AmalfiToolbarPiece(
+      child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
+    ),
+    _nav,
+    AmalfiTitlePiece(title: 'Lemon cake'),
+    AmalfiSpacerPiece(),
+    _search,
+  ],
+);
 
 AmalfiWindowColumn _sidebarColumn() => AmalfiWindowColumn(
   width: AmalfiWindowMetrics.sidebarWidth,
@@ -116,9 +129,9 @@ AmalfiWindowColumn _sidebarColumn() => AmalfiWindowColumn(
   toolbar: AmalfiToolbar.sidebarSection(
     children: [
       _controls(),
-      const AmalfiSpacerPiece(),
-      const AmalfiToolbarPiece(
-        child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
+      AmalfiSpacerPiece(),
+      AmalfiToolbarPiece(
+        child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
       ),
     ],
   ),
@@ -126,7 +139,7 @@ AmalfiWindowColumn _sidebarColumn() => AmalfiWindowColumn(
 );
 
 AmalfiWindowColumn _contentColumn() => AmalfiWindowColumn(
-  toolbar: const AmalfiToolbar.section(
+  toolbar: AmalfiToolbar.section(
     children: [
       _nav,
       AmalfiTitlePiece(title: 'Lemon cake'),
@@ -224,7 +237,7 @@ class _WindowsPage extends StatelessWidget {
                 active: active,
                 size: const Size(900, 420),
                 child: AmalfiWindowLayout(
-                  bar: _unifiedBar(surface: AmalfiBarSurface.none),
+                  bar: _unifiedBar(surface: AmalfiToolbarSurface.none),
                   barSeparator: true,
                   sidesUnderBar: true,
                   sidebar: const _Sidebar(top: 60),
@@ -297,15 +310,15 @@ class _WindowsPage extends StatelessWidget {
                   AmalfiWindowColumn(
                     width: AmalfiWindowMetrics.inspectorWidth,
                     toolbarOverChild: true,
-                    toolbar: const AmalfiToolbar.section(
-                      surface: AmalfiBarSurface.sidebar,
+                    toolbar: AmalfiToolbar.section(
+                      surface: AmalfiToolbarSurface.sidebar,
                       children: [
                         AmalfiSpacerPiece(),
                         AmalfiToolbarPiece(
-                          child: AmalfiToolbarPlaceholder.group([
-                            AmalfiChromeGlyphs.plus,
-                            AmalfiChromeGlyphs.tag,
-                            AmalfiChromeGlyphs.star,
+                          child: _actions([
+                            AmalfiTitlebarGlyphs.plus,
+                            AmalfiTitlebarGlyphs.tag,
+                            AmalfiTitlebarGlyphs.star,
                           ]),
                         ),
                       ],
@@ -325,7 +338,7 @@ class _WindowsPage extends StatelessWidget {
               child: AmalfiSplitWindowLayout(
                 columns: [
                   _sidebarColumn(),
-                  const AmalfiWindowColumn(
+                  AmalfiWindowColumn(
                     width: AmalfiWindowMetrics.listWidth,
                     toolbar: AmalfiToolbar.section(
                       children: [
@@ -348,11 +361,11 @@ class _WindowsPage extends StatelessWidget {
                 bar: AmalfiToolbar.compact(
                   children: [
                     _controls(),
-                    const AmalfiTitlePiece(title: 'Lemon cake'),
-                    const AmalfiSpacerPiece(),
-                    const AmalfiToolbarPiece(
+                    AmalfiTitlePiece(title: 'Lemon cake'),
+                    AmalfiSpacerPiece(),
+                    AmalfiToolbarPiece(
                       child: AmalfiToolbarPlaceholder.icon(
-                        AmalfiChromeGlyphs.share,
+                        AmalfiTitlebarGlyphs.share,
                       ),
                     ),
                   ],

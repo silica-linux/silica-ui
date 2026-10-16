@@ -41,7 +41,7 @@ class _SidebarsPage extends StatelessWidget {
                   child: onSidebar(
                     AmalfiSidebarRow(
                       label: 'Documents',
-                      icon: AmalfiChromeGlyphs.folder,
+                      icon: AmalfiTitlebarGlyphs.folder,
                       badge: badge,
                       selected: selected,
                       enabled: enabled,
@@ -90,8 +90,8 @@ class _SidebarsPage extends StatelessWidget {
               child: onSidebar(
                 const AmalfiSidebarFooter(
                   children: [
-                    AmalfiToolbarPlaceholder.square(AmalfiChromeGlyphs.plus),
-                    AmalfiToolbarPlaceholder.square(AmalfiChromeGlyphs.gear),
+                    AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.plus),
+                    AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.gear),
                   ],
                 ),
               ),
@@ -130,18 +130,18 @@ class _GroupState extends State<_Group> {
     children: [
       AmalfiSidebarRow(
         label: 'Documents',
-        icon: AmalfiChromeGlyphs.doc,
+        icon: AmalfiTitlebarGlyphs.doc,
         onTap: () {},
       ),
       AmalfiSidebarRow(
         label: 'Downloads',
-        icon: AmalfiChromeGlyphs.download,
+        icon: AmalfiTitlebarGlyphs.download,
         badge: '12',
         onTap: () {},
       ),
       AmalfiSidebarRow(
         label: 'Pictures',
-        icon: AmalfiChromeGlyphs.photo,
+        icon: AmalfiTitlebarGlyphs.photo,
         onTap: () {},
       ),
     ],
@@ -157,13 +157,13 @@ class _Panel extends StatefulWidget {
 
 class _PanelState extends State<_Panel> {
   static const _rows = [
-    ('Recents', AmalfiChromeGlyphs.clock, null),
-    ('Documents', AmalfiChromeGlyphs.doc, '12'),
-    ('Downloads', AmalfiChromeGlyphs.download, null),
+    ('Recents', AmalfiTitlebarGlyphs.clock, null),
+    ('Documents', AmalfiTitlebarGlyphs.doc, '12'),
+    ('Downloads', AmalfiTitlebarGlyphs.download, null),
   ];
   static const _library = [
-    ('Photos', AmalfiChromeGlyphs.photo),
-    ('Music', AmalfiChromeGlyphs.musicNote),
+    ('Photos', AmalfiTitlebarGlyphs.photo),
+    ('Music', AmalfiTitlebarGlyphs.musicNote),
   ];
 
   String _selected = 'Recents';
@@ -171,7 +171,7 @@ class _PanelState extends State<_Panel> {
 
   AmalfiSidebarRow _row(
     String label,
-    AmalfiChromeGlyphData icon, [
+    AmalfiTitlebarGlyphData icon, [
     String? badge,
   ]) => AmalfiSidebarRow(
     label: label,
@@ -185,8 +185,8 @@ class _PanelState extends State<_Panel> {
   Widget build(BuildContext context) => AmalfiSidebarPanel(
     footer: const AmalfiSidebarFooter(
       children: [
-        AmalfiToolbarPlaceholder.square(AmalfiChromeGlyphs.plus),
-        AmalfiToolbarPlaceholder.square(AmalfiChromeGlyphs.gear),
+        AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.plus),
+        AmalfiToolbarPlaceholder.square(AmalfiTitlebarGlyphs.gear),
       ],
     ),
     children: [
@@ -206,7 +206,7 @@ class _PanelState extends State<_Panel> {
         title: 'Tags',
         expanded: _tags,
         onToggle: () => setState(() => _tags = !_tags),
-        children: [_row('Recipes', AmalfiChromeGlyphs.tag)],
+        children: [_row('Recipes', AmalfiTitlebarGlyphs.tag)],
       ),
     ],
   );

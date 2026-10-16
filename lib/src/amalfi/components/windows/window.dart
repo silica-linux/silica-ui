@@ -7,11 +7,12 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../../controls/control_base.dart' show WindowActiveScope;
+
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../titlebars/pieces.dart';
-import '../titlebars/window_scope.dart';
 
 /// The kind of window frame.
 enum AmalfiWindowKind {
@@ -46,7 +47,7 @@ abstract final class AmalfiWindowMetrics {
 /// A window frame: `Surface/Window` with smooth corners, the window shadow (`shadows.3`) and a
 /// 1 pt `Line/Border` rim inside the edge, [child] clipped to the corners.
 ///
-/// It also tells the chrome below whether the window is [active] ([AmalfiWindowScope]).
+/// It also tells the chrome below whether the window is [active] ([WindowActiveScope]).
 /// [shadow] false leaves the shadow to the compositor (a real toplevel window); the gallery and
 /// tests draw it.
 class AmalfiWindow extends StatelessWidget {
@@ -75,7 +76,7 @@ class AmalfiWindow extends StatelessWidget {
     final colors = theme.colors;
     final radius = radiusOf(kind);
     final shape = AmalfiSmoothBorder(radius: radius);
-    return AmalfiWindowScope(
+    return WindowActiveScope(
       active: active,
       child: DecoratedBox(
         decoration: ShapeDecoration(
@@ -129,7 +130,7 @@ class AmalfiWindowSeparator extends StatelessWidget {
 /// Separators are drawn over the regions at their edges: under the bar ([barSeparator]),
 /// after the sidebar and before the inspector. With [sidesUnderBar] the sidebar and the
 /// inspector run up to the top of the window, behind a transparent bar (the bar must then
-/// use `AmalfiBarSurface.none`), and the line under the bar only spans the content.
+/// use `AmalfiToolbarSurface.none`), and the line under the bar only spans the content.
 class AmalfiWindowLayout extends StatelessWidget {
   const AmalfiWindowLayout({
     super.key,

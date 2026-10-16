@@ -4,6 +4,7 @@
 // segmented and fields families land.
 
 import 'package:flutter/widgets.dart';
+
 import 'package:silica_ui/silica_ui.dart';
 
 import '../specimen.dart';
@@ -29,6 +30,41 @@ String _state(AmalfiWindowControlState s) => switch (s) {
 };
 
 /// A piece in a 52 pt slot on the window surface.
+
+List<AmalfiSegment> _icons(List<AmalfiTitlebarGlyphData> glyphs) => [
+  for (final g in glyphs)
+    AmalfiSegment.icon(AmalfiTitlebarGlyph(g), semanticLabel: g.name),
+];
+
+/// An action group (segmented family).
+Widget _actions(List<AmalfiTitlebarGlyphData> glyphs) =>
+    AmalfiActionSegments(segments: _icons(glyphs), onPressed: (_) {});
+
+/// A select-one control of icons or labels (segmented family), live.
+class _Switcher extends StatefulWidget {
+  const _Switcher({this.glyphs = const [], this.labels = const []});
+
+  final List<AmalfiTitlebarGlyphData> glyphs;
+  final List<String> labels;
+
+  @override
+  State<_Switcher> createState() => _SwitcherState();
+}
+
+class _SwitcherState extends State<_Switcher> {
+  Set<int> _selected = const {0};
+
+  @override
+  Widget build(BuildContext context) => AmalfiSegmentedControl(
+    segments: widget.labels.isEmpty
+        ? _icons(widget.glyphs)
+        : [for (final l in widget.labels) AmalfiSegment.text(l)],
+    selected: _selected,
+    onChanged: (s) => setState(() => _selected = s),
+    size: AmalfiControlSize.large,
+  );
+}
+
 class _Slot extends StatelessWidget {
   const _Slot(this.piece);
 
@@ -48,26 +84,27 @@ class _Slot extends StatelessWidget {
   );
 }
 
-const _nav = AmalfiToolbarPlaceholder.group([
-  AmalfiChromeGlyphs.chevronLeft,
-  AmalfiChromeGlyphs.chevronRight,
+final _nav = _actions([
+  AmalfiTitlebarGlyphs.chevronLeft,
+  AmalfiTitlebarGlyphs.chevronRight,
 ]);
 
-const _view = AmalfiToolbarPlaceholder.segmented([
-  AmalfiChromeGlyphs.listBullet,
-  AmalfiChromeGlyphs.squareGrid2x2,
-]);
+final _view = _Switcher(
+  glyphs: [AmalfiTitlebarGlyphs.listBullet, AmalfiTitlebarGlyphs.squareGrid2x2],
+);
 
 List<Widget> _unified() => [
   AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
-  const AmalfiToolbarPiece(
-    child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.sidebar),
+  AmalfiToolbarPiece(
+    child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.sidebar),
   ),
-  const AmalfiToolbarPiece(child: _nav),
-  const AmalfiTitlePiece(title: 'Lemon cake'),
-  const AmalfiSpacerPiece(),
-  const AmalfiToolbarPiece(child: _view),
-  const AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.search()),
+  AmalfiToolbarPiece(child: _nav),
+  AmalfiTitlePiece(title: 'Lemon cake'),
+  AmalfiSpacerPiece(),
+  AmalfiToolbarPiece(child: _view),
+  AmalfiToolbarPiece(
+    child: AmalfiSearchField(size: AmalfiFieldSize.large, width: 200),
+  ),
 ];
 
 class _TitlebarsPage extends StatelessWidget {
@@ -166,85 +203,89 @@ class _TitlebarsPage extends StatelessWidget {
           for (final (label, piece) in <(String, Widget)>[
             (
               'Sidebar Toggle',
-              const AmalfiToolbarPiece(
+              AmalfiToolbarPiece(
                 child: AmalfiToolbarPlaceholder.icon(
-                  AmalfiChromeGlyphs.sidebar,
+                  AmalfiTitlebarGlyphs.sidebar,
                 ),
               ),
             ),
-            ('Nav', const AmalfiToolbarPiece(child: _nav)),
+            ('Nav', AmalfiToolbarPiece(child: _nav)),
             for (final n in [2, 3, 4])
               (
                 'Item Group $n',
                 AmalfiToolbarPiece(
-                  child: AmalfiToolbarPlaceholder.group([
-                    for (var i = 0; i < n; i++) AmalfiChromeGlyphs.plus,
+                  child: _actions([
+                    for (var i = 0; i < n; i++) AmalfiTitlebarGlyphs.plus,
                   ]),
                 ),
               ),
-            ('Segmented', const AmalfiToolbarPiece(child: _view)),
+            ('Segmented', AmalfiToolbarPiece(child: _view)),
             (
               'Segmented 4',
-              const AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.segmented([
-                  AmalfiChromeGlyphs.listBullet,
-                  AmalfiChromeGlyphs.squareGrid2x2,
-                  AmalfiChromeGlyphs.photo,
-                  AmalfiChromeGlyphs.clock,
-                ]),
+              AmalfiToolbarPiece(
+                child: _Switcher(
+                  glyphs: [
+                    AmalfiTitlebarGlyphs.listBullet,
+                    AmalfiTitlebarGlyphs.squareGrid2x2,
+                    AmalfiTitlebarGlyphs.photo,
+                    AmalfiTitlebarGlyphs.clock,
+                  ],
+                ),
               ),
             ),
             (
               'Segmented Text',
-              const AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.text([
-                  'All',
-                  'Mine',
-                  'Shared',
-                  'Recent',
-                ]),
+              AmalfiToolbarPiece(
+                child: _Switcher(labels: ['All', 'Mine', 'Shared', 'Recent']),
               ),
             ),
             (
               'Search',
-              const AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.search(),
+              AmalfiToolbarPiece(
+                child: AmalfiSearchField(
+                  size: AmalfiFieldSize.large,
+                  width: 200,
+                ),
               ),
             ),
             (
               'Search Token',
-              const AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.search(width: 240, height: 28),
+              AmalfiToolbarPiece(
+                child: AmalfiSearchField(width: 240, tokens: ['Recipes']),
               ),
             ),
             (
               'Share',
-              const AmalfiToolbarPiece(
-                child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.share),
+              AmalfiToolbarPiece(
+                child: AmalfiToolbarPlaceholder.icon(
+                  AmalfiTitlebarGlyphs.share,
+                ),
               ),
             ),
             (
               'More',
-              const AmalfiToolbarPiece(
+              AmalfiToolbarPiece(
                 child: AmalfiToolbarPlaceholder.icon(
-                  AmalfiChromeGlyphs.ellipsisCircle,
+                  AmalfiTitlebarGlyphs.ellipsisCircle,
                 ),
               ),
             ),
             (
               'Add',
-              const AmalfiToolbarPiece.add(
-                child: AmalfiToolbarPlaceholder.icon(AmalfiChromeGlyphs.plus),
+              AmalfiToolbarPiece.add(
+                child: AmalfiToolbarPlaceholder.icon(AmalfiTitlebarGlyphs.plus),
               ),
             ),
             (
               'Mail Send',
-              const AmalfiToolbarPiece(
+              AmalfiToolbarPiece(
                 trailing: 16,
-                child: AmalfiToolbarPlaceholder.round(AmalfiChromeGlyphs.plus),
+                child: AmalfiToolbarPlaceholder.round(
+                  AmalfiTitlebarGlyphs.plus,
+                ),
               ),
             ),
-            ('Spacer', const AmalfiSpacerPiece()),
+            ('Spacer', AmalfiSpacerPiece()),
             // App pieces: the same slots with each app's controls.
             for (final (name, n) in [
               ('Mail Filter', 2),
@@ -262,25 +303,25 @@ class _TitlebarsPage extends StatelessWidget {
               (
                 name,
                 AmalfiToolbarPiece(
-                  child: AmalfiToolbarPlaceholder.group([
-                    for (var i = 0; i < n; i++) AmalfiChromeGlyphs.plus,
+                  child: _actions([
+                    for (var i = 0; i < n; i++) AmalfiTitlebarGlyphs.plus,
                   ]),
                 ),
               ),
             for (final (name, glyph) in [
-              ('Doc Info', AmalfiChromeGlyphs.doc),
-              ('Doc Share', AmalfiChromeGlyphs.share),
-              ('Mail Compose', AmalfiChromeGlyphs.compose),
-              ('Notes New', AmalfiChromeGlyphs.compose),
-              ('Preview Inspector', AmalfiChromeGlyphs.sidebar),
-              ('Preview Markup', AmalfiChromeGlyphs.compose),
-              ('Preview Rotate', AmalfiChromeGlyphs.plus),
+              ('Doc Info', AmalfiTitlebarGlyphs.doc),
+              ('Doc Share', AmalfiTitlebarGlyphs.share),
+              ('Mail Compose', AmalfiTitlebarGlyphs.compose),
+              ('Notes New', AmalfiTitlebarGlyphs.compose),
+              ('Preview Inspector', AmalfiTitlebarGlyphs.sidebar),
+              ('Preview Markup', AmalfiTitlebarGlyphs.compose),
+              ('Preview Rotate', AmalfiTitlebarGlyphs.plus),
             ])
               (
                 name,
                 AmalfiToolbarPiece(child: AmalfiToolbarPlaceholder.icon(glyph)),
               ),
-            ('Notes View', const AmalfiToolbarPiece(child: _view)),
+            ('Notes View', AmalfiToolbarPiece(child: _view)),
           ])
             Specimen(label: label, child: _Slot(piece)),
         ],
@@ -318,12 +359,12 @@ class _TitlebarsPage extends StatelessWidget {
                       onMinimise: () {},
                       onZoom: () {},
                     ),
-                    const AmalfiToolbarPiece(child: _nav),
-                    const AmalfiTitlePiece(title: 'Lemon cake'),
-                    const AmalfiSpacerPiece(),
-                    const AmalfiToolbarPiece(
+                    AmalfiToolbarPiece(child: _nav),
+                    AmalfiTitlePiece(title: 'Lemon cake'),
+                    AmalfiSpacerPiece(),
+                    AmalfiToolbarPiece(
                       child: AmalfiToolbarPlaceholder.icon(
-                        AmalfiChromeGlyphs.share,
+                        AmalfiTitlebarGlyphs.share,
                       ),
                     ),
                   ],
@@ -356,7 +397,7 @@ class _TitlebarsPage extends StatelessWidget {
                   'Sidebar · Content · Inspector · ${active ? 'Active' : 'Inactive'}',
               child: SizedBox(
                 width: 1000,
-                child: AmalfiWindowScope(
+                child: WindowActiveScope(
                   active: active,
                   child: Row(
                     children: [
@@ -369,16 +410,16 @@ class _TitlebarsPage extends StatelessWidget {
                               onMinimise: () {},
                               onZoom: () {},
                             ),
-                            const AmalfiSpacerPiece(),
-                            const AmalfiToolbarPiece(
+                            AmalfiSpacerPiece(),
+                            AmalfiToolbarPiece(
                               child: AmalfiToolbarPlaceholder.icon(
-                                AmalfiChromeGlyphs.sidebar,
+                                AmalfiTitlebarGlyphs.sidebar,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         child: AmalfiToolbar.section(
                           children: [
                             AmalfiToolbarPiece(child: _nav),
@@ -388,17 +429,17 @@ class _TitlebarsPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 260,
                         child: AmalfiToolbar.section(
-                          surface: AmalfiBarSurface.sidebar,
+                          surface: AmalfiToolbarSurface.sidebar,
                           children: [
                             AmalfiSpacerPiece(),
                             AmalfiToolbarPiece(
-                              child: AmalfiToolbarPlaceholder.group([
-                                AmalfiChromeGlyphs.plus,
-                                AmalfiChromeGlyphs.tag,
-                                AmalfiChromeGlyphs.star,
+                              child: _actions([
+                                AmalfiTitlebarGlyphs.plus,
+                                AmalfiTitlebarGlyphs.tag,
+                                AmalfiTitlebarGlyphs.star,
                               ]),
                             ),
                           ],
