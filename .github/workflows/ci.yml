@@ -15,7 +15,8 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib test example/lib example/test
+      - run: dart format --output=none --set-exit-if-changed lib test tool example/lib example/test
+      - run: dart run tool/gen_amalfi_tokens.dart --check
       - run: flutter analyze --fatal-infos
       - run: flutter test
       - run: flutter pub get && flutter analyze --fatal-infos && flutter test

@@ -41,6 +41,9 @@ dependencies:
 | `SilicaMenuBar`, `SilicaMenus`, `SilicaMenuItem`, `SilicaMenuDelegate` | the app's menus in Silica's global menu bar, with their shortcuts ([docs/app-menus.md](docs/app-menus.md)) |
 | `SilicaIcon`, `resolveFileIcon`, `resolveFolderIcon` | layered icons from silica-icons (the rendered PNG of each style when the pack has one), with badges and ground shadows |
 | `SilicaDrag` | drag and drop of files between apps (`text/uri-list`) |
+| `AmalfiColors`, `AmalfiType`, `AmalfiSpacing`, `AmalfiRadii`, `AmalfiShadows`, `AmalfiMaterials`, `AmalfiSprings`, `AmalfiFades`, … | the Silica 1.0 "Amalfi" design tokens, generated from `tool/amalfi/` by `tool/gen_amalfi_tokens.dart` |
+| `AmalfiTheme`, `AmalfiThemeData` | the Amalfi appearance and app palette in effect (`AmalfiTheme.of(context)`) |
+| `AmalfiSmoothBorder`, `smoothRectPath` | rectangles with smooth (continuous) corners, smoothing 0.6 by default |
 
 ## How the glass works
 
@@ -60,11 +63,13 @@ when new measurements arrive: they are parity with the reference, not a contract
 
 ```sh
 flutter analyze --fatal-infos && flutter test
+dart run tool/gen_amalfi_tokens.dart   # after changing tool/amalfi/tokens.json or motion.md
 cd example && flutter test      # the glass lab
 ```
 
 ## License
 
 Code: MIT OR Apache-2.0 ([LICENSE-MIT](LICENSE-MIT), [LICENSE-APACHE](LICENSE-APACHE)).
-Font: Inter, OFL 1.1 ([fonts/OFL.txt](fonts/OFL.txt)). Every asset has a row in
+Fonts: Inter, OFL 1.1 ([fonts/OFL.txt](fonts/OFL.txt)); JetBrains Mono, OFL 1.1
+([fonts/JetBrainsMono-OFL.txt](fonts/JetBrainsMono-OFL.txt)). Every asset has a row in
 [ASSETS.md](ASSETS.md).

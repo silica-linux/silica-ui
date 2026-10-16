@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+Silica 1.0 "Amalfi", step 1: the design tokens in code. Existing widgets are unchanged.
+
+- **Added:** `tool/gen_amalfi_tokens.dart`, which generates `lib/src/amalfi/tokens.g.dart` from
+  `tool/amalfi/tokens.json` and the token tables of `tool/amalfi/motion.md` (copies of
+  silica-desktop `docs/design/amalfi/` at `f17b47c`); `--check` fails when the file is stale
+  (run in CI).
+- **Added:** `AmalfiColors.light` / `.dark`: every colour token as a typed field
+  (`accentAmalfi`, `textSecondary`, …), `byName('Text/Primary')`, and the app palettes as
+  typed classes (`AmalfiColors.light.mail.flag`) or by name (`app('Mail', 'Flag')`,
+  `palette('Mail')`). Dark-only apps (Calculator, Clock) give their palette in both.
+- **Added:** `AmalfiType` (the 11 text styles as `TextStyle` factories and `AmalfiTextToken`s),
+  `AmalfiGrid`, `AmalfiSpacing`, `AmalfiControlSize` (20 / 24 / 28 / 32 with icon sizes),
+  `AmalfiControlIcons`, `AmalfiRadii`, `AmalfiShadows` (levels 1–3, light and dark),
+  `AmalfiFocus`, `AmalfiStates`, `AmalfiMaterials` (Glass/Regular, Thick, Clear as data),
+  `AmalfiWindowControls`, `AmalfiSprings`, `AmalfiFades`, `AmalfiCurves`, `AmalfiDelays`.
+- **Added:** `AmalfiSmoothBorder` and `smoothRectPath`: smooth (continuous) corners, smoothing
+  `AmalfiRadii.smoothing` (0.6) by default.
+- **Added:** `AmalfiTheme` / `AmalfiThemeData`: appearance (following `SilicaAppearance` by
+  default) and app palette, read with `AmalfiTheme.of(context)`.
+- **Added:** fonts Inter Medium (500) and Bold (700), JetBrains Mono Regular (OFL). Text in
+  weight 500 or 700 in the `Inter` family now uses the real weight instead of the nearest one.
+
 ## 0.38.0 · 2026-10-15
 
 Windows close at once from their close button (silica-desktop#192).
