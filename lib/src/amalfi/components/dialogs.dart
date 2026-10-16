@@ -3,4 +3,4 @@
 // Checklist: `docs/amalfi-checklist/dialogs.md`. Gallery: `example/lib/amalfi/pages/dialogs.dart`.
 // The widgets live under `dialogs/` and are exported from here.
 
-// Nothing yet.
+export 'dialogs/dialog.dart';

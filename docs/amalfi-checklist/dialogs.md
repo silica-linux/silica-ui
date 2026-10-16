@@ -6,21 +6,21 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Dialogs/Browser
 
-- [ ] Dialogs/Browser/Files/Rest/Dark
-- [ ] Dialogs/Browser/Files/Rest/Light
+- [x] Dialogs/Browser/Files/Rest/Dark
+- [x] Dialogs/Browser/Files/Rest/Light
 
 ## Dialogs/Dialog
 
-- [ ] Dialogs/Dialog/Generic/Rest/Dark
-- [ ] Dialogs/Dialog/Generic/Rest/Light
-- [ ] Dialogs/Dialog/Open Panel/Rest/Dark
-- [ ] Dialogs/Dialog/Open Panel/Rest/Light
-- [ ] Dialogs/Dialog/Save Panel/Rest/Dark
-- [ ] Dialogs/Dialog/Save Panel/Rest/Light
+- [x] Dialogs/Dialog/Generic/Rest/Dark
+- [x] Dialogs/Dialog/Generic/Rest/Light
+- [x] Dialogs/Dialog/Open Panel/Rest/Dark
+- [x] Dialogs/Dialog/Open Panel/Rest/Light
+- [x] Dialogs/Dialog/Save Panel/Rest/Dark
+- [x] Dialogs/Dialog/Save Panel/Rest/Light
 
 ## Dialogs/Footer
 
-- [ ] Dialogs/Footer/Open/Rest/Dark
-- [ ] Dialogs/Footer/Open/Rest/Light
-- [ ] Dialogs/Footer/Save/Rest/Dark
-- [ ] Dialogs/Footer/Save/Rest/Light
+- [x] Dialogs/Footer/Open/Rest/Dark
+- [x] Dialogs/Footer/Open/Rest/Light
+- [x] Dialogs/Footer/Save/Rest/Dark
+- [x] Dialogs/Footer/Save/Rest/Light
