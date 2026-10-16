@@ -21,32 +21,35 @@ const _sizes = [
   ('Large', AmalfiControlSize.large),
 ];
 
-/// A stand-in glyph (the Icon Kit lives in silica-icons): a character in the colour and size
-/// the segment gives it.
-class _Glyph extends StatelessWidget {
-  const _Glyph(this.char);
+/// An Icon Kit symbol from the installed silica-icons, or [fallback] (one of the built-in
+/// control glyphs) when it is missing. Size and colour come from the segment.
+Widget _symbol(String name, AmalfiGlyphData fallback) =>
+    AmalfiSymbol(name, fallback: AmalfiGlyph(fallback));
 
-  final String char;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = IconTheme.of(context);
-    final size = theme.size ?? 16;
-    return Text(
-      char,
-      textAlign: TextAlign.center,
-      style: AmalfiType.body(
-        color: theme.color,
-      ).copyWith(fontSize: size, height: 1),
-    );
-  }
-}
-
-const _actionGlyphs = {
-  2: ['‹', '›'],
-  3: ['↩', '⇇', '→'],
-  4: ['+', '#', '☆', '⚑'],
-  5: ['+', '#', '☆', '⚑', '↑'],
+/// The kit's glyphs of each action capsule (`Segments/Action/Icon n`).
+final _actionGlyphs = <int, List<Widget>>{
+  2: const [
+    AmalfiGlyph(AmalfiGlyphs.chevronLeft),
+    AmalfiGlyph(AmalfiGlyphs.chevronRight),
+  ],
+  3: [
+    _symbol('reply', AmalfiGlyphs.chevronLeft),
+    _symbol('reply-all', AmalfiGlyphs.chevronLeft),
+    _symbol('forward', AmalfiGlyphs.chevronRight),
+  ],
+  4: [
+    const AmalfiGlyph(AmalfiGlyphs.plus),
+    const AmalfiGlyph(AmalfiGlyphs.tag),
+    const AmalfiGlyph(AmalfiGlyphs.star),
+    _symbol('flag', AmalfiGlyphs.warning),
+  ],
+  5: [
+    const AmalfiGlyph(AmalfiGlyphs.plus),
+    const AmalfiGlyph(AmalfiGlyphs.tag),
+    const AmalfiGlyph(AmalfiGlyphs.star),
+    _symbol('flag', AmalfiGlyphs.warning),
+    const AmalfiGlyph(AmalfiGlyphs.share),
+  ],
 };
 
 const _texts = {
@@ -66,7 +69,7 @@ List<AmalfiSegment> _actionSegments(
             enabled: !(lastDisabled && i == count - 1),
           )
         : AmalfiSegment.icon(
-            _Glyph(_actionGlyphs[count]?[i] ?? '•'),
+            _actionGlyphs[count]?[i] ?? const AmalfiGlyph(AmalfiGlyphs.plus),
             semanticLabel: 'Action ${i + 1}',
             tooltip: 'Action ${i + 1}',
             enabled: !(lastDisabled && i == count - 1),
@@ -74,16 +77,19 @@ List<AmalfiSegment> _actionSegments(
 ];
 
 const _itemWords = ['One', 'Two', 'Three', 'Four', 'Five'];
-const _itemGlyphs = ['▤', '▦', '▧', '▨', '▩'];
+const _itemGlyphs = [
+  AmalfiGlyph(AmalfiGlyphs.sidebar),
+  AmalfiGlyph(AmalfiGlyphs.listBullet),
+  AmalfiGlyph(AmalfiGlyphs.squareGrid2x2),
+  AmalfiGlyph(AmalfiGlyphs.photo),
+  AmalfiGlyph(AmalfiGlyphs.doc),
+];
 
 List<AmalfiSegment> _items(int count, {required bool text}) => [
   for (var i = 0; i < count; i++)
     text
         ? AmalfiSegment.text(_itemWords[i])
-        : AmalfiSegment.icon(
-            _Glyph(_itemGlyphs[i]),
-            semanticLabel: _itemWords[i],
-          ),
+        : AmalfiSegment.icon(_itemGlyphs[i], semanticLabel: _itemWords[i]),
 ];
 
 class _SegmentedPage extends StatelessWidget {
@@ -103,10 +109,17 @@ class _SegmentedPage extends StatelessWidget {
       ])
         SpecimenSection(
           title: 'Action segments · ${variant.$1} ${variant.$2}',
-          note: 'Hover and press a segment. Disabled: the last segment.',
+          note:
+              'Hover and press a segment. Disabled: the whole capsule at 35 %; '
+              'Last disabled: one segment.',
           children: [
             for (final (name, size) in _sizes)
-              for (final state in ['Rest', 'Disabled', 'Inactive'])
+              for (final state in [
+                'Rest',
+                'Disabled',
+                'Last disabled',
+                'Inactive',
+              ])
                 Specimen(
                   label: '$name · $state',
                   child: AmalfiActionSegments(
@@ -115,9 +128,9 @@ class _SegmentedPage extends StatelessWidget {
                     segments: _actionSegments(
                       variant.$2,
                       text: variant.$1 == 'Text',
-                      lastDisabled: state == 'Disabled',
+                      lastDisabled: state == 'Last disabled',
                     ),
-                    onPressed: (_) {},
+                    onPressed: state == 'Disabled' ? null : (_) {},
                   ),
                 ),
           ],
@@ -134,8 +147,9 @@ class _SegmentedPage extends StatelessWidget {
                 'Control · ${selection == AmalfiSegmentedSelection.one ? 'One' : 'Any'} · '
                 '${text ? 'Text' : 'Icon'}',
             note: selection == AmalfiSegmentedSelection.one
-                ? 'Press and drag: the lens follows the pointer and chooses on release.'
-                : 'Each item turns on and off.',
+                ? 'Press and drag: the lens follows the pointer and chooses on release. '
+                      'Disabled: the selection stays, the control at 35 %.'
+                : 'Each item turns on and off (a flat press, no lens).',
             children: [
               for (final count in [2, 3, 4, 5])
                 for (final (name, size) in _sizes) ...[
@@ -173,7 +187,7 @@ class _SegmentedPage extends StatelessWidget {
                     segment: text
                         ? const AmalfiSegment.text('Item')
                         : const AmalfiSegment.icon(
-                            _Glyph('▤'),
+                            AmalfiGlyph(AmalfiGlyphs.sidebar),
                             semanticLabel: 'Sidebar',
                           ),
                     size: size,
@@ -203,13 +217,17 @@ class _AlignGroupState extends State<_AlignGroup> {
     size: AmalfiControlSize.small,
     selected: {_selected},
     segments: [
-      for (final (glyph, name) in [
-        ('⇤', 'Left'),
-        ('↔', 'Centre'),
-        ('⇥', 'Right'),
-        ('☰', 'Justify'),
+      for (final (symbol, name) in [
+        ('text-align-left', 'Left'),
+        ('text-align-center', 'Centre'),
+        ('text-align-right', 'Right'),
+        ('text-justify', 'Justify'),
       ])
-        AmalfiSegment.icon(_Glyph(glyph), semanticLabel: name, tooltip: name),
+        AmalfiSegment.icon(
+          _symbol(symbol, AmalfiGlyphs.listBullet),
+          semanticLabel: name,
+          tooltip: name,
+        ),
     ],
     onPressed: (i) => setState(() => _selected = i),
   );
@@ -239,9 +257,9 @@ class _LiveControlState extends State<_LiveControl> {
 
   @override
   Widget build(BuildContext context) => Padding(
-    // Room for the lens above and below.
+    // Room for the lens above and below (12 beyond the items, 4 inside the track).
     padding: const EdgeInsets.symmetric(
-      vertical: AmalfiSegmentMetrics.lensOutset,
+      vertical: AmalfiLens.rise - AmalfiSegmentMetrics.trackPadding,
     ),
     child: AmalfiSegmentedControl(
       segments: _items(widget.count, text: widget.text),

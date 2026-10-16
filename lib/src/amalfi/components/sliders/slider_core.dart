@@ -315,17 +315,22 @@ abstract class AmalfiSliderBaseState<T extends AmalfiSliderBase>
         shortcuts: shortcuts(rtl: rtl),
         actions: _actions,
         onShowFocusHighlight: (v) => _set(WidgetState.focused, v),
-        onShowHoverHighlight: (v) => _set(WidgetState.hovered, v && enabled),
-        child: ExcludeSemantics(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onPanDown: enabled ? (d) => handleDown(d.localPosition) : null,
-            onPanUpdate: enabled
-                ? (d) => handleDragUpdate(d.localPosition)
-                : null,
-            onPanEnd: enabled ? (_) => handleUp() : null,
-            onPanCancel: enabled ? handleUp : null,
-            child: face,
+        // Hover follows the pointer itself, whatever the focus highlight mode (the
+        // detector's hover highlight waits for a mouse press after a touch).
+        child: MouseRegion(
+          onEnter: enabled ? (_) => _set(WidgetState.hovered, true) : null,
+          onExit: (_) => _set(WidgetState.hovered, false),
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onPanDown: enabled ? (d) => handleDown(d.localPosition) : null,
+              onPanUpdate: enabled
+                  ? (d) => handleDragUpdate(d.localPosition)
+                  : null,
+              onPanEnd: enabled ? (_) => handleUp() : null,
+              onPanCancel: enabled ? handleUp : null,
+              child: face,
+            ),
           ),
         ),
       ),

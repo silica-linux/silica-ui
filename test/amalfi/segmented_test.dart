@@ -2,7 +2,8 @@
 // Checklist: docs/amalfi-checklist/segmented.md.
 //
 // Icon Kit glyphs live in silica-icons, not in this repo: the segments get stand-in glyphs
-// and the pixel tests mask the glyph boxes (their frames are still checked).
+// and the pixel tests mask the glyph boxes (their frames are still checked, at the sizes'
+// icon sizes 12 / 14 / 16 / 16).
 
 import 'dart:io';
 
@@ -39,11 +40,15 @@ const Widget glyph = SizedBox.expand();
 
 Finder byKey(String key) => find.byKey(ValueKey(key));
 
-/// The deviation of every lens: the kit's lens blur is Sketch's `Glass` type, drawn here as
-/// the 2 pt backdrop blur of Glass/Clear (`materials.md`).
-const lensBlur = {
+/// The deviations of every lens: the kit's lens blur is Sketch's `Glass` type, drawn here as
+/// the 2 pt backdrop blur of Glass/Clear (`materials.md`); the lens rule (`AmalfiLens`, user
+/// decision 2026-10-16) takes a radius of half the height minus 1, the kit half the height.
+const lensDeviations = {
   'Lens#blurs':
       'kit Glass/Clear blur is a Sketch "Glass" blur; drawn as the 2 pt background blur',
+  'Lens#corners':
+      'kit lens radius is half its height; the lens rule takes half its height minus 1 '
+      '(user decision 2026-10-16)',
 };
 
 /// Capsules of glass: the rim and the blurred backdrop at the smooth ends antialias a little
@@ -159,22 +164,16 @@ Case actionCase(KitMaster master, List<String> parts) {
   final segments = [
     for (var i = 0; i < count; i++)
       text
-          ? AmalfiSegment.text(
-              labels[i],
-              enabled: !(state == 'Disabled' && i == count - 1),
-            )
-          : AmalfiSegment.icon(
-              glyph,
-              semanticLabel: 'Glyph ${i + 1}',
-              enabled: !(state == 'Disabled' && i == count - 1),
-            ),
+          ? AmalfiSegment.text(labels[i])
+          : AmalfiSegment.icon(glyph, semanticLabel: 'Glyph ${i + 1}'),
   ];
+  // Disabled: the whole capsule (at 35 %).
   final widget = AmalfiActionSegments(
     segments: segments,
     size: size,
     selected: selected,
     active: state != 'Inactive',
-    onPressed: (_) {},
+    onPressed: state == 'Disabled' ? null : (_) {},
   );
   final layers = <String, Finder>{'Glass': find.byType(AmalfiGlass)};
   for (var i = 1; i < count; i++) {
@@ -238,8 +237,6 @@ Case controlCase(KitMaster master, List<String> parts) {
           false)
         i,
   };
-  // Kit defect: a disabled control drops its selection; it is kept here.
-  if (state == 'Disabled' && selected.isEmpty) selected.add(0);
   final control = AmalfiSegmentedControl(
     segments: [
       for (var i = 0; i < count; i++)
@@ -257,7 +254,12 @@ Case controlCase(KitMaster master, List<String> parts) {
   final pressed = state == 'Pressed';
   final widget = pressed
       ? Padding(
-          padding: const EdgeInsets.all(AmalfiSegmentMetrics.lensOutset),
+          // Room for the lens: 8 beside the item, 12 above and below it (the items sit 4
+          // inside the track).
+          padding: const EdgeInsets.symmetric(
+            horizontal: AmalfiLens.outset,
+            vertical: AmalfiLens.rise - AmalfiSegmentMetrics.trackPadding,
+          ),
           child: control,
         )
       : control;
@@ -281,10 +283,8 @@ Case controlCase(KitMaster master, List<String> parts) {
   return Case(
     widget: widget,
     layers: layers,
-    deviations: pressed ? lensBlur : const {},
-    // The kept selection of a disabled control is not in the kit.
+    deviations: pressed ? lensDeviations : const {},
     maskLayers: [
-      if (state == 'Disabled') 'Segment 1',
       // The kit renders Sketch's "Glass" effect as a whitish frosted body; Glass/Clear has no
       // tint (`materials.md`): the lens is compared by its geometry only.
       if (pressed) 'Lens',
@@ -293,9 +293,8 @@ Case controlCase(KitMaster master, List<String> parts) {
     prepare: pressed
         ? (tester) => press(tester, byKey('amalfi-segmented-item-1'))
         : null,
-    // The lens magnifies the label under it; the kit's is drawn at its size. The kit's Mini
-    // labels are left-aligned (a defect: centred here).
-    withText: !pressed && size != AmalfiControlSize.mini,
+    // The lens magnifies the label under it; the kit's is drawn at its size.
+    withText: !pressed,
   );
 }
 
@@ -322,8 +321,8 @@ Case itemCase(KitMaster master, List<String> parts) {
     },
     maskLayers: [if (!text) 'Glyph Sidebar'],
     tolerance: itemTolerance,
-    // The label is most of the master; the Mini label is left-aligned in the kit (a defect:
-    // it is centred here).
+    // The label is most of the master: CoreText's text weighs a mean of 3–6 over it, beyond
+    // the text tolerance (measured); the label is checked by geometry and in the controls.
     withText: false,
   );
 }

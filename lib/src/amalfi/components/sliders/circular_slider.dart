@@ -1,12 +1,14 @@
 // The circular slider (kit `Sliders/Circular/Dial`): a 56 pt dial with a 4 pt
 // `Surface/Sunken` ring, the value drawn as an `Accent/Amalfi` arc from the top clockwise
-// (`Text/Tertiary` when disabled), and the round thumb on the ring at the value.
+// and the round thumb on the ring at the value. Disabled: the whole dial at 35 %
+// (`AmalfiStates.disabledOpacity`, user decision 2026-10-16).
 
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
 import '../../theme.dart';
+import '../../tokens.g.dart';
 import 'arc.dart';
 import 'lens.dart';
 import 'slider_core.dart';
@@ -78,7 +80,9 @@ class _AmalfiCircularSliderState
   @override
   Widget build(BuildContext context) {
     final rtl = Directionality.maybeOf(context) == TextDirection.rtl;
-    return interactive(face: _face(context), rtl: rtl);
+    final dial = interactive(face: _face(context), rtl: rtl);
+    if (widget.enabled) return dial;
+    return Opacity(opacity: AmalfiStates.disabledOpacity, child: dial);
   }
 
   Widget _face(BuildContext context) {
@@ -120,7 +124,7 @@ class _AmalfiCircularSliderState
         rect: ringRect,
         child: CustomPaint(
           painter: AmalfiArcPainter(
-            color: widget.enabled ? colors.accentAmalfi : colors.textTertiary,
+            color: colors.accentAmalfi,
             width: AmalfiSliderMetrics.track,
             sweep: f,
             roundCaps: true,
@@ -137,7 +141,10 @@ class _AmalfiCircularSliderState
           if (!states.contains(WidgetState.dragged))
             Positioned.fromRect(
               rect: thumb,
-              child: AmalfiSliderThumb(states: states),
+              // Disabled, the whole dial dims: the thumb rests.
+              child: AmalfiSliderThumb(
+                states: widget.enabled ? states : const {},
+              ),
             ),
           if (showsLens)
             Positioned.fromRect(

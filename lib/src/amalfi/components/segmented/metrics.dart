@@ -1,6 +1,7 @@
 // The measures of the segmented controls, per size, from the kit masters `Segments/*`
-// (silica-design ec113fd). Every size is a control height of the one Amalfi scale
-// ([AmalfiControlSize]: 20 / 24 / 28 / 32).
+// (silica-design 747ea80). Every size is a control height of the one Amalfi scale
+// ([AmalfiControlSize]: 20 / 24 / 28 / 32), with its glyph size (12 / 14 / 16 / 16, user
+// decision 2026-10-16). The lens of a pressed control follows the lens rule ([AmalfiLens]).
 
 import 'package:flutter/widgets.dart';
 
@@ -12,11 +13,6 @@ abstract final class AmalfiSegmentMetrics {
   /// Between the track of a segmented control and its items, on every side
   /// (`Segments/Control/*`: the items sit 4 inside the track).
   static const double trackPadding = 4;
-
-  /// How far the lens of a pressed segmented control reaches beyond the pressed item
-  /// sideways and beyond the track above and below (`Segments/Control/*/Pressed`: an 88 × 44
-  /// lens over a 72 × 20 item of a 28 pt track).
-  static const double lensOutset = 8;
 
   /// The space on each side of the widest label of a text item, before the item is wider than
   /// the kit's ([AmalfiSegmentSizeMetrics.textItemWidth]).
@@ -35,11 +31,9 @@ final class AmalfiSegmentSizeMetrics {
   const AmalfiSegmentSizeMetrics._({
     required this.size,
     required this.textSegmentWidth,
-    required this.glyph,
     required this.separatorHeight,
     required this.hoverInset,
     required this.textItemWidth,
-    required this.itemGlyph,
   });
 
   /// The size these measures are for.
@@ -57,8 +51,8 @@ final class AmalfiSegmentSizeMetrics {
   /// label needs it.
   final double textSegmentWidth;
 
-  /// The glyph of an action segment (12 on Mini, 16 from Small up).
-  final double glyph;
+  /// The glyph of an action segment: the size's icon size (12 / 14 / 16 / 16).
+  double get glyph => size.iconSize;
 
   /// The height of a separator between two action segments, centred.
   final double separatorHeight;
@@ -93,8 +87,8 @@ final class AmalfiSegmentSizeMetrics {
   /// The least width of a text item: wider only when the widest label needs it.
   final double textItemWidth;
 
-  /// The glyph of an icon item (12 on Mini and Small, 16 from Regular up).
-  final double itemGlyph;
+  /// The glyph of an icon item: the size's icon size (12 / 14 / 16 / 16).
+  double get itemGlyph => size.iconSize;
 
   /// The label style of a text item: Caption on Mini, Label on Small, Body from Regular.
   TextStyle itemLabelStyle({Color? color}) =>
@@ -118,40 +112,32 @@ final class AmalfiSegmentSizeMetrics {
   static const AmalfiSegmentSizeMetrics mini = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.mini,
     textSegmentWidth: 40,
-    glyph: 12,
     separatorHeight: 12,
     hoverInset: 0,
     textItemWidth: 44,
-    itemGlyph: 12,
   );
 
   static const AmalfiSegmentSizeMetrics small = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.small,
     textSegmentWidth: 44,
-    glyph: 16,
     separatorHeight: 12,
     hoverInset: 0,
     textItemWidth: 56,
-    itemGlyph: 12,
   );
 
   static const AmalfiSegmentSizeMetrics regular = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.regular,
     textSegmentWidth: 52,
-    glyph: 16,
     separatorHeight: 16,
     hoverInset: 4,
     textItemWidth: 72,
-    itemGlyph: 16,
   );
 
   static const AmalfiSegmentSizeMetrics large = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.large,
     textSegmentWidth: 56,
-    glyph: 16,
     separatorHeight: 16,
     hoverInset: 4,
     textItemWidth: 88,
-    itemGlyph: 16,
   );
 }

@@ -1,10 +1,9 @@
 // The linear slider (kit `Sliders/Horizontal/Plain|Ticks|Glyphs|Dragging`,
 // `Sliders/Vertical/Plain`): a 4 pt `Surface/Sunken` track with a `Line/Separator` rim, the
-// part up to the value filled with `Accent/Amalfi` (`Text/Tertiary` when disabled), and the
-// round thumb; optional tick marks under the track and glyphs at the ends. While the thumb is
-// dragged it becomes a Glass/Clear lens (`materials.md`).
-
-import 'dart:ui' show lerpDouble;
+// part up to the value filled with `Accent/Amalfi`, and the round thumb; optional tick marks
+// under the track (2 × 8, under the thumb's stops) and glyphs at the ends. While the thumb is
+// dragged it becomes a Glass/Clear lens (`materials.md`). Disabled: the whole slider, glyphs
+// included, at 35 % (`AmalfiStates.disabledOpacity`, user decision 2026-10-16).
 
 import 'package:flutter/widgets.dart';
 
@@ -25,7 +24,7 @@ import 'thumb.dart';
 /// runs from right to left.
 ///
 /// [minimumGlyph] and [maximumGlyph] go 8 before and after a horizontal slider, in 16 pt
-/// boxes, coloured through [IconTheme] (`Text/Secondary`, `Text/Tertiary` when disabled).
+/// boxes, coloured `Text/Secondary` through [IconTheme].
 class AmalfiSlider extends AmalfiSliderBase {
   const AmalfiSlider({
     super.key,
@@ -128,19 +127,18 @@ class _Layout {
       ),
   ];
 
-  /// The lens around the thumb, [growth] of the way from the thumb's size to the lens's.
+  /// The lens around the thumb, [growth] of the way from the thumb to the full lens
+  /// ([AmalfiSliderMetrics.lens], the lens rule around the thumb's stretch of the track).
   Rect lens(double growth) {
     final full = AmalfiSliderMetrics.lens;
-    final dx = (horizontal ? full.width : full.height) - _thumb;
-    final dy = (horizontal ? full.height : full.width) - _thumb;
+    final size = horizontal ? full : full.flipped;
     final r = thumb;
-    return _whole(
-      Rect.fromCenter(
-        center: r.center,
-        width: r.width + (lerpDouble(0, horizontal ? dx : dy, growth) ?? 0),
-        height: r.height + (lerpDouble(0, horizontal ? dy : dx, growth) ?? 0),
-      ),
+    final to = Rect.fromCenter(
+      center: r.center,
+      width: size.width,
+      height: size.height,
     );
+    return _whole(Rect.lerp(r, to, growth) ?? to);
   }
 
   /// The fraction under the thumb centre [p].
@@ -198,33 +196,39 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
         return interactive(face: _face(context, layout), rtl: rtl);
       },
     );
-    if (!hasGlyphs) return slider;
+    if (!hasGlyphs) return _dimmed(slider);
     final colors = AmalfiTheme.of(context).colors;
     Widget glyph(Widget? child) => IconTheme(
       data: IconThemeData(
         size: AmalfiSliderMetrics.glyph,
-        color: widget.enabled ? colors.textSecondary : colors.textTertiary,
+        color: colors.textSecondary,
       ),
       child: SizedBox.square(
         dimension: AmalfiSliderMetrics.glyph,
         child: child,
       ),
     );
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        glyph(widget.minimumGlyph),
-        const SizedBox(width: AmalfiSliderMetrics.glyphGap),
-        Flexible(child: slider),
-        const SizedBox(width: AmalfiSliderMetrics.glyphGap),
-        glyph(widget.maximumGlyph),
-      ],
+    return _dimmed(
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          glyph(widget.minimumGlyph),
+          const SizedBox(width: AmalfiSliderMetrics.glyphGap),
+          Flexible(child: slider),
+          const SizedBox(width: AmalfiSliderMetrics.glyphGap),
+          glyph(widget.maximumGlyph),
+        ],
+      ),
     );
   }
 
+  /// [child] at 35 % when the slider is disabled.
+  Widget _dimmed(Widget child) => widget.enabled
+      ? child
+      : Opacity(opacity: AmalfiStates.disabledOpacity, child: child);
+
   /// The track, the fill and the ticks, in a box of the slider's size.
   List<Widget> _bed(AmalfiColors colors, _Layout layout) {
-    final enabled = widget.enabled;
     return [
       Positioned.fromRect(
         rect: layout.track,
@@ -245,7 +249,7 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
         rect: layout.fill,
         child: DecoratedBox(
           decoration: AmalfiShapeDecoration(
-            color: enabled ? colors.accentAmalfi : colors.textTertiary,
+            color: colors.accentAmalfi,
             shape: const AmalfiSmoothBorder(
               radius: AmalfiSliderMetrics.track / 2,
             ),
@@ -275,7 +279,10 @@ class _AmalfiSliderState extends AmalfiSliderBaseState<AmalfiSlider> {
           if (!dragged)
             Positioned.fromRect(
               rect: layout.thumb,
-              child: AmalfiSliderThumb(states: states),
+              // Disabled, the whole slider dims: the thumb rests.
+              child: AmalfiSliderThumb(
+                states: widget.enabled ? states : const {},
+              ),
             ),
           if (showsLens)
             Positioned.fromRect(

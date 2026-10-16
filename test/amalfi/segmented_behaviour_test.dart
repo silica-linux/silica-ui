@@ -110,7 +110,7 @@ void main() {
       expect(pressed, [0]);
     });
 
-    testWidgets('a disabled segment does not fire and is tertiary', (
+    testWidgets('a disabled segment does not fire and is dimmed to 35 %', (
       tester,
     ) async {
       final pressed = <int>[];
@@ -119,7 +119,38 @@ void main() {
       expect(pressed, isEmpty);
       final colors = AmalfiColors.light;
       expect(ProbeGlyph.colors['g0'], colors.textPrimary);
-      expect(ProbeGlyph.colors['g2'], colors.textTertiary);
+      expect(ProbeGlyph.colors['g2'], colors.textPrimary);
+      double opacityOf(String key) => tester
+          .widgetList<Opacity>(
+            find.ancestor(of: byKey(key), matching: find.byType(Opacity)),
+          )
+          .fold(1.0, (o, w) => o * w.opacity);
+      expect(opacityOf('amalfi-segment-glyph-0'), 1);
+      expect(opacityOf('amalfi-segment-glyph-2'), AmalfiStates.disabledOpacity);
+    });
+
+    testWidgets('a disabled capsule dims as a whole and does not fire', (
+      tester,
+    ) async {
+      await pumpKitScene(
+        tester,
+        const AmalfiActionSegments(
+          segments: [
+            AmalfiSegment.text('Back'),
+            AmalfiSegment.text('Next', enabled: false),
+          ],
+        ),
+      );
+      final opacities = tester
+          .widgetList<Opacity>(
+            find.ancestor(
+              of: byKey('amalfi-segment-label-1'),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .map((o) => o.opacity);
+      // Once, not again for the disabled segment.
+      expect(opacities, [AmalfiStates.disabledOpacity]);
     });
 
     testWidgets('selected glyphs are accent, inactive windows tertiary', (
@@ -377,6 +408,72 @@ void main() {
       expect(changes, [
         {1},
       ]);
+    });
+
+    testWidgets('select any: no lens, a flat pressed item toggled on release', (
+      tester,
+    ) async {
+      final changes = <Set<int>>[];
+      await pumpKitScene(
+        tester,
+        selectOne(changes, selection: AmalfiSegmentedSelection.any),
+      );
+      final item1 = tester.getCenter(byKey('amalfi-segmented-item-1'));
+      final gesture = await tester.startGesture(item1);
+      await settle(tester);
+      expect(find.byType(AmalfiSegmentLens), findsNothing);
+      AmalfiSegmentItem item(int i) =>
+          tester.widget<AmalfiSegmentItem>(byKey('amalfi-segmented-item-$i'));
+      expect(item(1).pressed, isTrue);
+      // Off the item: not pressed; released there, nothing changes.
+      await gesture.moveTo(tester.getCenter(byKey('amalfi-segmented-item-2')));
+      await tester.pump();
+      expect(item(1).pressed, isFalse);
+      await gesture.up();
+      await tester.pump();
+      expect(changes, isEmpty);
+      await tester.tapAt(item1);
+      await tester.pump();
+      expect(changes, [
+        {0, 1},
+      ]);
+      expect(item(1).pressed, isFalse);
+    });
+
+    testWidgets('disabled: the selection stays, the control at 35 %', (
+      tester,
+    ) async {
+      await pumpKitScene(
+        tester,
+        const AmalfiSegmentedControl(
+          segments: [
+            AmalfiSegment.text('One'),
+            AmalfiSegment.text('Two', enabled: false),
+          ],
+          selected: {0},
+        ),
+      );
+      expect(find.byKey(const ValueKey('amalfi-segmented-thumb')), findsOne);
+      final opacities = tester
+          .widgetList<Opacity>(
+            find.ancestor(
+              of: byKey('amalfi-segmented-item-1'),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .map((o) => o.opacity);
+      expect(opacities, [AmalfiStates.disabledOpacity]);
+      expect(
+        tester
+            .widgetList<Opacity>(
+              find.descendant(
+                of: byKey('amalfi-segmented-item-1'),
+                matching: find.byType(Opacity),
+              ),
+            )
+            .isEmpty,
+        isTrue,
+      );
     });
 
     testWidgets('disabled: no change, no lens', (tester) async {

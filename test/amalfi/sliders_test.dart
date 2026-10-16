@@ -14,10 +14,11 @@ import 'support/harness.dart';
 const String lensBlur =
     'kit lens blur is a Glass blur, drawn as a 2 pt backdrop blur';
 
-/// The kit snaps the tick marks to the 4 pt grid, up to 2 pt off the thumb's stops; the
-/// ticks sit under the stops, on whole points.
-const String tickGrid =
-    'kit ticks on the 4 pt grid, ours under the thumb stops';
+/// The lens rule (user decision 2026-10-16, `AmalfiLens`): the lens's radius is half its
+/// height minus 1; the kit rounds it to half its height.
+const String lensRadius =
+    'kit lens radius is half its height; the lens rule takes half its height minus 1 '
+    '(user decision 2026-10-16)';
 
 /// A 20 pt disc is mostly edge: Sketch antialiases the circle's outline differently (up to
 /// 69 on single edge pixels), which lifts the mean over the default.
@@ -134,25 +135,14 @@ Future<void> focusWithKeyboard(WidgetTester tester, Finder target) async {
 /// and the track's ends differently (up to 76 on single edge pixels).
 const KitPixelTolerance sliderTolerance = KitPixelTolerance(mean: 1.5, max: 80);
 
+/// The dial: the kit's value arc is now concentric with the ring (silica-design 747ea80) and
+/// compared by pixels, but Sketch draws it as a Bézier path that sits a fraction of a point
+/// inside the circle near the bottom: one outer-edge pixel next to the thumb measures 87.
+const KitPixelTolerance dialTolerance = KitPixelTolerance(mean: 1.5, max: 88);
+
 /// The lens: Sketch draws Clear's refraction (distortion, chromatic aberration, specular
 /// highlight), which AmalfiGlass does not.
 const KitPixelTolerance lensTolerance = KitPixelTolerance(mean: 10, max: 212);
-
-/// The quarters of [ring] (stroke [stroke]) an arc from the top over [sweep] of a turn
-/// passes through, with its round ends.
-List<Rect> arcMask(Rect ring, double stroke, double sweep) {
-  final c = ring.center;
-  final quarters = [
-    Rect.fromLTRB(c.dx, ring.top, ring.right, c.dy),
-    Rect.fromLTRB(c.dx, c.dy, ring.right, ring.bottom),
-    Rect.fromLTRB(ring.left, c.dy, c.dx, ring.bottom),
-    Rect.fromLTRB(ring.left, ring.top, c.dx, c.dy),
-  ];
-  return [
-    for (var i = 0; i < 4 && i < (sweep * 4).ceil(); i++)
-      quarters[i].inflate(stroke),
-  ];
-}
 
 void main() {
   setUpAll(loadAmalfiFonts);
@@ -223,7 +213,7 @@ void main() {
               'Lens': find.byType(AmalfiGlass),
               'Core': decoratedIn(find.byType(AmalfiSliderThumb), 0),
             },
-            deviations: {'Lens#blurs': lensBlur},
+            deviations: {'Lens#blurs': lensBlur, 'Lens#corners': lensRadius},
           );
           await expectKitPixels(tester, master, lens, tolerance: lensTolerance);
         });
@@ -299,10 +289,6 @@ void main() {
                           )
                           .at(i),
                 },
-                deviations: {
-                  if (ticks)
-                    for (final i in [0, 2, 4, 6, 8, 10]) 'Tick $i': tickGrid,
-                },
               );
             }
             await mouse.release();
@@ -311,10 +297,6 @@ void main() {
               master,
               scene,
               tolerance: sliderTolerance,
-              // The ticks are compared by geometry (some sit 2 pt off the kit's).
-              mask: [
-                if (variant == 'Ticks') const Rect.fromLTWH(0, 20, 200, 8),
-              ],
               maskLayers: [
                 if (variant == 'Glyphs') ...['Minimum glyph', 'Maximum glyph'],
               ],
@@ -358,10 +340,6 @@ void main() {
             'Track': decoratedIn(sliders, 0),
             'Fill': decoratedIn(sliders, 1),
             'Lens thumb': find.byType(AmalfiSliderLens),
-          },
-          deviations: {
-            // Hidden under the core: the kit ends the fill at 116 here, at 120 at rest.
-            'Fill': 'kit fill ends 4 pt short of the value while dragging',
           },
         );
         await mouse.release();
@@ -408,10 +386,6 @@ void main() {
               'Track': decoratedIn(sliders, 0),
               'Fill': decoratedIn(sliders, 1),
               'Thumb': find.byType(AmalfiSliderThumb),
-            },
-            deviations: {
-              // Hidden under the thumb.
-              'Fill': 'kit fill 92 tall for 60 % of 160; ours 96',
             },
           );
           await mouse.release();
@@ -466,12 +440,8 @@ void main() {
             tester,
             master,
             scene,
-            tolerance: sliderTolerance,
+            tolerance: dialTolerance,
             origin: Offset.zero,
-            // Kit defect: the value arc is a hand-drawn path, not concentric with the ring
-            // (up to 2 pt off on the right): compared by geometry, the rest by pixels.
-            maskLayers: const ['Progress'],
-            mask: arcMask(const Rect.fromLTWH(6, 6, 44, 44), 4, 0.625),
             prepare: (tester) =>
                 bringTo(tester, mouse, state, find.byType(AmalfiSliderThumb)),
           );

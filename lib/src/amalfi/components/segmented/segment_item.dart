@@ -2,9 +2,10 @@
 // capsule as tall as the track minus its padding, holding a label or a glyph.
 //
 // Rest: no fill. Hover: `Line/Separator`. Selected: `Surface/Control` with a 1 pt
-// `Line/Border` inside and the level 1 shadow. Disabled: content in `Text/Tertiary`.
-// Labels: Caption (Mini), Label (Small), Body (Regular, Large), centred; glyphs 12 (Mini,
-// Small) or 16 (Regular, Large), centred.
+// `Line/Border` inside and the level 1 shadow. Disabled: the whole item at 35 %
+// (`AmalfiStates.disabledOpacity`, user decision 2026-10-16), content in `Text/Primary`.
+// Labels: Caption (Mini), Label (Small), Body (Regular, Large), centred; glyphs of the size's
+// icon size (12 / 14 / 16 / 16), centred.
 
 import 'package:flutter/widgets.dart';
 
@@ -27,6 +28,7 @@ class AmalfiSegmentItem extends StatelessWidget {
     this.size = AmalfiControlSize.regular,
     this.selected = false,
     this.hovered = false,
+    this.pressed = false,
     this.enabled = true,
     this.showSelection = true,
     this.width,
@@ -42,8 +44,12 @@ class AmalfiSegmentItem extends StatelessWidget {
   /// Whether the pointer is on it (only drawn when not [selected]).
   final bool hovered;
 
-  /// Whether it can be chosen; false draws the content in `Text/Tertiary`. The segment's own
-  /// [AmalfiSegment.enabled] also counts.
+  /// Whether the pointer is down on it (a select-any control, which has no lens): a flat
+  /// `Line/Border` capsule, or `Surface/Control Pressed` on a drawn selection.
+  final bool pressed;
+
+  /// Whether it can be chosen; false draws the whole item at 35 %
+  /// ([AmalfiStates.disabledOpacity]). The segment's own [AmalfiSegment.enabled] also counts.
   final bool enabled;
 
   /// Whether a [selected] item draws its own selection capsule; a select-one control draws
@@ -75,9 +81,12 @@ class AmalfiSegmentItem extends StatelessWidget {
   /// level 1 shadow).
   static ShapeDecoration selectionDecoration(
     AmalfiThemeData theme,
-    double height,
-  ) => AmalfiShapeDecoration(
-    color: theme.colors.surfaceControl,
+    double height, {
+    bool pressed = false,
+  }) => AmalfiShapeDecoration(
+    color: pressed
+        ? theme.colors.surfaceControlPressed
+        : theme.colors.surfaceControl,
     shape: AmalfiSmoothBorder(
       radius: height / 2,
       side: BorderSide(
@@ -96,11 +105,16 @@ class AmalfiSegmentItem extends StatelessWidget {
     final h = m.itemHeight;
     final w = width ?? preferredWidth(context, segment, size);
     final on = enabled && segment.enabled;
-    final color = on ? colors.textPrimary : colors.textTertiary;
+    final color = colors.textPrimary;
+    final down = pressed && on;
     final decoration = selected && showSelection
-        ? selectionDecoration(theme, h)
+        ? selectionDecoration(theme, h, pressed: down)
         : AmalfiShapeDecoration(
-            color: hovered && on && !selected ? colors.lineSeparator : null,
+            color: down && !selected
+                ? colors.lineBorder
+                : hovered && on && !selected
+                ? colors.lineSeparator
+                : null,
             shape: AmalfiSmoothBorder(radius: h / 2),
           );
 
@@ -135,7 +149,7 @@ class AmalfiSegmentItem extends StatelessWidget {
       );
     }
 
-    return SizedBox(
+    final item = SizedBox(
       width: w,
       height: h,
       child: Stack(
@@ -159,5 +173,7 @@ class AmalfiSegmentItem extends StatelessWidget {
         ],
       ),
     );
+    if (on) return item;
+    return Opacity(opacity: AmalfiStates.disabledOpacity, child: item);
   }
 }

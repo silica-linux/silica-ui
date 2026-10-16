@@ -4,10 +4,12 @@
 //
 // Selection: a `Surface/Control` capsule under the chosen item; with select one it slides to
 // the new item with `spring.morph` (`motion.md`, segmented control). Hover: `Line/Separator`
-// on the item under the pointer. Disabled: content in `Text/Tertiary` (the kit also drops the
-// selection capsule; it is kept here, so the choice stays readable).
+// on the item under the pointer. Disabled: the whole control at 35 %
+// (`AmalfiStates.disabledOpacity`), the selection kept visible (user decisions 2026-10-16).
 //
-// Pressed: the lens (`lens.dart`). Pointer down on an enabled item grows a Glass/Clear capsule
+// Pressed: the lens (`lens.dart`, the lens rule of [AmalfiLens]); only select-one controls
+// grow it (action segments keep a flat pressed highlight). Pointer down on an enabled item
+// grows a Glass/Clear capsule
 // over it with `spring.snappy`; while the pointer drags, the lens follows it 1:1 along the
 // track; on release over the control the item under the lens is chosen, the lens slides onto
 // it with `spring.morph` and fades out with `fade.quick`. Releasing outside cancels. The kit
@@ -46,9 +48,12 @@ enum AmalfiSegmentedSelection {
 /// [selected] holds the chosen indices; [onChanged] receives the new set when the user changes
 /// it (with select one, always a single index), and null disables the control. Text items
 /// share one width: the kit's for [size], or the widest label's plus
-/// [AmalfiSegmentMetrics.textItemPadding] on each side. While pressed, a lens of Glass/Clear
-/// grows over the item and follows the pointer (`materials.md`, lens rule); it reaches
-/// [AmalfiSegmentMetrics.lensOutset] beyond the control, outside its layout bounds.
+/// [AmalfiSegmentMetrics.textItemPadding] on each side. While pressed, a select-one control
+/// grows a lens of Glass/Clear over the item and follows the pointer (`materials.md`, lens rule, [AmalfiLens]); it
+/// reaches [AmalfiLens.outset] beyond the item on each side and [AmalfiLens.rise] above and
+/// below it, outside the control's layout bounds; a select-any control draws the pressed item
+/// flat instead (`Line/Border`) and toggles it on release over it. A disabled control ([onChanged] null) is
+/// drawn at 35 % ([AmalfiStates.disabledOpacity]) with its selection.
 ///
 /// Keyboard: with select one the arrows choose the next or previous enabled item; with select
 /// any they move the focus and Space or Enter toggles the focused item.
@@ -116,6 +121,10 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
   int? _thumbIndex;
 
   int? _pointer;
+
+  /// The item pressed in a select-any control (no lens), while the pointer stays on it.
+  int? _pressedItem;
+  bool _pressedInside = false;
   double _grab = 0;
   int? _hovered;
   bool _focused = false;
@@ -171,6 +180,11 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
     final n = widget.segments.length;
     if (_focusIndex >= n) _focusIndex = 0;
     if (_hovered case final h? when h >= n) _hovered = null;
+    if (_pressedItem case final p?
+        when p >= n || widget.selection != AmalfiSegmentedSelection.any) {
+      _pressedItem = null;
+      _pointer = null;
+    }
     final next = _single(widget.selected);
     if (next != _thumbIndex) {
       final from = _thumbRect();
@@ -252,6 +266,14 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
     if (i == null || !_canChoose(i)) return;
     _pointer = e.pointer;
     _focusIndex = i;
+    if (widget.selection == AmalfiSegmentedSelection.any) {
+      // Select any has no lens: a flat pressed item, toggled on release over it.
+      setState(() {
+        _pressedItem = i;
+        _pressedInside = true;
+      });
+      return;
+    }
     final centre = _items[i].center.dx;
     _grab = centre - e.localPosition.dx;
     _lensX.stop();
@@ -278,6 +300,11 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
   void _move(PointerMoveEvent e) {
     if (!mounted) return;
     if (e.pointer != _pointer) return;
+    if (_pressedItem case final p?) {
+      final inside = _indexAt(e.localPosition) == p;
+      if (inside != _pressedInside) setState(() => _pressedInside = inside);
+      return;
+    }
     _lensX.value = _clampX(e.localPosition.dx + _grab);
   }
 
@@ -285,6 +312,11 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
     if (!mounted) return;
     if (e.pointer != _pointer) return;
     _pointer = null;
+    if (_pressedItem case final p?) {
+      setState(() => _pressedItem = null);
+      if (_indexAt(e.localPosition) == p) _choose(p);
+      return;
+    }
     final inside = _indexAt(e.localPosition) != null;
     final target = inside ? _indexAtX(_lensX.value) : null;
     if (target != null && _canChoose(target)) {
@@ -300,6 +332,10 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
     if (!mounted) return;
     if (e.pointer != _pointer) return;
     _pointer = null;
+    if (_pressedItem != null) {
+      setState(() => _pressedItem = null);
+      return;
+    }
     _settle(null);
   }
 
@@ -432,8 +468,6 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
       final under = _indexAtX(lensCentre) ?? 0;
       final rect = amalfiSegmentLensRect(
         item: items[under],
-        trackTop: 0,
-        trackHeight: h,
         centreX: lensCentre,
         presence: presence,
       );
@@ -462,11 +496,12 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
           : 1.0;
       Widget item = AmalfiSegmentItem(
         key: ValueKey('amalfi-segmented-item-$i'),
-        segment: s,
+        // A disabled control dims as a whole: its items are not dimmed again.
+        segment: _enabled ? s : _undimmed(s),
         size: widget.size,
         selected: chosen,
         hovered: _hovered == i && _pointer == null && !chosen,
-        enabled: _enabled,
+        pressed: _pressedItem == i && _pressedInside,
         showSelection: !one,
         width: items[i].width,
         magnification: magnification,
@@ -538,12 +573,34 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
           child: SizedBox(
             width: width,
             height: h,
-            child: Stack(clipBehavior: Clip.none, children: layers),
+            child: _enabled
+                ? Stack(clipBehavior: Clip.none, children: layers)
+                : Opacity(
+                    opacity: AmalfiStates.disabledOpacity,
+                    child: Stack(clipBehavior: Clip.none, children: layers),
+                  ),
           ),
         ),
       ),
     );
   }
+}
+
+/// [s] drawn as enabled (inside a disabled control, which dims as a whole).
+AmalfiSegment _undimmed(AmalfiSegment s) {
+  if (s.enabled) return s;
+  if (s.icon case final icon?) {
+    return AmalfiSegment.icon(
+      icon,
+      semanticLabel: s.semanticsLabel,
+      tooltip: s.tooltip,
+    );
+  }
+  return AmalfiSegment.text(
+    s.label ?? '',
+    semanticLabel: s.semanticLabel,
+    tooltip: s.tooltip,
+  );
 }
 
 /// Chooses (select one) or focuses (select any) the next ([step] 1) or previous (-1) item.

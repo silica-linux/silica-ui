@@ -6,11 +6,10 @@
 // rectangle at a given presence, and [amalfiSegmentLensRect] / [amalfiSegmentLensMagnification]
 // give the geometry, so the look can be replaced without touching the control's behaviour.
 //
-// Geometry from the kit (`Segments/Control/*/Pressed`): the lens reaches
-// [AmalfiSegmentMetrics.lensOutset] (8) beyond the pressed item on each side and 8 beyond the
-// track above and below: an 88 × 44 capsule over a 72 × 20 item of a 28 pt track.
-// `materials.md` gives "8 pt above and below" (as the kit) but "width = segment + 8" and
-// "height 1.25 × control"; the kit's 8 on every side is used (44 = 28 + 16, not 35).
+// Geometry: the lens rule ([AmalfiLens], user decision 2026-10-16): 8 beyond the pressed item
+// on each side, 12 above and below it (an 88 × 44 lens over a 72 × 20 item of a 28 pt track,
+// as `Segments/Control/*/Pressed`), radius half its height minus 1 (the kit's is half its
+// height: a deviation in the tests).
 //
 // Look: Glass/Clear as `AmalfiGlass` draws it (a 2 pt backdrop blur, no tint, the 1 pt inside
 // rim and the rim light). The refraction of `materials.md` (distortion, chromatic aberration,
@@ -21,32 +20,24 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../glass.dart';
 import '../../tokens.g.dart';
-import 'metrics.dart';
 
-/// The lens over an item at [item] of a track of [trackHeight] whose top is at [trackTop],
-/// at [presence] (0: the item's own capsule, 1: the full lens), centred at [centreX].
+/// The lens over [item] slid to be centred at [centreX], at [presence] (0: the item's own
+/// capsule, 1: the full lens, [AmalfiLens.around] the item; a spring may overshoot).
 Rect amalfiSegmentLensRect({
   required Rect item,
-  required double trackTop,
-  required double trackHeight,
   required double centreX,
   required double presence,
 }) {
-  const outset = AmalfiSegmentMetrics.lensOutset;
   final p = presence.isFinite ? math.max(presence, 0.0) : 0.0;
-  final full = Rect.fromLTWH(
-    centreX - item.width / 2 - outset,
-    trackTop - outset,
-    item.width + 2 * outset,
-    trackHeight + 2 * outset,
-  );
   final from = Rect.fromCenter(
     center: Offset(centreX, item.center.dy),
     width: item.width,
     height: item.height,
   );
+  final full = AmalfiLens.around(from);
   return Rect.lerp(from, full, p) ?? full;
 }
 
@@ -69,7 +60,8 @@ double amalfiSegmentLensMagnification({
 }
 
 /// The lens of a pressed glass segment: a Glass/Clear capsule filling its parent, at
-/// [opacity]. It ignores the pointer and semantics.
+/// [opacity], with the lens rule's radius ([AmalfiLens.radiusOf]). It ignores the pointer
+/// and semantics.
 class AmalfiSegmentLens extends StatelessWidget {
   const AmalfiSegmentLens({super.key, this.opacity = 1, this.opaque = false});
 
@@ -86,7 +78,7 @@ class AmalfiSegmentLens extends StatelessWidget {
       builder: (context, constraints) => AmalfiGlass(
         key: const ValueKey('amalfi-segment-lens'),
         material: AmalfiMaterials.clear,
-        radius: constraints.biggest.shortestSide / 2,
+        radius: AmalfiLens.radiusOf(constraints.biggest),
         opaque: opaque,
         child: const SizedBox.expand(),
       ),

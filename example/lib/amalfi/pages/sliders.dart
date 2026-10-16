@@ -53,11 +53,16 @@ class _InStateState extends State<_InState> {
 class _SlidersPage extends StatelessWidget {
   const _SlidersPage();
 
-  static Widget _speaker(bool loud) => Builder(
-    builder: (context) => CustomPaint(
-      painter: _Speaker(
-        loud: loud,
-        color: IconTheme.of(context).color ?? const Color(0xFF000000),
+  /// The kit's speakers (Icon Kit `volume-0`, `volume-2`), or a drawn speaker when
+  /// silica-icons is not installed.
+  static Widget _speaker(bool loud) => AmalfiSymbol(
+    loud ? 'volume-2' : 'volume-0',
+    fallback: Builder(
+      builder: (context) => CustomPaint(
+        painter: _Speaker(
+          loud: loud,
+          color: IconTheme.of(context).color ?? const Color(0xFF000000),
+        ),
       ),
     ),
   );

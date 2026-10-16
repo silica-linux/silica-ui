@@ -3,12 +3,15 @@
 // alignment), split by 1 pt separators.
 //
 // Kit measures (per size in `AmalfiSegmentSizeMetrics`): icon segments are squares of the
-// control height, text segments 40 / 44 / 52 / 56 wide; separators 1 × 12 (Mini, Small) or
-// 1 × 16 (Regular, Large), centred, hidden next to a highlighted segment. Hover: a
-// `Line/Separator` capsule on the segment (inset 4 from Regular up, 4 sideways on text);
-// pressed: a `Line/Border` capsule as tall as the control. Disabled segments and every segment
-// of an inactive window draw their content in `Text/Tertiary`; a selected segment (the Align
-// group) keeps a `Line/Separator` highlight and draws its glyph in `Accent/Amalfi`.
+// control height, text segments 40 / 44 / 52 / 56 wide, glyphs of the size's icon size
+// (12 / 14 / 16 / 16); separators 1 × 12 (Mini, Small) or 1 × 16 (Regular, Large), centred,
+// hidden next to a highlighted segment. Hover: a `Line/Separator` capsule on the segment
+// (inset 4 from Regular up, 4 sideways on text); pressed: a flat `Line/Border` capsule as tall
+// as the control (no lens: the lens is for select-one controls, kit 747ea80). Disabled: the
+// whole capsule at 35 % (`AmalfiStates.disabledOpacity`, user decision 2026-10-16), a single
+// disabled segment its content at 35 %. Every segment of an inactive window draws its content
+// in `Text/Tertiary`; a selected segment (the Align group) keeps a `Line/Separator` highlight
+// and draws its glyph in `Accent/Amalfi`.
 //
 // Behaviour as the toolbar capsules (`toolbar.dart`): the action fires on release over the
 // pressed segment; the highlight fades in with `fade.quick` and out in 60 ms (`motion.md`,
@@ -34,7 +37,8 @@ const Duration amalfiSegmentHighlightOut = Duration(milliseconds: 60);
 /// A toolbar capsule of action segments: buttons side by side on Glass/Regular, split by
 /// separators (kit `Segments/Action/*`).
 ///
-/// [onPressed] receives the index of the segment released on; null disables the whole capsule.
+/// [onPressed] receives the index of the segment released on; null disables the whole capsule
+/// (drawn at 35 %, [AmalfiStates.disabledOpacity]; a disabled segment dims its content).
 /// With [selected], the capsule is also a toolbar selection group (kit `Segments/Align/*`):
 /// those segments keep a highlight and draw their content in `Accent/Amalfi`; choosing one
 /// is up to [onPressed]. Text segments share one width: the kit's for [size], or the widest
@@ -319,13 +323,15 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
     // Content.
     for (var i = 0; i < n; i++) {
       final s = segments[i];
-      final enabled = _canPress(i);
-      final color = !enabled || !active
+      final color = !active
           ? colors.textTertiary
           : widget.selected.contains(i)
           ? colors.accentAmalfi
           : colors.textPrimary;
-      final Widget content;
+      // A disabled segment of an enabled capsule dims its content; a disabled capsule dims
+      // as a whole, below.
+      final dim = _enabled && !s.enabled;
+      Widget content;
       if (s.icon case final icon?) {
         content = Positioned(
           left: lefts[i] + (widths[i] - m.glyph) / 2,
@@ -352,6 +358,14 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
             overflow: TextOverflow.clip,
             textAlign: TextAlign.center,
             style: m.labelStyle(color: color),
+          ),
+        );
+      }
+      if (dim) {
+        content = Positioned.fill(
+          child: Opacity(
+            opacity: AmalfiStates.disabledOpacity,
+            child: Stack(clipBehavior: Clip.none, children: [content]),
           ),
         );
       }
@@ -434,7 +448,12 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
           child: SizedBox(
             width: width,
             height: h,
-            child: Stack(clipBehavior: Clip.none, children: layers),
+            child: _enabled
+                ? Stack(clipBehavior: Clip.none, children: layers)
+                : Opacity(
+                    opacity: AmalfiStates.disabledOpacity,
+                    child: Stack(clipBehavior: Clip.none, children: layers),
+                  ),
           ),
         ),
       ),

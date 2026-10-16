@@ -1,13 +1,15 @@
 // The slider thumb (kit `Sliders/Thumb/Round/*`): a 20 pt disc of `Surface/Control` with a
-// 1 pt `Line/Border` rim inside and the controls' `Shadow/Soft` shadow; hover lays `Accent/Amalfi Soft` over
-// it, a press turns it `Surface/Control Pressed`, keyboard focus adds the 3 pt halo outside,
-// disabled is `Surface/Sunken` without shadow.
+// 1 pt `Line/Border` rim inside and the control shadow (level 1); hover lays
+// `Accent/Amalfi Soft` over it, a press turns it `Surface/Control Pressed`, keyboard focus
+// adds the 3 pt halo outside; disabled, the resting thumb at 35 %
+// (`AmalfiStates.disabledOpacity`, user decision 2026-10-16).
 
 import 'package:flutter/widgets.dart';
 
+import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
-import '../../foundation/foundation.dart';
+import '../../tokens.g.dart';
 
 /// The measures of the sliders, from the kit masters `Sliders/*`.
 abstract final class AmalfiSliderMetrics {
@@ -33,8 +35,8 @@ abstract final class AmalfiSliderMetrics {
   /// Between the track and the tick marks.
   static const double tickGap = 8;
 
-  /// A tick mark: 1 × 8.
-  static const Size tick = Size(1, 8);
+  /// A tick mark: 2 × 8, centred under a stop of the thumb.
+  static const Size tick = Size(2, 8);
 
   /// The glyph at each end of `Sliders/Horizontal/Glyphs`.
   static const double glyph = 16;
@@ -42,9 +44,10 @@ abstract final class AmalfiSliderMetrics {
   /// Between a glyph and the slider.
   static const double glyphGap = 8;
 
-  /// The lens over a dragged thumb (`Sliders/Thumb/Lens/Dragging`): 36 × 28, 8 wider and
-  /// taller than the thumb on each side across, 4 along the track.
-  static const Size lens = Size(36, 28);
+  /// The lens over a dragged thumb (`Sliders/Thumb/Lens/Dragging`), along the track ×
+  /// across it: the lens rule ([AmalfiLens.sizeAround]) around the thumb's stretch of the
+  /// track, the thumb's length by the track's thickness (36 × 28).
+  static final Size lens = AmalfiLens.sizeAround(const Size(thumb, track));
 
   /// The circular slider (`Sliders/Circular/Dial`): its side.
   static const double dial = 56;
@@ -58,7 +61,8 @@ abstract final class AmalfiSliderMetrics {
 }
 
 /// A slider thumb in [states]: [WidgetState.hovered], [WidgetState.pressed],
-/// [WidgetState.focused] (shows the focus halo), [WidgetState.disabled], and
+/// [WidgetState.focused] (shows the focus halo), [WidgetState.disabled] (the resting thumb
+/// at 35 %; a disabled slider dims as a whole and hands its thumb no states), and
 /// [WidgetState.dragged]: the core of the lens of a dragged thumb (`AmalfiSliderLens`), flat
 /// on the glass, without shadow, hover or press.
 ///
@@ -81,16 +85,14 @@ class AmalfiSliderThumb extends StatelessWidget {
         !disabled && !core && !pressed && states.contains(WidgetState.hovered);
     final focused = !disabled && !core && states.contains(WidgetState.focused);
     const radius = AmalfiSliderMetrics.thumb / 2;
-    return SizedBox.square(
+    final face = SizedBox.square(
       dimension: AmalfiSliderMetrics.thumb,
       child: Stack(
         fit: StackFit.expand,
         children: [
           DecoratedBox(
             decoration: AmalfiShapeDecoration(
-              color: disabled
-                  ? colors.surfaceSunken
-                  : pressed
+              color: pressed
                   ? colors.surfaceControlPressed
                   : colors.surfaceControl,
               shape: AmalfiSmoothBorder(
@@ -100,7 +102,7 @@ class AmalfiSliderThumb extends StatelessWidget {
                   strokeAlign: BorderSide.strokeAlignInside,
                 ),
               ),
-              shadows: disabled || core ? null : amalfiControlShadows(colors),
+              shadows: core ? null : amalfiControlShadows(colors),
             ),
           ),
           if (hovered)
@@ -114,5 +116,7 @@ class AmalfiSliderThumb extends StatelessWidget {
         ],
       ),
     );
+    if (!disabled) return face;
+    return Opacity(opacity: AmalfiStates.disabledOpacity, child: face);
   }
 }
