@@ -10,6 +10,9 @@
 // is a 34 × 28 pill inset by 5 pt, `#e2e2e2` → `#e7e7e7`. The capsules themselves, their
 // hover highlight, the press growth and the glow are in `toolbar.dart`.
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -124,6 +127,52 @@ abstract final class SilicaWindow {
     }
   }
 
+  /// Tests: the environment to read the user's choice from.
+  @visibleForTesting
+  static Map<String, String>? debugEnvironment;
+
+  /// Zooms the window (xdg_toplevel `set_maximized`), or puts it back when it is zoomed.
+  /// True if Silica applied it.
+  static Future<bool> zoom({int viewId = 0}) => _call('zoom', _view(viewId));
+
+  /// Minimizes the window to the Dock. True if Silica applied it.
+  static Future<bool> minimize({int viewId = 0}) =>
+      _call('minimize', _view(viewId));
+
+  /// What a double click on the empty part of the title bar does, from the user's choice in
+  /// Settings › Desktop & Dock (`titleBarDoubleClick` in `silica/dock.json`: `zoom`, the
+  /// default, `minimize` or `none`).
+  static TitleBarDoubleClick titleBarDoubleClick({Map<String, String>? env}) {
+    final e = env ?? debugEnvironment ?? Platform.environment;
+    final home = e['HOME'] ?? '';
+    final config = e['XDG_CONFIG_HOME'] ?? '$home/.config';
+    try {
+      final json = jsonDecode(
+        File('$config/silica/dock.json').readAsStringSync(),
+      );
+      if (json is Map) {
+        return switch (json['titleBarDoubleClick']) {
+          'minimize' => TitleBarDoubleClick.minimize,
+          'none' => TitleBarDoubleClick.none,
+          _ => TitleBarDoubleClick.zoom,
+        };
+      }
+    } on FileSystemException {
+      // The default.
+    } on FormatException {
+      // Likewise.
+    }
+    return TitleBarDoubleClick.zoom;
+  }
+
+  /// Runs the user's double click action on the window.
+  static Future<bool> doubleClickTitleBar({int viewId = 0}) =>
+      switch (titleBarDoubleClick()) {
+        TitleBarDoubleClick.zoom => zoom(viewId: viewId),
+        TitleBarDoubleClick.minimize => minimize(viewId: viewId),
+        TitleBarDoubleClick.none => Future.value(false),
+      };
+
   /// Moves the window with the pointer pressed (from the toolbar).
   static Future<void> startMove({int viewId = 0}) async {
     try {
@@ -138,6 +187,9 @@ abstract final class SilicaWindow {
     }
   }
 }
+
+/// The action of a double click on the title bar (Settings › Desktop & Dock).
+enum TitleBarDoubleClick { zoom, minimize, none }
 
 /// The empty part of the toolbar: dragging it moves the window. A press that lands on an
 /// interactive widget inside `child` (a button, a segmented control, a search field: anything
@@ -184,6 +236,16 @@ class _WindowDragAreaState extends State<WindowDragArea> {
   Widget build(BuildContext context) => RawGestureDetector(
     behavior: HitTestBehavior.translucent,
     gestures: {
+      _EmptyAreaDoubleTap:
+          GestureRecognizerFactoryWithHandlers<_EmptyAreaDoubleTap>(
+            () => _EmptyAreaDoubleTap(_onControl),
+            (r) {
+              r.isControl = _onControl;
+              r.onDoubleTap = () => SilicaWindow.doubleClickTitleBar(
+                viewId: View.maybeOf(context)?.viewId ?? 0,
+              );
+            },
+          ),
       _EmptyAreaPan: GestureRecognizerFactoryWithHandlers<_EmptyAreaPan>(
         () => _EmptyAreaPan(_onControl),
         (r) {
@@ -197,6 +259,16 @@ class _WindowDragAreaState extends State<WindowDragArea> {
     },
     child: KeyedSubtree(key: _content, child: widget.child),
   );
+}
+
+/// A double tap that ignores the presses that fall on a control.
+class _EmptyAreaDoubleTap extends DoubleTapGestureRecognizer {
+  _EmptyAreaDoubleTap(this.isControl);
+  bool Function(PointerDownEvent event) isControl;
+
+  @override
+  bool isPointerAllowed(PointerDownEvent event) =>
+      !isControl(event) && super.isPointerAllowed(event);
 }
 
 /// A pan that ignores the presses that fall on a control.

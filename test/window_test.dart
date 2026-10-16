@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -117,8 +119,51 @@ void main() {
       await gesture.up();
       await tester.pump();
       expect(calls.map((c) => c.method), contains('startMove'));
+      // The double tap recognizer's timeout.
+      await tester.pump(const Duration(milliseconds: 400));
     },
   );
+
+  testWidgets('a double click on the empty bar zooms or minimizes as chosen', (
+    tester,
+  ) async {
+    final dir = Directory.systemTemp.createTempSync('silica-dblclick');
+    addTearDown(() {
+      SilicaWindow.debugEnvironment = null;
+      dir.deleteSync(recursive: true);
+    });
+    SilicaWindow.debugEnvironment = {'HOME': dir.path};
+    Future<void> doubleTap() async {
+      await tester.tapAt(const Offset(20, 26));
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.tapAt(const Offset(20, 26));
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: WindowDragArea(
+          child: SizedBox(width: 400, height: toolbarHeight),
+        ),
+      ),
+    );
+    await doubleTap();
+    expect(calls.map((c) => c.method), ['zoom']);
+    calls.clear();
+    Directory('${dir.path}/.config/silica').createSync(recursive: true);
+    File(
+      '${dir.path}/.config/silica/dock.json',
+    ).writeAsStringSync('{"titleBarDoubleClick":"minimize"}');
+    await doubleTap();
+    expect(calls.map((c) => c.method), ['minimize']);
+    calls.clear();
+    File(
+      '${dir.path}/.config/silica/dock.json',
+    ).writeAsStringSync('{"titleBarDoubleClick":"none"}');
+    await doubleTap();
+    expect(calls, isEmpty);
+  });
 
   testWidgets('a drag on a SegmentedControl in the toolbar does not move the '
       'window; a drag on the empty toolbar does', (tester) async {
@@ -169,6 +214,7 @@ void main() {
     await empty.up();
     await tester.pump();
     expect(calls.map((c) => c.method), contains('startMove'));
+    await tester.pump(const Duration(milliseconds: 400));
   });
 
   testWidgets('capsules follow the system appearance', (tester) async {
