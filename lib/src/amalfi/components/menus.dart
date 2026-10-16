@@ -3,4 +3,5 @@
 // Checklist: `docs/amalfi-checklist/menus.md`. Gallery: `example/lib/amalfi/pages/menus.dart`.
 // The widgets live under `menus/` and are exported from here.
 
-// Nothing yet.
+export 'menus/menu.dart';
+export 'menus/menu_item.dart';
