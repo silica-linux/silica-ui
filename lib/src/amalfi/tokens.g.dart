@@ -1459,7 +1459,9 @@ abstract final class AmalfiSpacing {
 /// a bar.
 ///
 /// Icon sizes: user decision 2026-10-16: one scale for all controls, the kit's
-/// 16/12 small glyphs are defects.
+/// 16/12 small glyphs are defects; glyphs inside small discs or accessory
+/// buttons (gradient add/remove, combo chevron, clear and token crosses) stay
+/// 12 at every control size.
 enum AmalfiControlSize {
   /// `mini`: 20 pt high, 12 pt icons.
   mini(height: 20, iconSize: 12),
@@ -1486,6 +1488,9 @@ enum AmalfiControlSize {
 abstract final class AmalfiControlIcons {
   /// `controlIcons.toolbar`, in points.
   static const double toolbar = 16;
+
+  /// `controlIcons.accessory`, in points.
+  static const double accessory = 12;
 }
 
 /// Corner radii, in points. Corners are smooth (continuous), smoothing 0.6, on
@@ -1767,6 +1772,18 @@ abstract final class AmalfiSwitchTokens {
 
   /// How far a pressed thumb stretches toward the middle, in points.
   static const double pressedStretch = 4;
+
+  /// How far the lens reaches beyond the thumb at the `mini` size, in points
+  /// (`switch.lens.mini`).
+  static const double lensMini = 8;
+
+  /// How far the lens reaches beyond the thumb at the `small` size, in points
+  /// (`switch.lens.small`).
+  static const double lensSmall = 8;
+
+  /// How far the lens reaches beyond the thumb at the `regular` size, in points
+  /// (`switch.lens.regular`).
+  static const double lensRegular = 12;
 }
 
 /// The easing curves of the fade tokens (`motion.md`).

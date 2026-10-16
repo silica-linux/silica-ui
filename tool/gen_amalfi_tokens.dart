@@ -1185,7 +1185,7 @@ Set<int> _writeShadows(
 }
 
 void _writeSwitch(StringBuffer o, Map<String, Object?> sw) {
-  _onlyKeys(sw, {'thumbInset', 'pressedStretch', 'note'}, 'switch');
+  _onlyKeys(sw, {'thumbInset', 'pressedStretch', 'note', 'lens'}, 'switch');
   final inset = _number(
     _field(sw, 'thumbInset', 'switch'),
     'switch.thumbInset',
@@ -1195,6 +1195,24 @@ void _writeSwitch(StringBuffer o, Map<String, Object?> sw) {
     'switch.pressedStretch',
   );
   final note = sw['note'];
+  // `lens`: how far the lens reaches beyond the thumb, per control size ("thumb + 8").
+  final lens = <String, double>{};
+  final lensRaw = sw['lens'];
+  if (lensRaw != null) {
+    if (lensRaw is! Map<String, Object?>) {
+      throw TokenError('switch.lens: expected an object');
+    }
+    for (final MapEntry(:key, :value) in lensRaw.entries) {
+      final text = _string(value, 'switch.lens.$key');
+      final m = RegExp(r'^thumb \+ (\d+(?:\.\d+)?)$').firstMatch(text);
+      if (m == null) {
+        throw TokenError(
+          'switch.lens.$key: expected "thumb + <points>", got "$text"',
+        );
+      }
+      lens[key] = double.parse(m[1]!);
+    }
+  }
   o.writeln('/// The switch thumb (`switch`).');
   if (note != null) {
     final text = _string(note, 'switch.note');
@@ -1207,6 +1225,17 @@ void _writeSwitch(StringBuffer o, Map<String, Object?> sw) {
   o.writeln();
   _doc(o, 'How far a pressed thumb stretches toward the middle, in points.');
   o.writeln('  static const double pressedStretch = ${_num(stretch)};');
+  for (final MapEntry(:key, :value) in lens.entries) {
+    o.writeln();
+    _doc(
+      o,
+      'How far the lens reaches beyond the thumb at the `$key` size, in points '
+      '(`switch.lens.$key`).',
+    );
+    o.writeln(
+      '  static const double lens${key[0].toUpperCase()}${key.substring(1)} = ${_num(value)};',
+    );
+  }
   o.writeln('}');
   o.writeln();
 }
