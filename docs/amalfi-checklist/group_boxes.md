@@ -6,8 +6,8 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Group Boxes/Box
 
-- [ ] Group Boxes/Box/Nested/Rest/Dark
-- [ ] Group Boxes/Box/Nested/Rest/Light
+- [x] Group Boxes/Box/Nested/Rest/Dark
+- [x] Group Boxes/Box/Nested/Rest/Light
 - [ ] Group Boxes/Box/Titled/Disabled/Dark
 - [ ] Group Boxes/Box/Titled/Disabled/Light
 - [ ] Group Boxes/Box/Titled/Rest/Dark
