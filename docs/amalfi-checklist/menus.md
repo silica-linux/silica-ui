@@ -6,44 +6,44 @@ Tick a master when the component reproduces it with a geometry test and a pixel 
 
 ## Menus/Item
 
-- [ ] Menus/Item/Checkmark/Highlighted/Dark
-- [ ] Menus/Item/Checkmark/Highlighted/Light
-- [ ] Menus/Item/Checkmark/Rest/Dark
-- [ ] Menus/Item/Checkmark/Rest/Light
-- [ ] Menus/Item/Destructive/Highlighted/Dark
-- [ ] Menus/Item/Destructive/Highlighted/Light
-- [ ] Menus/Item/Destructive/Rest/Dark
-- [ ] Menus/Item/Destructive/Rest/Light
-- [ ] Menus/Item/Header/Rest/Dark
-- [ ] Menus/Item/Header/Rest/Light
-- [ ] Menus/Item/Icon/Disabled/Dark
-- [ ] Menus/Item/Icon/Disabled/Light
-- [ ] Menus/Item/Icon/Highlighted/Dark
-- [ ] Menus/Item/Icon/Highlighted/Light
-- [ ] Menus/Item/Icon/Rest/Dark
-- [ ] Menus/Item/Icon/Rest/Light
-- [ ] Menus/Item/Plain/Checked/Dark
-- [ ] Menus/Item/Plain/Checked/Light
-- [ ] Menus/Item/Plain/Disabled/Dark
-- [ ] Menus/Item/Plain/Disabled/Light
-- [ ] Menus/Item/Plain/Highlighted/Dark
-- [ ] Menus/Item/Plain/Highlighted/Light
-- [ ] Menus/Item/Plain/Rest/Dark
-- [ ] Menus/Item/Plain/Rest/Light
-- [ ] Menus/Item/Separator/Rest/Dark
-- [ ] Menus/Item/Separator/Rest/Light
+- [x] Menus/Item/Checkmark/Highlighted/Dark
+- [x] Menus/Item/Checkmark/Highlighted/Light
+- [x] Menus/Item/Checkmark/Rest/Dark
+- [x] Menus/Item/Checkmark/Rest/Light
+- [x] Menus/Item/Destructive/Highlighted/Dark
+- [x] Menus/Item/Destructive/Highlighted/Light
+- [x] Menus/Item/Destructive/Rest/Dark
+- [x] Menus/Item/Destructive/Rest/Light
+- [x] Menus/Item/Header/Rest/Dark
+- [x] Menus/Item/Header/Rest/Light
+- [x] Menus/Item/Icon/Disabled/Dark
+- [x] Menus/Item/Icon/Disabled/Light
+- [x] Menus/Item/Icon/Highlighted/Dark
+- [x] Menus/Item/Icon/Highlighted/Light
+- [x] Menus/Item/Icon/Rest/Dark
+- [x] Menus/Item/Icon/Rest/Light
+- [x] Menus/Item/Plain/Checked/Dark
+- [x] Menus/Item/Plain/Checked/Light
+- [x] Menus/Item/Plain/Disabled/Dark
+- [x] Menus/Item/Plain/Disabled/Light
+- [x] Menus/Item/Plain/Highlighted/Dark
+- [x] Menus/Item/Plain/Highlighted/Light
+- [x] Menus/Item/Plain/Rest/Dark
+- [x] Menus/Item/Plain/Rest/Light
+- [x] Menus/Item/Separator/Rest/Dark
+- [x] Menus/Item/Separator/Rest/Light
 - [ ] Menus/Item/Shortcut/Disabled/Dark
 - [ ] Menus/Item/Shortcut/Disabled/Light
 - [ ] Menus/Item/Shortcut/Highlighted/Dark
 - [ ] Menus/Item/Shortcut/Highlighted/Light
 - [ ] Menus/Item/Shortcut/Rest/Dark
 - [ ] Menus/Item/Shortcut/Rest/Light
-- [ ] Menus/Item/Submenu/Disabled/Dark
-- [ ] Menus/Item/Submenu/Disabled/Light
-- [ ] Menus/Item/Submenu/Highlighted/Dark
-- [ ] Menus/Item/Submenu/Highlighted/Light
-- [ ] Menus/Item/Submenu/Rest/Dark
-- [ ] Menus/Item/Submenu/Rest/Light
+- [x] Menus/Item/Submenu/Disabled/Dark
+- [x] Menus/Item/Submenu/Disabled/Light
+- [x] Menus/Item/Submenu/Highlighted/Dark
+- [x] Menus/Item/Submenu/Highlighted/Light
+- [x] Menus/Item/Submenu/Rest/Dark
+- [x] Menus/Item/Submenu/Rest/Light
 
 ## Menus/Menu
 
