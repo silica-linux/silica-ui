@@ -14,23 +14,37 @@ class AmalfiTitlebarTextBox extends SingleChildRenderObjectWidget {
   const AmalfiTitlebarTextBox({
     super.key,
     this.step = AmalfiGrid.base,
+    this.fill = false,
     super.child,
   }) : assert(step > 0);
 
   /// The rounding step of the width, in points.
   final double step;
 
+  /// Whether the box takes all the width it is given (a title that fills the bar, its text
+  /// at the left), when that is bounded.
+  final bool fill;
+
   @override
-  RenderObject createRenderObject(BuildContext context) => _RenderTextBox(step);
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderTextBox(step, fill);
 
   @override
   void updateRenderObject(BuildContext context, _RenderTextBox renderObject) {
     renderObject.step = step;
+    renderObject.fill = fill;
   }
 }
 
 class _RenderTextBox extends RenderProxyBox {
-  _RenderTextBox(this._step);
+  _RenderTextBox(this._step, this._fill);
+
+  bool _fill;
+  set fill(bool value) {
+    if (value == _fill) return;
+    _fill = value;
+    markNeedsLayout();
+  }
 
   double _step;
   set step(double value) {
@@ -40,7 +54,12 @@ class _RenderTextBox extends RenderProxyBox {
   }
 
   Size _round(Size size, BoxConstraints constraints) => constraints.constrain(
-    Size(ceilToWholePoints(size.width, _step), ceilToWholePoints(size.height)),
+    Size(
+      _fill && constraints.hasBoundedWidth
+          ? constraints.maxWidth
+          : ceilToWholePoints(size.width, _step),
+      ceilToWholePoints(size.height),
+    ),
   );
 
   @override

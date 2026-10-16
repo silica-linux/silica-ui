@@ -8,11 +8,6 @@ import 'package:silica_ui/silica_ui.dart';
 import 'support/harness.dart';
 import 'titlebars_kit_support.dart';
 
-/// components.md (binding): rows on a 32 pt pitch (4 between rows); the kit's Group and
-/// Panel stack them with no gap (pitch 28), while `Windows/Sidebar Body` uses 4.
-const String rowPitch =
-    'components.md row pitch 32 (gap 4); the kit stacks this master with gap 0';
-
 /// The sidebar of `Sidebars/Panel` (and of the window layouts, `Windows/Sidebar Body`).
 List<Widget> panelRows({bool library = true}) => [
   const AmalfiSidebarHeader(
@@ -213,14 +208,6 @@ void main() {
               'Header': find.byType(AmalfiSidebarHeader),
               if (open) ...keyed(['Documents', 'Downloads', 'Pictures']),
             },
-            deviations: {
-              if (open) ...{
-                '#frame': rowPitch,
-                'Documents': rowPitch,
-                'Downloads': rowPitch,
-                'Pictures': rowPitch,
-              },
-            },
           );
           if (!open) {
             await expectKitPixels(tester, master, group, tolerance: chromeText);
@@ -334,7 +321,6 @@ void main() {
                 .first,
             ...keyed(['Favourites', ...below, 'Footer']),
           },
-          deviations: {for (final n in below) n: rowPitch},
         );
       });
     });

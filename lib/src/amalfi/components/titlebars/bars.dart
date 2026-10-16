@@ -43,17 +43,21 @@ class AmalfiToolbar extends StatelessWidget {
     this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
-  });
+  }) : spacing = 0;
 
-  /// The compact toolbar: 40 tall.
+  /// The compact toolbar: 40 tall, its children 8 apart between paddings of 20 and 16. Its
+  /// children are bare controls: `AmalfiControlsPiece(width: AmalfiToolbarMetrics
+  /// .compactControlsWidth, leading: 0)`, buttons, and an `Expanded` `AmalfiTitlePiece(fill:
+  /// true)`.
   const AmalfiToolbar.compact({
     super.key,
     required this.children,
-    this.padding = AmalfiToolbarMetrics.unifiedPadding,
     this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
-  }) : height = AmalfiToolbarMetrics.compactHeight;
+  }) : height = AmalfiToolbarMetrics.compactHeight,
+       padding = AmalfiToolbarMetrics.compactPadding,
+       spacing = AmalfiToolbarMetrics.compactGap;
 
   /// A section of a split toolbar (kit `Titlebars/Section/Content|List|Inspector`): 52 tall,
   /// 12 before the first piece and 8 after the last.
@@ -64,7 +68,8 @@ class AmalfiToolbar extends StatelessWidget {
     this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
-  }) : height = AmalfiToolbarMetrics.toolbarHeight;
+  }) : height = AmalfiToolbarMetrics.toolbarHeight,
+       spacing = 0;
 
   /// The sidebar section of a split toolbar (kit `Titlebars/Section/Sidebar`): on
   /// `Surface/Sidebar`, starting with the controls piece, 8 after the last piece.
@@ -75,7 +80,8 @@ class AmalfiToolbar extends StatelessWidget {
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight,
-       surface = AmalfiToolbarSurface.sidebar;
+       surface = AmalfiToolbarSurface.sidebar,
+       spacing = 0;
 
   final List<Widget> children;
 
@@ -84,6 +90,9 @@ class AmalfiToolbar extends StatelessWidget {
 
   /// The padding before the first and after the last piece.
   final EdgeInsets padding;
+
+  /// The gap between the children (the compact bar's 8; pieces carry their own padding).
+  final double spacing;
 
   final AmalfiToolbarSurface surface;
 
@@ -103,6 +112,7 @@ class AmalfiToolbar extends StatelessWidget {
         return Row(
           mainAxisSize: bounded ? MainAxisSize.max : MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: spacing,
           children: [
             for (final child in children)
               if (child is AmalfiSpacerPiece && bounded)

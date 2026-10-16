@@ -409,10 +409,21 @@ void main() {
               'Window controls': find.byType(AmalfiWindowControlGroup),
               'Title': textBox('Lemon cake'),
             },
-            deviations: const {
-              'Window controls': measuredPlace,
-              'Title': compactPacked,
-            },
+            deviations: const {'Window controls': compactControlsSize},
+          );
+          // The four toolbar buttons share one layer name in the kit: check them by x.
+          final buttons = find.byType(AmalfiToolbarButton);
+          expect(buttons, findsNWidgets(4));
+          final origin = tester.getTopLeft(root);
+          expect(
+            [
+              for (var i = 0; i < 4; i++)
+                tester.getRect(buttons.at(i)).shift(-origin),
+            ],
+            [
+              for (final x in [92.0, 132.0, 432.0, 472.0])
+                Rect.fromLTWH(x, 4, 32, 32),
+            ],
           );
         });
 

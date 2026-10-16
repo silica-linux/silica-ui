@@ -16,7 +16,7 @@ enum AmalfiFieldSize {
     padding: 8,
     glyph: 14,
     comboButton: 16,
-    comboGlyph: 12,
+    comboGlyph: AmalfiControlIcons.accessory,
   ),
 
   /// 28 pt, Body text, 16 pt glyphs (the default).
@@ -26,7 +26,7 @@ enum AmalfiFieldSize {
     padding: 8,
     glyph: 16,
     comboButton: 20,
-    comboGlyph: 12,
+    comboGlyph: AmalfiControlIcons.accessory,
   ),
 
   /// 32 pt, Body text, 16 pt glyphs. The kit's corner is 10 (no token between `field` 9 and
@@ -37,7 +37,7 @@ enum AmalfiFieldSize {
     padding: 12,
     glyph: 16,
     comboButton: 24,
-    comboGlyph: 16,
+    comboGlyph: AmalfiControlIcons.accessory,
   );
 
   const AmalfiFieldSize({
@@ -65,7 +65,8 @@ enum AmalfiFieldSize {
   /// The side of the combo button disc.
   final double comboButton;
 
-  /// The side of the chevron in the combo button.
+  /// The side of the chevron in the combo button: 12 at every size (an accessory glyph,
+  /// `controlIcons.accessory`).
   final double comboGlyph;
 
   /// The text style token of the value and placeholder.
@@ -103,7 +104,7 @@ abstract final class AmalfiFieldMetrics {
   static const double clearButton = 16;
 
   /// The side of the clear button's cross.
-  static const double clearGlyph = 12;
+  static const double clearGlyph = AmalfiControlIcons.accessory;
 
   /// The radius of the clear button disc (`smallControl`; the kit's 16 pt disc).
   static const double clearRadius = AmalfiRadii.smallControl;
@@ -137,5 +138,5 @@ abstract final class AmalfiTokenMetrics {
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 4);
 
   /// The side of the remove cross.
-  static const double removeGlyph = 12;
+  static const double removeGlyph = AmalfiControlIcons.accessory;
 }

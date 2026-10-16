@@ -36,8 +36,8 @@ class AmalfiSwitchMetrics {
   /// The corner radius of the thumb.
   final double thumbRadius;
 
-  /// How much the lens of a dragged thumb exceeds the thumb ([AmalfiLens.switchGrowth] at
-  /// Regular; 8 at Mini and Small, as the kit draws them).
+  /// How much the lens of a dragged thumb exceeds the thumb ([AmalfiSwitchTokens.lensRegular] at
+  /// Regular, `lensMini` and `lensSmall`: thumb + 8).
   final double lensGrowth;
 
   /// The space between the thumb at rest and the track's edges, on every side.
@@ -63,14 +63,14 @@ class AmalfiSwitchMetrics {
       trackRadius: 7,
       thumb: 12,
       thumbRadius: 5,
-      lensGrowth: 8,
+      lensGrowth: AmalfiSwitchTokens.lensMini,
     ),
     AmalfiControlSize.small => const AmalfiSwitchMetrics(
       track: Size(32, 20),
       trackRadius: 9,
       thumb: 16,
       thumbRadius: 7,
-      lensGrowth: 8,
+      lensGrowth: AmalfiSwitchTokens.lensSmall,
     ),
     AmalfiControlSize.regular ||
     AmalfiControlSize.large => const AmalfiSwitchMetrics(
@@ -78,7 +78,7 @@ class AmalfiSwitchMetrics {
       trackRadius: 12,
       thumb: 20,
       thumbRadius: 10,
-      lensGrowth: AmalfiLens.switchGrowth,
+      lensGrowth: AmalfiSwitchTokens.lensRegular,
     ),
   };
 }

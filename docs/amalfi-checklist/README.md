@@ -8,25 +8,25 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Segmented](segmented.md) | `Segments` | 488 | 488 |
 | [Toggles](toggles.md) | `Toggles` | 296 | 296 |
 | [Fields](fields.md) | `Fields` | 128 | 128 |
-| [Menus](menus.md) | `Menus` | 48 | 46 |
+| [Menus](menus.md) | `Menus` | 48 | 48 |
 | [Popovers](popovers.md) | `Popovers` | 84 | 84 |
 | [Tooltips](tooltips.md) | `Tooltips` | 14 | 14 |
 | [Sliders](sliders.md) | `Sliders` | 64 | 64 |
 | [Steppers](steppers.md) | `Steppers` | 68 | 68 |
 | [Progress](progress.md) | `Progress` | 84 | 84 |
 | [Scrollbars](scrollbars.md) | `Scrollbars` | 34 | 34 |
-| [Sidebars](sidebars.md) | `Sidebars` | 32 | 28 |
+| [Sidebars](sidebars.md) | `Sidebars` | 32 | 32 |
 | [Lists](lists.md) | — | 0 | 0 |
 | [Disclosure](disclosure.md) | `Disclosure` | 44 | 44 |
 | [Group Boxes](group_boxes.md) | `Group Boxes` | 8 | 8 |
 | [Forms](forms.md) | `Forms` | 22 | 22 |
-| [Titlebars](titlebars.md) | `Titlebars` | 181 | 177 |
+| [Titlebars](titlebars.md) | `Titlebars` | 181 | 181 |
 | [Windows](windows.md) | `Windows` | 38 | 38 |
 | [Alerts](alerts.md) | `Alerts` | 12 | 12 |
 | [Dialogs](dialogs.md) | `Dialogs` | 12 | 12 |
 | [Sheets](sheets.md) | `Windows/Window/Sheet Attached` | 2 | 2 |
 | [Wells](wells.md) | `Wells` | 74 | 74 |
-| **Total** | | **2147** | **2137** |
+| **Total** | | **2147** | **2147** |
 
 ## Out of scope of the component milestone (M3)
 

@@ -40,7 +40,18 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - Segmented and Sliders: disabled select-one controls keep their selection and dim the whole control to 35 %; Mini labels are centred; Small glyphs are 14; only select-one controls use the lens.
 - Segmented and Sliders: slider ticks are 2 × 8 on the stops; the dial's value arc is concentric; the fill reaches the value while dragging and on the vertical slider; disabled at 35 % with the rest look; level 1 thumb shadow.
 
-## Still open (silica-design `747ea80`)
+## Fixed in silica-design `5f5f187`
+
+- `Menus/Menu/Cascade`: the submenu is 188 x 112 (the Submenu master) at x 224 / y 24, overlapping the parent by 4 (its padding), its first item level with the parent's; the master is 412 x 216.
+- `Titlebars/Bar/Compact/*`: stack gap 8, controls at x 20, buttons at 92 / 132 and 432 / 472, title at 172, trailing padding 16.
+- `Sidebars/Panel` and `Group/Open`: rows 28 at a 32 pitch, Group Open 216 x 124, Panel sections 16 apart.
+- The export carries `style.borderOptions` (dash pattern, line end, join, arrowheads) on every layer; the harness checks the dashes, line end and join of a dashed border.
+- Design decisions (silica-desktop `09c50a0`): glyphs inside small discs or accessory buttons stay 12 at every control size (`controlIcons.accessory`); the switch lens is thumb + 8 at Mini and Small, + 12 at Regular (`switch.lens`).
+
+## Still open (silica-design `5f5f187`)
+
+- `Windows/Window/Sheet Attached`: the `Sheet` instance of `Alerts/Alert/Two Buttons` is 266 tall, its master 268 (it was 268 in `747ea80`); the code builds the alert as its master.
+- `Fields/Combo Button/Large` and `Combo Box/Large` draw the chevron at 16; the accessory rule makes it 12 (the Large masters are not updated).
 
 - Text frames are drawn wider than the text, to whole points or to the 4 pt grid inconsistently
   ("Add to favourites" 97.03 -> 100; "Fri 16 Oct 09:41" 99.18 -> 104): each family decides how its
@@ -50,8 +61,6 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - The placement masters centre the tooltip across the target only to the 4 pt grid (x 0, not 2):
   the code floors the centred position to the grid (an assumption: no master tells floor from
   round).
-- The export does not carry Sketch's border options (dash patterns): the harness checks a dashed
-  border's colour, width and position only (`test/amalfi/README.md`).
 - The export writes one radius for four equal corners (`[8]` for a circle); the harness reads it
   as four.
 - Instances with an overridden label keep the master's text frame ("Button", 48 wide), so text
@@ -59,12 +68,10 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - Buttons: Pop-up and Pull-down Small chevrons are 12 pt; control glyphs are 14 at Small (user decision 2026-10-16).
 - Buttons: the pop-up `chevron-up-down` keeps the 24 pt stroke (1.5) at 12 and 16 pt.
 - Buttons: `Buttons/Pull-down/Open` applies its overrides to the wrong rows: row 2 shows the nested menu's checked "Lemon" instead of "Duplicate", and the highlighted item is swapped to plain.
-- Buttons (question): the Gradient add/remove glyphs are 12 pt in a 24 tall control; kept at 12 (not a sized control).
 - `Disclosure/Button/Expanded/*`: Glyph Chevron Up has no 12 pt layer style and keeps the 1.5 stroke.
 - `Toggles/Radio/*/Small/Hover|Focused`: State and Focus Halo keep radius 7 while the Small radio box is a circle (8).
 - `Toggles/Radio Group/List`: rows keep a stale width of 140 (With Label row is 124).
 - `Group Boxes/Box/Titled` "Show banners", "Play sound" and `Untitled` "Remember" rows keep width 168.
-- Toggles: the switch lens is thumb + 8 at Mini and Small (the docs give only Regular, + 12).
 - Fields: Search Field/Small and Text Field/Small/Error draw their glyphs at 12; control glyphs are 14 at Small (user decision 2026-10-16).
 - Steppers/Stepper/* (56 masters): "Glyph Chevron Up" keeps the 24 pt stroke (1.5) at 12 pt.
 - Progress/Circular/Determinate partial arcs are hand-drawn, up to 2 pt off concentric (geometry checked, pixels masked).
@@ -76,10 +83,7 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - Alerts: `Alerts/Alert/Critical`: the badge disc is 24 × 23.79 at y 59.48 and its glyph 16 × 15.86, off whole points.
 - Alerts: `Alerts/Alert/Three Buttons`: the `Don’t Save` label frame is 68, narrower than the text (the code's button is 96, not 92).
 - Menus: `Menus/Menu/Full`: `Export…` has no shortcut override and shows the master's ⌘N.
-- Menus: `Menus/Menu/Cascade`: the submenu is the fixed 188 pt master; the code fits a submenu to its rows (160).
 - Titlebars: `Titlebars/Piece/Title + Subtitle`: the subtitle frame is 64 wide for 58.9 pt of text, the text at its left; the code rounds it to 60 and centres it.
 - Dialogs: `Dialogs/Footer/Save`: the PNG starts 2 pt left of the frame, not frame + blur (2.7).
-- Sidebars: Group/Panel rows have no gap between them (components.md: 4).
-- Titlebars: the compact bar packs its controls 4 apart (8 elsewhere).
 - 28 filled glyphs at 16 pt keep the 24 pt stroke (kit side; the code scales the stroke).
 - Glass/Clear lenses are encoded as a Sketch `Glass` blur (drawn as Clear's 2 pt background blur).

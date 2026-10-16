@@ -365,14 +365,19 @@ class _TitlebarsPage extends StatelessWidget {
                   active: active,
                   children: [
                     AmalfiControlsPiece(
+                      width: AmalfiToolbarMetrics.compactControlsWidth,
+                      leading: 0,
                       onClose: () {},
                       onMinimise: () {},
                       onZoom: () {},
                     ),
-                    AmalfiToolbarPiece(child: _nav),
-                    AmalfiTitlePiece(title: 'Lemon cake'),
-                    AmalfiSpacerPiece(),
+                    AmalfiToolbarPiece(leading: 0, trailing: 0, child: _nav),
+                    Expanded(
+                      child: AmalfiTitlePiece(title: 'Lemon cake', fill: true),
+                    ),
                     AmalfiToolbarPiece(
+                      leading: 0,
+                      trailing: 0,
                       child: AmalfiToolbarButton(
                         icon: AmalfiGlyph(AmalfiGlyphs.share),
                         onPressed: () {},

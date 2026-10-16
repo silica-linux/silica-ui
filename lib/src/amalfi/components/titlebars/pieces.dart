@@ -81,6 +81,7 @@ class AmalfiControlsPiece extends StatelessWidget {
     this.onZoom,
     this.active,
     this.width = AmalfiToolbarPieceMetrics.controlsWidth,
+    this.leading,
   });
 
   final VoidCallback? onClose, onMinimise, onZoom;
@@ -90,6 +91,10 @@ class AmalfiControlsPiece extends StatelessWidget {
 
   /// The width of the piece.
   final double width;
+
+  /// The x of the group in the piece; null: the measured place for the bar's height
+  /// ([AmalfiWindowControlsMetrics.leadingFor]).
+  final double? leading;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -103,7 +108,7 @@ class AmalfiControlsPiece extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Positioned(
-              left: AmalfiWindowControlsMetrics.leadingFor(height),
+              left: leading ?? AmalfiWindowControlsMetrics.leadingFor(height),
               top: AmalfiWindowControlsMetrics.topFor(height),
               child: AmalfiWindowControlGroup(
                 onClose: onClose,
@@ -134,6 +139,7 @@ class AmalfiTitlePiece extends StatelessWidget {
     this.document = false,
     this.onDocumentMenu,
     this.active,
+    this.fill = false,
   });
 
   final String title;
@@ -150,9 +156,26 @@ class AmalfiTitlePiece extends StatelessWidget {
   /// Whether the window is active; null: from [WindowActiveScope].
   final bool? active;
 
+  /// Whether the title fills the room it is given, its text at the left and no padding (the
+  /// compact bar, `Bar/Compact`: put it in an `Expanded`).
+  final bool fill;
+
   @override
   Widget build(BuildContext context) {
     final active = amalfiTitlebarResolveActive(context, this.active);
+    if (fill) {
+      return Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: AmalfiTitleBlock(
+          title: title,
+          subtitle: subtitle,
+          document: document,
+          onDocumentMenu: onDocumentMenu,
+          active: active,
+          fill: true,
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AmalfiToolbarPieceMetrics.titlePadding,
@@ -182,6 +205,7 @@ class AmalfiTitleBlock extends StatelessWidget {
     this.onDocumentMenu,
     this.active,
     this.maxLines = 1,
+    this.fill = false,
   });
 
   final String title;
@@ -195,11 +219,15 @@ class AmalfiTitleBlock extends StatelessWidget {
   /// The lines of the title (1: ellipsis).
   final int maxLines;
 
+  /// Whether the title's text box takes all the width it is given.
+  final bool fill;
+
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
     final active = amalfiTitlebarResolveActive(context, this.active);
     final titleText = AmalfiTitlebarTextBox(
+      fill: fill,
       child: Text(
         title,
         maxLines: maxLines,
@@ -291,6 +319,14 @@ abstract final class AmalfiToolbarMetrics {
 
   /// The title bar of a document or panel window, with its separator.
   static const double titleBarHeight = 48;
+
+  /// The compact toolbar (kit `Bar/Compact`): 20 before the window controls, 16 after the
+  /// last control, 8 between its children.
+  static const EdgeInsets compactPadding = EdgeInsets.only(left: 20, right: 16);
+  static const double compactGap = 8;
+
+  /// The width of the window controls in the compact bar (kit: 3 discs of 16, 8 apart).
+  static const double compactControlsWidth = 64;
 
   /// The padding of the unified toolbar after its last piece (kit `Bar/Unified/Full Inset
   /// 16`, `components.md`: trailing padding 16; the last control ends 20 from the edge).

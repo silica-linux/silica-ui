@@ -2,9 +2,11 @@
 // capsule over a pressed select-one segment or a dragged slider or switch thumb reaches
 // [AmalfiLens.outset] beyond the control on each side and [AmalfiLens.rise] above and below
 // it (a 72 × 20 segment gets an 88 × 44 lens), with a radius of half its height minus 1.
-// The switch's lens is the exception the docs name: the thumb + 12 at Regular.
+// The switch's lens is the exception: the thumb + 8 at Mini and Small, + 12 at Regular.
 
 import 'package:flutter/widgets.dart';
+
+import '../tokens.g.dart';
 
 /// The geometry of the lens.
 abstract final class AmalfiLens {
@@ -14,8 +16,9 @@ abstract final class AmalfiLens {
   /// How far the lens reaches above and below the control.
   static const double rise = 12;
 
-  /// How much the switch's lens exceeds its thumb, at Regular (`materials.md`).
-  static const double switchGrowth = 12;
+  /// How much the switch's lens exceeds its thumb, at Regular (`switch.lens`: thumb + 12;
+  /// 8 at Mini and Small).
+  static const double switchGrowth = AmalfiSwitchTokens.lensRegular;
 
   /// The lens over [control] (the pressed segment, the dragged thumb).
   static Rect around(Rect control) => Rect.fromLTRB(

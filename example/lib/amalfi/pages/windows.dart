@@ -364,10 +364,19 @@ class _WindowsPage extends StatelessWidget {
               child: AmalfiWindowLayout(
                 bar: AmalfiToolbar.compact(
                   children: [
-                    _controls(),
-                    AmalfiTitlePiece(title: 'Lemon cake'),
-                    AmalfiSpacerPiece(),
+                    AmalfiControlsPiece(
+                      width: AmalfiToolbarMetrics.compactControlsWidth,
+                      leading: 0,
+                      onClose: () {},
+                      onMinimise: () {},
+                      onZoom: () {},
+                    ),
+                    Expanded(
+                      child: AmalfiTitlePiece(title: 'Lemon cake', fill: true),
+                    ),
                     AmalfiToolbarPiece(
+                      leading: 0,
+                      trailing: 0,
                       child: AmalfiToolbarButton(
                         icon: AmalfiGlyph(AmalfiGlyphs.share),
                         onPressed: () {},

@@ -19,7 +19,7 @@ abstract final class AmalfiGradientButtonsMetrics {
   static const double radius = AmalfiRadii.smallControl;
 
   /// The glyph size.
-  static const double glyph = 12;
+  static const double glyph = AmalfiControlIcons.accessory;
 
   /// The divider between the two halves.
   static const Size divider = Size(1, 12);

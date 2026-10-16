@@ -357,12 +357,6 @@ void main() {
           master,
           root: root,
           layers: {'Parent menu': menus.first, 'Submenu': menus.last},
-          // Kit choice: the submenu is the 188 pt `Menus/Menu/Submenu` master; the code
-          // sizes a submenu to its widest row (160, the least).
-          deviations: {
-            'Submenu':
-                'kit submenu 188 wide, the code fits it to its rows (160)',
-          },
         );
         expect(
           tester.getTopLeft(menus.last),

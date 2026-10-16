@@ -462,46 +462,49 @@ List<Widget> inspectorSectionPieces() => [
   ),
 ];
 
-/// components.md: 8 between toolbar controls; the kit's compact bar packs them 4 apart.
-const String compactPacked =
-    'kit compact bar packs its controls 4 apart from x 88; components.md: 8 between '
-    'controls, controls at the measured place';
+/// The group of window controls is 62 wide (14 pt discs 7 apart, measured), the kit's 64.
+const String compactControlsSize =
+    'measured window controls 62 wide (14 pt discs), kit 64 (16 pt discs); the x and the '
+    'gap to the next control follow the kit';
 
-/// The compact bar of the kit (`Bar/Compact`).
+/// The compact bar of the kit (`Bar/Compact`): children 8 apart between paddings of 20 and 16.
 Widget compactBar({bool? active}) => AmalfiToolbar.compact(
   active: active,
   children: [
-    AmalfiControlsPiece(onClose: () {}, onMinimise: () {}, onZoom: () {}),
-    AmalfiToolbarPiece(
-      child: AmalfiToolbarButton(
-        icon: AmalfiGlyph(AmalfiGlyphs.chevronLeft),
-        onPressed: () {},
-        semanticLabel: 'chevronLeft',
-      ),
+    AmalfiControlsPiece(
+      width: AmalfiToolbarMetrics.compactControlsWidth,
+      leading: 0,
+      onClose: () {},
+      onMinimise: () {},
+      onZoom: () {},
     ),
-    AmalfiToolbarPiece(
-      child: AmalfiToolbarButton(
-        icon: AmalfiGlyph(AmalfiGlyphs.chevronRight),
-        onPressed: () {},
-        semanticLabel: 'chevronRight',
+    for (final (glyph, label) in [
+      (AmalfiGlyphs.chevronLeft, 'chevronLeft'),
+      (AmalfiGlyphs.chevronRight, 'chevronRight'),
+    ])
+      AmalfiToolbarPiece(
+        leading: 0,
+        trailing: 0,
+        child: AmalfiToolbarButton(
+          icon: AmalfiGlyph(glyph),
+          onPressed: () {},
+          semanticLabel: label,
+        ),
       ),
-    ),
-    AmalfiTitlePiece(title: 'Lemon cake'),
-    AmalfiSpacerPiece(),
-    AmalfiToolbarPiece(
-      child: AmalfiToolbarButton(
-        icon: AmalfiGlyph(AmalfiGlyphs.share),
-        onPressed: () {},
-        semanticLabel: 'share',
+    Expanded(child: AmalfiTitlePiece(title: 'Lemon cake', fill: true)),
+    for (final (glyph, label) in [
+      (AmalfiGlyphs.share, 'share'),
+      (AmalfiGlyphs.ellipsisCircle, 'ellipsisCircle'),
+    ])
+      AmalfiToolbarPiece(
+        leading: 0,
+        trailing: 0,
+        child: AmalfiToolbarButton(
+          icon: AmalfiGlyph(glyph),
+          onPressed: () {},
+          semanticLabel: label,
+        ),
       ),
-    ),
-    AmalfiToolbarPiece(
-      child: AmalfiToolbarButton(
-        icon: AmalfiGlyph(AmalfiGlyphs.ellipsisCircle),
-        onPressed: () {},
-        semanticLabel: 'ellipsisCircle',
-      ),
-    ),
   ],
 );
 

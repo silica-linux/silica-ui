@@ -58,6 +58,9 @@ abstract final class AmalfiMenuMetrics {
   /// The narrowest menu.
   static const double minWidth = 160;
 
+  /// The narrowest submenu: the `Menus/Menu/Submenu` master's 188.
+  static const double submenuMinWidth = 188;
+
   /// The time the pointer rests on an item before its submenu opens (`docs/spec/menubar.md`,
   /// M-01: about 295 ms).
   static const Duration submenuDelay = Duration(milliseconds: 295);

@@ -96,6 +96,11 @@ void main() {
           'Scrim': find.byType(AmalfiSheetScrim),
           'Sheet': find.byType(AmalfiAlert),
         },
+        deviations: {
+          'Sheet':
+              'the kit resizes the Two Buttons instance to 266 tall (its master is 268, as '
+              'the alert is built)',
+        },
       );
       await expectKitPixels(
         tester,

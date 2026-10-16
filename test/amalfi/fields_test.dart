@@ -327,6 +327,12 @@ class _TokenFieldSceneState extends State<_TokenFieldScene> {
   );
 }
 
+/// The glyph inside the combo button is an accessory glyph: 12 at every control size
+/// (`controlIcons.accessory`, user decision 2026-10-16); the Large kit master draws 16.
+const String accessoryGlyph =
+    'accessory glyphs stay 12 at every size (tokens.json controlIcons.accessory); the Large '
+    'kit master draws 16';
+
 const List<String> fruit = ['Orange', 'Lemon', 'Olive', 'Fig'];
 
 List<FieldCase> comboCases() => [
@@ -348,6 +354,7 @@ List<FieldCase> comboCases() => [
           'Inline button': find.byType(AmalfiComboButton),
         },
         focus: state == 'Focused',
+        maskGlyphs: size == 'Large',
       ),
   for (final size in ['Small', 'Regular', 'Large'])
     for (final state in ['Rest', 'Pressed', 'Disabled'])
@@ -359,6 +366,8 @@ List<FieldCase> comboCases() => [
         ),
         layers: {'Disc': find.byType(DecoratedBox), 'Chevron': glyph()},
         tolerance: smallShapes,
+        maskGlyphs: size == 'Large',
+        deviations: {if (size == 'Large') 'Chevron': accessoryGlyph},
         prepare: state == 'Pressed'
             ? (tester) async {
                 final g = await tester.startGesture(
