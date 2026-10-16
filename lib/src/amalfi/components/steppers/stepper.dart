@@ -12,7 +12,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import '../sliders/css_shadow.dart';
+import '../buttons/button_surface.dart' show amalfiControlShadows;
 import '../sliders/thumb.dart' show AmalfiSliderFocusHalo;
 import 'chevron.dart';
 
@@ -276,9 +276,7 @@ class _AmalfiStepperState extends State<AmalfiStepper> {
                         )
                       : BorderSide.none,
                 ),
-                shadows: enabled
-                    ? AmalfiCssShadow.all(theme.shadows.level1)
-                    : null,
+                shadows: enabled ? amalfiControlShadows(colors) : null,
               ),
             ),
           ),

@@ -9,12 +9,6 @@ import 'package:silica_ui/src/amalfi/components/sliders/arc.dart';
 
 import 'support/harness.dart';
 
-/// Kit defect: the raised controls cast `#00000024` / `#00000052` (`Shadow/Soft`) with the
-/// level 1 offset and blur; the tokens give level 1 (`#1A000000` / `#33000000`), which
-/// `tokens.json` names for the slider thumb.
-const String softShadow =
-    'kit thumb shadow uses the Shadow/Soft colour, tokens level 1';
-
 /// The kit draws the lens's refraction as a "Glass" blur, which the harness does not read;
 /// AmalfiGlass draws Clear's 2 pt blur as a background blur.
 const String lensBlur =
@@ -200,9 +194,7 @@ void main() {
                 if (state == 'Hover') 'State': decoratedIn(thumbs, 1),
                 if (state == 'Focused') 'Focus Halo': decoratedIn(thumbs, 1),
               },
-              deviations: {
-                if (state != 'Disabled') 'Thumb#shadows': softShadow,
-              },
+              deviations: {},
             );
             await expectKitPixels(
               tester,

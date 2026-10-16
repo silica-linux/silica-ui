@@ -9,11 +9,6 @@ import 'package:silica_ui/src/amalfi/components/steppers/chevron.dart';
 
 import 'support/harness.dart';
 
-/// Kit defect: the raised controls cast `Shadow/Soft` with the level 1 offset and blur; the
-/// tokens give level 1.
-const String softShadow =
-    'kit shadow uses the Shadow/Soft colour, tokens level 1';
-
 /// The kit rounds the hover and press overlay of a half on all four corners, leaving notches
 /// at the divider; ours fills the half, clipped to the bezel.
 const String halfCorners = 'kit overlay rounded at the divider; ours clipped';
@@ -212,7 +207,6 @@ void main() {
                 'Glyph Chevron Down': chevrons.at(1),
               },
               deviations: {
-                if (enabled) 'Background#shadows': softShadow,
                 if (hasState) 'State#corners': halfCorners,
                 for (final (i, name) in [
                   (0, 'Glyph Chevron Up'),

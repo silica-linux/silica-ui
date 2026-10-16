@@ -41,6 +41,18 @@ Offset? pngOrigin(KitMaster master) {
 /// The bars' round ends: Sketch antialiases them differently (up to 81 on single pixels).
 const KitPixelTolerance barTolerance = KitPixelTolerance(mean: 1, max: 96);
 
+/// The regular bar (8 tall, radius 3: smooth corners, not capsule ends). Its outline matches
+/// the kit's SVG and is symmetric, but the test rasteriser under-covers the bottom row of
+/// pixels at the corners (alpha 64 where the top row has 197, also with the outline flipped
+/// upside down): single pixels differ by up to 118. The mean stays at 0.06–0.18.
+const KitPixelTolerance regularBarTolerance = KitPixelTolerance(
+  mean: 1,
+  max: 128,
+);
+
+KitPixelTolerance barToleranceOf(AmalfiProgressSize size) =>
+    size == AmalfiProgressSize.regular ? regularBarTolerance : barTolerance;
+
 /// The quarters of [ring] (stroke [stroke]) an arc from the top over [sweep] of a turn
 /// passes through, with its round ends.
 List<Rect> arcMask(Rect ring, double stroke, double sweep) {
@@ -104,7 +116,7 @@ void main() {
               master,
               scene,
               origin: pngOrigin(master),
-              tolerance: barTolerance,
+              tolerance: barToleranceOf(size),
             );
           });
 
@@ -185,7 +197,7 @@ void main() {
               master,
               scene,
               origin: pngOrigin(master),
-              tolerance: barTolerance,
+              tolerance: barToleranceOf(size),
             );
           });
         }

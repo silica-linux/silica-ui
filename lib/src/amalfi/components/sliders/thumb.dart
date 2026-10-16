@@ -1,5 +1,5 @@
 // The slider thumb (kit `Sliders/Thumb/Round/*`): a 20 pt disc of `Surface/Control` with a
-// 1 pt `Line/Border` rim inside and the level 1 shadow; hover lays `Accent/Amalfi Soft` over
+// 1 pt `Line/Border` rim inside and the controls' `Shadow/Soft` shadow; hover lays `Accent/Amalfi Soft` over
 // it, a press turns it `Surface/Control Pressed`, keyboard focus adds the 3 pt halo outside,
 // disabled is `Surface/Sunken` without shadow.
 
@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
-import 'css_shadow.dart';
+import '../buttons/button_surface.dart' show amalfiControlShadows;
 
 /// The measures of the sliders, from the kit masters `Sliders/*`.
 abstract final class AmalfiSliderMetrics {
@@ -101,9 +101,7 @@ class AmalfiSliderThumb extends StatelessWidget {
                   strokeAlign: BorderSide.strokeAlignInside,
                 ),
               ),
-              shadows: disabled || core
-                  ? null
-                  : AmalfiCssShadow.all(theme.shadows.level1),
+              shadows: disabled || core ? null : amalfiControlShadows(colors),
             ),
           ),
           if (hovered)
