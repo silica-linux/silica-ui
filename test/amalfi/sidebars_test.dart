@@ -66,20 +66,29 @@ void main() {
   for (final appearance in ['Light', 'Dark']) {
     group('kit $appearance', () {
       for (final variant in ['Plain', 'Badge']) {
-        for (final state in ['Rest', 'Hover', 'Selected', 'Disabled']) {
+        for (final state in [
+          'Rest',
+          'Hover',
+          'Selected',
+          'Selected Inactive',
+          'Disabled',
+        ]) {
           testWidgets('Row/$variant/$state', (tester) async {
             final master = KitMaster.load(
               'Sidebars/Row/$variant/$state/$appearance',
             );
-            final row = SizedBox(
-              width: 216,
-              child: AmalfiSidebarRow(
-                label: 'Documents',
-                icon: AmalfiGlyphs.folder,
-                badge: variant == 'Badge' ? '12' : null,
-                selected: state == 'Selected',
-                enabled: state != 'Disabled',
-                onTap: () {},
+            final row = WindowActiveScope(
+              active: state != 'Selected Inactive',
+              child: SizedBox(
+                width: 216,
+                child: AmalfiSidebarRow(
+                  label: 'Documents',
+                  icon: AmalfiGlyphs.folder,
+                  badge: variant == 'Badge' ? '12' : null,
+                  selected: state.startsWith('Selected'),
+                  enabled: state != 'Disabled',
+                  onTap: () {},
+                ),
               ),
             );
             Future<void> prepare(WidgetTester t) async {
@@ -92,7 +101,7 @@ void main() {
             await prepare(tester);
             final surface = switch (state) {
               'Hover' => 'Hover',
-              'Selected' => 'Selection',
+              'Selected' || 'Selected Inactive' => 'Selection',
               _ => null,
             };
             expectKitGeometry(

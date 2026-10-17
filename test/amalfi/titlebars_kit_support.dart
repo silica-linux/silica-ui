@@ -517,13 +517,6 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
   ],
 );
 
-/// The kit's sidebar section is a translucent blur strip over the sidebar (80 % surface,
-/// one background blur) with the divider drawn on top, the controls 1 further in
-/// (`components.md`, "Sidebar in a split title bar"); the section here is the opaque one.
-/// Tracked apart from the readability pass.
-const String blurStrip =
-    'kit: blur strip with the divider through the title bar (not built yet)';
-
 /// The kit's subtitle frame of `Piece/Title + Subtitle` is the text's width in whole points
 /// (66, centred under the 76 title); ours rounds to the 4 pt grid (68), like every titlebar text.
 const String subtitleWholePoints =

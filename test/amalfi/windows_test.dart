@@ -73,18 +73,16 @@ Map<String, Finder> frameLayers() {
 }
 
 /// A sidebar under a bar or a split toolbar (kit `Windows/Sidebar Body/Below Bar|Full`).
-Widget sidebarBody({required bool full, bool edge = true}) =>
-    AmalfiSidebarPanel(
-      edge: edge,
-      padding: EdgeInsets.fromLTRB(12, full ? 60 : 8, 12, 0),
-      children: [
-        for (final w in panelRows())
-          if (w is AmalfiSidebarHeader)
-            AmalfiSidebarHeader(key: w.key, title: w.title)
-          else
-            w,
-      ],
-    );
+Widget sidebarBody({required bool full}) => AmalfiSidebarPanel(
+  padding: EdgeInsets.fromLTRB(12, full ? 60 : 8, 12, 0),
+  children: [
+    for (final w in panelRows())
+      if (w is AmalfiSidebarHeader)
+        AmalfiSidebarHeader(key: w.key, title: w.title)
+      else
+        w,
+  ],
+);
 
 /// The pieces of the kit's unified window bar.
 Widget windowBar({
@@ -629,11 +627,7 @@ void main() {
             Size(240, full ? 600 : 548),
             sidebarBody(full: full),
             frame: false,
-            layers: {
-              'Surface': find.byType(ColoredBox).first,
-              'Edge': find.byType(ColoredBox).last,
-              ...keyed(names),
-            },
+            layers: {'Surface': find.byType(ColoredBox).first, ...keyed(names)},
           );
         });
       }

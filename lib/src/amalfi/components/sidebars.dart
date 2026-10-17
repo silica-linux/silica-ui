@@ -4,3 +4,4 @@
 // The widgets live under `sidebars/` and are exported from here.
 
 export 'sidebars/sidebar.dart';
+export 'sidebars/sidebar_reveal.dart';

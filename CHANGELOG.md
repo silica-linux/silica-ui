@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- **Changed (Amalfi sidebars, silica-ui#95; silica-desktop 2aa9b2a, silica-design 723f76a0):**
+  glyphs are coloured by section: new `AmalfiSidebarGlyphColor` scope, `AmalfiSidebarGroup.glyphColor`
+  and `AmalfiSidebarRow.glyphColor`; the default is `Accent/Amalfi` and a selected row keeps its
+  section colour. In an inactive window (`WindowActiveScope`) the selection is a neutral capsule
+  (`Surface/Control Pressed`, dark `Surface/Control`) and every glyph and label is `Text/Secondary`
+  (`Sidebars/Row/{Plain,Badge}/Selected Inactive`). No divider between sidebar and content:
+  `AmalfiSidebarPanel.edge` and `AmalfiToolbar.sidebarSection(edge:)` are removed (breaking), and
+  `AmalfiWindowLayout` no longer draws the sidebar line across the bar. Kit fixtures resynced for
+  the sidebar masters.
+- **Added (silica-ui#95):** `AmalfiSidebarReveal` and `AmalfiSidebarRevealBuilder`, the sidebar
+  show/hide motion (hide 240 ms, show 230 ms after a 40 ms delay, cubic-bezier(0.42, 0, 0.58, 1);
+  the sidebar slides from the leading edge, the content and its toolbar follow the content edge),
+  with the timings in `AmalfiSidebarMotion`.
 - **Added (silica-desktop#4):** menus and popovers as surfaces of their own. `showAmalfiMenu`,
   `showAmalfiPopover`, the pop-up and pull-down buttons and the submenus open an `xdg_popup` of
   the app's window, drawn by its own Flutter view, when Silica offers it (the app started with

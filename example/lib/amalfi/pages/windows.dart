@@ -73,7 +73,6 @@ class _SidebarState extends State<_Sidebar> {
 
   @override
   Widget build(BuildContext context) => AmalfiSidebarPanel(
-    edge: false,
     padding: EdgeInsets.fromLTRB(12, widget.top, 12, 0),
     children: [
       const AmalfiSidebarHeader(title: 'Favourites'),

@@ -136,11 +136,11 @@ class AmalfiWindowSeparator extends StatelessWidget {
 /// the [content] and the [inspector] side by side.
 ///
 /// Separators are drawn over the regions at their edges: under the bar ([barSeparator])
-/// and along the leading edge of the inspector. The sidebar draws its own trailing edge (an
-/// `AmalfiSidebarPanel` with `edge`, the kit's single sidebar edge, inside its width). With
-/// [sidesUnderBar] the sidebar and the inspector run up to the top of the window, behind a
-/// transparent bar (the bar must then use `AmalfiToolbarSurface.none`), the line under the
-/// bar only spans the content, and the sidebar's edge continues up beside the bar.
+/// and along the leading edge of the inspector. There is no line between the sidebar and the
+/// content, in the body or across the bar: the tone step `Surface/Sidebar` -> `Surface/Window`
+/// is the edge (`components.md`, user decision 2026-10-17). With [sidesUnderBar] the sidebar
+/// and the inspector run up to the top of the window, behind a transparent bar (the bar must
+/// then use `AmalfiToolbarSurface.none`), and the line under the bar only spans the content.
 class AmalfiWindowLayout extends StatelessWidget {
   const AmalfiWindowLayout({
     super.key,
@@ -212,14 +212,6 @@ class AmalfiWindowLayout extends StatelessWidget {
             height: line,
             child: const AmalfiWindowSeparator(),
           ),
-        if (sidebar != null && sidesUnderBar && bar != null)
-          Positioned(
-            left: sidebarWidth - line,
-            top: 0,
-            height: top,
-            width: line,
-            child: const AmalfiWindowSeparator(),
-          ),
         if (inspector != null)
           Positioned(
             right: inspectorWidth - line,
@@ -258,15 +250,15 @@ class AmalfiWindowColumn {
   /// behind its section, kit `Windows/Sidebar Body/Full`).
   final bool toolbarOverChild;
 
-  /// Whether [child] draws its own trailing edge (a sidebar: `AmalfiSidebarPanel` with
-  /// `edge`), so no separator follows the column.
+  /// Whether no separator follows the column (a sidebar: it meets the next column with the
+  /// tone step `Surface/Sidebar` -> `Surface/Window`, no line).
   final bool ownEdge;
 }
 
 /// A window split into columns, each with its own toolbar section (kit `Windows/Split
 /// Toolbar`, `Split Toolbar Inspector`, `Split Toolbar Three Columns`), with a full-height
-/// separator over every boundary between columns, except after a column that draws its own
-/// edge ([AmalfiWindowColumn.ownEdge], the sidebar).
+/// separator over every boundary between columns, except after a column that has none
+/// ([AmalfiWindowColumn.ownEdge], the sidebar).
 class AmalfiSplitWindowLayout extends StatelessWidget {
   const AmalfiSplitWindowLayout({
     super.key,

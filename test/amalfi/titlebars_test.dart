@@ -266,6 +266,7 @@ void main() {
             width: 240,
             child: AmalfiToolbar.sidebarSection(
               active: active,
+              surface: AmalfiToolbarSurface.blur,
               children: sidebarSectionPieces(),
             ),
           );
@@ -276,14 +277,12 @@ void main() {
             root: root,
             layers: {'Surface': barSurface(), ...keyed(sidebarSectionNames)},
             deviations: const {
-              'Surface#fills': blurStrip,
-              'Surface#blurs': blurStrip,
-              'Controls': blurStrip,
-              'Spacer': blurStrip,
+              'Surface#blurs':
+                  'the blur is the BackdropFilter around the tinted ColoredBox',
             },
           );
-          // The kit's section is a blur strip over the sidebar with the divider drawn on
-          // top: the pixels of the opaque section differ everywhere.
+          // The kit's section is a blur strip over the sidebar: the pixels of the opaque
+          // section differ.
           await expectKitPixels(
             tester,
             master,

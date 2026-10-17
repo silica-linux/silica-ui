@@ -50,8 +50,7 @@ class AmalfiToolbar extends StatelessWidget {
     this.surface = AmalfiToolbarSurface.window,
     this.separator = false,
     this.active,
-  }) : spacing = 0,
-       edge = false;
+  }) : spacing = 0;
 
   /// The compact toolbar: 40 tall, its children 8 apart between paddings of 20 and 16. Its
   /// children are bare controls: `AmalfiControlsPiece(width: AmalfiToolbarMetrics
@@ -65,8 +64,7 @@ class AmalfiToolbar extends StatelessWidget {
     this.active,
   }) : height = AmalfiToolbarMetrics.compactHeight,
        padding = AmalfiToolbarMetrics.compactPadding,
-       spacing = AmalfiToolbarMetrics.compactGap,
-       edge = false;
+       spacing = AmalfiToolbarMetrics.compactGap;
 
   /// A section of a split toolbar (kit `Titlebars/Section/Content|List|Inspector`): 52 tall,
   /// 12 before the first piece and 8 after the last.
@@ -78,21 +76,19 @@ class AmalfiToolbar extends StatelessWidget {
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight,
-       spacing = 0,
-       edge = false;
+       spacing = 0;
 
   /// The sidebar section of a split toolbar (kit `Titlebars/Section/Sidebar`): on
   /// `Surface/Sidebar`, starting with the controls piece, 8 after the last piece.
   ///
   /// With [AmalfiToolbarSurface.blur] the section is a blur strip over the sidebar, which scrolls
-  /// under it; [edge] draws the sidebar's trailing separator across the bar, so the divider
-  /// runs up to the top edge of the window.
+  /// under it. No divider runs along its trailing edge (`components.md`, user decision
+  /// 2026-10-17).
   const AmalfiToolbar.sidebarSection({
     super.key,
     required this.children,
     this.padding = AmalfiToolbarMetrics.sidebarSectionPadding,
     this.surface = AmalfiToolbarSurface.sidebar,
-    this.edge = false,
     this.separator = false,
     this.active,
   }) : height = AmalfiToolbarMetrics.toolbarHeight,
@@ -110,10 +106,6 @@ class AmalfiToolbar extends StatelessWidget {
   final double spacing;
 
   final AmalfiToolbarSurface surface;
-
-  /// Whether to draw a 1 pt `Line/Separator` along the trailing edge, inside the bar (the
-  /// sidebar section's share of the sidebar divider).
-  final bool edge;
 
   /// Whether to draw a 1 pt `Line/Separator` along the bottom, inside the bar.
   final bool separator;
@@ -154,14 +146,6 @@ class AmalfiToolbar extends StatelessWidget {
               right: 0,
               bottom: 0,
               height: 1,
-              child: ColoredBox(color: colors.lineSeparator),
-            ),
-          if (edge)
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: 1,
               child: ColoredBox(color: colors.lineSeparator),
             ),
         ],

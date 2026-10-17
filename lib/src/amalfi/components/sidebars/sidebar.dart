@@ -8,6 +8,7 @@
 
 import 'package:flutter/widgets.dart';
 
+import '../../../controls/control_base.dart' show WindowActiveScope;
 import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
@@ -109,11 +110,38 @@ class AmalfiSidebarBadge extends StatelessWidget {
   }
 }
 
+/// The glyph colour of a sidebar section (`components.md`, user decision 2026-10-17): the
+/// rows below it take it for their glyph, selected or not. Glyphs are coloured by section,
+/// never per item. Without a scope (and without [AmalfiSidebarRow.glyphColor]) a glyph is
+/// `Accent/Amalfi`, the row masters' default.
+class AmalfiSidebarGlyphColor extends InheritedWidget {
+  const AmalfiSidebarGlyphColor({
+    super.key,
+    required this.color,
+    required super.child,
+  });
+
+  /// The section's glyph colour (`Accent/Amalfi`, `Text/Secondary`, a palette colour).
+  final Color color;
+
+  /// The colour in effect for [context]; null: no scope.
+  static Color? maybeOf(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<AmalfiSidebarGlyphColor>()
+      ?.color;
+
+  @override
+  bool updateShouldNotify(AmalfiSidebarGlyphColor old) => old.color != color;
+}
+
 /// A sidebar row (kit `Sidebars/Row/Plain|Badge`): a 20 pt [icon] and [label], an optional
 /// [badge] at the end.
 ///
-/// Selected: `Accent/Amalfi Soft` capsule, the label at weight 600 and the icon in the
-/// accent. Under the pointer: a `Line/Separator` capsule. Disabled ([onTap] null and not
+/// The glyph is [glyphColor], else the section's ([AmalfiSidebarGlyphColor]), else
+/// `Accent/Amalfi`, and a selected row keeps it. Selected in an active window: `Accent/Amalfi
+/// Soft` capsule, the label `Text/Primary` at weight 600. In an inactive window
+/// ([WindowActiveScope]; kit `Selected Inactive`) the selection is a neutral capsule
+/// (`Surface/Control Pressed`, dark `Surface/Control`) and every glyph and label is
+/// `Text/Secondary`. Under the pointer: a `Line/Separator` capsule. Disabled ([onTap] null and not
 /// [selected]): the whole row at `AmalfiStates.disabledOpacity`. Enter or Space activates a focused row.
 class AmalfiSidebarRow extends StatefulWidget {
   const AmalfiSidebarRow({
@@ -124,9 +152,13 @@ class AmalfiSidebarRow extends StatefulWidget {
     this.selected = false,
     this.onTap,
     this.enabled = true,
+    this.glyphColor,
   });
 
   final String label;
+
+  /// The glyph colour of this row; null: the section's ([AmalfiSidebarGlyphColor]).
+  final Color? glyphColor;
 
   /// The Icon Kit glyph; null: an empty 20 pt slot.
   final AmalfiGlyphData? icon;
@@ -154,12 +186,18 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
     final enabled = widget.enabled;
     final selected = widget.selected && enabled;
     final hovered = _hovered && enabled && !selected;
-    final iconColor = selected ? colors.accentAmalfi : colors.textSecondary;
+    final active = WindowActiveScope.of(context);
+    final iconColor = !active || !enabled
+        ? colors.textSecondary
+        : widget.glyphColor ??
+              AmalfiSidebarGlyphColor.maybeOf(context) ??
+              colors.accentAmalfi;
+    final labelColor = active ? colors.textPrimary : colors.textSecondary;
     final labelStyle = selected
         ? AmalfiType.sidebar(
-            color: colors.textPrimary,
+            color: labelColor,
           ).copyWith(fontWeight: FontWeight.w600)
-        : AmalfiType.sidebar(color: colors.textPrimary);
+        : AmalfiType.sidebar(color: labelColor);
     final icon = widget.icon;
     final badge = widget.badge;
     Widget row = Padding(
@@ -198,7 +236,13 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
     if (selected || hovered) {
       row = DecoratedBox(
         decoration: AmalfiShapeDecoration(
-          color: selected ? colors.accentAmalfiSoft : colors.lineSeparator,
+          color: !selected
+              ? colors.lineSeparator
+              : active
+              ? colors.accentAmalfiSoft
+              : AmalfiTheme.of(context).brightness == Brightness.dark
+              ? colors.surfaceControl
+              : colors.surfaceControlPressed,
           shape: const AmalfiSmoothBorder(radius: AmalfiSidebarMetrics.radius),
         ),
         child: row,
@@ -342,27 +386,41 @@ class AmalfiSidebarGroup extends StatelessWidget {
     required this.title,
     required this.expanded,
     this.onToggle,
+    this.glyphColor,
     this.children = const [],
   });
 
   final String title;
   final bool expanded;
   final VoidCallback? onToggle;
+
+  /// The glyph colour of the section's rows ([AmalfiSidebarGlyphColor]); null: inherited.
+  final Color? glyphColor;
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      AmalfiSidebarHeader(title: title, expanded: expanded, onToggle: onToggle),
-      if (expanded)
-        for (final child in children) ...[
-          const SizedBox(height: AmalfiSidebarMetrics.rowGap),
-          child,
-        ],
-    ],
-  );
+  Widget build(BuildContext context) {
+    final color = glyphColor;
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AmalfiSidebarHeader(
+          title: title,
+          expanded: expanded,
+          onToggle: onToggle,
+        ),
+        if (expanded)
+          for (final child in children) ...[
+            const SizedBox(height: AmalfiSidebarMetrics.rowGap),
+            child,
+          ],
+      ],
+    );
+    return color == null
+        ? column
+        : AmalfiSidebarGlyphColor(color: color, child: column);
+  }
 }
 
 /// The bar at the bottom of a sidebar (kit `Sidebars/Footer`): a 1 pt separator along its top
@@ -413,15 +471,14 @@ class AmalfiSidebarFooter extends StatelessWidget {
 ///
 /// [padding] is the space around the list: 12 at the sides; at the top 8 under a toolbar, or
 /// the toolbar height + 8 when the sidebar runs under a split toolbar (`Sidebar Body/Full`).
-/// With [edge] a 1 pt separator runs along the trailing edge, inside the width (a window
-/// layout draws its own separator instead).
+/// No line runs along the trailing edge: the sidebar meets the content with the tone step
+/// `Surface/Sidebar` -> `Surface/Window` (`components.md`, user decision 2026-10-17).
 class AmalfiSidebarPanel extends StatelessWidget {
   const AmalfiSidebarPanel({
     super.key,
     required this.children,
     this.footer,
     this.padding = const EdgeInsets.fromLTRB(12, 8, 12, 0),
-    this.edge = true,
     this.width = AmalfiSidebarMetrics.width,
     this.topInset = 0,
   });
@@ -429,7 +486,6 @@ class AmalfiSidebarPanel extends StatelessWidget {
   final List<Widget> children;
   final Widget? footer;
   final EdgeInsets padding;
-  final bool edge;
 
   /// The width; null: as wide as the constraints.
   final double? width;
@@ -501,14 +557,6 @@ class AmalfiSidebarPanel extends StatelessWidget {
                 },
               ),
             ),
-            if (edge)
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                width: 1,
-                child: ColoredBox(color: colors.lineSeparator),
-              ),
           ],
         ),
       ),
