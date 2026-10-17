@@ -164,7 +164,11 @@ abstract final class SilicaPopups {
     for (final candidate in WidgetsBinding.instance.platformDispatcher.views) {
       if (candidate.viewId == id) view ??= candidate;
     }
-    if (view == null) return null;
+    if (view == null) {
+      // The embedder opened it but the engine has no such view: do not leave it open.
+      unawaited(SilicaWindows.invoke<Object?>('closeWindow', {'viewId': id}));
+      return null;
+    }
     final popup = SilicaPopupController._(view, placement);
     _open[id] = popup;
     return popup;

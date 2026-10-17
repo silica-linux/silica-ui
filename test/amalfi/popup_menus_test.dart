@@ -442,4 +442,30 @@ void main() {
     expect(popup.isOpen, isFalse);
     await popup.closed;
   });
+
+  testWidgets('a popup whose view the engine does not know is closed again', (
+    tester,
+  ) async {
+    await pumpKitScene(tester, const SizedBox());
+    await offerPopups(tester);
+    place = (call) => {'viewId': 99};
+    final popup = await SilicaPopups.show(
+      parent: 0,
+      size: const Size(10, 10),
+      anchorRect: Rect.zero,
+    );
+    // The resolver of these tests knows every id: forget this one.
+    SilicaPopups.debugViewResolver = null;
+    expect(popup, isNotNull);
+    final unknown = await SilicaPopups.show(
+      parent: 0,
+      size: const Size(10, 10),
+      anchorRect: Rect.zero,
+    );
+    expect(unknown, isNull);
+    expect(
+      calls.where((call) => call.method == 'closeWindow').single.arguments,
+      {'viewId': 99},
+    );
+  });
 }
