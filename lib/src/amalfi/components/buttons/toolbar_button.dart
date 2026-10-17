@@ -5,6 +5,7 @@
 import 'package:flutter/rendering.dart' show OverflowBoxFit;
 import 'package:flutter/widgets.dart';
 
+import '../../../controls/control_base.dart' show WindowActiveScope;
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
@@ -76,7 +77,10 @@ class AmalfiToolbarButton extends StatelessWidget {
       glass: AmalfiMaterials.regular,
       hoverOverlay: colors.lineSeparator,
       pressOverlay: colors.lineBorder,
-      content: colors.textPrimary,
+      // An inactive window's toolbar glyphs are Text/Tertiary (Titlebars/Piece/* Inactive).
+      content: WindowActiveScope.of(context)
+          ? colors.textPrimary
+          : colors.textTertiary,
     );
     final label = this.label;
     final small = this.small && label == null;
