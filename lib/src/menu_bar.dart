@@ -18,6 +18,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'windows.dart';
+
 /// The role of a top-level menu.
 enum SilicaMenuRole {
   /// One of the app's own menus (File, Edit, View…).
@@ -64,6 +66,9 @@ enum SilicaMenuItemRole {
 
   /// Closes the active window (system, ⌘W).
   close('close'),
+
+  /// Closes every window of the app (⌥⌘W): [SilicaMenuItem.closeAll].
+  closeAll('close_all'),
   minimize('minimize'),
   fullScreen('fullscreen'),
   bringAllToFront('bring_all_to_front');
@@ -108,6 +113,22 @@ class SilicaMenuItem extends PlatformMenuItem {
   const SilicaMenuItem.system(this.role, {this.enabled = true})
     : checked = false,
       super(label: '');
+
+  /// File › Close All (⌥⌘W): closes every window of the app, the main one included, asking
+  /// each that asks before closing ([SilicaWindows.closeAll]). An empty [label] takes the
+  /// bar's. Disabled when [enabled] is false (nothing to close).
+  SilicaMenuItem.closeAll({String label = '', this.enabled = true})
+    : checked = false,
+      role = SilicaMenuItemRole.closeAll,
+      super(
+        label: label,
+        shortcut: const SingleActivator(
+          LogicalKeyboardKey.keyW,
+          meta: true,
+          alt: true,
+        ),
+        onSelected: SilicaWindows.closeAll,
+      );
 
   final bool checked;
   final bool enabled;

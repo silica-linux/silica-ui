@@ -2,6 +2,7 @@
 // groups, in every variant, size and state. Checklist: docs/amalfi-checklist/toggles.md.
 
 import 'package:flutter/gestures.dart';
+
 import 'dart:ui' show CheckedState, Tristate;
 
 import 'package:flutter/semantics.dart';

@@ -27,6 +27,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'app.dart' show SilicaApp;
 import 'appearance.dart';
 import 'window.dart';
 
@@ -105,6 +106,25 @@ abstract final class SilicaWindows {
   static set onMainCloseRequested(Future<bool> Function()? ask) {
     _onMainCloseRequested = ask;
     if (ask != null) _listen();
+  }
+
+  /// Closes every window of the app, the main one last (File › Close All, ⌥⌘W). A window that
+  /// asks before closing ([SilicaWindowController.onCloseRequested]) may refuse: it stays
+  /// open, and so does the main window then.
+  static Future<void> closeAll() async {
+    var refused = false;
+    for (final window in [..._open.value]) {
+      final ask = window.onCloseRequested;
+      if (ask != null && !await ask()) {
+        refused = true;
+        continue;
+      }
+      await window.close();
+    }
+    if (refused) return;
+    final ask = _onMainCloseRequested;
+    if (ask != null && !await ask()) return;
+    await SilicaApp.closeWindow();
   }
 
   /// The windows open now (not the main one), in opening order.

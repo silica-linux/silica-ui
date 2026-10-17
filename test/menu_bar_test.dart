@@ -346,4 +346,23 @@ void main() {
       {'key': 'S', 'meta': true, 'ctrl': true, 'alt': true, 'shift': true},
     );
   });
+
+  testWidgets('File › Close All is a standard item with ⌥⌘W', (tester) async {
+    final calls = mockChannel(tester);
+    await tester.pumpWidget(
+      SilicaMenuBar(
+        menus: [
+          SilicaMenu(label: 'File', menus: [SilicaMenuItem.closeAll()]),
+        ],
+        child: const SizedBox(),
+      ),
+    );
+    await tester.pump();
+    final model = calls.single.arguments as Map;
+    final item = ((model['menus'] as List).single as Map)['items'] as List;
+    expect(item.single, containsPair('role', 'close_all'));
+    expect(item.single, containsPair('enabled', true));
+    expect(item.single, contains('id'));
+    expect((item.single as Map)['shortcut'], containsPair('key', 'W'));
+  });
 }

@@ -224,4 +224,43 @@ void main() {
     );
     expect(find.text('main'), findsOneWidget);
   });
+
+  testWidgets('closeAll closes the other windows, then the main one', (
+    tester,
+  ) async {
+    final appCalls = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SilicaApp.channel, (call) async {
+          appCalls.add(call.method);
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SilicaApp.channel, null),
+    );
+    answer = (call) => call.method == 'openWindow' ? 0 : true;
+    final window = await SilicaWindows.openWindow(
+      title: 'Info',
+      size: const Size(200, 200),
+      builder: content,
+    );
+    expect(window, isNotNull);
+    calls.clear();
+
+    // A window that refuses stays, and so does the main window.
+    window!.onCloseRequested = () async => false;
+    await SilicaWindows.closeAll();
+    expect(calls, isEmpty);
+    expect(appCalls, isEmpty);
+
+    window.onCloseRequested = null;
+    SilicaWindows.onMainCloseRequested = () async => false;
+    await SilicaWindows.closeAll();
+    expect(calls.map((call) => call.method), ['closeWindow']);
+    expect(appCalls, isEmpty);
+
+    SilicaWindows.onMainCloseRequested = null;
+    await SilicaWindows.closeAll();
+    expect(appCalls, ['closeWindow']);
+  });
 }
