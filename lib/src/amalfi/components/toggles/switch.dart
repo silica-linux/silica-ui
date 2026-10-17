@@ -112,10 +112,16 @@ class AmalfiSwitchFace extends StatelessWidget {
     this.lens = 1,
     this.lensOpacity = 0,
     this.dimDisabled = true,
+    this.trackOn,
   });
 
   /// Whether the switch is on.
   final bool value;
+
+  /// Which state the track is drawn in; null: [value]. While dragging, the switch passes the
+  /// half the thumb is in, so the result of the release is visible; the colour changes with
+  /// `fade.quick`.
+  final bool? trackOn;
 
   /// Mini, Small or Regular (Large draws as Regular).
   final AmalfiControlSize size;
@@ -148,15 +154,31 @@ class AmalfiSwitchFace extends StatelessWidget {
     final hovered = enabled && state.hovered && !state.pressed;
     final x = m.clampX(thumbX ?? m.restX(value));
 
-    Widget track({Key? key}) => DecoratedBox(
-      key: key,
-      decoration: AmalfiShapeDecoration(
-        color: value
-            ? (pressed ? colors.accentAmalfiPressed : colors.accentAmalfi)
-            : colors.surfaceSunken,
-        shape: AmalfiSmoothBorder(
-          radius: m.trackRadius,
-          side: value ? BorderSide.none : BorderSide(color: colors.lineBorder),
+    final trackIsOn = trackOn ?? value;
+    Widget track({Key? key}) => TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: trackIsOn ? 1 : 0),
+      duration: AmalfiFades.quick.duration,
+      curve: AmalfiFades.quick.curve,
+      builder: (context, t, _) => DecoratedBox(
+        key: key,
+        decoration: AmalfiShapeDecoration(
+          color: Color.lerp(
+            colors.surfaceSunken,
+            pressed ? colors.accentAmalfiPressed : colors.accentAmalfi,
+            t,
+          ),
+          shape: AmalfiSmoothBorder(
+            radius: m.trackRadius,
+            side: t >= 1
+                ? BorderSide.none
+                : BorderSide(
+                    color: Color.lerp(
+                      colors.lineBorder,
+                      const Color(0x00000000),
+                      t,
+                    )!,
+                  ),
+          ),
         ),
       ),
     );
@@ -377,6 +399,10 @@ class _AmalfiSwitchState extends State<AmalfiSwitch>
         });
   }
 
+  /// Whether the thumb is in the on half of the track.
+  bool get _thumbOn =>
+      _thumb.value + _metrics.thumb / 2 > _metrics.track.width / 2;
+
   void _toggle() => widget.onChanged?.call(!widget.value);
 
   void _dragStart(Offset at) {
@@ -398,8 +424,7 @@ class _AmalfiSwitchState extends State<AmalfiSwitch>
   }
 
   void _dragEnd() {
-    final m = _metrics;
-    final on = _thumb.value + m.thumb / 2 > m.track.width / 2;
+    final on = _thumbOn;
     setState(() => _dragging = false);
     // The lens fades out (fade.quick) over the thumb as it settles.
     _lens.reverse();
@@ -431,6 +456,7 @@ class _AmalfiSwitchState extends State<AmalfiSwitch>
               state: state,
               thumbX: _thumb.value,
               dragging: _dragging,
+              trackOn: _dragging ? _thumbOn : null,
               lens: _dragging ? _lens.value : 1,
               lensOpacity: _dragging ? 1 : _lens.value,
               dimDisabled: label == null,
