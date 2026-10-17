@@ -13,6 +13,7 @@ import 'package:flutter/widgets.dart';
 import '../../foundation/foundation.dart';
 import '../../../controls/control_base.dart' show WindowActiveScope;
 
+import '../../../window.dart' show WindowDragThrough;
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import 'text_box.dart';
@@ -173,6 +174,7 @@ class AmalfiTitlePiece extends StatelessWidget {
           onDocumentMenu: onDocumentMenu,
           active: active,
           fill: true,
+          leading: true,
         ),
       );
     }
@@ -188,6 +190,7 @@ class AmalfiTitlePiece extends StatelessWidget {
           document: document,
           onDocumentMenu: onDocumentMenu,
           active: active,
+          leading: true,
         ),
       ),
     );
@@ -206,6 +209,7 @@ class AmalfiTitleBlock extends StatelessWidget {
     this.active,
     this.maxLines = 1,
     this.fill = false,
+    this.leading = false,
   });
 
   final String title;
@@ -221,6 +225,11 @@ class AmalfiTitleBlock extends StatelessWidget {
 
   /// Whether the title's text box takes all the width it is given.
   final bool fill;
+
+  /// Whether the title and the subtitle line up at the leading edge (the piece of a toolbar,
+  /// the block as wide as its longer line) instead of being centred on each other (the title
+  /// bar).
+  final bool leading;
 
   @override
   Widget build(BuildContext context) {
@@ -243,6 +252,9 @@ class AmalfiTitleBlock extends StatelessWidget {
     if (subtitle != null) {
       block = Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: leading
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
         children: [
           titleText,
           AmalfiTitlebarTextBox(
@@ -285,10 +297,13 @@ class AmalfiTitleBlock extends StatelessWidget {
       onTap: menu,
       child: menu == null
           ? block
-          : GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: menu,
-              child: MouseRegion(child: block),
+          : WindowDragThrough(
+              // A click opens the menu; a drag from the title moves the window.
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: menu,
+                child: MouseRegion(child: block),
+              ),
             ),
     );
   }
