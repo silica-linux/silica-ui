@@ -33,19 +33,24 @@ class AmalfiAppIcon extends StatelessWidget {
         ? _fromFolder(id)
         : findSilicaIcon(id, env: env);
     final dark = AmalfiTheme.maybeOf(context)?.isDark ?? false;
-    return SizedBox.square(
-      dimension: size,
-      child: icon == null
-          ? null
-          : Center(
-              // The kit's 16 pt image is the whole 1024 canvas: the body is 824/1024 of it.
-              child: SilicaIcon(
-                LayeredSource(icon),
-                side: size * bodySide / canvasSide,
-                dark: dark,
-                env: env,
+    // Under tight constraints (the menu's 20 pt icon slot) the box is centred in them.
+    return Align(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: SizedBox.square(
+        dimension: size,
+        child: icon == null
+            ? null
+            : Center(
+                // The kit's 16 pt image is the whole 1024 canvas: the body is 824/1024 of it.
+                child: SilicaIcon(
+                  LayeredSource(icon),
+                  side: size * bodySide / canvasSide,
+                  dark: dark,
+                  env: env,
+                ),
               ),
-            ),
+      ),
     );
   }
 }

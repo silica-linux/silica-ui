@@ -376,6 +376,34 @@ void main() {
   }
 
   group('behaviour', () {
+    testWidgets(
+      'a submenu takes the width its action asks for (Open With: 192)',
+      (tester) async {
+        await pumpKitScene(
+          tester,
+          AmalfiMenu(
+            width: 232,
+            entries: [
+              AmalfiMenuAction(
+                'Open With',
+                submenu: [
+                  const AmalfiMenuAction('Photo Viewer (default)'),
+                  const AmalfiMenuAction('Other…'),
+                ],
+                submenuWidth: 192,
+              ),
+            ],
+          ),
+        );
+        await hover(tester, menuItem('Open With'));
+        await tester.pump(AmalfiMenuMetrics.submenuDelay);
+        await tester.pump();
+        final menus = find.byType(AmalfiMenu);
+        expect(menus, findsNWidgets(2));
+        expect(tester.getSize(menus.last).width, 192);
+      },
+    );
+
     testWidgets('sizes itself to its widest row, on the 4 pt grid', (
       tester,
     ) async {

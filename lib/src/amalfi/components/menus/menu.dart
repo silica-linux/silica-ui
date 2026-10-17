@@ -39,6 +39,7 @@ class AmalfiMenuAction extends AmalfiMenuEntry {
     this.destructive = false,
     this.onSelected,
     this.submenu,
+    this.submenuWidth,
   });
 
   /// The text.
@@ -64,6 +65,10 @@ class AmalfiMenuAction extends AmalfiMenuEntry {
 
   /// The entries of the submenu this item opens; null: none.
   final List<AmalfiMenuEntry>? submenu;
+
+  /// The narrowest the [submenu] gets, in pt; null: [AmalfiMenuMetrics.submenuMinWidth]. The kit's
+  /// `Submenu/Open With` is 192 (rows with 16 pt app icons).
+  final double? submenuWidth;
 
   /// Whether the pointer or the keyboard can highlight and choose it.
   bool get selectable => enabled && (submenu?.isNotEmpty ?? true);
@@ -468,6 +473,8 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
   Future<void> _openSubmenuPopup(int i, int parent) async {
     final opening = ++_submenuOpenings;
     final entries = _action(i)?.submenu;
+    final submenuWidth =
+        _action(i)?.submenuWidth ?? AmalfiMenuMetrics.submenuMinWidth;
     final list = context.findRenderObject();
     final item = _keys[i].currentContext?.findRenderObject();
     if (entries == null ||
@@ -505,7 +512,7 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
         entries: entries,
         onDismiss: onDismiss ?? dismiss,
         onBack: _backFromSubmenu,
-        minWidth: AmalfiMenuMetrics.submenuMinWidth,
+        minWidth: submenuWidth,
         autofocus: byKeyboard,
         highlightFirst: byKeyboard,
         opaque: opaque,
@@ -708,6 +715,9 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
   Widget _submenuOverlay(BuildContext overlayContext) {
     final i = _submenu;
     final entries = i == null ? null : _action(i)?.submenu;
+    final submenuWidth =
+        (i == null ? null : _action(i)?.submenuWidth) ??
+        AmalfiMenuMetrics.submenuMinWidth;
     final overlay = Overlay.maybeOf(context)?.context.findRenderObject();
     final list = context.findRenderObject();
     final item = i == null ? null : _keys[i].currentContext?.findRenderObject();
@@ -737,7 +747,7 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
             entries: entries,
             onDismiss: widget.onDismiss,
             onBack: _backFromSubmenu,
-            minWidth: AmalfiMenuMetrics.submenuMinWidth,
+            minWidth: submenuWidth,
             autofocus: _submenuByKeyboard,
             highlightFirst: _submenuByKeyboard,
             opaque: widget.opaque,

@@ -5,6 +5,7 @@
 - **Added (silica-ui, mustache#23; silica-design 43bd510f):** `AmalfiAppIcon(id)`, the 16 pt app icon of
   a menu row (`Icons/App/16/<App>`), drawn from the app's layers in silica-icons for
   `AmalfiMenuAction.icon`; the id may also be an app's `icon/` folder (`X-Silica-Icon`).
+  `AmalfiMenuAction.submenuWidth` sets the submenu width (192 for Open With).
   `SilicaMenuItem.icon` sends the same id to Silica's menu bar as `icon` (the bar must draw it).
   **Changed (silica-design a23f0d03):** the menu submenu overlaps its parent
   by 4 pt on the parent's visible body (it was 8; `AmalfiMenuMetrics.submenuOverlap` stays 4). Every
