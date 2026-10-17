@@ -614,6 +614,8 @@ final class AmalfiColors {
     required this.accentAmalfiPressed,
     required this.accentAmalfiSoft,
     required this.paletteLimone,
+    required this.paletteLimoneScuro,
+    required this.paletteArancia,
     required this.paletteTerracotta,
     required this.paletteBouganville,
     required this.paletteUlivo,
@@ -666,6 +668,12 @@ final class AmalfiColors {
 
   /// `Palette/Limone`: light `#FFC21AFF`, dark `#FFCF3DFF`.
   final Color paletteLimone;
+
+  /// `Palette/Limone Scuro`: light `#A67600FF`, dark `#FFCF3DFF`.
+  final Color paletteLimoneScuro;
+
+  /// `Palette/Arancia`: light `#F98A17FF`, dark `#FF9F40FF`.
+  final Color paletteArancia;
 
   /// `Palette/Terracotta`: light `#F0562EFF`, dark `#FF6A43FF`.
   final Color paletteTerracotta;
@@ -782,6 +790,8 @@ final class AmalfiColors {
     accentAmalfiPressed: Color(0xFF0A60BD),
     accentAmalfiSoft: Color(0x240E77E6),
     paletteLimone: Color(0xFFFFC21A),
+    paletteLimoneScuro: Color(0xFFA67600),
+    paletteArancia: Color(0xFFF98A17),
     paletteTerracotta: Color(0xFFF0562E),
     paletteBouganville: Color(0xFFE5338A),
     paletteUlivo: Color(0xFF34A853),
@@ -827,6 +837,8 @@ final class AmalfiColors {
     accentAmalfiPressed: Color(0xFF2F7FE6),
     accentAmalfiSoft: Color(0x383D95FF),
     paletteLimone: Color(0xFFFFCF3D),
+    paletteLimoneScuro: Color(0xFFFFCF3D),
+    paletteArancia: Color(0xFFFF9F40),
     paletteTerracotta: Color(0xFFFF6A43),
     paletteBouganville: Color(0xFFF04A9A),
     paletteUlivo: Color(0xFF4CC75A),
@@ -877,6 +889,8 @@ final class AmalfiColors {
     'Accent/Amalfi Pressed',
     'Accent/Amalfi Soft',
     'Palette/Limone',
+    'Palette/Limone Scuro',
+    'Palette/Arancia',
     'Palette/Terracotta',
     'Palette/Bouganville',
     'Palette/Ulivo',
@@ -973,6 +987,8 @@ final class AmalfiColors {
     'Accent/Amalfi Pressed' => accentAmalfiPressed,
     'Accent/Amalfi Soft' => accentAmalfiSoft,
     'Palette/Limone' => paletteLimone,
+    'Palette/Limone Scuro' => paletteLimoneScuro,
+    'Palette/Arancia' => paletteArancia,
     'Palette/Terracotta' => paletteTerracotta,
     'Palette/Bouganville' => paletteBouganville,
     'Palette/Ulivo' => paletteUlivo,
