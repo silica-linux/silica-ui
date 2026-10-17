@@ -15,6 +15,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../silica_ui.dart' show uiFontFamily, uiText;
 import 'file_icons.dart';
 import 'silica_icons.dart';
+import '../amalfi/foundation/symbol.dart'
+    show AmalfiSymbolWeight, silicaSymbolData;
 
 /// Icon canvas: 1024, body 824 at 100 from the edge, square keyline 600.
 const double canvasSide = 1024;
@@ -643,6 +645,13 @@ class SilicaIcon extends StatelessWidget {
         final left = box.center.dx * k - w / 2;
         final top = box.center.dy * k - h / 2;
         final fx = isDark ? dyn.dark : dyn.light;
+        final glyphData = silicaSymbolData(
+          name!,
+          weight: AmalfiSymbolWeight.values.firstWhere(
+            (weight) => weight.folder == band.weight,
+            orElse: () => AmalfiSymbolWeight.regular,
+          ),
+        );
         Widget glyph(Color color, double opacity, double dy) => Positioned(
           left: left,
           top: top + dy,
@@ -650,12 +659,23 @@ class SilicaIcon extends StatelessWidget {
           height: h,
           child: Opacity(
             opacity: opacity,
-            child: SvgPicture.string(
-              svgText(file),
-              width: w,
-              height: h,
-              theme: SvgTheme(currentColor: color),
-            ),
+            // The bundled Silica Symbols font draws it sharp at any size (one glyph, hinted
+            // by the text engine, instead of a rasterised SVG); a symbol the font lacks
+            // (an installed silica-icons newer than the font) falls back to its SVG.
+            child: glyphData == null
+                ? SvgPicture.string(
+                    svgText(file),
+                    width: w,
+                    height: h,
+                    theme: SvgTheme(currentColor: color),
+                  )
+                : SizedBox(
+                    width: w,
+                    height: h,
+                    child: Center(
+                      child: Icon(glyphData, size: w, color: color),
+                    ),
+                  ),
           ),
         );
         if (band.highlight && fx.highlightOpacity > 0) {
