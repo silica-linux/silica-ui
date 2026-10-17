@@ -71,6 +71,7 @@ class CalcState extends State<Calc> {
               SilicaMenuItem(
                 label: 'Basic',
                 checked: mode == 'basic',
+                icon: 'notes',
                 shortcut: cmd1,
                 onSelected: () => setState(() => mode = 'basic'),
               ),
@@ -165,6 +166,7 @@ void main() {
       'label': 'Basic',
       'enabled': true,
       'checked': true,
+      'icon': 'notes',
       'shortcut': {'key': '1', 'meta': true},
     });
     expect((view[1] as Map)['checked'], isNull);

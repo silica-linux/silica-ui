@@ -107,11 +107,13 @@ class SilicaMenuItem extends PlatformMenuItem {
     this.checked = false,
     this.enabled = true,
     this.role = SilicaMenuItemRole.none,
+    this.icon,
   });
 
   /// A system item the bar runs itself (Quit, Services, Hide, Minimize, Full screen…).
   const SilicaMenuItem.system(this.role, {this.enabled = true})
     : checked = false,
+      icon = null,
       super(label: '');
 
   /// File › Close All (⌥⌘W): closes every window of the app, the main one included, asking
@@ -119,6 +121,7 @@ class SilicaMenuItem extends PlatformMenuItem {
   /// bar's. Disabled when [enabled] is false (nothing to close).
   SilicaMenuItem.closeAll({String label = '', this.enabled = true})
     : checked = false,
+      icon = null,
       role = SilicaMenuItemRole.closeAll,
       super(
         label: label,
@@ -133,6 +136,10 @@ class SilicaMenuItem extends PlatformMenuItem {
   final bool checked;
   final bool enabled;
   final SilicaMenuItemRole role;
+
+  /// The app icon the bar draws before the label (16 pt, `Icons/App/16`): a silica-icons name
+  /// or the absolute path of an app's `icon/` folder (the `X-Silica-Icon` of its desktop entry).
+  final String? icon;
 
   /// Whether the app runs something when it is chosen.
   bool get hasAction => onSelected != null || onSelectedIntent != null;
@@ -613,6 +620,7 @@ class SilicaMenuDelegate extends PlatformMenuDelegate {
         'label': item.label,
         'enabled': enabled,
         if (silica?.checked ?? false) 'checked': true,
+        if (silica?.icon case final icon?) 'icon': icon,
         if (role != SilicaMenuItemRole.none) 'role': role.wire,
         'shortcut': ?silicaMenuShortcut(item.shortcut),
       });

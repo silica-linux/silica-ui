@@ -1,13 +1,17 @@
 // The 16 pt icon of an app in a menu row (kit `Icons/App/16/<App>`), drawn from the app's own
 // layers in silica-icons (`apps/<id>/icon.json`), not from a separate asset.
 
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 
 import '../../icons/silica_icon.dart';
 import '../../icons/silica_icons.dart';
 import '../theme.dart';
 
-/// The icon of the app [id] (the silica-icons folder `apps/<id>`, e.g. `photo-viewer`) on a [size]
+/// The icon of the app [id], the `X-Silica-Icon` of its desktop entry: a silica-icons name
+/// (folder `apps/<id>`, e.g. `photo-viewer`) or the absolute path of the `icon/` folder the app
+/// carries, on a [size]
 /// pt canvas (16 by default: `AmalfiMenuAction.icon` and `AmalfiMenuItem.icon`). It follows the theme's
 /// brightness (the kit has a Light and a Dark master per app). Without such an icon it leaves
 /// the box empty, so the labels still line up.
@@ -25,7 +29,9 @@ class AmalfiAppIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = findSilicaIcon(id, env: env);
+    final icon = id.startsWith('/')
+        ? _fromFolder(id)
+        : findSilicaIcon(id, env: env);
     final dark = AmalfiTheme.maybeOf(context)?.isDark ?? false;
     return SizedBox.square(
       dimension: size,
@@ -43,3 +49,13 @@ class AmalfiAppIcon extends StatelessWidget {
     );
   }
 }
+
+final Map<String, LayeredIcon?> _folders = {};
+
+LayeredIcon? _fromFolder(String dir) => _folders.putIfAbsent(dir, () {
+  try {
+    return parseManifest(dir, File('$dir/icon.json').readAsStringSync());
+  } on FileSystemException {
+    return null;
+  }
+});
