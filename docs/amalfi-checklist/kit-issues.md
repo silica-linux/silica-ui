@@ -53,6 +53,23 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - `Windows/Window/Sheet Attached` (Light, Dark): the nested `Alerts/Alert/Two Buttons` instance is 266 tall (silica-design ba8183f9), its master 268; the code draws 268.
 - `Fields/Combo Button/Large` (6 masters) draws its chevron at 12 x 12 with the Regular/12 stroke; `Combo Box/Large` (6 masters) nests it. The tests no longer list the deviation or mask the glyphs.
 
+## Fixed in silica-design `d3594d18`
+
+- Light glass without the double tint: the glass layer has no fill of its own and the tint is
+  the sibling `<name> tint` layer; the Light pixel tests are exact again (the harness reads the
+  tint from the sibling layer).
+- `Alerts/Alert/Critical` is 230 tall (the stray warning text is gone) with the badge disc 24 and
+  its glyph 16, on whole points.
+- Sidebar Emphasis (selected row) and the Sidebar Header are weight 600.
+- Symbol glyphs sit at offset 0 at every size (the code keeps the line box N and centres).
+- `Titlebars/Piece/Title + Subtitle` is 92 wide (76 text block, the title at its width) and
+  `Titlebars/Title Bar/Subtitle` measures the subtitle as the code does; the piece's subtitle
+  frame is still 66 against the code's 4 pt grid 68 (its pixels are masked).
+
+New with that export: Sketch draws no shadow for a layer without a fill, so the Light glass
+shadows are in the JSON but not in the PNGs; the pixel harness leaves the shadow ring out
+(`KitMaster.unpaintedShadows`).
+
 ## Still open (silica-design `4dde030`)
 
 - Text frames are drawn wider than the text, to whole points or to the 4 pt grid inconsistently
@@ -79,21 +96,14 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - Forms/Row/Check: the checkbox instance is 168 wide, not resized to its label (148), and sits at the top of the 28 pt line.
 - Segmented and Sliders: the lens radius is half its height (Segments/Control/*/Pressed 22, Sliders/Thumb/Lens/Dragging 14); the lens rule takes half the height minus 1 (21, 13).
 - Sliders/Circular/Dial draws the value arc as a Bézier path a fraction of a point inside the circle near the bottom (one edge pixel off by 87).
-- Alerts: `Alerts/Alert/One Button|Critical|Glass` are 230/214 tall, off the 4 pt grid; the other alerts put the 2 pt remainder in the bottom padding (22), as the code does everywhere.
-- Alerts: `Alerts/Alert/Critical`: the badge disc is 24 × 23.79 at y 59.48 and its glyph 16 × 15.86, off whole points.
+- Alerts: `Alerts/Alert/One Button|Critical|Glass` are 230/214 tall (Critical is 230 since `d3594d18`), off the 4 pt grid; the other alerts put the 2 pt remainder in the bottom padding (22), as the code does everywhere.
 - Alerts: `Alerts/Alert/Three Buttons`: the `Don’t Save` label frame is 68, narrower than the text (the code's button is 96, not 92).
 - Menus: `Menus/Menu/Full`: `Export…` has no shortcut override and shows the master's ⌘N.
-- Titlebars: `Titlebars/Piece/Title + Subtitle`: the subtitle frame is 64 wide for 58.9 pt of text, the text at its left; the code rounds it to 60 and centres it.
 - Dialogs: `Dialogs/Footer/Save`: the PNG starts 2 pt left of the frame, not frame + blur (2.7).
 - 28 filled glyphs at 16 pt keep the 24 pt stroke (kit side; the code scales the stroke).
 - Glass/Clear lenses are encoded as a Sketch `Glass` blur (drawn as Clear's 2 pt background blur).
 - Glass/Regular and Thick are Sketch `Glass` blurs (silica-design ba8183f9). Kit deviations from `tokens.json` (accepted exactly, in `geometry.dart`): Thick has saturation 1 and chromatic aberration 0; Regular Dark has σ 10, saturation 1, distortion 0.5, depth 0.5, chromatic aberration 0 (Light matches the tokens).
 - Glass pixel tests: Sketch refracts the edge band (depth × half the shorter side) and lifts the fill there; the Flutter fallback (no shader in tests) draws none. A comparison that fails is repeated with that band masked (`maskGlassBand`, same tolerance, the mean still divided by the pixels of the full comparison); the shader itself is checked by `test/amalfi/glass_refraction_test.dart` (uniforms) only.
-- Readability pass (silica-design fd1719cf): Light Regular and Thick glass masters with a separate `<name> tint` layer keep the glass layer's own white fill under it, so the PNG shows the tint twice (white at 84 % where the material is 60 %); the code has it once, as `materials.md` says. Light pixel tests of those masters are compared loosely (`pixels.dart`); Dark ones are exact.
-- Readability pass: `Alerts/Alert/Critical` has a stray `Glyph Warning` text at (132, 24) above the app icon and is 262 tall (32 more than the other alerts); everything below the icon sits 32 lower. Geometry is deviated, pixels skipped.
-- Readability pass: `Sidebars/Row/*` Sidebar Emphasis and `Sidebars/Header/*` are Sketch weight 6 (Medium); `components.md` and `tokens.json` say 600 (selected row, header). The code follows the docs.
-- Readability pass: symbols of 16 and 20 pt sit about a point above where they are centred in their box in the kit PNGs (12 and 14 pt do not); Skia centres the same font glyph. Measured on Gradient Add Remove, Combo/Clear buttons and the sidebar rows; the symbol's box, size and colour are checked exactly, the pixel means are loose.
-- Readability pass: `Titlebars/Piece/Title + Subtitle` is a fixed 100 wide block with both lines left in it; `Titlebars/Title Bar/Subtitle` measures the subtitle 111 (the code rounds to the 4 pt grid: 112).
 - Readability pass: `Titlebars/Section/Sidebar` is a blur strip (80 % `Surface/Sidebar`, one background blur) with the divider drawn through the bar and the controls at x 1 (`components.md`, sidebar in a split title bar): not built yet, deviated.
 - Readability pass: `Fields/Token` is 64 wide with the 16 pt cross and a 32 label frame (Sketch measures "Travel" 4 narrower than the grid); `Wells/Image Well/Empty/*` Caption hint is a half-point frame (61).
 - Readability pass: Mini segmented text items stay 44 wide at Caption 11; "Three" needs 48 with the 8 pt padding, so the test shortens the label.

@@ -125,7 +125,16 @@ void expectKitGeometry(
       default:
         final style = layer.style;
         if (style != null && !style.isEmpty) {
-          _checkStyle(tester, layer, style, finder, reporter(path));
+          // Light glass keeps its tint in a sibling `<name> tint` layer (the glass layer has
+          // no fill of its own): the code's glass paints that tint once.
+          _checkStyle(
+            tester,
+            layer,
+            style,
+            finder,
+            reporter(path),
+            tint: master.maybeLayer('$path tint')?.style,
+          );
         }
     }
   }
@@ -184,8 +193,9 @@ void _checkStyle(
   KitLayer layer,
   KitStyle kit,
   Finder finder,
-  _Add add,
-) {
+  _Add add, {
+  KitStyle? tint,
+}) {
   final p = '"${layer.path}"';
   final r = RenderedStyle.of(tester, finder);
   if (r == null) {
@@ -198,7 +208,10 @@ void _checkStyle(
   }
   final what = '$p (${r.source})';
 
-  final flat = kit.fills.where((f) => f.gradient == null).toList();
+  var flat = kit.fills.where((f) => f.gradient == null).toList();
+  if (flat.isEmpty && tint != null) {
+    flat = tint.fills.where((f) => f.gradient == null).toList();
+  }
   if (flat.length != r.fills.length) {
     add('fills', '$what: ${r.fills.length} fills, kit ${flat.length}');
   } else {

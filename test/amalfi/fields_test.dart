@@ -16,11 +16,9 @@ const KitPixelTolerance fieldsShapes = KitPixelTolerance(mean: 1, max: 180);
 
 /// The shape tolerance of the masters of 24 pt or less (clear button, combo buttons,
 /// tokens): a few hundred pixels compared, mostly the antialiased rim of the disc, so the
-/// same edge differences weigh more in the mean (1.25 and 88 measured, kit 747ea80). The
-/// kit's symbols (16 pt in these discs) are drawn from the Silica Symbols font in Sketch,
-/// which sits them a point above where Skia centres them (measured: 5.9 / 6.7 means), so the
-/// mean is loose; the symbol's box, size and colour are checked exactly.
-const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 7, max: 150);
+/// same edge differences weigh more in the mean (up to 3.4 measured, kit d3594d18; the
+/// symbols sit where Skia centres them since the kit's glyph offset is 0 at every size).
+const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 3.5, max: 150);
 
 /// The text tolerance of the fields: CoreText draws Inter visibly heavier than Skia, which
 /// the text-dense masters (the text area's three lines: mean 2.76 measured) feel most.
@@ -256,7 +254,7 @@ List<FieldCase> searchCases() => [
     build: (_) => AmalfiClearButton(onPressed: () {}),
     layers: {'Disc': find.byType(DecoratedBox), 'Clear glyph': glyph()},
     // A 16 pt disc: its antialiased rim weighs most in the mean (1.39 and 47 measured).
-    tolerance: const KitPixelTolerance(mean: 7.5, max: 110),
+    tolerance: const KitPixelTolerance(mean: 2, max: 110),
   ),
 ];
 

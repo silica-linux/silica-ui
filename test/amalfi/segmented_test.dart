@@ -58,8 +58,8 @@ const glassTolerance = KitPixelTolerance(mean: 1, max: 72);
 /// The items are tiny (12–24 pt tall): their antialiased edges and the shadow of the selection
 /// weigh much more in the mean, and the 28 × 20 capsules have no room for the smoothing.
 /// With the text: CoreText's light text on dark glass is a little heavier than Flutter's
-/// (Action Text 3 Dark measures up to 2.66).
-const textTolerance = KitPixelTolerance(mean: 3, max: 255);
+/// (Action Text 3 Dark measures up to 2.66, Action Text 3 Mini Light 3.41).
+const textTolerance = KitPixelTolerance(mean: 3.5, max: 255);
 
 const itemTolerance = KitPixelTolerance(mean: 2.5, max: 96);
 
@@ -383,7 +383,12 @@ void main() {
             maskLayers: c.maskLayers,
             mask: c.mask,
             prepare: c.prepare,
-            tolerance: textTolerance,
+            // A Mini control with "Three" draws "Thr" (see controlCase), so one label's
+            // pixels differ from the kit's.
+            tolerance:
+                master.key.contains('/Mini/') && master.key.contains(' Text/')
+                ? const KitPixelTolerance(mean: 5, max: 255)
+                : textTolerance,
           );
         }
         // The pointer is released before the scene goes away.

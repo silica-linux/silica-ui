@@ -16,22 +16,6 @@ import 'package:silica_ui/silica_ui.dart';
 import 'fonts.dart';
 import 'kit.dart';
 
-/// The extra mean difference allowed on a Light master whose tint is drawn twice in the kit.
-const double _doubleTintMean = 16;
-
-bool _hasTintLayer(KitLayer layer) {
-  if (layer.name.endsWith(' tint') || layer.children.any(_hasTintLayer)) {
-    return true;
-  }
-  final nested = layer.master;
-  if (layer.type != KitLayerType.symbolInstance || nested == null) return false;
-  try {
-    return _hasTintLayer(KitMaster.load(nested).root);
-  } on Object {
-    return false;
-  }
-}
-
 /// Where diff images are written when a pixel test fails.
 const String kitDiffPath = 'build/amalfi-diff';
 
@@ -45,9 +29,9 @@ class KitPixelTolerance {
   static const KitPixelTolerance shapes = KitPixelTolerance();
 
   /// For a comparison that includes text, rasterised by CoreText in the kit: only the mean
-  /// is meaningful (the tooltips measure ≤ 1.92).
+  /// is meaningful (the tooltips measure ≤ 2.8, the Light ones the most).
   static const KitPixelTolerance withText = KitPixelTolerance(
-    mean: 2.5,
+    mean: 3,
     max: 255,
   );
 
@@ -214,6 +198,16 @@ Future<KitPixelResult> expectKitPixels(
     cover(master.paintBoundsOf(master.layer(path)));
   }
   mask.forEach(cover);
+  // The shadows of glass without a fill are in the JSON but not in the PNG: not compared.
+  final rings = master.unpaintedShadows;
+  if (rings.isNotEmpty) {
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        final p = Offset((x + 0.5) / 2, (y + 0.5) / 2) - at;
+        if (rings.any((r) => r.contains(p))) masked[y * width + x] = 1;
+      }
+    }
+  }
 
   // Compares outside [masked]; the diff image shows the masked pixels in blue.
   (KitPixelResult, Uint8List) compare(Uint8List masked, {int? meanOver}) {
@@ -260,16 +254,8 @@ Future<KitPixelResult> expectKitPixels(
     );
   }
 
-  // Light masters with a separate tint layer (`Glass tint`, `Track tint`): the export keeps
-  // the glass layer's own white fill under it, so the kit PNG shows the tint twice (white at
-  // 84 % where the material is 60 %: `docs/amalfi-checklist/kit-issues.md`). The code has the
-  // tint once, as the docs say, so those masters are compared loosely (Dark ones, drawn with
-  // the tint once, stay exact).
-  final doubleTint =
-      master.name.endsWith('/Light') && _hasTintLayer(master.root);
-  bool within(KitPixelResult r) => doubleTint
-      ? r.mean <= tolerance.mean + _doubleTintMean
-      : r.mean <= tolerance.mean && r.max <= tolerance.max;
+  bool within(KitPixelResult r) =>
+      r.mean <= tolerance.mean && r.max <= tolerance.max;
 
   var (result, diff) = compare(masked);
   // The edge of Regular and Thick is refracted in the kit (Sketch's `Glass` blur: the band
