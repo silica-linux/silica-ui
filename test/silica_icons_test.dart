@@ -342,6 +342,13 @@ void main() {
     // 12 pt: no symbol; 32 pt: only the symbol; from 64 highlight and symbol in light,
     // only the symbol in dark (highlight at opacity 0).
     expect(find.byType(Opacity), findsNWidgets(0 + 2 + 3 + 3 + 3));
+    // The engraving is set in the Silica Symbols font, not rasterised from the SVG.
+    final icons = tester.widgetList<Icon>(find.byType(Icon)).toList();
+    expect(icons, isNotEmpty);
+    expect(
+      icons.map((i) => i.icon?.fontFamily).toSet(),
+      everyElement(startsWith('SilicaSymbols')),
+    );
   });
 
   test('the body mask fits the rectangle and is not a rounded rectangle', () {
