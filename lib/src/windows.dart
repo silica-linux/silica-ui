@@ -29,6 +29,7 @@ import 'package:flutter/widgets.dart';
 
 import 'app.dart' show SilicaApp;
 import 'appearance.dart';
+import 'popups.dart';
 import 'window.dart';
 
 /// The kind of a window: a document or browser window, or a utility (an inspector, Get
@@ -213,6 +214,7 @@ abstract final class SilicaWindows {
         // closeAsking when it asks, so it may close a window that does not answer.
         return true;
       case 'windowClosed':
+        SilicaPopups.closedView(id);
         final window = _withId(id);
         if (window == null) return null;
         _open.value = [
@@ -248,6 +250,10 @@ abstract final class SilicaWindows {
     );
   }
 
+  /// A call on `silica/window` that is null outside Silica (for silica_ui's own popups).
+  static Future<T?> invoke<T>(String method, [Object? args]) =>
+      _invoke<T>(method, args);
+
   static Future<T?> _invoke<T>(String method, [Object? args]) async {
     try {
       return await SilicaWindow.channel.invokeMethod<T>(method, args);
@@ -266,6 +272,7 @@ abstract final class SilicaWindows {
       window._gone();
     }
     _open.value = const [];
+    SilicaPopups.reset();
     _onMainCloseRequested = null;
     if (_listening) SilicaWindow.channel.setMethodCallHandler(null);
     _listening = false;

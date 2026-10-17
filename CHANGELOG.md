@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **Added (silica-desktop#4):** menus and popovers as surfaces of their own. `showAmalfiMenu`,
+  `showAmalfiPopover`, the pop-up and pull-down buttons and the submenus open an `xdg_popup` of
+  the app's window, drawn by its own Flutter view, when Silica offers it (the app started with
+  `--multi-window`, `SilicaPopups.available`): they can extend past the window's edge, Ossido keeps
+  them on the output (flip or slide) and closes them with a press outside (`popup_done`), and their
+  glass is the compositor's. A popover then opens without the scale (its surface appears at once)
+  and its arrow follows where Ossido put it. Without popups (tests, other embedders, apps without
+  `--multi-window`) they are drawn in the window's overlay as before. New: `SilicaPopups`
+  (`probe`, `available`, `show`), `SilicaPopupController`, `SilicaPopupEdge`, `SilicaPopupAdjust`,
+  `SilicaPopupScope`. Needs silica-desktop with `openPopup` on `silica/window`.
 - **Added:** `SilicaApp.onOpen`, the files of a second launch of the running app (Open With, a share
   target), from the embedder's `open` call.
 - **Added (silica-desktop#217):** `SilicaShare` (the system share service, `dev.frascella.Silica.Share1`:

@@ -20,6 +20,7 @@ import 'package:flutter/widgets.dart';
 
 import 'appearance.dart';
 import 'window.dart' show SilicaWindow;
+import 'popups.dart' show SilicaPopups;
 import 'windows.dart' show SilicaWindows;
 
 /// The app's lifecycle in Silica.
@@ -213,6 +214,8 @@ class _SilicaAppWindowState extends State<SilicaAppWindow> {
     super.initState();
     SilicaApp.onLastWindowClosed = _closed;
     SilicaApp.onReopen = _reopen;
+    // Whether menus and popovers can be surfaces of their own (silica-desktop#4).
+    unawaited(SilicaPopups.probe());
   }
 
   @override

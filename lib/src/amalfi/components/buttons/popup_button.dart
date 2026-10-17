@@ -2,13 +2,17 @@
 // `…/Open`): the opaque control look, a label on the left and a chevron on the right; pressed,
 // they open a menu 4 below.
 
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 
+import '../../../popups.dart';
 import '../../foundation/foundation.dart';
 import '../../smooth_border.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../menus/menu.dart';
+import '../popup_presenter.dart';
 import 'button_base.dart';
 import 'button_surface.dart';
 
@@ -257,31 +261,121 @@ class _MenuButtonState extends State<_MenuButton>
     curve: AmalfiFades.instant.curve,
   );
 
+  /// The menu as a popup of its own, while it is being measured and while it is open
+  /// (silica-desktop#4); the portal above is the menu drawn in the window.
+  SilicaPopupController? _popup;
+  bool _opening = false;
+
   bool get _open =>
-      _portal.isShowing && _fade.status != AnimationStatus.reverse;
+      _opening ||
+      _popup != null ||
+      (_portal.isShowing && _fade.status != AnimationStatus.reverse);
 
   @override
   void didUpdateWidget(_MenuButton old) {
     super.didUpdateWidget(old);
     if (!widget.enabled && _portal.isShowing) _closeNow();
+    if (!widget.enabled) unawaited(_popup?.close());
   }
 
   @override
   void dispose() {
+    unawaited(_popup?.close());
     _fade.dispose();
     _menuFocus.dispose();
     super.dispose();
   }
 
   void _toggle() {
-    if (_open) {
+    final popup = _popup;
+    if (popup != null) {
+      unawaited(popup.close());
+    } else if (_open) {
       _close();
     } else {
       _show();
     }
   }
 
+  /// Opens the menu as a popup hanging from the button, 4 below it (above when there is no
+  /// room), its leading edge on the button's; false if the system has no popups.
+  Future<bool> _showPopup() async {
+    final box = context.findRenderObject();
+    if (SilicaPopups.available != true || box is! RenderBox || !box.hasSize) {
+      if (SilicaPopups.available == null) unawaited(SilicaPopups.probe());
+      return false;
+    }
+    final rect = box.localToGlobal(Offset.zero) & box.size;
+    const d = AmalfiPopUpButtonMetrics.menuDistance;
+    final minWidth = rect.width > AmalfiPopUpButtonMetrics.menuMinWidth
+        ? rect.width
+        : AmalfiPopUpButtonMetrics.menuMinWidth;
+    final rtl =
+        (Directionality.maybeOf(context) ?? TextDirection.ltr) ==
+        TextDirection.rtl;
+    setState(() => _opening = true);
+    final popup = await showAmalfiAsPopup(
+      context: context,
+      // The button with the distance on both sides: the menu hangs from its bottom edge, and
+      // from its top edge when it flips above.
+      anchor: Rect.fromLTRB(
+        rect.left,
+        rect.top - d,
+        rect.right,
+        rect.bottom + d,
+      ),
+      anchorEdge: rtl
+          ? SilicaPopupEdge.bottomRight
+          : SilicaPopupEdge.bottomLeft,
+      gravity: rtl ? SilicaPopupEdge.bottomLeft : SilicaPopupEdge.bottomRight,
+      adjust: const {
+        SilicaPopupAdjust.flipY,
+        SilicaPopupAdjust.slideX,
+        SilicaPopupAdjust.slideY,
+      },
+      builder: (context, dismiss, placement) => AmalfiMenu(
+        entries: widget.entries,
+        initialHighlight: widget.highlighted < 0 ? null : widget.highlighted,
+        minWidth: minWidth,
+        onDismiss: dismiss,
+        autofocus: true,
+      ),
+    );
+    if (!mounted) {
+      unawaited(popup?.close());
+      return true;
+    }
+    if (popup == null) {
+      setState(() => _opening = false);
+      return false;
+    }
+    setState(() {
+      _opening = false;
+      _popup = popup;
+    });
+    unawaited(
+      popup.closed.whenComplete(() {
+        if (mounted && identical(_popup, popup)) setState(() => _popup = null);
+      }),
+    );
+    return true;
+  }
+
   void _show() {
+    if (!widget.enabled || _opening) return;
+    if (SilicaPopups.available == true) {
+      unawaited(
+        _showPopup().then((shown) {
+          if (!shown && mounted) _showInWindow();
+        }),
+      );
+      return;
+    }
+    if (SilicaPopups.available == null) unawaited(SilicaPopups.probe());
+    _showInWindow();
+  }
+
+  void _showInWindow() {
     if (!widget.enabled) return;
     _returnFocus = FocusManager.instance.primaryFocus;
     setState(_portal.show);

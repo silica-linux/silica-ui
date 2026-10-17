@@ -9,14 +9,17 @@
 // back at +74 ms) and closes the menu at +114 ms; Esc closes every level.
 
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../../popups.dart';
 import '../../glass.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
+import '../popup_presenter.dart';
 import 'menu_item.dart';
 
 /// A row of an Amalfi menu: [AmalfiMenuAction], [AmalfiMenuSection] or [AmalfiMenuDivider].
@@ -260,6 +263,13 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
   int? _submenu;
   bool _submenuByKeyboard = false;
 
+  /// In a popup of its own the submenu is a popup too (it may extend past the parent's
+  /// surface): its controller, where it is (in this popup's coordinates), and a count that
+  /// tells a stale opening (the pointer moved on while it was measured).
+  SilicaPopupController? _submenuPopup;
+  Rect? _submenuPlacement;
+  int _submenuOpenings = 0;
+
   Timer? _submenuTimer, _deferTimer, _blinkTimer, _closeTimer;
   Offset? _lastPointer;
 
@@ -319,6 +329,10 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
       t?.cancel();
     }
     _ownFocus?.dispose();
+    _submenuOpenings++;
+    final popup = _submenuPopup;
+    _submenuPopup = null;
+    if (popup != null) unawaited(popup.close());
     super.dispose();
   }
 
@@ -409,7 +423,7 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
   }
 
   bool _headingToSubmenu(Offset? from, Offset to) {
-    final rect = _globalRect(_submenuKey);
+    final rect = _submenuPlacement ?? _globalRect(_submenuKey);
     if (from == null || rect == null) return false;
     final towardsRight = rect.left >= from.dx;
     final x = towardsRight ? rect.left : rect.right;
@@ -440,10 +454,90 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
       _submenu = i;
       _submenuByKeyboard = byKeyboard;
     });
-    _portal.show();
+    final scope = SilicaPopupScope.maybeOf(context);
+    if (scope != null) {
+      unawaited(_openSubmenuPopup(i, scope.viewId));
+    } else {
+      _portal.show();
+    }
+  }
+
+  /// The submenu of item [i] as a popup of its own, hanging from this popup (view [parent]):
+  /// its leading edge [AmalfiMenuMetrics.submenuOverlap] inside this list's trailing edge, its
+  /// first item level with the item; on the other side when there is no room.
+  Future<void> _openSubmenuPopup(int i, int parent) async {
+    final opening = ++_submenuOpenings;
+    final entries = _action(i)?.submenu;
+    final list = context.findRenderObject();
+    final item = _keys[i].currentContext?.findRenderObject();
+    if (entries == null ||
+        list is! RenderBox ||
+        item is! RenderBox ||
+        !list.hasSize ||
+        !item.hasSize) {
+      return;
+    }
+    final listRect = list.localToGlobal(Offset.zero) & list.size;
+    final itemRect = item.localToGlobal(Offset.zero) & item.size;
+    final rtl =
+        (Directionality.maybeOf(context) ?? TextDirection.ltr) ==
+        TextDirection.rtl;
+    const overlap = AmalfiMenuMetrics.submenuOverlap;
+    final byKeyboard = _submenuByKeyboard;
+    final opaque = widget.opaque;
+    final group = widget.group + 1;
+    final onDismiss = widget.onDismiss;
+    final popup = await showAmalfiAsPopup(
+      context: context,
+      // The list's width less the overlap on both sides, at the item's top less the menu's
+      // padding: the submenu hangs from this rectangle's trailing (leading when flipped)
+      // corner.
+      anchor: Rect.fromLTWH(
+        listRect.left + overlap,
+        itemRect.top - AmalfiMenuMetrics.padding,
+        math.max(1, listRect.width - 2 * overlap),
+        1,
+      ),
+      anchorEdge: rtl ? SilicaPopupEdge.topLeft : SilicaPopupEdge.topRight,
+      gravity: rtl ? SilicaPopupEdge.bottomLeft : SilicaPopupEdge.bottomRight,
+      adjust: const {SilicaPopupAdjust.flipX, SilicaPopupAdjust.slideY},
+      builder: (context, dismiss, placement) => AmalfiMenu(
+        entries: entries,
+        onDismiss: onDismiss ?? dismiss,
+        onBack: _backFromSubmenu,
+        minWidth: AmalfiMenuMetrics.submenuMinWidth,
+        autofocus: byKeyboard,
+        highlightFirst: byKeyboard,
+        opaque: opaque,
+        group: group,
+      ),
+    );
+    if (popup == null) return;
+    // The pointer moved on, or the menu closed, while the submenu was being measured.
+    if (!mounted || opening != _submenuOpenings || _submenu != i) {
+      unawaited(popup.close());
+      return;
+    }
+    _submenuPopup = popup;
+    _submenuPlacement = popup.placement;
+    unawaited(
+      popup.closed.whenComplete(() {
+        if (identical(_submenuPopup, popup)) {
+          _submenuPopup = null;
+          _submenuPlacement = null;
+        }
+      }),
+    );
   }
 
   void _closeSubmenu() {
+    _submenuOpenings++;
+    final popup = _submenuPopup;
+    if (popup != null) {
+      _submenuPopup = null;
+      _submenuPlacement = null;
+      unawaited(popup.close());
+    }
     if (_portal.isShowing) _portal.hide();
     if (_submenu != null && mounted) setState(() => _submenu = null);
   }
@@ -711,6 +805,12 @@ class _SubmenuLayout extends SingleChildLayoutDelegate {
 ///
 /// It fades in and out with [AmalfiFades.instant] (`motion.md`: no scale) and takes the
 /// keyboard focus. [width], [minWidth] and [opaque] are as in [AmalfiMenu].
+///
+/// Where Silica offers it (an app started with `--multi-window`, [SilicaPopups]) the menu is a
+/// surface of its own, an `xdg_popup` of the window: it can extend past the window's edge,
+/// Ossido keeps it on the output (it slides back) and closes it with a press outside, and its
+/// glass blurs what is under it, the window included. Elsewhere it is drawn in the window,
+/// inside the overlay, as described above.
 Future<void> showAmalfiMenu({
   required BuildContext context,
   required Offset position,
@@ -718,6 +818,53 @@ Future<void> showAmalfiMenu({
   double? width,
   double minWidth = AmalfiMenuMetrics.minWidth,
   bool opaque = false,
+}) {
+  if (SilicaPopups.available == true) {
+    return showAmalfiAsPopup(
+      context: context,
+      // The menu's top-left corner on the position.
+      anchor: position & const Size(1, 1),
+      anchorEdge: SilicaPopupEdge.topLeft,
+      gravity: SilicaPopupEdge.bottomRight,
+      builder: (context, dismiss, placement) => AmalfiMenu(
+        entries: entries,
+        width: width,
+        minWidth: minWidth,
+        opaque: opaque,
+        autofocus: true,
+        onDismiss: dismiss,
+      ),
+    ).then(
+      (popup) => popup == null
+          ? _showMenuInWindow(
+              context: context,
+              position: position,
+              entries: entries,
+              width: width,
+              minWidth: minWidth,
+              opaque: opaque,
+            )
+          : popup.closed,
+    );
+  }
+  if (SilicaPopups.available == null) unawaited(SilicaPopups.probe());
+  return _showMenuInWindow(
+    context: context,
+    position: position,
+    entries: entries,
+    width: width,
+    minWidth: minWidth,
+    opaque: opaque,
+  );
+}
+
+Future<void> _showMenuInWindow({
+  required BuildContext context,
+  required Offset position,
+  required List<AmalfiMenuEntry> entries,
+  required double? width,
+  required double minWidth,
+  required bool opaque,
 }) {
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return Future.value();

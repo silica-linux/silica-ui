@@ -13,10 +13,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../../popups.dart';
 import '../../theme.dart';
 import '../../tokens.g.dart';
 import '../../whole_points.dart';
 import '../menus/menu.dart';
+import '../popup_presenter.dart';
 import 'popover_surface.dart';
 
 /// A popover: [child] on Glass/Thick with radius 16, [padding] around it, and an arrow on
@@ -311,6 +313,12 @@ amalfiPopoverLayout({
 /// on the [placement] side (or the other one when there is no room), with its arrow pointing
 /// at the anchor's centre. Completes when it closes: on Esc, on a press outside it, or when
 /// the builder's `dismiss` is called.
+///
+/// Where Silica offers it (an app started with `--multi-window`, [SilicaPopups]) the popover
+/// is a surface of its own, an `xdg_popup` of the window, so it can extend past the window's
+/// edge; Ossido flips it to the other side or slides it along the edge to keep it on the
+/// output, and the arrow follows. It then opens without the scale (its surface and glass
+/// appear at once). Elsewhere it is drawn in the window, as described above.
 Future<void> showAmalfiPopover({
   required BuildContext context,
   required Rect anchor,
@@ -318,6 +326,121 @@ Future<void> showAmalfiPopover({
   AmalfiPopoverPlacement placement = AmalfiPopoverPlacement.below,
   EdgeInsets padding = AmalfiPopoverMetrics.padding,
   bool opaque = false,
+}) {
+  if (SilicaPopups.available == true) {
+    return _showPopoverPopup(
+      context: context,
+      anchor: anchor,
+      builder: builder,
+      placement: placement,
+      padding: padding,
+      opaque: opaque,
+    ).then(
+      (shown) => shown
+          ? null
+          : _showPopoverInWindow(
+              context: context,
+              anchor: anchor,
+              builder: builder,
+              placement: placement,
+              padding: padding,
+              opaque: opaque,
+            ),
+    );
+  }
+  if (SilicaPopups.available == null) unawaited(SilicaPopups.probe());
+  return _showPopoverInWindow(
+    context: context,
+    anchor: anchor,
+    builder: builder,
+    placement: placement,
+    padding: padding,
+    opaque: opaque,
+  );
+}
+
+/// The popover as a popup; completes when it closes, with false at once if the system cannot
+/// show it.
+Future<bool> _showPopoverPopup({
+  required BuildContext context,
+  required Rect anchor,
+  required Widget Function(BuildContext context, VoidCallback dismiss) builder,
+  required AmalfiPopoverPlacement placement,
+  required EdgeInsets padding,
+  required bool opaque,
+}) async {
+  final rtl =
+      (Directionality.maybeOf(context) ?? TextDirection.ltr) ==
+      TextDirection.rtl;
+  bool leftOf(AmalfiPopoverPlacement p) =>
+      (p == AmalfiPopoverPlacement.leading) != rtl;
+  // The edge of the anchor the popover hangs from, and the way it grows from there: centred
+  // across, its arrow tip on the anchor.
+  final edge = switch (placement) {
+    AmalfiPopoverPlacement.below => SilicaPopupEdge.bottom,
+    AmalfiPopoverPlacement.above => SilicaPopupEdge.top,
+    _ => leftOf(placement) ? SilicaPopupEdge.left : SilicaPopupEdge.right,
+  };
+  final vertical =
+      placement == AmalfiPopoverPlacement.below ||
+      placement == AmalfiPopoverPlacement.above;
+  final popup = await showAmalfiAsPopup(
+    context: context,
+    anchor: anchor,
+    anchorEdge: edge,
+    gravity: edge,
+    adjust: {
+      SilicaPopupAdjust.flipX,
+      SilicaPopupAdjust.flipY,
+      if (vertical) SilicaPopupAdjust.slideX else SilicaPopupAdjust.slideY,
+    },
+    builder: (context, dismiss, placed) {
+      // Where Ossido put it says which side it went to and where the arrow points.
+      var side = placement;
+      double? arrowOffset;
+      if (placed != null) {
+        if (vertical) {
+          side = placed.center.dy >= anchor.center.dy
+              ? AmalfiPopoverPlacement.below
+              : AmalfiPopoverPlacement.above;
+          arrowOffset = rtl
+              ? placed.right - anchor.center.dx
+              : anchor.center.dx - placed.left;
+        } else {
+          final left = placed.center.dx < anchor.center.dx;
+          side = left != rtl
+              ? AmalfiPopoverPlacement.leading
+              : AmalfiPopoverPlacement.trailing;
+          arrowOffset = anchor.center.dy - placed.top;
+        }
+      }
+      return CallbackShortcuts(
+        bindings: {const SingleActivator(LogicalKeyboardKey.escape): dismiss},
+        child: Focus(
+          autofocus: true,
+          child: AmalfiPopover(
+            arrowEdge: amalfiPopoverArrowEdge(side),
+            arrowOffset: arrowOffset,
+            padding: padding,
+            opaque: opaque,
+            child: Builder(builder: (c) => builder(c, dismiss)),
+          ),
+        ),
+      );
+    },
+  );
+  if (popup == null) return false;
+  await popup.closed;
+  return true;
+}
+
+Future<void> _showPopoverInWindow({
+  required BuildContext context,
+  required Rect anchor,
+  required Widget Function(BuildContext context, VoidCallback dismiss) builder,
+  required AmalfiPopoverPlacement placement,
+  required EdgeInsets padding,
+  required bool opaque,
 }) {
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return Future.value();

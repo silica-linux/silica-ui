@@ -33,6 +33,13 @@ export 'src/menu.dart';
 export 'src/menu_bar.dart';
 export 'src/tip_outline.dart';
 export 'src/toolbar.dart';
+export 'src/popups.dart'
+    show
+        SilicaPopupAdjust,
+        SilicaPopupController,
+        SilicaPopupEdge,
+        SilicaPopupScope,
+        SilicaPopups;
 export 'src/window.dart';
 export 'src/window_glass.dart';
 export 'src/windows.dart';
