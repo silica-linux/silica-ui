@@ -544,6 +544,44 @@ void main() {
       },
     );
 
+    testWidgets('the track follows the half the dragged thumb is in', (
+      tester,
+    ) async {
+      final changes = <bool>[];
+      await pumpKitScene(
+        tester,
+        AmalfiSwitch(value: false, onChanged: changes.add),
+      );
+      Color? trackColor() {
+        final box = tester.widget<DecoratedBox>(
+          find.byKey(AmalfiLayerKeys.body),
+        );
+        return (box.decoration as AmalfiShapeDecoration).color;
+      }
+
+      final off = trackColor();
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(AmalfiLayerKeys.thumb)),
+        kind: PointerDeviceKind.mouse,
+      );
+      await gesture.moveBy(const Offset(4, 0));
+      await gesture.moveBy(const Offset(40, 0));
+      await tester.pumpAndSettle();
+      final on = trackColor();
+      expect(on, isNot(off));
+      expect(changes, isEmpty, reason: 'nothing is applied before the release');
+      // Back below the middle: the track returns to the off colour.
+      await gesture.moveBy(const Offset(-40, 0));
+      await tester.pumpAndSettle();
+      expect(trackColor(), off);
+      await gesture.moveBy(const Offset(40, 0));
+      await tester.pumpAndSettle();
+      expect(trackColor(), on);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(changes, [true]);
+    });
+
     testWidgets('a disabled switch ignores clicks and drags', (tester) async {
       await pumpKitScene(
         tester,
