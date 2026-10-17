@@ -517,13 +517,6 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
   ],
 );
 
-/// Kit defect: the subtitle "Edited today" of `Piece/Title + Subtitle` has a fixed-width
-/// frame 64 wide for 58.9 pt of text (the grid gives 60, as the other titlebar texts), the
-/// text at its left, so 2.5 pt left of the centre under the title.
-const String fixedTextBlock =
-    'kit text block of the piece is a fixed 100 wide, both lines left in it (11 pt Caption '
-    'subtitle); ours is as wide as the widest line, the lines centred';
-
 /// The kit's sidebar section is a translucent blur strip over the sidebar (80 % surface,
 /// one background blur) with the divider drawn on top, the controls 1 further in
 /// (`components.md`, "Sidebar in a split title bar"); the section here is the opaque one.
@@ -531,14 +524,10 @@ const String fixedTextBlock =
 const String blurStrip =
     'kit: blur strip with the divider through the title bar (not built yet)';
 
-/// The kit's subtitle (11 pt) is the text's width (111); ours rounds to the 4 pt grid (112),
-/// which moves the centred title by a half point.
-const String halfPointText =
-    'kit text measure 111 for "Edited today at 09:41", ours the 4 pt grid (112)';
-
-const String fixedSubtitle =
-    'kit fixed-width subtitle frame 64 for 58.9 pt of text, text not centred; ours rounded '
-    'to the grid (60) and centred';
+/// The kit's subtitle frame of `Piece/Title + Subtitle` is the text's width in whole points
+/// (66, centred under the 76 title); ours rounds to the 4 pt grid (68), like every titlebar text.
+const String subtitleWholePoints =
+    'kit subtitle frame 66 (whole points), ours the 4 pt grid (68)';
 
 /// The separator along the bottom of a title bar (translucent `Line/Separator`).
 Finder titleBarEdge() => find.descendant(

@@ -560,6 +560,12 @@ class KitMaster {
   /// the Clear lens), nested masters included, in master coordinates.
   List<KitGlassBand> get glassBands => _bands(root, Offset.zero, isRoot: true);
 
+  /// The shadows the kit PNGs do not draw: Sketch draws no shadow for a layer without a fill,
+  /// and the Light glass layers have none since the tint moved to its own layer (the JSON keeps
+  /// the shadow, the code draws it). Master coordinates, nested masters included.
+  List<KitShadowRing> get unpaintedShadows =>
+      _rings(root, Offset.zero, isRoot: true);
+
   /// The area [layer] paints, effects and nested masters included, in master coordinates.
   Rect paintBoundsOf(KitLayer layer) =>
       _bounds(layer, layer.rectInMaster.topLeft - layer.frame.topLeft)!;
@@ -640,6 +646,57 @@ class KitGlassBand {
 
   KitGlassBand shifted(Offset by) =>
       KitGlassBand(rect.shift(by), radius, width);
+}
+
+/// The ring a shadow covers around [body] (the rounded rectangle of its layer).
+class KitShadowRing {
+  KitShadowRing(this.body, this.radius, this.outer);
+
+  final Rect body;
+  final double radius;
+  final Rect outer;
+
+  /// Whether [p] (master coordinates) lies in the shadow's area, outside the body (1 pt of
+  /// the body's edge included: the antialiasing).
+  bool contains(Offset p) {
+    if (!outer.contains(p)) return false;
+    final r = math.min(radius, body.shortestSide / 2);
+    final c = body.center - p;
+    final h = Offset(body.width / 2 - r, body.height / 2 - r);
+    final dx = math.max(c.dx.abs() - h.dx, 0.0);
+    final dy = math.max(c.dy.abs() - h.dy, 0.0);
+    return r - math.sqrt(dx * dx + dy * dy) < 1;
+  }
+
+  KitShadowRing shifted(Offset by) =>
+      KitShadowRing(body.shift(by), radius, outer.shift(by));
+}
+
+List<KitShadowRing> _rings(
+  KitLayer layer,
+  Offset origin, {
+  bool isRoot = false,
+}) {
+  final at = isRoot ? origin : origin + layer.frame.topLeft;
+  if (layer.isKitInstance) {
+    return [
+      for (final b in KitMaster.nested(layer).unpaintedShadows) b.shifted(at),
+    ];
+  }
+  final style = layer.style;
+  final rect = at & layer.frame.size;
+  return [
+    if (style != null &&
+        style.fills.isEmpty &&
+        style.shadows.isNotEmpty &&
+        style.blurs.any((b) => b.type == 'Glass'))
+      KitShadowRing(
+        rect,
+        math.min(style.corners?.maxRadius ?? 0, layer.frame.shortestSide / 2),
+        _effects(rect, style),
+      ),
+    for (final c in layer.children) ..._rings(c, at),
+  ];
 }
 
 List<KitGlassBand> _bands(

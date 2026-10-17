@@ -151,15 +151,9 @@ void main() {
               'Text block/Title': textBox('Lemon cake'),
               'Text block/Subtitle': textBox('Edited today'),
             },
-            deviations: const {
-              '': fixedTextBlock,
-              'Text block': fixedTextBlock,
-              'Text block/Title': fixedTextBlock,
-              'Text block/Subtitle': fixedTextBlock,
-            },
+            deviations: const {'Text block/Subtitle': subtitleWholePoints},
           );
-          // The kit's subtitle sits at the left of its wider frame, 2.5 pt left of the centre
-          // (deviation above): compare the rest of the piece.
+          // The subtitle's frame is 2 pt narrower in the kit (deviation above): its pixels move.
           await expectKitPixels(
             tester,
             master,
@@ -492,13 +486,7 @@ void main() {
                   _ => {'Title block/Title': textBox('Lemon cake')},
                 },
               },
-              deviations: {
-                'Window controls': measuredPitch,
-                if (variant == 'Subtitle') ...{
-                  'Title block': halfPointText,
-                  'Title block/Subtitle': halfPointText,
-                },
-              },
+              deviations: {'Window controls': measuredPitch},
             );
             await expectKitPixels(
               tester,
