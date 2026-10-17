@@ -209,7 +209,17 @@ void _checkStyle(
   final what = '$p (${r.source})';
 
   var flat = kit.fills.where((f) => f.gradient == null).toList();
-  if (flat.isEmpty && tint != null) {
+  // Sketch draws a layer's shadow only for a layer with a fill, so the Light glass layers carry
+  // a ~1% white fill in the kit; the code does not paint it, and the tint is the sibling's.
+  final placeholder =
+      flat.length == 1 &&
+      flat.first.swatch == null &&
+      flat.first.color != null &&
+      flat.first.color!.a <= 0.02 &&
+      flat.first.color!.r > 0.99 &&
+      flat.first.color!.g > 0.99 &&
+      flat.first.color!.b > 0.99;
+  if ((flat.isEmpty || placeholder) && tint != null) {
     flat = tint.fills.where((f) => f.gradient == null).toList();
   }
   if (flat.length != r.fills.length) {

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Added (silica-ui, mustache#23; silica-design 43bd510f):** `AmalfiAppIcon(id)`, the 16 pt app icon of
+  a menu row (`Icons/App/16/<App>`), drawn from the app's layers in silica-icons for
+  `AmalfiMenuAction.icon`. **Changed (silica-design a23f0d03):** the menu submenu overlaps its parent
+  by 4 pt on the parent's visible body (it was 8; `AmalfiMenuMetrics.submenuOverlap` stays 4). Every
+  kit fixture resynced to silica-design a23f0d03: the Light glass layers carry a ~1% white fill in
+  Sketch so that it renders their shadow; the code does not add it (the geometry check reads the
+  tint from the sibling layer) and the pixel harness now compares the shadow ring
+  (`KitMaster.unpaintedShadows` is removed); the glass pixels needed no extra tolerance.
 - **Added (silica-ui#97; silica-design 3e50109d, silica-desktop fb2989c):** `AmalfiColors.paletteArancia`
   (`Palette/Arancia`, light `#F98A17`, dark `#FF9F40`: the Orange tag and the Orange accent, never
   `paletteLimone`) and `AmalfiColors.paletteLimoneScuro` (`Palette/Limone Scuro`, light `#A67600`,

@@ -281,14 +281,13 @@ void main() {
     expect(submenu['gravity'], 'bottom-right');
     expect(submenu['adjust'], unorderedEquals(['flipX', 'slideY']));
     final rect = submenu['anchorRect'] as List;
-    // In the menu popup's own coordinates: its list is the menu less its padding, and the
-    // anchor is inside the list by the overlap on both sides, at the item's top less the
-    // padding.
+    // In the menu popup's own coordinates: the anchor is inside the menu's body by the
+    // overlap on both sides, at the item's top less the padding.
     const padding = AmalfiMenuMetrics.padding;
     const overlap = AmalfiMenuMetrics.submenuOverlap;
-    expect(rect[0], padding + overlap);
+    expect(rect[0], overlap);
     expect(rect[1], padding + 24 - padding);
-    expect(rect[2], AmalfiMenuMetrics.minWidth - 2 * padding - 2 * overlap);
+    expect(rect[2], AmalfiMenuMetrics.minWidth - 2 * overlap);
     expect(find.text('One'), findsOneWidget);
     expect(View.of(tester.element(find.text('One'))).viewId, 8);
 

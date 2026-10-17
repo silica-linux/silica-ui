@@ -493,9 +493,9 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
       // padding: the submenu hangs from this rectangle's trailing (leading when flipped)
       // corner.
       anchor: Rect.fromLTWH(
-        listRect.left + overlap,
+        listRect.left - AmalfiMenuMetrics.padding + overlap,
         itemRect.top - AmalfiMenuMetrics.padding,
-        math.max(1, listRect.width - 2 * overlap),
+        math.max(1, listRect.width + 2 * (AmalfiMenuMetrics.padding - overlap)),
         1,
       ),
       anchorEdge: rtl ? SilicaPopupEdge.topLeft : SilicaPopupEdge.topRight,
@@ -754,7 +754,7 @@ class _AmalfiMenuListState extends State<AmalfiMenuList> {
 }
 
 /// Puts a submenu beside its parent: its leading edge [AmalfiMenuMetrics.submenuOverlap]
-/// inside the parent list's trailing edge (the parent's 4 pt padding), its first item level
+/// inside the parent menu's trailing edge (its body, the list and its 4 pt padding), its first item level
 /// with the parent's item, so its top is the item's top less its own padding
 /// (`Menus/Menu/Cascade`); on the other side when it does not fit, then inside the bounds.
 class _SubmenuLayout extends SingleChildLayoutDelegate {
@@ -774,9 +774,10 @@ class _SubmenuLayout extends SingleChildLayoutDelegate {
 
   @override
   Offset getPositionForChild(Size size, Size childSize) {
-    final after = list.right - AmalfiMenuMetrics.submenuOverlap;
+    const inset = AmalfiMenuMetrics.padding;
+    final after = list.right + inset - AmalfiMenuMetrics.submenuOverlap;
     final before =
-        list.left + AmalfiMenuMetrics.submenuOverlap - childSize.width;
+        list.left - inset + AmalfiMenuMetrics.submenuOverlap - childSize.width;
     final rtl = textDirection == TextDirection.rtl;
     final fitsAfter = after + childSize.width <= size.width;
     final fitsBefore = before >= 0;

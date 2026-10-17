@@ -2,6 +2,7 @@
 // halo, the interaction states, the layer keys, the control glyphs and the runtime Icon Kit
 // symbols.
 
+export 'app_icon.dart';
 export 'focus_halo.dart';
 export 'glyph.dart';
 export 'interaction.dart';

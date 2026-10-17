@@ -198,17 +198,6 @@ Future<KitPixelResult> expectKitPixels(
     cover(master.paintBoundsOf(master.layer(path)));
   }
   mask.forEach(cover);
-  // The shadows of glass without a fill are in the JSON but not in the PNG: not compared.
-  final rings = master.unpaintedShadows;
-  if (rings.isNotEmpty) {
-    for (var y = 0; y < height; y++) {
-      for (var x = 0; x < width; x++) {
-        final p = Offset((x + 0.5) / 2, (y + 0.5) / 2) - at;
-        if (rings.any((r) => r.contains(p))) masked[y * width + x] = 1;
-      }
-    }
-  }
-
   // Compares outside [masked]; the diff image shows the masked pixels in blue.
   (KitPixelResult, Uint8List) compare(Uint8List masked, {int? meanOver}) {
     var sum = 0, compared = 0, max = 0, worst = 0;

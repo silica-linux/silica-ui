@@ -66,9 +66,9 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
   `Titlebars/Title Bar/Subtitle` measures the subtitle as the code does; the piece's subtitle
   frame is still 66 against the code's 4 pt grid 68 (its pixels are masked).
 
-New with that export: Sketch draws no shadow for a layer without a fill, so the Light glass
-shadows are in the JSON but not in the PNGs; the pixel harness leaves the shadow ring out
-(`KitMaster.unpaintedShadows`).
+Since silica-design `a23f0d03` the Light/Glass layers carry a ~1% white fill so that Sketch renders
+their shadow. The code does not add that fill: the geometry check takes the tint from the sibling
+layer as before, and the pixel harness no longer leaves the shadow ring out.
 
 ## Still open (silica-design `4dde030`)
 
