@@ -9,3 +9,5 @@ export 'lens.dart';
 export 'layer_keys.dart';
 export 'shadow.dart';
 export 'symbol.dart';
+export 'silica_symbol_names.g.dart';
+export 'silica_symbols.g.dart';

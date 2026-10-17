@@ -31,6 +31,15 @@ flutter:
           weight: 600
         - asset: fonts/Inter-Bold.ttf
           weight: 700
+    - family: SilicaSymbols
+      fonts:
+        - asset: fonts/SilicaSymbols-Regular.otf
+    - family: SilicaSymbolsLight
+      fonts:
+        - asset: fonts/SilicaSymbols-Light.otf
+    - family: SilicaSymbolsSemibold
+      fonts:
+        - asset: fonts/SilicaSymbols-Semibold.otf
     - family: JetBrains Mono
       fonts:
         - asset: fonts/JetBrainsMono-Regular.ttf

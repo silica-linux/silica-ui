@@ -13,6 +13,7 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 
 import '../theme.dart';
+import 'symbol.dart';
 
 /// One path of a glyph: SVG path data on the 24 × 24 canvas, stroked with the glyph's stroke
 /// and, with [fill], filled too (as an SVG `<path fill="currentColor">` in a stroked group).
@@ -169,6 +170,14 @@ class AmalfiGlyph extends StatelessWidget {
     final side = size ?? icons.size ?? 16;
     final paint =
         color ?? icons.color ?? AmalfiTheme.of(context).colors.textPrimary;
+    final symbol = strokeWidth == null ? _font(glyph) : null;
+    if (symbol != null) {
+      // The Silica Symbols font: font size = icon box (`tokens.json` iconFont).
+      Widget icon = Icon(symbol, size: side, color: paint);
+      if (turns != 0)
+        icon = Transform.rotate(angle: turns * 2 * math.pi, child: icon);
+      return ExcludeSemantics(child: icon);
+    }
     return ExcludeSemantics(
       child: SizedBox.square(
         dimension: side,
@@ -184,6 +193,17 @@ class AmalfiGlyph extends StatelessWidget {
     );
   }
 }
+
+/// The bundled Silica Symbols glyph of [glyph] in the weight of its stroke, or null when the
+/// font has none (an app's own glyph).
+IconData? _font(AmalfiGlyphData glyph) => silicaSymbolData(
+  glyph.name,
+  weight: switch (glyph.strokeWidth) {
+    < AmalfiGlyphData.regularStroke => AmalfiSymbolWeight.light,
+    > AmalfiGlyphData.regularStroke => AmalfiSymbolWeight.semibold,
+    _ => AmalfiSymbolWeight.regular,
+  },
+);
 
 /// Paints [glyph] in [color] in the largest square centred in its size, optionally turned by
 /// [turns]. [strokeWidth] (in points at the painted size) overrides the glyph's stroke.

@@ -13,6 +13,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../icons/silica_icons.dart' show silicaIconDirs;
 import 'glyph.dart';
+import 'silica_symbol_names.g.dart';
 
 /// The weights of the Icon Kit (`symbols/<weight>/`).
 enum AmalfiSymbolWeight {
@@ -24,6 +25,31 @@ enum AmalfiSymbolWeight {
 
   /// The folder under `symbols/`.
   final String folder;
+
+  /// The family of this weight in the bundled Silica Symbols font (one family per weight).
+  String get fontFamily => switch (this) {
+    light => 'SilicaSymbolsLight',
+    regular => 'SilicaSymbols',
+    semibold => 'SilicaSymbolsSemibold',
+  };
+}
+
+/// The bundled Silica Symbols glyph [name] in [weight] as an icon (draw it with `Icon`, the
+/// font size is the icon box), or null when the font has no such symbol.
+IconData? silicaSymbolData(
+  String name, {
+  AmalfiSymbolWeight weight = AmalfiSymbolWeight.regular,
+}) {
+  final codepoint = silicaSymbolCodepoints[name];
+  if (codepoint == null) return null;
+  // A by-name lookup cannot be a constant: apps that use it build with
+  // `--no-tree-shake-icons` (or only use the `SilicaSymbols*` constants).
+  // ignore_for_file: non_const_argument_for_const_parameter
+  return IconData(
+    codepoint,
+    fontFamily: weight.fontFamily,
+    fontPackage: 'silica_ui',
+  );
 }
 
 /// Finds and reads the installed Icon Kit symbols.
@@ -88,11 +114,12 @@ abstract final class AmalfiSymbols {
   static void clearCache() => _cache.clear();
 }
 
-/// The installed Icon Kit symbol [name] in [weight], [size] points square in [color] (both
-/// default to the ambient [IconTheme], as [AmalfiGlyph]). The stroke is the weight's, scaled
-/// with the size.
+/// The Icon Kit symbol [name] in [weight], [size] points square in [color] (both default to
+/// the ambient [IconTheme], as [AmalfiGlyph]). It is set in the bundled Silica Symbols font
+/// (font size = icon box); a name the font lacks is read from the installed silica-icons
+/// instead, with the weight's stroke scaled with the size.
 ///
-/// When the symbol is not installed it draws [fallback], or an empty box of [size].
+/// When the symbol is in neither it draws [fallback], or an empty box of [size].
 class AmalfiSymbol extends StatelessWidget {
   const AmalfiSymbol(
     this.name, {
@@ -115,6 +142,8 @@ class AmalfiSymbol extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final data = silicaSymbolData(name, weight: weight);
+    if (data != null) return Icon(data, size: size, color: color);
     final glyph = AmalfiSymbols.load(name, weight: weight);
     if (glyph == null) {
       return fallback ??
