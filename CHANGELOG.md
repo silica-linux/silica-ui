@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Added (silica-desktop#217):** `SilicaShare` (the system share service, `dev.frascella.Silica.Share1`:
+  targets and sharing over the `silica/dbus` channel), `silicaShareEntries` and `showSilicaShareMenu`
+  for an app's Share button. Without the service there are no targets, so the button stays hidden.
 - **Changed (Amalfi readability pass, silica-ui#92; silica-desktop 3fd30a9, silica-design
   fd1719cf):** sizes are never smaller than macOS. Control icons: mini 14, small 16, regular /
   large / toolbar / menu bar / sidebar / list 20, accessory 16 (`AmalfiControlSize.iconSize`,

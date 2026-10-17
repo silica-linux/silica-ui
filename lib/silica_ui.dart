@@ -7,6 +7,7 @@ export 'src/alert.dart';
 export 'src/amalfi/amalfi.dart';
 export 'src/appearance.dart' show SilicaAppearance, SilicaAppearanceScope;
 export 'src/app.dart';
+export 'src/share.dart';
 export 'src/controls/buttons/buttons.dart';
 export 'src/controls/containers/containers.dart';
 export 'src/controls/control_base.dart';
