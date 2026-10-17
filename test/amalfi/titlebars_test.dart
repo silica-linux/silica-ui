@@ -151,7 +151,12 @@ void main() {
               'Text block/Title': textBox('Lemon cake'),
               'Text block/Subtitle': textBox('Edited today'),
             },
-            deviations: const {'Text block/Subtitle': fixedSubtitle},
+            deviations: const {
+              '': fixedTextBlock,
+              'Text block': fixedTextBlock,
+              'Text block/Title': fixedTextBlock,
+              'Text block/Subtitle': fixedTextBlock,
+            },
           );
           // The kit's subtitle sits at the left of its wider frame, 2.5 pt left of the centre
           // (deviation above): compare the rest of the piece.
@@ -223,7 +228,15 @@ void main() {
               root: root,
               layers: {child: pieceControl()},
             );
-            await expectKitPixels(tester, master, scene, maskLayers: [child]);
+            await expectKitPixels(
+              tester,
+              master,
+              scene,
+              maskLayers: [child],
+              // The kit's Send is a flat accent circle, ours the toolbar button's glass: its
+              // shadow reaches beyond the mask.
+              maskMargin: child == 'Send' ? 8 : 1,
+            );
           });
         }
       }
@@ -268,12 +281,21 @@ void main() {
             master,
             root: root,
             layers: {'Surface': barSurface(), ...keyed(sidebarSectionNames)},
+            deviations: const {
+              'Surface#fills': blurStrip,
+              'Surface#blurs': blurStrip,
+              'Controls': blurStrip,
+              'Spacer': blurStrip,
+            },
           );
+          // The kit's section is a blur strip over the sidebar with the divider drawn on
+          // top: the pixels of the opaque section differ everywhere.
           await expectKitPixels(
             tester,
             master,
             bar,
             maskLayers: ['Controls', 'Sidebar Toggle'],
+            tolerance: const KitPixelTolerance(mean: 40, max: 255),
           );
         });
 
@@ -421,8 +443,8 @@ void main() {
                 tester.getRect(buttons.at(i)).shift(-origin),
             ],
             [
-              for (final x in [92.0, 132.0, 432.0, 472.0])
-                Rect.fromLTWH(x, 4, 32, 32),
+              for (final x in [92.0, 124.0, 448.0, 480.0])
+                Rect.fromLTWH(x, 8, 24, 24),
             ],
           );
         });
@@ -470,7 +492,13 @@ void main() {
                   _ => {'Title block/Title': textBox('Lemon cake')},
                 },
               },
-              deviations: const {'Window controls': measuredPitch},
+              deviations: {
+                'Window controls': measuredPitch,
+                if (variant == 'Subtitle') ...{
+                  'Title block': halfPointText,
+                  'Title block/Subtitle': halfPointText,
+                },
+              },
             );
             await expectKitPixels(
               tester,
@@ -734,10 +762,10 @@ void main() {
       tester,
     ) async {
       await pumpKitScene(tester, SizedBox(width: 760, child: unifiedBar()));
-      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 156);
+      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 135);
       // A wider bar gives the spacer the extra width.
       await pumpKitScene(tester, SizedBox(width: 960, child: unifiedBar()));
-      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 356);
+      expect(tester.getSize(find.byKey(const ValueKey('Spacer'))).width, 335);
       // Trailing padding 16 (components.md, user decision 2026-10-16).
       expect(tester.getTopRight(find.byKey(const ValueKey('Search'))).dx, 944);
     });

@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+- **Changed (Amalfi readability pass, silica-ui#92; silica-desktop 3fd30a9, silica-design
+  fd1719cf):** sizes are never smaller than macOS. Control icons: mini 14, small 16, regular /
+  large / toolbar / menu bar / sidebar / list 20, accessory 16 (`AmalfiControlSize.iconSize`,
+  `AmalfiControlIcons`: new `menuBar`, `sidebar`, `list`; `accessory` 12 -> 16). Text: Caption 11/14
+  (was 10), new `AmalfiType.sidebar` (14/20) and `sidebarHeader` (12/16, 600); no text below
+  11 (the legacy controls' 9 and 10 pt labels are 11). Sidebar: rows 32 with no gap, icon 20 at
+  x 12, label at x 40, selected label 600, headers 28 (`AmalfiSidebarMetrics.rowHeight` 32,
+  `rowGap` 0, `icon` 20, new `headerHeight`). Toolbar: items are 36 high at y 8 in the 52 bar
+  (`AmalfiControlHeights.toolbar`): `AmalfiToolbarButton` 36 (glyph 20, labelled glyph at y 4),
+  `AmalfiActionSegments` Large 36 with a 1 pt separator between icon segments (Back/Forward 73,
+  groups of 3 and 4: 110 and 147), toolbar search field `AmalfiFieldSize.toolbar` (36, glyph 20,
+  text at x 40). Compact 40 pt bars take the 24 pt `AmalfiToolbarButton(small: true)` (glyph
+  16). `AmalfiSegmentedControl(toolbar: true)` with `size: large` is the toolbar's 36 high control
+  (a plain Large one stays 32). Pop-up and pull-down chevrons, the submenu chevron, the clear
+  and combo buttons (20 and 20/24 discs), the colour well chevron and the token cross are the
+  16 pt accessory size; menu item icons 20; the full-screen strip's menu bar is 32. A Mini push
+  button is 56 wide.
+- **Added:** the Silica Symbols font (silica-icons ebc580b, CC BY-SA 4.0), one family per
+  weight (`SilicaSymbols`, `SilicaSymbolsLight`, `SilicaSymbolsSemibold`, package `silica_ui`;
+  font size = icon box): the generated icon constants `SilicaSymbols`, `SilicaSymbolsLight` and
+  `SilicaSymbolsSemibold`, `silicaSymbolCodepoints` (name -> codepoint) and `silicaSymbolData`.
+  `AmalfiGlyph` draws the control glyphs from the font (a glyph with its own `strokeWidth`, or
+  one the font lacks, stays a vector) and `AmalfiSymbol` draws any symbol of the font by name
+  before looking in the installed silica-icons. A by-name lookup is not a constant icon: apps
+  that use `AmalfiSymbol` build with `--no-tree-shake-icons`. `tool/sync_symbols.dart` copies
+  the fonts and regenerates the Dart files from a silica-icons checkout. Tokens regenerated
+  from silica-desktop 3fd30a9 (`tool/gen_amalfi_tokens.dart` accepts `iconFont` and
+  `controlHeights.toolbar`: `AmalfiControlHeights.toolbar`).
+- **Changed:** the kit geometry tests follow the new masters (silica-design fd1719cf): kit icons
+  are text layers in the Silica Symbols font, `Buttons/Toolbar/Icon Small` is covered, the known
+  differences of the kit are in `docs/amalfi-checklist/kit-issues.md`.
 - **Fixed:** `ScrollUnderToolbar.background` / `.columns` work again (silica-ui#87): given, in an
   active window the scrolled bar anchors its veil to the content colour (`ToolbarVeil.anchoredTo`)
   and shows it unchanged, like clear glass, with no colour band. Without them the measured veil

@@ -542,7 +542,7 @@ class _SilicaCalendarState extends State<SilicaCalendar> {
                   ? labels.weekdayInitials[(widget.firstDayOfWeek + i) % 7]
                   : '',
               textAlign: TextAlign.center,
-              style: inputText(colors.secondaryText, size: 10),
+              style: inputText(colors.secondaryText, size: 11),
             ),
           ),
       ],

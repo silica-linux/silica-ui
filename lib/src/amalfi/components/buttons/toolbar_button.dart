@@ -1,6 +1,6 @@
 // Toolbar buttons (kit `Buttons/Toolbar/<Icon|Icon + Label>/<state>`): Glass/Regular items of
 // a toolbar (`materials.md`: toolbar controls are Regular glass; `components.md`: a single icon
-// button is a 32 × 32 circle).
+// button is a 36 × 36 circle).
 
 import 'package:flutter/rendering.dart' show OverflowBoxFit;
 import 'package:flutter/widgets.dart';
@@ -15,7 +15,7 @@ import 'button_surface.dart';
 /// The measures of toolbar buttons, from the kit masters `Buttons/Toolbar/*`.
 abstract final class AmalfiToolbarButtonMetrics {
   /// The icon-only button's side.
-  static const double side = 32;
+  static const double side = AmalfiControlHeights.toolbar;
 
   /// The size of the button with a label (the label may make it wider).
   static const Size labeled = Size(56, 44);
@@ -26,14 +26,18 @@ abstract final class AmalfiToolbarButtonMetrics {
   /// The glyph size.
   static const double glyph = AmalfiControlIcons.toolbar;
 
+  /// The icon-only button of a compact (40 pt) bar: a 24 pt circle with a 16 pt glyph
+  /// (`Buttons/Toolbar/Icon Small`).
+  static const double smallSide = 24, smallGlyph = 16;
+
   /// The top of the glyph in the labelled button.
-  static const double labeledGlyphTop = 6;
+  static const double labeledGlyphTop = 4;
 
   /// The top of the label in the labelled button.
   static const double labelTop = 26;
 }
 
-/// A toolbar button: [icon] on Glass/Regular, a 32 pt circle; with a [label], 56 × 44 with the
+/// A toolbar button: [icon] on Glass/Regular, a 36 pt circle (24 with [small]); with a [label], 56 × 44 with the
 /// label (Caption) under the glyph.
 ///
 /// Hovered it gets a `Line/Separator` highlight, pressed a `Line/Border` one. Without a
@@ -47,6 +51,7 @@ class AmalfiToolbarButton extends StatelessWidget {
     this.semanticLabel,
     this.focusNode,
     this.autofocus = false,
+    this.small = false,
   });
 
   final Widget icon;
@@ -61,6 +66,9 @@ class AmalfiToolbarButton extends StatelessWidget {
   final FocusNode? focusNode;
   final bool autofocus;
 
+  /// The 24 pt button of a compact bar (glyph 16); only without a [label].
+  final bool small;
+
   @override
   Widget build(BuildContext context) {
     final colors = AmalfiTheme.of(context).colors;
@@ -71,9 +79,13 @@ class AmalfiToolbarButton extends StatelessWidget {
       content: colors.textPrimary,
     );
     final label = this.label;
+    final small = this.small && label == null;
+    final side = small
+        ? AmalfiToolbarButtonMetrics.smallSide
+        : AmalfiToolbarButtonMetrics.side;
     final shape = AmalfiSmoothBorder(
       radius: label == null
-          ? AmalfiRadii.capsule(AmalfiToolbarButtonMetrics.side)
+          ? AmalfiRadii.capsule(side)
           : AmalfiToolbarButtonMetrics.labeledRadius,
     );
     return AmalfiButtonBehavior(
@@ -85,13 +97,15 @@ class AmalfiToolbarButton extends StatelessWidget {
         final color = look.content;
         final glyph = AmalfiButtonIconTheme(
           color: color,
-          size: AmalfiToolbarButtonMetrics.glyph,
+          size: small
+              ? AmalfiToolbarButtonMetrics.smallGlyph
+              : AmalfiToolbarButtonMetrics.glyph,
           child: icon,
         );
         final Widget content;
         if (label == null) {
           content = SizedBox.square(
-            dimension: AmalfiToolbarButtonMetrics.side,
+            dimension: side,
             child: Center(child: glyph),
           );
         } else {

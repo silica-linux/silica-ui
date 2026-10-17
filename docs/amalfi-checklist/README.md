@@ -4,7 +4,7 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 
 | Family | Kit | Masters | Done |
 | --- | --- | ---: | ---: |
-| [Buttons](buttons.md) | `Buttons` | 414 | 414 |
+| [Buttons](buttons.md) | `Buttons` | 418 | 414 |
 | [Segmented](segmented.md) | `Segments` | 488 | 488 |
 | [Toggles](toggles.md) | `Toggles` | 296 | 296 |
 | [Fields](fields.md) | `Fields` | 128 | 128 |
@@ -26,16 +26,16 @@ One line per master of the Silica 1.0 "Amalfi" UI kit ([silica-design](https://g
 | [Dialogs](dialogs.md) | `Dialogs` | 12 | 12 |
 | [Sheets](sheets.md) | `Windows/Window/Sheet Attached` | 2 | 2 |
 | [Wells](wells.md) | `Wells` | 74 | 74 |
-| **Total** | | **2147** | **2147** |
+| **Total** | | **2151** | **2147** |
 
 ## Out of scope of the component milestone (M3)
 
 | Kit category | Masters | Belongs to |
 | --- | ---: | --- |
-| `Apps` | 481 | the app milestones (each `App · <name>` page) |
-| `Dock` | 42 | the shell (M4) |
+| `Apps` | 512 | the app milestones (each `App · <name>` page) |
+| `Dock` | 46 | the shell (M4) |
 | `Menu Bar` | 16 | the shell (M4) |
 | `Control Center` | 68 | the shell (M4) |
 | `Notifications` | 22 | the shell (M4) |
-| `Pointers` | 26 | the shell (M4) (cursor theme) |
+| `Pointers` | 0 | the shell (M4) (cursor theme) |
 | `Foundations` | 2 | none: a test backdrop for glass, not a component |

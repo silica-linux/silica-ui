@@ -403,6 +403,61 @@ List<double> _evenStops(int n) => [
   for (var i = 0; i < n; i++) n == 1 ? 0 : i / (n - 1),
 ];
 
+/// A kit icon is a text layer in the Silica Symbols font (its text is the symbol name, its
+/// font size the icon box). The controls paint the same symbols as vector glyphs
+/// ([AmalfiGlyph], from the same drawings): the glyph is the layer's symbol, painted at the
+/// font size in the font colour.
+void _checkSymbolGlyph(KitLayer layer, Finder finder, _Add add) {
+  final p = '"${layer.path}"';
+  final font = layer.font!;
+  final texts = find.descendant(
+    of: finder,
+    matching: find.byType(RichText),
+    matchRoot: true,
+  );
+  if (texts.evaluate().isNotEmpty) {
+    // Painted from the bundled font: the codepoint of the symbol, at the font size.
+    final span = (texts.evaluate().first.widget as RichText).text;
+    final style = span.style;
+    final codepoint = silicaSymbolCodepoints[layer.text];
+    if (layer.text != null &&
+        span.toPlainText() != String.fromCharCode(codepoint ?? 0)) {
+      add('text', '$p: symbol "${span.toPlainText()}", kit "${layer.text}"');
+    }
+    if (style?.fontSize != font.size) {
+      add('font', '$p: symbol size ${style?.fontSize}, kit ${font.size}');
+    }
+    if (font.color != null && style?.color != font.color) {
+      add('color', '$p: colour ${style?.color}, kit ${_hex(font.color!)}');
+    }
+    return;
+  }
+  final painters = find.descendant(
+    of: finder,
+    matching: find.byWidgetPredicate(
+      (w) => w is CustomPaint && w.painter is AmalfiGlyphPainter,
+    ),
+    matchRoot: true,
+  );
+  if (painters.evaluate().isEmpty) {
+    add('text', '$p: no symbol at or below the widget');
+    return;
+  }
+  final painter =
+      (painters.evaluate().first.widget as CustomPaint).painter!
+          as AmalfiGlyphPainter;
+  if (layer.text != null && painter.glyph.name != layer.text) {
+    add('text', '$p: symbol "${painter.glyph.name}", kit "${layer.text}"');
+  }
+  final size = painters.evaluate().first.size;
+  if (size != null && !_same(size.width, font.size ?? 0)) {
+    add('font', '$p: symbol size ${size.width}, kit ${font.size}');
+  }
+  if (font.color != null && painter.color != font.color) {
+    add('color', '$p: colour ${_hex(painter.color)}, kit ${_hex(font.color!)}');
+  }
+}
+
 void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
   final p = '"${layer.path}"';
   final paragraphs = find.descendant(
@@ -417,6 +472,11 @@ void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
   );
   final String text;
   final TextStyle? style;
+  final symbol = layer.font?.family == 'Silica Symbols';
+  if (symbol) {
+    _checkSymbolGlyph(layer, finder, add);
+    return;
+  }
   if (paragraphs.evaluate().isNotEmpty) {
     final span = tester.renderObject<RenderParagraph>(paragraphs.first).text;
     text = span.toPlainText();
@@ -485,7 +545,7 @@ void _checkText(WidgetTester tester, KitLayer layer, Finder finder, _Add add) {
         !_same(t.size, font.size ?? -1) ||
         (t.lineHeight != null &&
             !_same(t.lineHeight!, font.lineHeight ?? -1)) ||
-        t.weight != weight) {
+        (ref.weight ?? t.weight) != weight) {
       add(
         'style',
         '$p: the kit font differs from the token ${t.name} '

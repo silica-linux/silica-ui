@@ -1,4 +1,4 @@
-// Loads the package fonts (Inter, JetBrains Mono) into the test engine, so that text in widget
+// Loads the package fonts (Inter, JetBrains Mono, Silica Symbols) into the test engine, so that text in widget
 // tests is drawn with the real glyphs and metrics instead of the Ahem test font.
 
 import 'dart:io';
@@ -32,7 +32,21 @@ Future<void> loadAmalfiFonts() async {
   }
   final mono = FontLoader('packages/silica_ui/JetBrains Mono')
     ..addFont(Future.value(read('fonts/JetBrainsMono-Regular.ttf')));
-  await Future.wait([inter.load(), mono.load()]);
+  final symbols = [
+    for (final weight in ['', 'Light', 'Semibold'])
+      FontLoader('packages/silica_ui/SilicaSymbols$weight')..addFont(
+        Future.value(
+          read(
+            'fonts/SilicaSymbols-${weight.isEmpty ? 'Regular' : weight}.otf',
+          ),
+        ),
+      ),
+  ];
+  await Future.wait([
+    inter.load(),
+    mono.load(),
+    for (final f in symbols) f.load(),
+  ]);
   _loaded = true;
 }
 

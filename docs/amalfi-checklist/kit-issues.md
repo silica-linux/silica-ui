@@ -67,14 +67,12 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
   as four.
 - Instances with an overridden label keep the master's text frame ("Button", 48 wide), so text
   masks of nested labels are drawn by hand in the tests that need them.
-- Buttons: Pop-up and Pull-down Small chevrons are 12 pt; control glyphs are 14 at Small (user decision 2026-10-16).
 - Buttons: the pop-up `chevron-up-down` keeps the 24 pt stroke (1.5) at 12 and 16 pt.
 - Buttons: `Buttons/Pull-down/Open` applies its overrides to the wrong rows: row 2 shows the nested menu's checked "Lemon" instead of "Duplicate", and the highlighted item is swapped to plain.
 - `Disclosure/Button/Expanded/*`: Glyph Chevron Up has no 12 pt layer style and keeps the 1.5 stroke.
 - `Toggles/Radio/*/Small/Hover|Focused`: State and Focus Halo keep radius 7 while the Small radio box is a circle (8).
 - `Toggles/Radio Group/List`: rows keep a stale width of 140 (With Label row is 124).
 - `Group Boxes/Box/Titled` "Show banners", "Play sound" and `Untitled` "Remember" rows keep width 168.
-- Fields: Search Field/Small and Text Field/Small/Error draw their glyphs at 12; control glyphs are 14 at Small (user decision 2026-10-16).
 - Steppers/Stepper/* (56 masters): "Glyph Chevron Up" keeps the 24 pt stroke (1.5) at 12 pt.
 - Progress/Circular/Determinate partial arcs are hand-drawn, up to 2 pt off concentric (geometry checked, pixels masked).
 - Wells: the photo glyph (Image Well 20/28/36) and the eyedropper (Color Well Expanded, 16) keep the 24 pt stroke.
@@ -91,3 +89,11 @@ The second round of kit fixes, after the user decisions of 2026-10-16:
 - Glass/Clear lenses are encoded as a Sketch `Glass` blur (drawn as Clear's 2 pt background blur).
 - Glass/Regular and Thick are Sketch `Glass` blurs (silica-design ba8183f9). Kit deviations from `tokens.json` (accepted exactly, in `geometry.dart`): Thick has saturation 1 and chromatic aberration 0; Regular Dark has σ 10, saturation 1, distortion 0.5, depth 0.5, chromatic aberration 0 (Light matches the tokens).
 - Glass pixel tests: Sketch refracts the edge band (depth × half the shorter side) and lifts the fill there; the Flutter fallback (no shader in tests) draws none. A comparison that fails is repeated with that band masked (`maskGlassBand`, same tolerance, the mean still divided by the pixels of the full comparison); the shader itself is checked by `test/amalfi/glass_refraction_test.dart` (uniforms) only.
+- Readability pass (silica-design fd1719cf): Light Regular and Thick glass masters with a separate `<name> tint` layer keep the glass layer's own white fill under it, so the PNG shows the tint twice (white at 84 % where the material is 60 %); the code has it once, as `materials.md` says. Light pixel tests of those masters are compared loosely (`pixels.dart`); Dark ones are exact.
+- Readability pass: `Alerts/Alert/Critical` has a stray `Glyph Warning` text at (132, 24) above the app icon and is 262 tall (32 more than the other alerts); everything below the icon sits 32 lower. Geometry is deviated, pixels skipped.
+- Readability pass: `Sidebars/Row/*` Sidebar Emphasis and `Sidebars/Header/*` are Sketch weight 6 (Medium); `components.md` and `tokens.json` say 600 (selected row, header). The code follows the docs.
+- Readability pass: symbols of 16 and 20 pt sit about a point above where they are centred in their box in the kit PNGs (12 and 14 pt do not); Skia centres the same font glyph. Measured on Gradient Add Remove, Combo/Clear buttons and the sidebar rows; the symbol's box, size and colour are checked exactly, the pixel means are loose.
+- Readability pass: `Titlebars/Piece/Title + Subtitle` is a fixed 100 wide block with both lines left in it; `Titlebars/Title Bar/Subtitle` measures the subtitle 111 (the code rounds to the 4 pt grid: 112).
+- Readability pass: `Titlebars/Section/Sidebar` is a blur strip (80 % `Surface/Sidebar`, one background blur) with the divider drawn through the bar and the controls at x 1 (`components.md`, sidebar in a split title bar): not built yet, deviated.
+- Readability pass: `Fields/Token` is 64 wide with the 16 pt cross and a 32 label frame (Sketch measures "Travel" 4 narrower than the grid); `Wells/Image Well/Empty/*` Caption hint is a half-point frame (61).
+- Readability pass: Mini segmented text items stay 44 wide at Caption 11; "Three" needs 48 with the 8 pt padding, so the test shortens the label.

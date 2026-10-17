@@ -1210,6 +1210,46 @@ abstract final class AmalfiType {
   static TextStyle bodyEmphasis({Color? color}) =>
       bodyEmphasisToken.style(color: color);
 
+  /// `Sidebar`: Inter 14/20, weight 400. Use: sidebar row labels; selected row
+  /// weight 600.
+  static const AmalfiTextToken sidebarToken = AmalfiTextToken(
+    name: 'Sidebar',
+    family: 'Inter',
+    size: 14,
+    lineHeight: 20,
+    weight: FontWeight.w400,
+    colorTokens: [
+      'Text/Primary',
+      'Text/Secondary',
+      'Text/Tertiary',
+      'Text/On Accent',
+      'Accent/Amalfi',
+    ],
+  );
+
+  /// `Sidebar` in [color] (none: inherited).
+  static TextStyle sidebar({Color? color}) => sidebarToken.style(color: color);
+
+  /// `Sidebar Header`: Inter 12/16, weight 600. Use: sidebar section headers.
+  static const AmalfiTextToken sidebarHeaderToken = AmalfiTextToken(
+    name: 'Sidebar Header',
+    family: 'Inter',
+    size: 12,
+    lineHeight: 16,
+    weight: FontWeight.w600,
+    colorTokens: [
+      'Text/Primary',
+      'Text/Secondary',
+      'Text/Tertiary',
+      'Text/On Accent',
+      'Accent/Amalfi',
+    ],
+  );
+
+  /// `Sidebar Header` in [color] (none: inherited).
+  static TextStyle sidebarHeader({Color? color}) =>
+      sidebarHeaderToken.style(color: color);
+
   /// `Callout`: Inter 12/16, weight 400.
   static const AmalfiTextToken calloutToken = AmalfiTextToken(
     name: 'Callout',
@@ -1248,11 +1288,11 @@ abstract final class AmalfiType {
   /// `Label` in [color] (none: inherited).
   static TextStyle label({Color? color}) => labelToken.style(color: color);
 
-  /// `Caption`: Inter 10/14, weight 400.
+  /// `Caption`: Inter 11/14, weight 400.
   static const AmalfiTextToken captionToken = AmalfiTextToken(
     name: 'Caption',
     family: 'Inter',
-    size: 10,
+    size: 11,
     lineHeight: 14,
     weight: FontWeight.w400,
     colorTokens: [
@@ -1382,6 +1422,8 @@ abstract final class AmalfiType {
     headlineToken,
     bodyToken,
     bodyEmphasisToken,
+    sidebarToken,
+    sidebarHeaderToken,
     calloutToken,
     labelToken,
     captionToken,
@@ -1403,6 +1445,8 @@ abstract final class AmalfiType {
     'Headline' => headlineToken,
     'Body' => bodyToken,
     'Body Emphasis' => bodyEmphasisToken,
+    'Sidebar' => sidebarToken,
+    'Sidebar Header' => sidebarHeaderToken,
     'Callout' => calloutToken,
     'Label' => labelToken,
     'Caption' => captionToken,
@@ -1463,25 +1507,24 @@ abstract final class AmalfiSpacing {
 
 /// The one control scale of Amalfi: height and icon size of every control.
 ///
-/// One scale for every control; Large = toolbar; never resize a control inside
-/// a bar.
+/// One scale for every control; toolbar items are 36 (user decision 2026-10-17,
+/// macOS capsules are 38); never resize a control inside a bar.
 ///
-/// Icon sizes: user decision 2026-10-16: one scale for all controls, the kit's
-/// 16/12 small glyphs are defects; glyphs inside small discs or accessory
-/// buttons (gradient add/remove, combo chevron, clear and token crosses) stay
-/// 12 at every control size.
+/// Icon sizes: user decision 2026-10-17: Amalfi symbols draw ink = size x
+/// 20/24, so a 20 pt symbol draws ~17 pt like macOS; never smaller. Icons are
+/// set in the Silica Symbols font (silica-icons fonts/): font size = icon size.
 enum AmalfiControlSize {
-  /// `mini`: 20 pt high, 12 pt icons.
-  mini(height: 20, iconSize: 12),
+  /// `mini`: 20 pt high, 14 pt icons.
+  mini(height: 20, iconSize: 14),
 
-  /// `small`: 24 pt high, 14 pt icons.
-  small(height: 24, iconSize: 14),
+  /// `small`: 24 pt high, 16 pt icons.
+  small(height: 24, iconSize: 16),
 
-  /// `regular`: 28 pt high, 16 pt icons.
-  regular(height: 28, iconSize: 16),
+  /// `regular`: 28 pt high, 20 pt icons.
+  regular(height: 28, iconSize: 20),
 
-  /// `large`: 32 pt high, 16 pt icons.
-  large(height: 32, iconSize: 16);
+  /// `large`: 32 pt high, 20 pt icons.
+  large(height: 32, iconSize: 20);
 
   const AmalfiControlSize({required this.height, required this.iconSize});
 
@@ -1492,13 +1535,28 @@ enum AmalfiControlSize {
   final double iconSize;
 }
 
+/// Control heights that are not a control size (`controlHeights`).
+abstract final class AmalfiControlHeights {
+  /// `controlHeights.toolbar`, in points.
+  static const double toolbar = 36;
+}
+
 /// Control icon sizes that are not a control size (`controlIcons`).
 abstract final class AmalfiControlIcons {
   /// `controlIcons.toolbar`, in points.
-  static const double toolbar = 16;
+  static const double toolbar = 20;
 
   /// `controlIcons.accessory`, in points.
-  static const double accessory = 12;
+  static const double accessory = 16;
+
+  /// `controlIcons.menuBar`, in points.
+  static const double menuBar = 20;
+
+  /// `controlIcons.sidebar`, in points.
+  static const double sidebar = 20;
+
+  /// `controlIcons.list`, in points.
+  static const double list = 20;
 }
 
 /// Corner radii, in points. Corners are smooth (continuous), smoothing 0.6, on

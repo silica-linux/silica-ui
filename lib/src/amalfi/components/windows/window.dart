@@ -335,7 +335,7 @@ class AmalfiSplitWindowLayout extends StatelessWidget {
 }
 
 /// The strip a full-screen window shows when the pointer reaches the top of the screen (kit
-/// `Windows/Window/Full Screen Strip`): the menu bar (28 tall, 20 from each side), 12 below
+/// `Windows/Window/Full Screen Strip`): the menu bar (32 tall, 20 from each side), 12 below
 /// it the window's toolbar (52), a separator, then [child] (the top of the window content).
 class AmalfiFullScreenStrip extends StatelessWidget {
   const AmalfiFullScreenStrip({
@@ -354,7 +354,7 @@ class AmalfiFullScreenStrip extends StatelessWidget {
   final Widget? child;
 
   /// The menu bar height, its side inset and the gap under it.
-  static const double menuBarHeight = 28, menuBarInset = 20, gap = 12;
+  static const double menuBarHeight = 32, menuBarInset = 20, gap = 12;
 
   /// Where the toolbar starts.
   static const double toolbarTop = menuBarHeight + gap;

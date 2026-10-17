@@ -26,6 +26,7 @@ class AmalfiSegmentItem extends StatelessWidget {
     super.key,
     required this.segment,
     this.size = AmalfiControlSize.regular,
+    this.toolbar = false,
     this.selected = false,
     this.hovered = false,
     this.pressed = false,
@@ -37,6 +38,9 @@ class AmalfiSegmentItem extends StatelessWidget {
 
   final AmalfiSegment segment;
   final AmalfiControlSize size;
+
+  /// An item of a toolbar control ([AmalfiSegmentedControl.toolbar]).
+  final bool toolbar;
 
   /// Whether the item is chosen.
   final bool selected;
@@ -67,9 +71,10 @@ class AmalfiSegmentItem extends StatelessWidget {
   static double preferredWidth(
     BuildContext context,
     AmalfiSegment segment,
-    AmalfiControlSize size,
-  ) {
-    final m = AmalfiSegmentSizeMetrics.of(size);
+    AmalfiControlSize size, {
+    bool toolbar = false,
+  }) {
+    final m = AmalfiSegmentSizeMetrics.of(size, toolbar: toolbar);
     final label = segment.label;
     if (label == null) return m.iconItemWidth;
     final text = amalfiSegmentLabelWidth(context, label, m.itemLabelStyle());
@@ -101,9 +106,9 @@ class AmalfiSegmentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = AmalfiTheme.of(context);
     final colors = theme.colors;
-    final m = AmalfiSegmentSizeMetrics.of(size);
+    final m = AmalfiSegmentSizeMetrics.of(size, toolbar: toolbar);
     final h = m.itemHeight;
-    final w = width ?? preferredWidth(context, segment, size);
+    final w = width ?? preferredWidth(context, segment, size, toolbar: toolbar);
     final on = enabled && segment.enabled;
     final color = colors.textPrimary;
     final down = pressed && on;

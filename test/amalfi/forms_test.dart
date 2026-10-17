@@ -10,8 +10,9 @@ import 'package:silica_ui/silica_ui.dart';
 import 'support/harness.dart';
 
 /// The shape tolerance of the forms: the borders' antialiased edges and the pop-up's
-/// chevron (measured with the real nested controls: mean ≤ 0.72, max 106 on the pop-up).
-const KitPixelTolerance formsShapes = KitPixelTolerance(mean: 1, max: 112);
+/// chevron (measured with the real nested controls: mean ≤ 0.72, max 106 on the pop-up; 213 at
+/// the 20 pt error mark, which the kit sits a point higher than Skia).
+const KitPixelTolerance formsShapes = KitPixelTolerance(mean: 1, max: 215);
 
 /// The text tolerance of the forms (CoreText draws Inter heavier than Skia; light text on
 /// the transparent canvas of the dark rows feels it most).

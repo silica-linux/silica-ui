@@ -165,7 +165,10 @@ Case actionCase(KitMaster master, List<String> parts) {
     for (var i = 0; i < count; i++)
       text
           ? AmalfiSegment.text(labels[i])
-          : AmalfiSegment.icon(glyph, semanticLabel: 'Glyph ${i + 1}'),
+          : AmalfiSegment.icon(
+              AmalfiSymbol(master.layer('Glyph ${i + 1}').text ?? 'plus'),
+              semanticLabel: 'Glyph ${i + 1}',
+            ),
   ];
   // Disabled: the whole capsule (at 35 %).
   final widget = AmalfiActionSegments(
@@ -230,7 +233,12 @@ Case controlCase(KitMaster master, List<String> parts) {
   final text = words[2] == 'Text';
   final size = sizeNamed(parts[3]);
   final state = parts[4];
-  final labels = itemLabels(master, count);
+  // The kit's Mini items are 44 wide whatever the label; at 11 pt "Three" (30.4) needs 48 with
+  // the 8 pt padding, so the label is cut to what fits the kit's item.
+  final labels = [
+    for (final l in itemLabels(master, count))
+      size == AmalfiControlSize.mini && l == 'Three' ? 'Thr' : l,
+  ];
   final selected = <int>{
     for (var i = 0; i < count; i++)
       if (master.layer('Segment ${i + 1}').master?.contains('/Selected/') ??
@@ -306,7 +314,10 @@ Case itemCase(KitMaster master, List<String> parts) {
   final widget = AmalfiSegmentItem(
     segment: text
         ? AmalfiSegment.text(master.layer('Label').text ?? 'Item')
-        : const AmalfiSegment.icon(glyph, semanticLabel: 'Sidebar'),
+        : AmalfiSegment.icon(
+            AmalfiSymbol(master.layer('Glyph Sidebar').text ?? 'sidebar'),
+            semanticLabel: 'Sidebar',
+          ),
     size: size,
     selected: state == 'Selected',
     hovered: state == 'Hover',

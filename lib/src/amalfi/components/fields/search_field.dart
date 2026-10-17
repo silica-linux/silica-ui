@@ -165,7 +165,11 @@ class _AmalfiSearchFieldState extends State<AmalfiSearchField>
                         size: size.glyph,
                         color: colors.textSecondary,
                       ),
-                      const SizedBox(width: AmalfiFieldMetrics.gap),
+                      SizedBox(
+                        width: size == AmalfiFieldSize.toolbar && !hasTokens
+                            ? 2 * AmalfiFieldMetrics.gap
+                            : AmalfiFieldMetrics.gap,
+                      ),
                       for (final token in buildTokens(enabled: enabled)) ...[
                         token,
                         const SizedBox(width: AmalfiFieldMetrics.gap),

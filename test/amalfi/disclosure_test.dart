@@ -57,6 +57,13 @@ void main() {
                   'State': layerOf(root, AmalfiLayerKeys.state),
                 glyph: layerOf(root, AmalfiLayerKeys.mark),
               },
+              // The glyph turns (animated) from the collapsed one: expanded, ours is the
+              // collapsed chevron turned, the kit's the chevron of the expanded state.
+              deviations: {
+                if (expanded)
+                  '$glyph#text':
+                      'the collapsed chevron, turned by a quarter / half turn',
+              },
               maskLayers: [if (thickGlyph) glyph],
               maskMargin: 0,
               tolerance: tolerance(masked: thickGlyph),

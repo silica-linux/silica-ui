@@ -65,6 +65,7 @@ class AmalfiSegmentedControl extends StatefulWidget {
     this.onChanged,
     this.selection = AmalfiSegmentedSelection.one,
     this.size = AmalfiControlSize.regular,
+    this.toolbar = false,
     this.opaque = false,
     this.focusNode,
     this.autofocus = false,
@@ -83,6 +84,10 @@ class AmalfiSegmentedControl extends StatefulWidget {
   final AmalfiSegmentedSelection selection;
 
   final AmalfiControlSize size;
+
+  /// A control of a toolbar: with [size] large it is 36 high, like the other toolbar items
+  /// (`Titlebars/Piece/Segmented`), not 32.
+  final bool toolbar;
 
   /// Whether the glass is drawn without blur (see [AmalfiGlass.opaque]).
   final bool opaque;
@@ -237,7 +242,10 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
   }
 
   int? _indexAt(Offset local) {
-    final h = widget.size.height;
+    final h = AmalfiSegmentSizeMetrics.of(
+      widget.size,
+      toolbar: widget.toolbar,
+    ).height;
     if (local.dy < 0 || local.dy > h || _items.isEmpty) return null;
     if (local.dx < 0 || local.dx > _width) return null;
     return _indexAtX(local.dx);
@@ -398,7 +406,7 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
   @override
   Widget build(BuildContext context) {
     final theme = AmalfiTheme.of(context);
-    final m = AmalfiSegmentSizeMetrics.of(widget.size);
+    final m = AmalfiSegmentSizeMetrics.of(widget.size, toolbar: widget.toolbar);
     final segments = widget.segments;
     final n = segments.length;
     final h = m.height;
@@ -409,7 +417,12 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
     var textWidth = m.textItemWidth;
     for (final s in segments) {
       if (!s.isIcon) {
-        final w = AmalfiSegmentItem.preferredWidth(context, s, widget.size);
+        final w = AmalfiSegmentItem.preferredWidth(
+          context,
+          s,
+          widget.size,
+          toolbar: widget.toolbar,
+        );
         if (w > textWidth) textWidth = w;
       }
     }
@@ -500,6 +513,7 @@ class _AmalfiSegmentedControlState extends State<AmalfiSegmentedControl>
         // A disabled control dims as a whole: its items are not dimmed again.
         segment: _enabled ? s : _undimmed(s),
         size: widget.size,
+        toolbar: widget.toolbar,
         selected: chosen,
         hovered: _hovered == i && _pointer == null && !chosen,
         pressed: _pressedItem == i && _pressedInside,

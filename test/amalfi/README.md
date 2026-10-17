@@ -39,12 +39,14 @@ What every family draws with, exported from `silica_ui.dart`:
 - `AmalfiInteraction`: hover, press (pointer still inside), keyboard focus (halo only with
   keyboard navigation), activation on release or with `activators` (Space for toggles,
   Space and Return for buttons), drags; a control nested in another takes the press.
-- `AmalfiGlyph(AmalfiGlyphs.chevronDown, size: 12)`: the control glyphs (Icon Kit Regular,
-  from silica-icons), stroke scaled with the size (24 → 1.5, 12 → 0.75).
-  `AmalfiSymbol('trash')` draws any Icon Kit symbol an app chooses from the installed
-  silica-icons at runtime (`SILICA_ICONS_DIR`, then `silica/icons` in the XDG data folders),
-  or a fallback when it is missing; tests set `AmalfiSymbols.debugEnvironment` to a folder of
-  their own.
+- `AmalfiGlyph(AmalfiGlyphs.chevronDown, size: 20)`: the control glyphs, set in the bundled
+  Silica Symbols font (font size = icon box; the tests load the fonts with
+  `loadAmalfiFonts`). A glyph with a `strokeWidth` of its own is drawn as a vector.
+  `AmalfiSymbol('trash')` draws any symbol of the font by name (`silicaSymbolCodepoints`),
+  and one the font lacks from the installed silica-icons at runtime (`SILICA_ICONS_DIR`, then
+  `silica/icons` in the XDG data folders), or a fallback; tests set
+  `AmalfiSymbols.debugEnvironment` to a folder of their own. The kit's icons are text layers
+  in the font: `expectKitGeometry` checks their symbol, size and colour.
 - `AmalfiLens`: the lens rule (8 beyond the control on each side, 12 above and below, radius
   half the height minus 1; the switch's thumb + 8 at Mini and Small, + 12 at Regular, from `AmalfiSwitchTokens.lens*`), for the segmented, slider and switch lenses.
 - `AmalfiLayerKeys`: the kit's layer names (`Box`, `State`, `Focus Halo`, …) as keys.

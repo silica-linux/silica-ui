@@ -44,9 +44,9 @@ abstract final class AmalfiPopUpButtonMetrics {
   /// Between the label and the chevron.
   static const double gap = 4;
 
-  /// The chevron's size: the control glyph size, 12 / 14 / 16 / 16 (user decision
-  /// 2026-10-16; the kit draws Small's at 12).
-  static double chevron(AmalfiControlSize size) => size.iconSize;
+  /// The chevron's size: the accessory glyph size, 16 at every control size (kit
+  /// `Buttons/Pop-up`, `controlIcons.accessory`).
+  static double chevron(AmalfiControlSize size) => AmalfiControlIcons.accessory;
 
   /// The label style: Caption, Label, Body, Body.
   static TextStyle labelStyle(AmalfiControlSize size, Color color) =>

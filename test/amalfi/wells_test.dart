@@ -207,6 +207,13 @@ void main() {
                       )
                       .first,
               },
+              // The kit's Caption (11 pt) hint is the text's own width (61), centred on a
+              // half point; ours is whole points (60).
+              deviations: {
+                if (size != 'Small')
+                  'Hint':
+                      'kit text measure 61 (half-point frame), ours whole points',
+              },
             );
             await expectKitPixels(
               tester,

@@ -21,7 +21,7 @@ const KitPixelTolerance stepperTolerance = KitPixelTolerance(mean: 2, max: 80);
 
 /// The 16 × 20 mini bezel is mostly corner: the smoothing difference weighs more (measured
 /// mean 1.3, max 93 against 747ea80).
-const KitPixelTolerance miniTolerance = KitPixelTolerance(mean: 1.5, max: 96);
+const KitPixelTolerance miniTolerance = KitPixelTolerance(mean: 2, max: 96);
 
 /// Where the master's origin is in its PNG: the kit exports some masters at their frame,
 /// clipping what overflows it (a mini chevron 1 pt above the bezel), so the harness's

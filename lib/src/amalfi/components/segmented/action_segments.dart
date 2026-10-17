@@ -107,7 +107,11 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
       widget.segments[i].enabled;
 
   int? _indexAt(Offset local) {
-    if (local.dy < 0 || local.dy > widget.size.height) return null;
+    if (local.dy < 0 ||
+        local.dy >
+            AmalfiSegmentSizeMetrics.of(widget.size, toolbar: true).height) {
+      return null;
+    }
     for (var i = 0; i < _lefts.length; i++) {
       if (local.dx >= _lefts[i] && local.dx < _lefts[i] + _widths[i]) return i;
     }
@@ -213,7 +217,10 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
       final inset = pressed ? 0.0 : m.hoverInset;
       return Rect.fromLTWH(x + inset, inset, w - 2 * inset, h - 2 * inset);
     }
-    const side = AmalfiSegmentMetrics.textHighlightInset;
+    // A pressed text segment of a toolbar item (Large) is lit over its whole width.
+    final side = pressed && m.separatorTakesSpace
+        ? 0.0
+        : AmalfiSegmentMetrics.textHighlightInset;
     final inset = pressed ? 0.0 : m.hoverInset;
     return Rect.fromLTWH(x + side, inset, w - 2 * side, h - 2 * inset);
   }
@@ -222,7 +229,7 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
   Widget build(BuildContext context) {
     final theme = AmalfiTheme.of(context);
     final colors = theme.colors;
-    final m = AmalfiSegmentSizeMetrics.of(widget.size);
+    final m = AmalfiSegmentSizeMetrics.of(widget.size, toolbar: true);
     final active = widget.active ?? WindowActiveScope.of(context);
     final segments = widget.segments;
     final n = segments.length;
@@ -238,8 +245,12 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
     }
     final lefts = <double>[], widths = <double>[];
     var x = 0.0;
-    for (final s in segments) {
+    for (final (i, s) in segments.indexed) {
       final w = s.isIcon ? m.iconSegmentWidth : textWidth;
+      // Large icon segments (toolbar items) are 1 apart: the separator has a place of its
+      // own (Back/Forward 73, groups of 3 and 4: 110 and 147).
+      if (i > 0 && s.isIcon && m.separatorTakesSpace)
+        x += AmalfiSegmentMetrics.separatorWidth;
       lefts.add(x);
       widths.add(w);
       x += w;
@@ -303,7 +314,10 @@ class _AmalfiActionSegmentsState extends State<AmalfiActionSegments> {
         Positioned(
           left: rtl
               ? lefts[i] + widths[i] - AmalfiSegmentMetrics.separatorWidth
-              : lefts[i],
+              : lefts[i] -
+                    (segments[i].isIcon && m.separatorTakesSpace
+                        ? AmalfiSegmentMetrics.separatorWidth
+                        : 0),
           top: (h - m.separatorHeight) / 2,
           width: AmalfiSegmentMetrics.separatorWidth,
           height: m.separatorHeight,

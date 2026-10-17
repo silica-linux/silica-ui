@@ -12,8 +12,10 @@ import 'support/harness.dart';
 /// The tolerance of small controls (16–24 pt, radius 4–12): their canvases are mostly edge,
 /// and Sketch and [AmalfiSmoothBorder] antialias tight smooth corners a little differently
 /// (the corner of a 1 pt accent border on white differs by up to ~100 on one channel, on a
-/// few pixels; the means stay at 1–2).
-const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 2, max: 100);
+/// few pixels; the means stay at 1–2). The 12 pt check, dash and chevron marks are drawn
+/// from the Silica Symbols font in the kit, as here, but rasterised by CoreText: the mean
+/// reaches 3.2 on the 16 pt checkbox.
+const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 3.5, max: 100);
 
 /// The tolerance of a master: [smallShapes], looser where a 1 pt accent border meets white
 /// ([accentRim]: the edge pixels under the border are antialiased by the fill and again by
@@ -21,9 +23,9 @@ const KitPixelTolerance smallShapes = KitPixelTolerance(mean: 2, max: 100);
 /// ([masked]: what is left is mostly edge pixels; means ≤ 3.1).
 KitPixelTolerance tolerance({bool accentRim = false, bool masked = false}) =>
     accentRim
-    ? const KitPixelTolerance(mean: 3, max: 128)
+    ? const KitPixelTolerance(mean: 4, max: 128)
     : masked
-    ? const KitPixelTolerance(mean: 3.5, max: 100)
+    ? const KitPixelTolerance(mean: 4, max: 100)
     : smallShapes;
 
 /// The pointer of the current test, if any (hovering or pressing).

@@ -138,6 +138,9 @@ final Map<String, (AmalfiAlert, List<String>, String?)> alerts = {
   ),
 };
 
+const String kitStrayGlyph =
+    'kit Critical master has a stray warning text at the top that adds 32 pt of height';
+
 /// The deviations of each variant from its master.
 Map<String, String> deviationsOf(String variant) {
   // Kit defect: the badge is scaled with the glyph to 24 x 23.79 (y 59.48), off whole
@@ -148,7 +151,23 @@ Map<String, String> deviationsOf(String variant) {
   const grid = 'kit height off the 4 pt grid (bottom padding 20, not 22)';
   const offGrid = {'#frame': grid, 'Surface': grid};
   return switch (variant) {
-    'Critical' => {...offGrid, 'Badge disc': badge, 'Glyph Warning': badge},
+    'Critical' => {
+      ...offGrid,
+      'Badge disc': badge,
+      'Glyph Warning': badge,
+      // Kit defect (fd1719cf): the warning symbol is a text layer left at (132, 24), above
+      // the app icon, and the master grew by 32 (262 tall): everything below the icon sits
+      // 32 lower than in the other alerts and in the code.
+      for (final layer in [
+        'App icon',
+        'Title',
+        'Message',
+        'Buttons',
+        'Buttons/Cancel',
+        'Buttons/Delete',
+      ])
+        layer: kitStrayGlyph,
+    },
     'One Button' || 'Glass' => offGrid,
     // Kit defect: the label frame of `Don’t Save` is 68 while Inter measures the text wider
     // (the push button rounds it up to 72): the button is 96, the column centred at x 92.
@@ -211,23 +230,25 @@ void main() {
           // Where the kit ends 2 pt early (see deviationsOf), its bottom edge and the shadow
           // under it are left out.
           final h = master.size.height;
-          await expectKitPixels(
-            tester,
-            master,
-            alert,
-            maskText: true,
-            maskLayers: [
-              'App icon',
-              // Off whole points in the kit (see deviationsOf).
-              if (alert.critical) ...['Badge disc', 'Glyph Warning'],
-              if (variant == 'Three Buttons') 'Buttons/Don’t Save',
-            ],
-            mask: [
-              if (h % AmalfiGrid.base != 0)
-                Rect.fromLTWH(-40, h - 24, master.size.width + 80, 80),
-            ],
-            tolerance: largeCorners,
-          );
+          // The kit's Critical master is laid out 32 pt off (kitStrayGlyph): no pixels.
+          if (variant != 'Critical')
+            await expectKitPixels(
+              tester,
+              master,
+              alert,
+              maskText: true,
+              maskLayers: [
+                'App icon',
+                // Off whole points in the kit (see deviationsOf).
+                if (alert.critical) ...['Badge disc', 'Glyph Warning'],
+                if (variant == 'Three Buttons') 'Buttons/Don’t Save',
+              ],
+              mask: [
+                if (h % AmalfiGrid.base != 0)
+                  Rect.fromLTWH(-40, h - 24, master.size.width + 80, 80),
+              ],
+              tolerance: largeCorners,
+            );
         });
       }
     });

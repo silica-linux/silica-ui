@@ -32,7 +32,7 @@ enum AmalfiColorWellStyle {
     radius: AmalfiRadii.regularControl,
     colourWidth: 44,
     colourRadius: 6,
-    padding: EdgeInsets.fromLTRB(4, 4, 8, 4),
+    padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
     gap: 4,
   ),
 
@@ -77,10 +77,10 @@ enum AmalfiColorWellStyle {
 /// The measures shared by the colour well styles.
 abstract final class AmalfiColorWellMetrics {
   /// The picker chevron of the standard style.
-  static const double chevron = 12;
+  static const double chevron = 16;
 
   /// The eyedropper of the expanded style.
-  static const double eyedropper = 16;
+  static const double eyedropper = 20;
 
   /// Between the well and its colour panel.
   static const double panelGap = 4;
