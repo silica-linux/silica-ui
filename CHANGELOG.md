@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Added:** `SilicaApp.onOpen`, the files of a second launch of the running app (Open With, a share
+  target), from the embedder's `open` call.
 - **Added (silica-desktop#217):** `SilicaShare` (the system share service, `dev.frascella.Silica.Share1`:
   targets and sharing over the `silica/dbus` channel), `silicaShareEntries` and `showSilicaShareMenu`
   for an app's Share button. Without the service there are no targets, so the button stays hidden.

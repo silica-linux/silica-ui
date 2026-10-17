@@ -74,6 +74,17 @@ abstract final class SilicaApp {
     );
   }
 
+  /// Called with the arguments (files) of a second launch of the running app: Open With, a
+  /// share target. The embedder has already brought a window forward (after [onReopen] when
+  /// the app had none).
+  static void Function(List<String> args)? get onOpen => _onOpen;
+  static set onOpen(void Function(List<String> args)? callback) {
+    _onOpen = callback;
+    _listen();
+  }
+
+  static void Function(List<String> args)? _onOpen;
+
   /// Whether the app ends with its last window: false by default; true for single-window
   /// utilities (Calculator, Clock, Settings on the reference).
   static bool get quitWhenLastWindowCloses => _quitWhenLastWindowCloses;
@@ -122,6 +133,15 @@ abstract final class SilicaApp {
             unawaited(openWindow());
           });
           SchedulerBinding.instance.scheduleFrame();
+        }
+        return true;
+      case 'open':
+        final list = args is Map ? args['args'] : null;
+        if (list is List) {
+          _onOpen?.call([
+            for (final a in list)
+              if (a is String) a,
+          ]);
         }
         return true;
     }

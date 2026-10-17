@@ -90,4 +90,19 @@ void main() {
     expect(find.text('1'), findsOneWidget);
     expect(calls.map((c) => c.method), isNot(contains('openWindow')));
   });
+
+  test('open hands the files of a second launch to onOpen', () async {
+    final got = <List<String>>[];
+    SilicaApp.onOpen = got.add;
+    addTearDown(() => SilicaApp.onOpen = null);
+    expect(
+      await SilicaApp.handle('open', const {
+        'args': ['/home/a/b.png', 3],
+      }),
+      isTrue,
+    );
+    expect(got, [
+      ['/home/a/b.png'],
+    ]);
+  });
 }
