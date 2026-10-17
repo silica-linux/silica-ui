@@ -47,22 +47,13 @@ const String folderManifest = '''
       "labels": { "green": "#2fb350", "BAD": "#000000", "red": "rosso" } },
     "folders": { "HOME": "house", "DOCUMENTS": "doc-text", "DOWNLOAD": "missing",
                  "lower": "house", "MUSIC": "../etc/passwd" },
-    "fallback": "folder"
+    "fallback": null
   }
 }
 ''';
 
 /// The fake repo for the generic folder: plain folder, generic folder and two symbols.
 Directory folderTree() => iconTree({
-  'files/folder': {
-    'icon.json': folderManifest
-        .replaceAll('"folder-generic"', '"folder"')
-        .replaceAll(
-          RegExp(r'"dynamic": \{[\s\S]*\}\s*\}\s*$'),
-          '"dynamic": null }',
-        ),
-    'icon.svg': svg,
-  },
   'files/folder-generic': {
     'icon.json': folderManifest,
     'icon.svg': svg,
@@ -177,9 +168,6 @@ void main() {
     final root = folderTree();
     addTearDown(() => root.deleteSync(recursive: true));
     final env = {'SILICA_ICONS_DIR': root.path, 'HOME': '/nessuna'};
-    final plain = findSilicaIcon('folder', env: env);
-    expect(plain, isNotNull);
-    expect(plain!.dynamic, isNull);
     final icon = findSilicaIcon('folder-generic', env: env)!;
     final dyn = icon.dynamic! as FolderSymbol;
     expect(dyn.box, const Rect.fromLTWH(374, 456, 276, 276));
@@ -249,7 +237,7 @@ void main() {
     );
     expect(flat!.lightTint, isNull);
     final noFallback = parse(
-      folderManifest.replaceFirst('"fallback": "folder"', '"fallback": "/etc"'),
+      folderManifest.replaceFirst('"fallback": null', '"fallback": "/etc"'),
     );
     expect(noFallback!.fallback, isNull);
   });
@@ -300,10 +288,10 @@ void main() {
     expect(home.symbol, 'house');
     expect(home.tint, isNull);
     // Any folder without a tint: the plain folder.
-    expect(resolveFolderIcon('/tmp/x', env: env)!.icon.id, 'folder');
+    expect(resolveFolderIcon('/tmp/x', env: env)!.icon.id, 'folder-generic');
     // Symbol mapped but missing from symbols/: fallback.
     final missing = resolveFolderIcon('/tmp/x', key: 'DOWNLOAD', env: env)!;
-    expect(missing.icon.id, 'folder');
+    expect(missing.icon.id, 'folder-generic');
     expect(missing.symbol, isNull);
     // Tint without a symbol: the generic folder tinted.
     final green = resolveFolderIcon('/tmp/x', tint: 'green', env: env)!;
@@ -317,7 +305,7 @@ void main() {
     );
     expect(
       resolveFolderIcon('/x', symbol: '../../etc/passwd', env: env)!.icon.id,
-      'folder',
+      'folder-generic',
     );
     // Without any folder icon: null.
     expect(
@@ -555,5 +543,69 @@ void main() {
       );
       expect(withoutFilters(blurred('')), isNot(contains('<g')));
     });
+  });
+
+  group('real silica-icons checkout', () {
+    final dirEnv = Platform.environment['SILICA_ICONS_DIR'];
+    final dir = [
+      if (dirEnv != null && dirEnv.isNotEmpty) dirEnv,
+      '../silica-icons',
+    ].where((d) => Directory('$d/files').existsSync()).firstOrNull;
+    final skip = dir == null ? 'no silica-icons checkout' : null;
+    final env = {'SILICA_ICONS_DIR': dir ?? '', 'HOME': '/nessuna'};
+
+    List<String> ids(String kind) => [
+      for (final e in Directory('$dir/$kind').listSync())
+        if (File('${e.path}/icon.json').existsSync()) e.path.split('/').last,
+    ];
+
+    test('every file and app icon parses with its layers', () {
+      for (final id in [...ids('files'), ...ids('apps')]) {
+        final icon = findSilicaIcon(id, env: env);
+        expect(icon, isNotNull, reason: id);
+        expect(icon!.layers, isNotEmpty, reason: id);
+        for (final layer in icon.layers) {
+          expect(File(layer.path).existsSync(), isTrue, reason: id);
+        }
+      }
+    }, skip: skip);
+
+    test('ids requested by silica_ui exist in the pack', () {
+      final present = ids('files').toSet();
+      // The removed `folder` must not be required anywhere.
+      expect(present, contains('folder-generic'));
+      expect(present, isNot(contains('folder')));
+      for (final id in [
+        'folder-generic',
+        'file-generic',
+        'file-unknown',
+        'file-executable',
+        for (final name in ['a.png', 'a.mp3', 'a.mp4', 'a.pdf', 'a.zip'])
+          fileIconId(name),
+        fileIconId('a.txt'),
+        fileIconId('a.rs'),
+      ]) {
+        expect(present, contains(id), reason: id);
+      }
+      final rules = findSilicaIcon('file-generic', env: env)!.dynamic;
+      expect(rules, isA<FileLabelRules>());
+      expect(present, contains((rules! as FileLabelRules).fallback));
+    }, skip: skip);
+
+    test('a plain folder is the generic folder with no symbol or tint', () {
+      final folder = resolveFolderIcon('/nessuna/x', env: env)!;
+      expect(folder.icon.id, 'folder-generic');
+      expect(folder.symbol, isNull);
+      expect(folder.tint, isNull);
+      final downloads = resolveFolderIcon(
+        '/nessuna/x',
+        key: 'DOWNLOAD',
+        env: env,
+      )!;
+      expect(downloads.icon.id, 'folder-generic');
+      expect(downloads.symbol, 'arrow-down-circle');
+      final tinted = resolveFolderIcon('/nessuna/x', tint: 'green', env: env)!;
+      expect(tinted.tint, isNotNull);
+    }, skip: skip);
   });
 }

@@ -637,7 +637,8 @@ FolderSymbol? _parseFolder(Map raw, String dir) {
     );
   }
 
-  final light = fx(effect['light']);
+  // One effect for every theme (current format) or a `light`/`dark` pair (earlier packs).
+  final light = fx(effect['light']) ?? fx(effect);
   if (light == null) return null;
   final dark = fx(effect['dark']) ?? light;
 
@@ -661,7 +662,7 @@ FolderSymbol? _parseFolder(Map raw, String dir) {
   TintRamp? lightTint;
   TintRamp? darkTint;
   if (tint is Map) {
-    lightTint = ramp(tint['light']);
+    lightTint = ramp(tint['light']) ?? ramp(tint);
     darkTint = ramp(tint['dark']) ?? lightTint;
     final rawLabels = tint['labels'];
     if (rawLabels is Map && rawLabels.length <= 32) {
@@ -858,7 +859,7 @@ class FolderIcon {
 /// The icon of the folder `path`: the symbol of the special folder (or `symbol`, which wins;
 /// `key` for folders without a fixed path, like `SHARED` and `NETWORK`) and the tint (`#rrggbb`
 /// or the name of a tag). Without symbol or tint, or if the symbol does not exist, the plain
-/// folder (`fallback`). Null if there is no folder icon at all.
+/// generic folder (no symbol, no tint). Null if there is no folder icon at all.
 FolderIcon? resolveFolderIcon(
   String path, {
   String? symbol,
@@ -869,16 +870,14 @@ FolderIcon? resolveFolderIcon(
   final generic = findSilicaIcon('folder-generic', env: env);
   final dyn = generic?.dynamic;
   if (generic == null || dyn is! FolderSymbol) {
-    final plain = findSilicaIcon('folder', env: env);
-    return plain == null ? null : FolderIcon(plain);
+    return null;
   }
   final folderKey = key ?? specialFolderKey(path, env: env);
   final name = symbol ?? (folderKey == null ? null : dyn.folders[folderKey]);
   final valid = name != null && dyn.symbolFile(name, 'regular') != null;
   final color = dyn.tintFor(tint);
   if (!valid && color == null) {
-    final plain = findSilicaIcon(dyn.fallback ?? 'folder', env: env);
-    return FolderIcon(plain ?? generic);
+    return FolderIcon(generic);
   }
   return FolderIcon(generic, symbol: valid ? name : null, tint: color);
 }
