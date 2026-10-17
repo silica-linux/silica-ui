@@ -148,8 +148,8 @@ class AccentColors {
       ring: Color(0xFFEC9894),
     ),
     SilicaAccent.orange: AccentColors(
-      plain: Color(0xFFF7821B),
-      fill: Color(0xFFF17E1B),
+      plain: Color(0xFFF98A17),
+      fill: Color(0xFFF98A17),
       ring: Color(0xFFF8B88A),
     ),
     SilicaAccent.yellow: AccentColors(
@@ -196,8 +196,8 @@ class AccentColors {
       ring: Color(0xFF945154),
     ),
     SilicaAccent.orange: AccentColors(
-      plain: Color(0xFFF7821B),
-      fill: Color(0xFFF78622),
+      plain: Color(0xFFFF9F40),
+      fill: Color(0xFFFF9F40),
       ring: Color(0xFF936E33),
     ),
     SilicaAccent.yellow: AccentColors(

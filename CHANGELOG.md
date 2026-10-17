@@ -6,7 +6,8 @@
   (`Palette/Arancia`, light `#F98A17`, dark `#FF9F40`: the Orange tag and the Orange accent, never
   `paletteLimone`) and `AmalfiColors.paletteLimoneScuro` (`Palette/Limone Scuro`, light `#A67600`,
   dark `#FFCF3D`: yellow glyphs such as the Notes sidebar folders). `paletteLimone` stays the Yellow
-  tag and fills. Tokens regenerated; no kit fixture changed.
+  tag and fills. Tokens regenerated; no kit fixture changed. `SilicaAccent.orange` now uses Arancia
+  for `plain` and `fill` (it was the measured reference orange).
 - **Changed (Amalfi sidebars, silica-ui#95; silica-desktop 2aa9b2a, silica-design 723f76a0):**
   glyphs are coloured by section: new `AmalfiSidebarGlyphColor` scope, `AmalfiSidebarGroup.glyphColor`
   and `AmalfiSidebarRow.glyphColor`; the default is `Accent/Amalfi` and a selected row keeps its
