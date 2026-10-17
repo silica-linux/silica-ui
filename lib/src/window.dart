@@ -218,9 +218,23 @@ class _WindowDragAreaState extends State<WindowDragArea> {
     for (final entry in result.path) {
       final target = entry.target;
       if (target is! RenderObject || !_within(target, root)) continue;
-      if (target is RenderPointerListener && target.onPointerDown != null) {
+      if (target is RenderPointerListener &&
+          target.onPointerDown != null &&
+          !_passesThrough(target, root)) {
         return true;
       }
+    }
+    return false;
+  }
+
+  /// Whether [node] sits inside a [WindowDragThrough] below [root].
+  static bool _passesThrough(RenderObject node, RenderObject root) {
+    for (
+      RenderObject? n = node;
+      n != null && !identical(n, root);
+      n = n.parent
+    ) {
+      if (n is _RenderDragThrough) return true;
     }
     return false;
   }
@@ -260,6 +274,18 @@ class _WindowDragAreaState extends State<WindowDragArea> {
     child: KeyedSubtree(key: _content, child: widget.child),
   );
 }
+
+/// Marks [child] as part of the drag area although it listens to pointers: a press on it
+/// still starts a window move when it turns into a drag, and stays a click otherwise. For
+/// click-only pieces that cover bar text, such as a document title with a menu.
+class WindowDragThrough extends SingleChildRenderObjectWidget {
+  const WindowDragThrough({super.key, super.child});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) => _RenderDragThrough();
+}
+
+class _RenderDragThrough extends RenderProxyBox {}
 
 /// A double tap that ignores the presses that fall on a control.
 class _EmptyAreaDoubleTap extends DoubleTapGestureRecognizer {

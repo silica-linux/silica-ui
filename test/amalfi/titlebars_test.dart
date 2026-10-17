@@ -278,8 +278,6 @@ void main() {
             deviations: const {
               'Surface#fills': blurStrip,
               'Surface#blurs': blurStrip,
-              'Controls': blurStrip,
-              'Spacer': blurStrip,
             },
           );
           // The kit's section is a blur strip over the sidebar with the divider drawn on
