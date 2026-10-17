@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Fixed:** `ScrollUnderToolbar.background` / `.columns` work again (silica-ui#87): given, in an
+  active window the scrolled bar anchors its veil to the content colour (`ToolbarVeil.anchoredTo`)
+  and shows it unchanged, like clear glass, with no colour band. Without them the measured veil
+  is unchanged; an inactive window keeps the plain veil.
 - **Changed:** `Glass/Regular` and `Glass/Thick` are real glass (silica-desktop 6c4105a): the
   Flutter backend of `AmalfiGlass` bends the blurred backdrop at the rim with
   `shaders/glass_edge.frag` (distortion / depth / chromatic split from the tokens, saturation,

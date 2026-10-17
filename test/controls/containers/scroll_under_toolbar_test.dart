@@ -287,4 +287,13 @@ void main() {
       findsOneWidget,
     );
   });
+
+  test('an anchored veil leaves the content background unchanged (#87)', () {
+    const background = Color(0xFF1B1C1F);
+    expect(ToolbarVeil.dark.apply(background), isNot(background));
+    expect(
+      ToolbarVeil.dark.anchoredTo(background).apply(background),
+      background,
+    );
+  });
 }

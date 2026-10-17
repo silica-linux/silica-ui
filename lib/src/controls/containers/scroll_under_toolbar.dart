@@ -258,11 +258,13 @@ class ScrollUnderToolbar extends StatefulWidget {
   /// [anyVerticalScrollUnderPredicate].
   final bool Function(ScrollMetrics metrics, int depth) scrollPredicate;
 
-  /// No effect since 0.30.0, kept so that apps compile: the band is invisible at rest and a
-  /// bar once content scrolls under it, whatever the background (SIDEBAR-GLASS).
+  /// The colour of the content background under the band. Given, in an active window the
+  /// scrolled bar shows it unchanged, like clear glass over the content (no colour band,
+  /// silica-ui#87; [ToolbarVeil.anchoredTo]); null keeps the measured veil.
   final Color? background;
 
-  /// No effect since 0.30.0 (see [background]).
+  /// Columns with different backgrounds side by side (a list and a reader): each anchors its
+  /// part of the band. Takes precedence over [background].
   final List<ToolbarVeilColumn>? columns;
 
   @override
@@ -287,6 +289,14 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
     final veil = widget.veil ?? ToolbarVeil.of(context);
     final active = containerActive(context, widget.active);
     final line = widget.showLine && (_scrolled || !active);
+    // An inactive window keeps the plain measured veil.
+    final columns = !active
+        ? null
+        : widget.columns ??
+              [
+                if (widget.background case final background?)
+                  ToolbarVeilColumn(background),
+              ];
     return Stack(
       children: [
         Positioned.fill(
@@ -305,7 +315,27 @@ class _ScrollUnderToolbarState extends State<ScrollUnderToolbar> {
             right: 0,
             top: 0,
             height: band,
-            child: ToolbarVeilLayer(veil: veil),
+            child: columns == null || columns.isEmpty
+                ? ToolbarVeilLayer(veil: veil)
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final column in columns)
+                        if (column.width case final width?)
+                          SizedBox(
+                            width: width,
+                            child: ToolbarVeilLayer(
+                              veil: veil.anchoredTo(column.background),
+                            ),
+                          )
+                        else
+                          Expanded(
+                            child: ToolbarVeilLayer(
+                              veil: veil.anchoredTo(column.background),
+                            ),
+                          ),
+                    ],
+                  ),
           ),
         if (line)
           Positioned(
