@@ -435,7 +435,7 @@ class SearchTokenChip extends StatelessWidget {
     const radius = Radius.circular(3);
     final labelStyle = inputText(
       colors.tokenText,
-      size: 9,
+      size: 11,
     ).copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.3, height: 1);
     return Semantics(
       label: '${token.label}: ${token.value}',

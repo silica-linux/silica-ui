@@ -212,7 +212,16 @@ void main() {
             maskText: true,
             tolerance: highlightCorners,
           );
-          await expectKitPixels(tester, master, scene, tolerance: denseText);
+          await expectKitPixels(
+            tester,
+            master,
+            scene,
+            // The 20 pt icon is drawn from the Silica Symbols font in the kit (a point
+            // higher than Skia centres it): looser mean on that master.
+            tolerance: master.name.contains('/Icon/')
+                ? const KitPixelTolerance(mean: 8, max: 255)
+                : denseText,
+          );
         });
       }
 

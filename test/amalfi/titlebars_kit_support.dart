@@ -239,10 +239,12 @@ final List<(String, String, Widget)> itemPieces = [
     'Send',
     AmalfiToolbarPiece(
       trailing: 16,
-      child: AmalfiIconButton(
-        icon: AmalfiGlyph(AmalfiGlyphs.plus),
+      // The kit's Send is an accent circle of the toolbar item size (36): the slot, with
+      // the app's own button inside; the pixels of the control are masked.
+      child: AmalfiToolbarButton(
+        icon: AmalfiSymbol('arrow-up'),
         onPressed: () {},
-        semanticLabel: 'plus',
+        semanticLabel: 'send',
       ),
     ),
   ),
@@ -294,6 +296,7 @@ Widget viewSwitcher(List<AmalfiGlyphData> glyphs) => AmalfiSegmentedControl(
   selected: const {0},
   onChanged: (_) {},
   size: AmalfiControlSize.large,
+  toolbar: true,
 );
 
 /// A select-one control of labels (kit `Segments/Control/One 4 Text/Large`).
@@ -302,15 +305,19 @@ Widget textSwitcher(List<String> labels) => AmalfiSegmentedControl(
   selected: const {0},
   onChanged: (_) {},
   size: AmalfiControlSize.large,
+  toolbar: true,
 );
 
-/// The toolbar search field (kit `Fields/Search Field/Large/Empty`, 200 wide).
+/// The toolbar search field (kit `Titlebars/Piece/Search`, 36 tall, 200 wide).
 Widget toolbarSearch() =>
-    const AmalfiSearchField(size: AmalfiFieldSize.large, width: 200);
+    const AmalfiSearchField(size: AmalfiFieldSize.toolbar, width: 200);
 
-/// The search field with a token (kit `Fields/Search Field/Regular/Token`, 240 wide).
-Widget searchToken() =>
-    const AmalfiSearchField(width: 240, tokens: ['Recipes']);
+/// The search field with a token (kit `Titlebars/Piece/Search Token`, 240 wide).
+Widget searchToken() => const AmalfiSearchField(
+  size: AmalfiFieldSize.toolbar,
+  width: 240,
+  tokens: ['Recipes'],
+);
 
 /// The control in an item piece: a widget of the buttons, segmented or fields family.
 Finder pieceControl() => find
@@ -486,6 +493,7 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
         leading: 0,
         trailing: 0,
         child: AmalfiToolbarButton(
+          small: true,
           icon: AmalfiGlyph(glyph),
           onPressed: () {},
           semanticLabel: label,
@@ -500,6 +508,7 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
         leading: 0,
         trailing: 0,
         child: AmalfiToolbarButton(
+          small: true,
           icon: AmalfiGlyph(glyph),
           onPressed: () {},
           semanticLabel: label,
@@ -511,6 +520,22 @@ Widget compactBar({bool? active}) => AmalfiToolbar.compact(
 /// Kit defect: the subtitle "Edited today" of `Piece/Title + Subtitle` has a fixed-width
 /// frame 64 wide for 58.9 pt of text (the grid gives 60, as the other titlebar texts), the
 /// text at its left, so 2.5 pt left of the centre under the title.
+const String fixedTextBlock =
+    'kit text block of the piece is a fixed 100 wide, both lines left in it (11 pt Caption '
+    'subtitle); ours is as wide as the widest line, the lines centred';
+
+/// The kit's sidebar section is a translucent blur strip over the sidebar (80 % surface,
+/// one background blur) with the divider drawn on top, the controls 1 further in
+/// (`components.md`, "Sidebar in a split title bar"); the section here is the opaque one.
+/// Tracked apart from the readability pass.
+const String blurStrip =
+    'kit: blur strip with the divider through the title bar (not built yet)';
+
+/// The kit's subtitle (11 pt) is the text's width (111); ours rounds to the 4 pt grid (112),
+/// which moves the centred title by a half point.
+const String halfPointText =
+    'kit text measure 111 for "Edited today at 09:41", ours the 4 pt grid (112)';
+
 const String fixedSubtitle =
     'kit fixed-width subtitle frame 64 for 58.9 pt of text, text not centred; ours rounded '
     'to the grid (60) and centred';

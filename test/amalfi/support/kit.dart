@@ -274,7 +274,7 @@ FontWeight? kitFontWeight(int? weight) => switch (weight) {
 /// A text style reference (`Light/Callout/Primary`): the appearance, the Amalfi text style and
 /// the colour token.
 class KitTextStyleRef {
-  KitTextStyleRef(this.brightness, this.style, this.colorToken);
+  KitTextStyleRef(this.brightness, this.style, this.colorToken, {this.weight});
 
   /// Parses a text shared style name; null when it is not `<Light|Dark>/<Style>/<Colour>` with
   /// a style of [AmalfiType].
@@ -287,17 +287,27 @@ class KitTextStyleRef {
       'Dark' => Brightness.dark,
       _ => null,
     };
-    final style = AmalfiType.tokenNamed(parts[1]);
+    // `Sidebar Emphasis` is the Sidebar style at weight 600 (the selected row).
+    final emphasis = parts[1] == 'Sidebar Emphasis';
+    final style = AmalfiType.tokenNamed(emphasis ? 'Sidebar' : parts[1]);
     if (brightness == null || style == null) return null;
     final colorToken = switch (parts[2]) {
       'Accent' => 'Accent/Amalfi',
       final colour => 'Text/$colour',
     };
-    return KitTextStyleRef(brightness, style, colorToken);
+    return KitTextStyleRef(
+      brightness,
+      style,
+      colorToken,
+      weight: emphasis ? FontWeight.w600 : null,
+    );
   }
 
   final Brightness brightness;
   final AmalfiTextToken style;
+
+  /// The weight when it differs from the style's, else null.
+  final FontWeight? weight;
 
   /// The colour token (`Text/Primary`, `Accent/Amalfi`).
   final String colorToken;

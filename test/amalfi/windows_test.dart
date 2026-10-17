@@ -362,7 +362,7 @@ void main() {
         await checkWindow(
           tester,
           'Windows/Window/Full Screen Strip/Active/$appearance',
-          const Size(1000, 112),
+          const Size(1000, 116),
           AmalfiFullScreenStrip(
             menuBar: SizedBox.expand(key: ValueKey('Menu bar')),
             toolbar: windowBar(),

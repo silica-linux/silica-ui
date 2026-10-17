@@ -6,36 +6,46 @@ import 'package:flutter/widgets.dart';
 import '../../token_types.dart';
 import '../../tokens.g.dart';
 
-/// The three sizes of a field (`Fields/Text Field/Small|Regular|Large`).
+/// The sizes of a field (`Fields/Text Field/Small|Regular|Large`, and the toolbar's).
 enum AmalfiFieldSize {
-  /// 24 pt, Callout text, 14 pt glyphs (`AmalfiControlSize.small.iconSize`, user decision
-  /// 2026-10-16; the kit draws 12).
+  /// 24 pt, Callout text, 16 pt glyphs (`AmalfiControlSize.small.iconSize`).
   small(
     height: 24,
     radius: AmalfiRadii.smallControl,
-    padding: 8,
-    glyph: 14,
-    comboButton: 16,
-    comboGlyph: AmalfiControlIcons.accessory,
-  ),
-
-  /// 28 pt, Body text, 16 pt glyphs (the default).
-  regular(
-    height: 28,
-    radius: AmalfiRadii.field,
     padding: 8,
     glyph: 16,
     comboButton: 20,
     comboGlyph: AmalfiControlIcons.accessory,
   ),
 
-  /// 32 pt, Body text, 16 pt glyphs. The kit's corner is 10 (no token between `field` 9 and
+  /// 28 pt, Body text, 20 pt glyphs (the default).
+  regular(
+    height: 28,
+    radius: AmalfiRadii.field,
+    padding: 8,
+    glyph: 20,
+    comboButton: 20,
+    comboGlyph: AmalfiControlIcons.accessory,
+  ),
+
+  /// 32 pt, Body text, 20 pt glyphs. The kit's corner is 10 (no token between `field` 9 and
   /// `menu` 12).
   large(
     height: 32,
     radius: 10,
     padding: 12,
-    glyph: 16,
+    glyph: 20,
+    comboButton: 24,
+    comboGlyph: AmalfiControlIcons.accessory,
+  ),
+
+  /// 36 pt, Body text, 20 pt glyphs: the search field of a toolbar (`Titlebars/Piece/Search`,
+  /// a toolbar item: `controlHeights.toolbar`). Glyph at x 12, the placeholder at x 40.
+  toolbar(
+    height: AmalfiControlHeights.toolbar,
+    radius: 12,
+    padding: 12,
+    glyph: 20,
     comboButton: 24,
     comboGlyph: AmalfiControlIcons.accessory,
   );
@@ -65,7 +75,7 @@ enum AmalfiFieldSize {
   /// The side of the combo button disc.
   final double comboButton;
 
-  /// The side of the chevron in the combo button: 12 at every size (an accessory glyph,
+  /// The side of the chevron in the combo button: 16 at every size (an accessory glyph,
   /// `controlIcons.accessory`).
   final double comboGlyph;
 
@@ -101,13 +111,13 @@ abstract final class AmalfiFieldMetrics {
   static const double errorHaloOpacity = 0.3;
 
   /// The side of the clear button.
-  static const double clearButton = 16;
+  static const double clearButton = 20;
 
   /// The side of the clear button's cross.
   static const double clearGlyph = AmalfiControlIcons.accessory;
 
-  /// The radius of the clear button disc (`smallControl`; the kit's 16 pt disc).
-  static const double clearRadius = AmalfiRadii.smallControl;
+  /// The radius of the clear button disc (a circle).
+  static const double clearRadius = clearButton / 2;
 }
 
 /// Measures of the text area (`Fields/Text Area/Regular`).
@@ -136,6 +146,10 @@ abstract final class AmalfiTokenMetrics {
 
   /// The token's padding: 8 before the label, 4 after the remove cross.
   static const EdgeInsets padding = EdgeInsets.only(left: 8, right: 4);
+
+  /// Between the label and the remove cross: none, the 16 pt cross has 2 of air on its own
+  /// sides (the kit keeps the token 64 wide for "Travel" with the 16 pt cross).
+  static const double labelGap = 0;
 
   /// The side of the remove cross.
   static const double removeGlyph = AmalfiControlIcons.accessory;

@@ -68,7 +68,7 @@ class AmalfiToken extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: AmalfiFieldMetrics.gap),
+                  const SizedBox(width: AmalfiTokenMetrics.labelGap),
                   Semantics(
                     button: true,
                     label: 'Remove $label',

@@ -54,6 +54,15 @@ List<Widget> panelRows({bool library = true}) => [
   ),
 ];
 
+/// The kit's Sidebar Emphasis and Sidebar Header are Sketch weight 6 (Medium, as Body
+/// Emphasis); components.md and tokens.json specify 600 (user decision 2026-10-17).
+/// Rows: 14 pt text and a 20 pt symbol (the kit draws the symbol from the font, the
+/// controls paint the same drawing as a vector) and 600 against the kit's 500 when selected.
+const KitPixelTolerance _rowText = KitPixelTolerance(mean: 7, max: 255);
+
+const String _weight600 =
+    'tokens.json: selected row and header weight 600, kit has 500';
+
 void main() {
   setUpAll(loadAmalfiFonts);
 
@@ -106,12 +115,18 @@ void main() {
                 if (variant == 'Badge')
                   'Badge': find.byType(AmalfiSidebarBadge),
               },
+              deviations: {
+                if (state == 'Selected') ...{
+                  'Label#font': _weight600,
+                  'Label#style': _weight600,
+                },
+              },
             );
             await expectKitPixels(
               tester,
               master,
               row,
-              tolerance: chromeText,
+              tolerance: _rowText,
               prepare: prepare,
             );
           });
@@ -159,6 +174,10 @@ void main() {
             layers: {
               'Title': find.text('Favourites'),
               if (expanded != null) 'Disclosure': find.byType(AmalfiGlyph),
+            },
+            deviations: const {
+              'Title#font': _weight600,
+              'Title#style': _weight600,
             },
           );
           await expectKitPixels(tester, master, header, tolerance: chromeText);

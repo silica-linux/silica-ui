@@ -268,7 +268,7 @@ class _SilicaSliderState extends State<SilicaSlider> {
     final labels = widget.labels;
     Widget body = slider;
     if (labels != null && labels.isNotEmpty) {
-      final style = inputText(colors.secondaryText, size: 10);
+      final style = inputText(colors.secondaryText, size: 11);
       body = SizedBox(
         width: widget.width,
         child: Column(

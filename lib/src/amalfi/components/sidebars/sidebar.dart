@@ -1,9 +1,9 @@
 // The sidebar (kit `Sidebars/*`): rows, section headers, collapsible groups, count badges, the
 // footer and the panel that stacks them.
 //
-// Layout (`components.md`, binding): width 240, horizontal padding 12, rows 28 tall on a 32 pt
-// pitch (4 between rows), the selection capsule the full row width with radius 8, the row
-// icon 16 at x 12 and the label at x 36; a section header is 28 tall with its title 8 below
+// Layout (`components.md`, binding): width 240, horizontal padding 12, rows 32 tall on a 32 pt
+// pitch (no gap: the selection capsules touch), the selection capsule the full row width with
+// radius 8, the row icon 20 at x 12 and the label at x 40 (Sidebar 14/20, selected 600); a section header is 28 tall with its title 8 below
 // its top; 8 more between the last row of a section and the next header.
 
 import 'package:flutter/widgets.dart';
@@ -22,11 +22,14 @@ abstract final class AmalfiSidebarMetrics {
   /// The horizontal padding of the panel.
   static const double padding = 12;
 
-  /// The row and header height.
-  static const double rowHeight = 28;
+  /// The row height.
+  static const double rowHeight = 32;
 
-  /// Between two rows (pitch 32).
-  static const double rowGap = 4;
+  /// The section header height.
+  static const double headerHeight = 28;
+
+  /// Between two rows (pitch 32: the capsules touch).
+  static const double rowGap = 0;
 
   /// Added before a header that follows a row (8 between sections).
   static const double sectionGap = 8;
@@ -35,7 +38,7 @@ abstract final class AmalfiSidebarMetrics {
   static const double radius = 8;
 
   /// The padding inside a row, the row icon and the gap after it.
-  static const double rowPadding = 12, icon = 16, iconGap = 8;
+  static const double rowPadding = 12, icon = 20, iconGap = 8;
 
   /// The space above a header's title inside the header.
   static const double headerTop = 8;
@@ -106,10 +109,10 @@ class AmalfiSidebarBadge extends StatelessWidget {
   }
 }
 
-/// A sidebar row (kit `Sidebars/Row/Plain|Badge`): a 16 pt [icon] and [label], an optional
+/// A sidebar row (kit `Sidebars/Row/Plain|Badge`): a 20 pt [icon] and [label], an optional
 /// [badge] at the end.
 ///
-/// Selected: `Accent/Amalfi Soft` capsule, the label in Body Emphasis and the icon in the
+/// Selected: `Accent/Amalfi Soft` capsule, the label at weight 600 and the icon in the
 /// accent. Under the pointer: a `Line/Separator` capsule. Disabled ([onTap] null and not
 /// [selected]): the whole row at `AmalfiStates.disabledOpacity`. Enter or Space activates a focused row.
 class AmalfiSidebarRow extends StatefulWidget {
@@ -125,7 +128,7 @@ class AmalfiSidebarRow extends StatefulWidget {
 
   final String label;
 
-  /// The Icon Kit glyph; null: an empty 16 pt slot.
+  /// The Icon Kit glyph; null: an empty 20 pt slot.
   final AmalfiGlyphData? icon;
 
   /// The count shown in a badge; null: none.
@@ -153,8 +156,10 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
     final hovered = _hovered && enabled && !selected;
     final iconColor = selected ? colors.accentAmalfi : colors.textSecondary;
     final labelStyle = selected
-        ? AmalfiType.bodyEmphasis(color: colors.textPrimary)
-        : AmalfiType.body(color: colors.textPrimary);
+        ? AmalfiType.sidebar(
+            color: colors.textPrimary,
+          ).copyWith(fontWeight: FontWeight.w600)
+        : AmalfiType.sidebar(color: colors.textPrimary);
     final icon = widget.icon;
     final badge = widget.badge;
     Widget row = Padding(
@@ -238,7 +243,7 @@ class _AmalfiSidebarRowState extends State<AmalfiSidebarRow> {
   }
 }
 
-/// A section header (kit `Sidebars/Header/Plain|Open|Closed`): [title] in Label
+/// A section header (kit `Sidebars/Header/Plain|Open|Closed`): [title] in Sidebar Header 12/16
 /// `Text/Tertiary`, 8 below the top of the 28 pt header.
 ///
 /// With [expanded] non-null the header shows a disclosure chevron at the end (down when
@@ -264,7 +269,7 @@ class AmalfiSidebarHeader extends StatelessWidget {
     final colors = AmalfiTheme.of(context).colors;
     final expanded = this.expanded;
     final header = SizedBox(
-      height: AmalfiSidebarMetrics.rowHeight,
+      height: AmalfiSidebarMetrics.headerHeight,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AmalfiSidebarMetrics.rowPadding,
@@ -280,7 +285,7 @@ class AmalfiSidebarHeader extends StatelessWidget {
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: AmalfiType.label(color: colors.textTertiary),
+                style: AmalfiType.sidebarHeader(color: colors.textTertiary),
               ),
             ),
             if (expanded != null) ...[

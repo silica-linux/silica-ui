@@ -330,6 +330,7 @@ String generate({
     'states',
     'windowControls',
     'switch',
+    'iconFont',
   }, tokensPath);
   final schema = _string(_field(root, r'$schema', tokensPath), r'$schema');
   if (schema != 'silica-amalfi-tokens/1') {
@@ -790,6 +791,7 @@ void _writeTypography(
       'weight',
       'colors',
       'use',
+      'note',
     }, path);
     final family = _string(_field(style, 'family', path), '$path.family');
     if (!fontFamilies.contains(family)) {
@@ -951,9 +953,13 @@ void _writeControls(
 ) {
   String? note;
   final sizes = <String, double>{};
+  final extraHeights = <String, double>{};
   for (final MapEntry(:key, :value) in heights.entries) {
     if (key == 'note') {
       note = _string(value, 'controlHeights.note');
+    } else if (key == 'toolbar') {
+      // Not one of the four control sizes: toolbar items are 36 in a 52 bar.
+      extraHeights[key] = _number(value, 'controlHeights.$key');
     } else {
       sizes[key] = _number(value, 'controlHeights.$key');
     }
@@ -1014,6 +1020,22 @@ void _writeControls(
   o.writeln('  final double iconSize;');
   o.writeln('}');
   o.writeln();
+  if (extraHeights.isNotEmpty) {
+    o.writeln(
+      '/// Control heights that are not a control size (`controlHeights`).',
+    );
+    o.writeln('abstract final class AmalfiControlHeights {');
+    for (final (i, MapEntry(:key, :value)) in extraHeights.entries.indexed) {
+      if (i > 0) o.writeln();
+      _doc(o, '`controlHeights.$key`, in points.');
+      o.writeln(
+        '  static const double ${_camel(key, 'controlHeights.$key')} = '
+        '${_num(value)};',
+      );
+    }
+    o.writeln('}');
+    o.writeln();
+  }
   final extra = iconSizes.keys.where((k) => !sizes.containsKey(k)).toList();
   if (extra.isNotEmpty) {
     o.writeln(

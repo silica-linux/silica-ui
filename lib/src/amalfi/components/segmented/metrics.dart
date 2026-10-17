@@ -30,6 +30,7 @@ abstract final class AmalfiSegmentMetrics {
 final class AmalfiSegmentSizeMetrics {
   const AmalfiSegmentSizeMetrics._({
     required this.size,
+    required this.height,
     required this.textSegmentWidth,
     required this.separatorHeight,
     required this.hoverInset,
@@ -39,10 +40,20 @@ final class AmalfiSegmentSizeMetrics {
   /// The size these measures are for.
   final AmalfiControlSize size;
 
-  /// The control height: an action capsule, or the track of a segmented control.
-  double get height => size.height;
+  /// The control height: an action capsule, or the track of a segmented control. In a toolbar
+  /// ([toolbarLarge]) it is 36 (`controlHeights.toolbar`), not the 32 of a Large control.
+  final double height;
 
   // Action segments (`Segments/Action/*`, `Segments/Align/*`).
+
+  /// The height of an action capsule: the control height, 36 on Large (a toolbar item,
+  /// `controlHeights.toolbar`).
+  double get actionHeight =>
+      size == AmalfiControlSize.large ? AmalfiControlHeights.toolbar : height;
+
+  /// Whether the separators between icon action segments take a point of their own (the
+  /// toolbar's Large).
+  bool get separatorTakesSpace => height == AmalfiControlHeights.toolbar;
 
   /// The width of an icon action segment: a square.
   double get iconSegmentWidth => height;
@@ -51,7 +62,7 @@ final class AmalfiSegmentSizeMetrics {
   /// label needs it.
   final double textSegmentWidth;
 
-  /// The glyph of an action segment: the size's icon size (12 / 14 / 16 / 16).
+  /// The glyph of an action segment: the size's icon size (14 / 16 / 20 / 20).
   double get glyph => size.iconSize;
 
   /// The height of a separator between two action segments, centred.
@@ -87,7 +98,7 @@ final class AmalfiSegmentSizeMetrics {
   /// The least width of a text item: wider only when the widest label needs it.
   final double textItemWidth;
 
-  /// The glyph of an icon item: the size's icon size (12 / 14 / 16 / 16).
+  /// The glyph of an icon item: the size's icon size (14 / 16 / 20 / 20).
   double get itemGlyph => size.iconSize;
 
   /// The label style of a text item: Caption on Mini, Label on Small, Body from Regular.
@@ -101,16 +112,21 @@ final class AmalfiSegmentSizeMetrics {
     _ => AmalfiType.bodyToken,
   };
 
-  /// The measures of [size].
-  static AmalfiSegmentSizeMetrics of(AmalfiControlSize size) => switch (size) {
+  /// The measures of [size]; with [toolbar], Large is the toolbar's 36 pt item (action
+  /// segments are always one, a segmented control only in a toolbar).
+  static AmalfiSegmentSizeMetrics of(
+    AmalfiControlSize size, {
+    bool toolbar = false,
+  }) => switch (size) {
     AmalfiControlSize.mini => mini,
     AmalfiControlSize.small => small,
     AmalfiControlSize.regular => regular,
-    AmalfiControlSize.large => large,
+    AmalfiControlSize.large => toolbar ? toolbarLarge : large,
   };
 
   static const AmalfiSegmentSizeMetrics mini = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.mini,
+    height: 20,
     textSegmentWidth: 40,
     separatorHeight: 12,
     hoverInset: 0,
@@ -119,6 +135,7 @@ final class AmalfiSegmentSizeMetrics {
 
   static const AmalfiSegmentSizeMetrics small = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.small,
+    height: 24,
     textSegmentWidth: 44,
     separatorHeight: 12,
     hoverInset: 0,
@@ -127,14 +144,27 @@ final class AmalfiSegmentSizeMetrics {
 
   static const AmalfiSegmentSizeMetrics regular = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.regular,
+    height: 28,
     textSegmentWidth: 52,
     separatorHeight: 16,
     hoverInset: 4,
     textItemWidth: 72,
   );
 
+  /// Large in a toolbar: 36 high (`Titlebars/Piece/Segmented`, `Segments/Action/*/Large`).
+  static const AmalfiSegmentSizeMetrics toolbarLarge =
+      AmalfiSegmentSizeMetrics._(
+        size: AmalfiControlSize.large,
+        height: AmalfiControlHeights.toolbar,
+        textSegmentWidth: 56,
+        separatorHeight: 16,
+        hoverInset: 4,
+        textItemWidth: 88,
+      );
+
   static const AmalfiSegmentSizeMetrics large = AmalfiSegmentSizeMetrics._(
     size: AmalfiControlSize.large,
+    height: 32,
     textSegmentWidth: 56,
     separatorHeight: 16,
     hoverInset: 4,

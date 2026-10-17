@@ -34,13 +34,16 @@ abstract final class AmalfiMenuMetrics {
   static const double checkSlot = 12;
 
   /// The slot of an icon, before the label (it replaces the checkmark slot).
-  static const double iconSlot = 16;
+  static const double iconSlot = 20;
 
   /// The space between the slots of an item (checkmark, label, shortcut, chevron).
   static const double gap = 4;
 
-  /// The side of the checkmark and of the submenu chevron.
+  /// The side of the checkmark.
   static const double glyph = 12;
+
+  /// The side of the submenu chevron (`controlIcons.accessory`).
+  static const double chevron = 16;
 
   /// The inset of a section header's label: 12 from the leading edge, 4 from the top.
   static const EdgeInsets headerPadding = EdgeInsets.only(
@@ -184,7 +187,7 @@ class AmalfiMenuItem extends StatelessWidget {
             AmalfiGlyph(
               AmalfiGlyphs.chevronRight,
               color: secondary,
-              size: AmalfiMenuMetrics.glyph,
+              size: AmalfiMenuMetrics.chevron,
             ),
           ],
         ],

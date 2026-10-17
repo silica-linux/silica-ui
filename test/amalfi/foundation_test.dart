@@ -103,16 +103,10 @@ void main() {
         ),
       );
       expect(tester.getSize(find.byType(AmalfiGlyph)), const Size(12, 12));
-      final paint = tester.widget<CustomPaint>(
-        find.descendant(
-          of: find.byType(AmalfiGlyph),
-          matching: find.byType(CustomPaint),
-        ),
-      );
-      expect(
-        (paint.painter! as AmalfiGlyphPainter).color,
-        const Color(0xFF123456),
-      );
+      // Drawn from the Silica Symbols font: an icon in the IconTheme's size and colour.
+      final icon = tester.widget<Icon>(find.byType(Icon));
+      expect(icon.size, 12);
+      expect(icon.color, const Color(0xFF123456));
     });
 
     testWidgets('a 24 pt minus is 1.5 thick, a 12 pt one 0.75', (tester) async {
@@ -123,6 +117,8 @@ void main() {
           AmalfiGlyphs.minus,
           size: 24,
           color: Color(0xFF000000),
+          // An explicit stroke draws the vector glyph (the font has its own weights).
+          strokeWidth: 1.5,
         ),
         const Size(24, 24),
       );
@@ -136,6 +132,7 @@ void main() {
           AmalfiGlyphs.minus,
           size: 12,
           color: Color(0xFF000000),
+          strokeWidth: 0.75,
         ),
         const Size(12, 12),
       );
@@ -196,7 +193,7 @@ void main() {
           ],
         ),
       );
-      expect(find.byType(AmalfiGlyph), findsOneWidget);
+      expect(find.byType(Icon), findsOneWidget);
       expect(find.text('?'), findsOneWidget);
       expect(
         tester.getSize(find.byType(AmalfiSymbol).last),

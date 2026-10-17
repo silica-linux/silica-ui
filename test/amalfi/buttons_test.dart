@@ -189,6 +189,22 @@ const KitPixelTolerance buttonsTolerance = KitPixelTolerance(
   max: 84,
 );
 
+/// The tolerance of the masters that draw a symbol (icon buttons, toolbar buttons, Gradient
+/// add/remove, Glass push buttons with a glyph). The kit draws the symbol from the Silica
+/// Symbols font in Sketch, which sets its glyphs and strokes slightly differently from Skia:
+/// a 16 or 20 pt symbol sits up to a point higher in the kit than centred in its box, and
+/// the strokes antialias differently. The frame (box, size, colour, text) is checked exactly.
+const KitPixelTolerance buttonsSymbolTolerance = KitPixelTolerance(
+  mean: 9,
+  max: 255,
+);
+
+bool _hasSymbol(String name) =>
+    name.startsWith('Buttons/Icon/') ||
+    name.startsWith('Buttons/Toolbar/') ||
+    name.startsWith('Buttons/Gradient/') ||
+    name.startsWith('Buttons/Push/Glass/');
+
 /// [expectKitPixels] with real shadows: flutter_test draws BoxShadows solid
 /// (`debugDisableShadows`), the kit blurs them.
 Future<KitPixelResult> kitPixels(
@@ -206,7 +222,9 @@ Future<KitPixelResult> kitPixels(
       tester,
       master,
       widget,
-      tolerance: buttonsTolerance,
+      tolerance: _hasSymbol(master.name)
+          ? buttonsSymbolTolerance
+          : buttonsTolerance,
       maskText: maskText,
       maskLayers: maskLayers,
       mask: mask,
@@ -326,7 +344,12 @@ void main() {
         for (final (name, label) in [
           ('Icon', null),
           ('Icon + Label', 'Label'),
+          ('Icon Small', null),
         ]) {
+          // `Icon Small` (the compact bars' 24 pt button) has Rest and Disabled only.
+          if (name == 'Icon Small' && state != 'Rest' && state != 'Disabled') {
+            continue;
+          }
           testWidgets('$name $state $a', (tester) async {
             await checkMaster(
               tester,
@@ -334,6 +357,7 @@ void main() {
               state,
               keyed(
                 AmalfiToolbarButton(
+                  small: name == 'Icon Small',
                   icon: const AmalfiGlyph(AmalfiGlyphs.gear),
                   label: label,
                   semanticLabel: 'Settings',
@@ -456,23 +480,14 @@ void main() {
                       ],
                     );
               // Pressing opens the menu; the kit's Pressed master is the button alone.
-              // Kit defect: the Small chevron is 12; control glyphs are 14 at Small (user
-              // decision 2026-10-16, `AmalfiControlSize.iconSize`).
-              final smallGlyph = size == AmalfiControlSize.small;
               // Kit defect (user decision 7, 2026-10-16): the pop-up chevron keeps the
               // 24 pt stroke (1.5) at every size; the glyph rule scales it (1 at 16).
-              final maskChevron = smallGlyph || kind == 'Pop-up';
+              final maskChevron = kind == 'Pop-up';
               await checkMaster(
                 tester,
                 'Buttons/$kind/$s/$state/$a',
                 state,
                 keyed(button),
-                deviations: smallGlyph
-                    ? const {
-                        'Chevron': 'kit 12 pt glyph at Small; decision: 14',
-                        'Label': 'the 14 pt chevron (decision) leaves 2 less',
-                      }
-                    : const {},
                 maskLayers: maskChevron ? const ['Chevron'] : const [],
               );
             });
