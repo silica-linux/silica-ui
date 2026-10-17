@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Added (silica-desktop#224):** `SilicaThumbnails` (client of `dev.frascella.Silica.Thumbnails1`:
+  `thumbnail(uri, sizePx)` returns the cached PNG path or null, `invalidate(uris)`) and the
+  `SilicaThumbnail` widget: it asks for `size x devicePixelRatio`, shows `fallback` (the file-type
+  icon) until the PNG is ready, then `Image.file` in the `size` box; with no service the fallback
+  stays. Raster images and PDF first pages only; folders keep their icon until the composed folder
+  icon lands.
 - **Added (silica-ui, mustache#23; silica-design 43bd510f):** `AmalfiAppIcon(id)`, the 16 pt app icon of
   a menu row (`Icons/App/16/<App>`), drawn from the app's layers in silica-icons for
   `AmalfiMenuAction.icon`; the id may also be an app's `icon/` folder (`X-Silica-Icon`).
